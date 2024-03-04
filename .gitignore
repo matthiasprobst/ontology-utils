@@ -17,7 +17,7 @@ docs/class_structure_pub.svg
 .coverage
 *.zip
 *.tif
-*.json
+#*.json
 *.h5
 *.doc
 

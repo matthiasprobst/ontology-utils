@@ -1,5 +1,8 @@
 # OntoUtils
 
+![Tests](https://github.com/matthiasprobst/ontology-utils/actions/workflows/tests.yml/badge.svg)
+![pyvers](https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-blue)
+
 Utility library for the work with ontologies. Provides two features:
 
 - namespaces

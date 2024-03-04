@@ -27,7 +27,6 @@ class TestNamespaces(unittest.TestCase):
             agent = Agent(mbox='123')
 
         agent = Agent(mbox='m@email.com')
-        print(agent)
         self.assertEqual(agent.mbox, 'm@email.com')
         self.assertEqual(agent.mbox, agent.dict()['mbox'])
         self.assertEqual(Agent.iri(), 'https://www.w3.org/ns/prov#Agent')

@@ -1,11 +1,11 @@
-import appdirs
 import json
 import logging
 import pathlib
-import rdflib
-import requests
 from typing import List
 from typing import Union
+
+import rdflib
+import requests
 
 logger = logging.getLogger(__package__)
 logger.setLevel('DEBUG')
@@ -70,14 +70,6 @@ def is_zip_file(mediaType: Union[str, rdflib.URIRef]):
         'https://www.iana.org/assignments/media-types/application/zip',
         'zip',
     )
-
-
-def get_cache_dir() -> pathlib.Path:
-    """Get the cache directory and create it if it does not exist"""
-    cache_dir = pathlib.Path(appdirs.user_cache_dir('pivmetalib'))
-    if not cache_dir.exists():
-        cache_dir.mkdir(parents=True)
-    return cache_dir
 
 
 def download_file(url,
@@ -164,4 +156,3 @@ def download_file(url,
             f.write(content)
 
     return dest_filename
-

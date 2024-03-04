@@ -1,0 +1,4 @@
+rdflib
+pydantic[email]
+python-dateutil
+requests

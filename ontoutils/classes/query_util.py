@@ -22,7 +22,7 @@ def get_query_string(cls) -> str:
 
     query_str += f"""
 SELECT ?id {fields}
-WHERE {{{{
+WHERE {{
     ?id a {_get_namespace(cls.__name__)} ."""
 
     for field in cls.model_fields.keys():
@@ -31,7 +31,7 @@ WHERE {{{{
                 query_str += f"\n    ?id {_get_namespace(field)} ?{field} ."
             else:
                 query_str += f"\n    OPTIONAL {{ ?id {_get_namespace(field)} ?{field} . }}"
-    query_str += "\n}}"
+    query_str += "\n}"
     return query_str
 
 
@@ -106,22 +106,27 @@ def _qurey_by_id(graph, id: Union[str, rdflib.URIRef]):
     return out
 
 
-def query(cls: Thing, source: Union[str, Dict, pathlib.Path]) -> List:
+def query(cls: Thing, source: Union[str, Dict, pathlib.Path], context=None) -> List:
     """Return a generator of results from the query."""
 
     query_string = get_query_string(cls)
     g = rdflib.Graph()
 
-    for k, p in NamespaceManager[cls].items():
-        g.bind(k, p)
-    if isinstance(source, Dict):
-        g.parse(data=source, format='json-ld',
-                context="https://raw.githubusercontent.com/matthiasprobst/pivmeta/main/pivmeta_context.jsonld")
-    else:
-        g.parse(source=source, format='json-ld',
-                context="https://raw.githubusercontent.com/matthiasprobst/pivmeta/main/pivmeta_context.jsonld")
+    ns_keys = [_ns[0] for _ns in g.namespaces()]
 
-    res = g.query(query_string)
+    prefixes = "".join([f"PREFIX {k}: <{p}>\n" for k, p in NamespaceManager[cls].items()])
+    for k, p in NamespaceManager[cls].items():
+        if k not in ns_keys:
+            g.bind(k, p)
+            print(k)
+        g.bind(k, p)
+
+    if isinstance(source, Dict):
+        g.parse(data=source, format='json-ld', context=context)
+    else:
+        g.parse(source=source, format='json-ld', context=context)
+
+    res = g.query(prefixes + query_string)
 
     if len(res) == 0:
         return

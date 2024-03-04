@@ -104,20 +104,29 @@ class Thing(ThingModel):
     id: Union[str, HttpUrl, FileUrl, BlankNodeType, None] = None  # @id
     label: str = None  # rdfs:label
 
+    def __lt__(self, other):
+        if self.id is None or other.id is None:
+            return False
+        return self.id <= other.id
+
     def dump_jsonld(self,
                     context=None,
                     exclude_none: bool = True,
                     local_namespace: HttpUrl = 'https://local-domain.org/') -> str:
         """alias for model_dump_json()"""
 
-        if context is None:
-            from . import CONTEXT
-            context = CONTEXT
+        # if context is None:
+        #     from . import CONTEXT
+        #     context = CONTEXT
 
         g = rdflib.Graph()
 
-        at_context: Dict = {"@import": context,
-                            "local": local_namespace}
+        at_context: Dict = {"local": local_namespace}
+        if isinstance(context, str):
+            at_context['@import'] = context
+        else:
+            at_context.update(**context)
+
         jsonld = {
             "@context": at_context,
             "@graph": [
@@ -128,7 +137,7 @@ class Thing(ThingModel):
         g.parse(data=json.dumps(jsonld), format='json-ld')
         if context:
             return g.serialize(format='json-ld',
-                               context={"@import": context},
+                               context=at_context,
                                indent=4)
         return g.serialize(format='json-ld', indent=4)
 

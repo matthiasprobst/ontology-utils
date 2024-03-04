@@ -2,14 +2,14 @@ import unittest
 
 import rdflib
 
-import ontoutils
-from ontoutils import namespacelib
+import ontolutils
+from ontolutils import namespacelib
 
 
 class TestNamespaces(unittest.TestCase):
 
     def test_m4i(self):
-        self.assertIsInstance(ontoutils.M4I.Tool, rdflib.URIRef)
+        self.assertIsInstance(ontolutils.M4I.Tool, rdflib.URIRef)
         self.assertIsInstance(namespacelib.M4I.Tool, rdflib.URIRef)
         self.assertEqual(str(namespacelib.M4I.Tool),
                          'http://w3id.org/nfdi4ing/metadata4ing#Tool')

@@ -3,8 +3,8 @@ import unittest
 import pydantic
 from pydantic import EmailStr
 
-from ontoutils import Thing
-from ontoutils import classes as ontocls
+from ontolutils import Thing
+from ontolutils import classes as ontocls
 
 
 class TestNamespaces(unittest.TestCase):

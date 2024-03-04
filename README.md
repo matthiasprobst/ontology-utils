@@ -1,4 +1,4 @@
-# OntoUtils
+# Ontolutils - Utilities for work with ontologies
 
 ![Tests](https://github.com/matthiasprobst/ontology-utils/actions/workflows/tests.yml/badge.svg)
 ![pyvers](https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-blue)
@@ -24,7 +24,7 @@ part of this package, like `CODEMETA` or `M4I`. Thus, you can do:
 
 ```python
 
-from ontoutils import M4I
+from ontolutils import M4I
 
 print(M4I.Tool)
 # rdflib.URIRef('http://w3id.org/nfdi4ing/metadata4ing#Tool')
@@ -38,7 +38,7 @@ them again. Below, an example is made with the `prov` ontology:
 
 from pydantic import EmailStr
 
-from ontoutils import Thing, namespaces, urirefs
+from ontolutils import Thing, namespaces, urirefs
 
 
 @namespaces(prov="https://www.w3.org/ns/prov#",
@@ -77,7 +77,8 @@ Some namespaces may be incomplete due to vocabularies with names that are reserv
 `schema.org`, "yield" or "True" will not be available like this:
 
 ```python
-from ontoutils import SCHEMA
+from ontolutils import SCHEMA
 
-SCHEMA.yield  # AttributeError: 'SchemaOrg' object has no attribute 'yield'
+SCHEMA.
+yield  # AttributeError: 'SchemaOrg' object has no attribute 'yield'
 ```

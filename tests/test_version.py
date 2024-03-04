@@ -2,7 +2,7 @@ import json
 import pathlib
 import unittest
 
-from ontoutils import __version__
+from ontolutils import __version__
 
 
 def get_package_meta():

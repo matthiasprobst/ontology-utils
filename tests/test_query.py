@@ -23,20 +23,20 @@ class TestQuery(unittest.TestCase):
 
     def test_query(self):
         agent = self.Agent(mbox='e@mail.com')
-        with open('agent.jsonld', 'w') as f:
+        with open(__this_dir__ / 'agent.jsonld', 'w') as f:
             json_ld_str = agent.dump_jsonld(context={'prov': 'https://www.w3.org/ns/prov#',
                                                      'foaf': 'http://xmlns.com/foaf/0.1/'})
             f.write(
                 json_ld_str
             )
-        found_agents = ontoutils.query(self.Agent, source='agent.jsonld')
+        found_agents = ontoutils.query(self.Agent, source=__this_dir__ / 'agent.jsonld')
         self.assertEqual(len(found_agents), 1)
         self.assertEqual(found_agents[0].mbox, 'e@mail.com')
 
-        found_agents = sorted(ontoutils.query(self.Agent, source='agents.jsonld'))
+        found_agents = sorted(ontoutils.query(self.Agent, source=__this_dir__ / 'agents.jsonld'))
         self.assertEqual(len(found_agents), 2)
         self.assertEqual(found_agents[0].mbox, 'e1@mail.com')
         self.assertEqual(found_agents[1].mbox, 'e2@mail.com')
 
     def tearDown(self):
-        pathlib.Path('agent.jsonld').unlink(missing_ok=True)
+        pathlib.Path(__this_dir__ / 'agent.jsonld').unlink(missing_ok=True)

@@ -28,6 +28,8 @@ print(M4I.Tool)
 ```
 
 ## Ontology wrapper classes
+With the ontology wrapper classes, you can create objects of ontology classes, write them to a JSON-LD file and query 
+them again. Below, an example is made with the `prov` ontology:
 
 ```python
 
@@ -50,11 +52,20 @@ class Agent(Thing):
     """
     mbox: EmailStr = None  # foaf:mbox
 
+
 # usage:
 agent = Agent(mbox="a@email.com")
 print(agent.mbox)
 # Agent(id=None, label=None, mbox='m@email.com')
 
+with open("agent.json", "w") as f:
+    f.write(agent.dump_jsonld())
+
+with open("agent.json", "r") as f:
+    found_agents = Agent.load_jsonld(f.read())
+found_agent = found_agents[0]
+print(found_agent.mbox)
+# Agent(id=..., label=None, mbox='m@email.com')
 ```
 
 ## Limitations

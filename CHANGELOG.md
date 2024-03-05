@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.1.1
+
+- bugfix exporting to jsond-ld
+- bugfix query, now using data and source as arguments, which are passed to json.dump()
+
 ## v0.1.0
 
 - initial version

@@ -1,5 +1,6 @@
+import json
 import pathlib
-from typing import Union, Dict, List
+from typing import Union, Dict, List, Optional
 
 import rdflib
 
@@ -106,8 +107,23 @@ def _qurey_by_id(graph, id: Union[str, rdflib.URIRef]):
     return out
 
 
-def query(cls: Thing, source: Union[str, Dict, pathlib.Path], context=None) -> List:
-    """Return a generator of results from the query."""
+def query(cls: Thing,
+          source: Optional[Union[str, pathlib.Path]] = None,
+          data: Optional[Union[str, Dict]] = None,
+          context: Optional[Union[Dict, str]] = None) -> List:
+    """Return a generator of results from the query.
+
+    Parameters
+    ----------
+    cls : Thing
+        The class to query
+    source: Optional[Union[str, pathlib.Path]]
+        The source of the json-ld file. see json.dump() for details
+    data : Optional[Union[str, Dict]]
+        The data of the json-ld file
+    context : Optional[Union[Dict, str]]
+        The context of the json-ld file
+    """
 
     query_string = get_query_string(cls)
     g = rdflib.Graph()
@@ -118,13 +134,12 @@ def query(cls: Thing, source: Union[str, Dict, pathlib.Path], context=None) -> L
     for k, p in NamespaceManager[cls].items():
         if k not in ns_keys:
             g.bind(k, p)
-            print(k)
+            # print(k)
         g.bind(k, p)
 
-    if isinstance(source, Dict):
-        g.parse(data=source, format='json-ld', context=context)
-    else:
-        g.parse(source=source, format='json-ld', context=context)
+    if isinstance(data, dict):
+        data = json.dumps(data)
+    g.parse(source=source, data=data, format='json-ld', context=context)
 
     res = g.query(prefixes + query_string)
 

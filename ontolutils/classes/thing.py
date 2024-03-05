@@ -122,10 +122,11 @@ class Thing(ThingModel):
         g = rdflib.Graph()
 
         at_context: Dict = {"local": local_namespace}
-        if isinstance(context, str):
-            at_context['@import'] = context
-        else:
-            at_context.update(**context)
+        if context is not None:
+            if isinstance(context, str):
+                at_context['@import'] = context
+            else:
+                at_context.update(**context)
 
         jsonld = {
             "@context": at_context,

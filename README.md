@@ -79,6 +79,5 @@ Some namespaces may be incomplete due to vocabularies with names that are reserv
 ```python
 from ontolutils import SCHEMA
 
-SCHEMA.
-yield  # AttributeError: 'SchemaOrg' object has no attribute 'yield'
+SCHEMA.yield  # AttributeError: 'SchemaOrg' object has no attribute 'yield'
 ```

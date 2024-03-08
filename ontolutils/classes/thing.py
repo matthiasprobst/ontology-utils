@@ -8,7 +8,6 @@ import rdflib
 from pydantic import HttpUrl, FileUrl, BaseModel, ConfigDict
 
 from .decorator import urirefs, namespaces, URIRefManager, NamespaceManager
-from .model import ThingModel
 from .typing import BlankNodeType
 from .utils import split_URIRef
 

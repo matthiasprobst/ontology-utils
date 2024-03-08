@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.2.0a2
+
+- added documentation
+
+## v0.2.0a1
+
+- improved and consistent handling serialization
+
 ## v0.1.1
 
 - bugfix exporting to jsond-ld

@@ -47,8 +47,9 @@ def serialize_fields(
     dict
         The serialized fields
     """
-    if isinstance(obj, str):
+    if isinstance(obj, (int, str, float, bool)):
         return obj
+
     if exclude_none:
         serialized_fields = {URIRefManager[obj.__class__][k]: getattr(obj, k) for k in obj.model_fields if
                              getattr(obj, k) is not None and k not in ('id', '@id')}

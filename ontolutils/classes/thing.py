@@ -1,8 +1,8 @@
 import abc
 import json
-import uuid
+import logging
 from datetime import datetime
-from typing import Dict, Union
+from typing import Dict, Union, Optional
 
 import rdflib
 from pydantic import BaseModel
@@ -13,6 +13,10 @@ from .model import ThingModel
 from .typing import BlankNodeType
 from .utils import split_URIRef
 
+logger = logging.getLogger('ontolutils')
+
+EXTRA = 'allow'  # or allow or ignore
+
 
 class ThingModel(abc.ABC, BaseModel):
     """Abstract class to be used by model classes used within PIVMetalib"""
@@ -20,24 +24,42 @@ class ThingModel(abc.ABC, BaseModel):
     class Config:
         validate_assignment = True
         # extra = Extra.forbid
-        extra = 'allow'
+        extra = EXTRA
 
     @abc.abstractmethod
     def _repr_html_(self) -> str:
         """Returns the HTML representation of the class"""
 
 
-def serialize_fields(obj, exclude_none: bool = True) -> Dict:
-    """Serializes the fields of a Thing object into a json-ld dictionary (without context!)"""
+def serialize_fields(
+        obj,
+        exclude_none: bool = True
+) -> Dict:
+    """Serializes the fields of a Thing object into a json-ld
+    dictionary (without context!). Note, that IDs can automatically be
+    generated (with a local prefix)
 
+    Parameter
+    ---------
+    obj: Thing
+        The object to serialize
+    exclude_none: bool=True
+        If True, fields with None values will be excluded from the
+        serialization
+
+    Returns
+    -------
+    dict
+        The serialized fields
+    """
+    if isinstance(obj, str):
+        return obj
     if exclude_none:
         serialized_fields = {URIRefManager[obj.__class__][k]: getattr(obj, k) for k in obj.model_fields if
                              getattr(obj, k) is not None and k not in ('id', '@id')}
-        # serialized_fields = {_parse_key(k): getattr(obj, k) for k in obj.model_fields if getattr(obj, k) is not None}
     else:
         serialized_fields = {URIRefManager[obj.__class__][k]: getattr(obj, k) for k in obj.model_fields if
                              k not in ('id', '@id')}
-        # serialized_fields = {_parse_key(k): getattr(obj, k) for k in obj.model_fields}
     if obj.Config.extra == 'allow':
         for k, v in obj.model_extra.items():
             serialized_fields[URIRefManager[obj.__class__].get(k, k)] = v
@@ -57,8 +79,11 @@ def serialize_fields(obj, exclude_none: bool = True) -> Dict:
 
     _type = URIRefManager[obj.__class__].get(obj.__class__.__name__, obj.__class__.__name__)
 
-    return {"@type": _type, **serialized_fields,
-            "@id": obj.id if obj.id is not None else f'local:{str(uuid.uuid4())}'}
+    out = {"@type": _type, **serialized_fields}
+    # if no ID is given, generate a local one:
+    if obj.id is not None:
+        out["@id"] = obj.id
+    return out
 
 
 def _repr(obj):
@@ -96,7 +121,7 @@ def dump_hdf(g, data: Dict, iris: Dict = None):
 
 @namespaces(owl='http://www.w3.org/2002/07/owl#',
             rdfs='http://www.w3.org/2000/01/rdf-schema#',
-            local='http://example.com/')
+            local='http://example.org/')
 @urirefs(Thing='owl:Thing', label='rdfs:label')
 class Thing(ThingModel):
     """owl:Thing
@@ -109,40 +134,99 @@ class Thing(ThingModel):
             return False
         return self.id <= other.id
 
-    def dump_jsonld(self,
-                    context=None,
-                    exclude_none: bool = True,
-                    local_namespace: HttpUrl = 'https://local-domain.org/') -> str:
-        """alias for model_dump_json()"""
+    def get_jsonld_dict(self,
+                        context: Optional[Union[Dict, str]] = None,
+                        exclude_none: bool = True) -> Dict:
+        """Return the JSON-LD dictionary of the object. This will include the context
+        and the fields of the object.
 
-        # if context is None:
-        #     from . import CONTEXT
-        #     context = CONTEXT
+        Parameters
+        ----------
+        context: Optional[Union[Dict, str]]
+            The context to use for the JSON-LD serialization. If a string is given, it will
+            be interpreted as an import statement and will be added to the context.
+        exclude_none: bool=True
+            Exclude fields with None values
 
-        g = rdflib.Graph()
+        Returns
+        -------
+        Dict
+            The JSON-LD dictionary
+        """
+        logger.debug('Initializing RDF graph to dump the Thing to JSON-LD')
 
-        at_context: Dict = {"local": local_namespace}
+        # lets auto-generate the context
+        at_context: Dict = NamespaceManager.get(self.__class__, {})
+
         if context is not None:
             if isinstance(context, str):
-                at_context['@import'] = context
+                logger.debug('The context argument is a string. Interpreting it '
+                             'as an import statement, so will update "@import" in the context')
+                _import = at_context.get('@import', [])
+                _import['@context'].extend(context)
+                # at_context['@import'] = context
             else:
                 at_context.update(**context)
 
+        logger.debug(f'The context is "{at_context}".')
+
         jsonld = {
             "@context": at_context,
-            "@graph": [
-                serialize_fields(self, exclude_none=exclude_none)
-            ]
+            **serialize_fields(self, exclude_none=exclude_none)
         }
+        return jsonld
 
-        g.parse(data=json.dumps(jsonld), format='json-ld')
+    def model_dump_jsonld(self,
+                          context: Optional[Union[Dict, str]] = None,
+                          exclude_none: bool = True,
+                          rdflib_serialize: bool = False) -> str:
+        """Similar to model_dump_json() but will return a JSON string with
+        context resulting in a JSON-LD serialization. Using `rdflib_serialize=True`
+        will use the rdflib to serialize. This will make the output a bit cleaner
+        but is not needed in most cases and just takes a bit more time (and requires
+        an internet connection.
+
+        Note, that if `rdflib_serialize=True`, then a blank node will be generated if no ID is set.
+
+        Parameters
+        ----------
+        context: Optional[Union[Dict, str]]
+            The context to use for the JSON-LD serialization. If a string is given, it will
+            be interpreted as an import statement and will be added to the context.
+        exclude_none: bool=True
+            Exclude fields with None values
+        rdflib_serialize: bool=False
+            If True, the output will be serialized using rdflib. This results in a cleaner
+            output but is not needed in most cases and just takes a bit more time (and requires
+            an internet connection). Will also generate a blank node if no ID is set.
+
+        Returns
+        -------
+        str
+            The JSON-LD string
+        """
+
+        jsonld_dict = self.get_jsonld_dict(
+            context=context,
+            exclude_none=exclude_none
+        )
+        jsonld_str = json.dumps(jsonld_dict, indent=4)
+        if not rdflib_serialize:
+            return jsonld_str
+
+        logger.debug(f'Parsing the following jsonld dict to the RDF graph: {jsonld_str}')
+        g = rdflib.Graph()
+        g.parse(data=jsonld_str, format='json-ld')
+
+        _context = jsonld_dict.get('@context', {})
         if context:
-            return g.serialize(format='json-ld',
-                               context=at_context,
-                               indent=4)
-        return g.serialize(format='json-ld', indent=4)
+            _context.update(context)
 
-    def dump_hdf(self, g):
+        return g.serialize(format='json-ld',
+                           context=_context,
+                           indent=4)
+
+    def model_dump_hdf(self, g):
         """Write the object to an hdf group. Nested dictionaries result in nested groups"""
 
         def _get_explained_dict(obj):
@@ -173,8 +257,6 @@ class Thing(ThingModel):
                 else:
                     explained_key = (None, k)
 
-                # namespaced_key = _resolve_namespaced_field(_context_manager.get(k, k))
-                # namespace_dict[k] = _context_manager.get(key, key)
                 if isinstance(v, ThingModel):
                     namespaced_fields[explained_key] = _get_explained_dict(v)
                 else:
@@ -229,10 +311,10 @@ class Thing(ThingModel):
         return f"{self.__class__.__name__}({repr_fields})"
 
     @classmethod
-    def from_jsonld(cls, source):
+    def from_jsonld(cls, source=None, data=None):
         """Initialize the class from a JSON-LD source"""
         from . import query
-        return query(cls, source)
+        return query(cls, source=source, data=data)
 
     @classmethod
     def iri(cls, key: str = None, compact: bool = False):

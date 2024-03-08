@@ -1,4 +1,5 @@
 import json
+import logging
 import pathlib
 from typing import Union, Dict, List, Optional
 
@@ -7,6 +8,8 @@ import rdflib
 from .decorator import URIRefManager, NamespaceManager
 from .thing import Thing
 from .utils import split_URIRef
+
+logger = logging.getLogger('ontolutils')
 
 
 def get_query_string(cls) -> str:
@@ -141,7 +144,11 @@ def query(cls: Thing,
         data = json.dumps(data)
     g.parse(source=source, data=data, format='json-ld', context=context)
 
-    res = g.query(prefixes + query_string)
+    gquery = prefixes + query_string
+    logger.debug(f"Querying {cls.__name__} with query: {gquery}")
+    res = g.query(gquery)
+
+    # print(prefixes+ query_string)
 
     if len(res) == 0:
         return

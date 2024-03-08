@@ -1,8 +1,7 @@
 import json
 import logging
 import pathlib
-from typing import List
-from typing import Union
+from typing import Union, List, Dict
 
 import rdflib
 import requests
@@ -16,6 +15,17 @@ class UNManager:
 
     def __init__(self):
         self.data = {}
+
+    def get(self, cls, other=None) -> Dict:
+        """Get the Namespace for the class."""
+        ret = self.data.get(cls, other)
+        if ret is None:
+            return {}
+        return ret
+
+    def __repr__(self):
+        names = ', '.join([f'{c.__name__}' for c in self.data])
+        return f'{self.__class__.__name__}({names})'
 
     def __getitem__(self, cls):
         if cls not in self.data:

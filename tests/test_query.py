@@ -24,7 +24,7 @@ class TestQuery(unittest.TestCase):
     def test_query(self):
         agent = self.Agent(mbox='e@mail.com')
         with open(__this_dir__ / 'agent.jsonld', 'w') as f:
-            json_ld_str = agent.dump_jsonld(context={'prov': 'https://www.w3.org/ns/prov#',
+            json_ld_str = agent.model_dump_jsonld(context={'prov': 'https://www.w3.org/ns/prov#',
                                                      'foaf': 'http://xmlns.com/foaf/0.1/'})
             f.write(
                 json_ld_str

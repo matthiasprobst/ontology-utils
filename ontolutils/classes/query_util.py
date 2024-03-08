@@ -153,7 +153,7 @@ def find_subsequent_fields(bindings, graph):
 def expand_sparql_res(bindings, graph):
     out = {}
     for binding in bindings:
-        _id = binding['?id'].n3()
+        _id = str(binding['?id'])#.n3()
         if _id not in out:
             out[_id] = {}
         p = binding['p'].__str__()
@@ -186,7 +186,7 @@ def expand_sparql_res(bindings, graph):
             else:
                 out[_id][predicate] = object
 
-    return out[_id]
+    return out
         # # if isinstance(binding['?o'], rdflib.term.BNode):
         # #     # the property points to a blank node.
         # #     object = _qurey_by_id(g, objectn3)
@@ -274,7 +274,7 @@ def query(cls: Thing,
 
     kwargs: Dict = expand_sparql_res(res.bindings, g)
 
-    return cls.model_validate(kwargs)
+    return [cls.model_validate({'id': k, **v}) for k, v in kwargs.items()]
 
     results = []
     for _id, _params in kwargs.items():

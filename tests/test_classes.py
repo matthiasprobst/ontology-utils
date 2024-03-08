@@ -30,6 +30,10 @@ class TestNamespaces(unittest.TestCase):
             label='Agent 1',
             mbox='my@email.com'
         )
+        with self.assertRaises(pydantic.ValidationError):
+            agent.mbox = 4.5
+            agent.model_validate(agent.model_dump())
+        agent.mbox = 'my@email.com'
         jsonld_str1 = agent.model_dump_jsonld(rdflib_serialize=False)
         jsonld_str2 = agent.model_dump_jsonld(rdflib_serialize=True)
         jsonld_str2_dict = json.loads(jsonld_str2)

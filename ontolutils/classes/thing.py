@@ -157,15 +157,13 @@ class Thing(ThingModel):
         # lets auto-generate the context
         at_context: Dict = NamespaceManager.get(self.__class__, {})
 
-        if context is not None:
-            if isinstance(context, str):
-                logger.debug('The context argument is a string. Interpreting it '
-                             'as an import statement, so will update "@import" in the context')
-                _import = at_context.get('@import', [])
-                _import['@context'].extend(context)
-                # at_context['@import'] = context
-            else:
-                at_context.update(**context)
+        if context is None:
+            context = {}
+
+        if not isinstance(context, dict):
+            raise TypeError(f"Context must be a dict, not {type(context)}")
+
+        at_context.update(**context)
 
         logger.debug(f'The context is "{at_context}".')
 
@@ -176,7 +174,7 @@ class Thing(ThingModel):
         return jsonld
 
     def model_dump_jsonld(self,
-                          context: Optional[Union[Dict, str]] = None,
+                          context: Optional[Dict] = None,
                           exclude_none: bool = True,
                           rdflib_serialize: bool = False) -> str:
         """Similar to model_dump_json() but will return a JSON string with
@@ -204,6 +202,8 @@ class Thing(ThingModel):
         str
             The JSON-LD string
         """
+
+
 
         jsonld_dict = self.get_jsonld_dict(
             context=context,

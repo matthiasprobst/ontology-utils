@@ -150,10 +150,12 @@ def find_subsequent_fields(bindings, graph):
             else:
                 out[predicate] = object
     return out
+
+
 def expand_sparql_res(bindings, graph):
     out = {}
     for binding in bindings:
-        _id = str(binding['?id'])#.n3()
+        _id = str(binding['?id'])  # .n3()
         if _id not in out:
             out[_id] = {}
         p = binding['p'].__str__()
@@ -187,23 +189,6 @@ def expand_sparql_res(bindings, graph):
                 out[_id][predicate] = object
 
     return out
-        # # if isinstance(binding['?o'], rdflib.term.BNode):
-        # #     # the property points to a blank node.
-        # #     object = _qurey_by_id(g, objectn3)
-        #
-        # if objectn3.startswith('<'):
-        #     # it is a URIRef
-        #     if predicate not in ('type', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'):  # and _o may be an ID
-        #         # assert object.startswith('http') or object.startswith('_:')
-        #         object = _qurey_by_id(g, object)
-        #
-        # if predicate in n3dict[_id]:
-        #     if isinstance(n3dict[_id][predicate], list):
-        #         n3dict[_id][predicate].append(object)
-        #     else:
-        #         n3dict[_id][predicate] = [n3dict[_id][predicate], object]
-        # else:
-        #     n3dict[_id][predicate] = object
 
 
 def query(cls: Thing,
@@ -229,7 +214,7 @@ def query(cls: Thing,
 
     ns_keys = [_ns[0] for _ns in g.namespaces()]
 
-    prefixes = "".join([f"PREFIX {k}: <{p}>\n" for k, p in NamespaceManager[cls].items()])
+    prefixes = "".join([f"PREFIX {k}: <{p}>\n" for k, p in NamespaceManager[cls].items() if not k.startswith('@')])
     for k, p in NamespaceManager[cls].items():
         if k not in ns_keys:
             g.bind(k, p)
@@ -243,6 +228,9 @@ def query(cls: Thing,
 
     if context is None:
         context = {}
+
+    if not isinstance(context, dict):
+        raise TypeError(f"Context must be a dict, not {type(context)}")
 
     _context.update(context)
 

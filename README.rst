@@ -56,6 +56,5 @@ Now, you can instantiate the class and use the `model_dump_jsonld` method to get
 
 
 
-Please visit the `documentation <https://matthiasprobst.github.io/ontology-utils/>`_ for more information.
-
+Please visit the `documentation <https://ontology-utils.readthedocs.io/en/latest/>`_ for more information.
 

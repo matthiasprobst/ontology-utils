@@ -12,31 +12,31 @@ from .utils import split_URIRef
 logger = logging.getLogger('ontolutils')
 
 
-def get_query_string(cls) -> str:
-    def _get_namespace(key):
-        ns = URIRefManager[cls].data.get(key, f'local:{key}')
-        if ':' in ns:
-            return ns
-        return f'{ns}:{key}'
-
-    # generate query automatically based on fields
-    fields = " ".join([f"?{k}" for k in cls.model_fields.keys() if k != 'id'])
-    # better in a one-liner:
-    query_str = "".join([f"PREFIX {k}: <{v}>\n" for k, v in NamespaceManager.namespaces.items()])
-
-    query_str += f"""
-SELECT ?id {fields}
-WHERE {{
-    ?id a {_get_namespace(cls.__name__)} ."""
-
-    for field in cls.model_fields.keys():
-        if field != 'id':
-            if cls.model_fields[field].is_required():
-                query_str += f"\n    ?id {_get_namespace(field)} ?{field} ."
-            else:
-                query_str += f"\n    OPTIONAL {{ ?id {_get_namespace(field)} ?{field} . }}"
-    query_str += "\n}"
-    return query_str
+# def get_query_string(cls) -> str:
+#     def _get_namespace(key):
+#         ns = URIRefManager[cls].data.get(key, f'local:{key}')
+#         if ':' in ns:
+#             return ns
+#         return f'{ns}:{key}'
+#
+#     # generate query automatically based on fields
+#     fields = " ".join([f"?{k}" for k in cls.model_fields.keys() if k != 'id'])
+#     # better in a one-liner:
+#     query_str = "".join([f"PREFIX {k}: <{v}>\n" for k, v in NamespaceManager.namespaces.items()])
+#
+#     query_str += f"""
+# SELECT ?id {fields}
+# WHERE {{
+#     ?id a <{_get_namespace(cls.__name__)}> ."""
+#
+#     for field in cls.model_fields.keys():
+#         if field != 'id':
+#             if cls.model_fields[field].is_required():
+#                 query_str += f"\n    ?id {_get_namespace(field)} ?{field} ."
+#             else:
+#                 query_str += f"\n    OPTIONAL {{ ?id {_get_namespace(field)} ?{field} . }}"
+#     query_str += "\n}"
+#     return query_str
 
 
 def get_query_string(cls) -> str:
@@ -110,6 +110,102 @@ def _qurey_by_id(graph, id: Union[str, rdflib.URIRef]):
     return out
 
 
+def exists_as_type(object: str, graph):
+    query = """SELECT ?object
+WHERE {
+  %s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?object .
+}""" % object
+    out = graph.query(query)
+    return len(out) == 1
+
+
+def find_subsequent_fields(bindings, graph):
+    out = {}
+    for binding in bindings:
+        p = binding['p'].__str__()
+        _, predicate = split_URIRef(p)
+        if predicate == 'type':
+            continue
+        objectn3 = binding['?o'].n3()
+        object = binding['?o'].__str__()
+
+        if exists_as_type(objectn3, graph):
+            sub_query = """SELECT ?p ?o WHERE { <%s> ?p ?o }""" % object
+            sub_res = graph.query(sub_query)
+            assert len(sub_res) > 0
+            _data = find_subsequent_fields(sub_res.bindings, graph)
+            if predicate in out:
+                if isinstance(out[predicate], list):
+                    out[predicate].append(_data)
+                else:
+                    out[predicate] = [out[predicate], _data]
+            else:
+                out[predicate] = _data
+        else:
+            if predicate in out:
+                if isinstance(out[predicate], list):
+                    out[predicate].append(object)
+                else:
+                    out[predicate] = [out[predicate], object]
+            else:
+                out[predicate] = object
+    return out
+def expand_sparql_res(bindings, graph):
+    out = {}
+    for binding in bindings:
+        _id = binding['?id'].n3()
+        if _id not in out:
+            out[_id] = {}
+        p = binding['p'].__str__()
+        _, predicate = split_URIRef(p)
+
+        if predicate == 'type':
+            continue
+
+        objectn3 = binding['?o'].n3()
+        object = binding['?o'].__str__()
+
+        if exists_as_type(objectn3, graph):
+            sub_query = """SELECT ?p ?o WHERE { %s ?p ?o }""" % objectn3
+            sub_res = graph.query(sub_query)
+            assert len(sub_res) > 0
+            _data = find_subsequent_fields(sub_res.bindings, graph)
+            if predicate in out[_id]:
+                if isinstance(out[_id][predicate], list):
+                    out[_id][predicate].append(_data)
+                else:
+                    out[_id][predicate] = [out[_id][predicate], _data]
+            else:
+                out[_id][predicate] = _data
+        else:
+            if predicate in out[_id]:
+                if isinstance(out[_id][predicate], list):
+                    out[_id][predicate].append(object)
+                else:
+                    out[_id][predicate] = [out[_id][predicate], object]
+            else:
+                out[_id][predicate] = object
+
+    return out[_id]
+        # # if isinstance(binding['?o'], rdflib.term.BNode):
+        # #     # the property points to a blank node.
+        # #     object = _qurey_by_id(g, objectn3)
+        #
+        # if objectn3.startswith('<'):
+        #     # it is a URIRef
+        #     if predicate not in ('type', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'):  # and _o may be an ID
+        #         # assert object.startswith('http') or object.startswith('_:')
+        #         object = _qurey_by_id(g, object)
+        #
+        # if predicate in n3dict[_id]:
+        #     if isinstance(n3dict[_id][predicate], list):
+        #         n3dict[_id][predicate].append(object)
+        #     else:
+        #         n3dict[_id][predicate] = [n3dict[_id][predicate], object]
+        # else:
+        #     n3dict[_id][predicate] = object
+
+
 def query(cls: Thing,
           source: Optional[Union[str, pathlib.Path]] = None,
           data: Optional[Union[str, Dict]] = None,
@@ -142,7 +238,18 @@ def query(cls: Thing,
 
     if isinstance(data, dict):
         data = json.dumps(data)
-    g.parse(source=source, data=data, format='json-ld', context=context)
+
+    _context = cls.get_context()
+
+    if context is None:
+        context = {}
+
+    _context.update(context)
+
+    g.parse(source=source,
+            data=data,
+            format='json-ld',
+            context=_context)
 
     gquery = prefixes + query_string
     logger.debug(f"Querying {cls.__name__} with query: {gquery}")
@@ -165,30 +272,11 @@ def query(cls: Thing,
             full_iri = f'{NamespaceManager[cls].get(ns)}{key}'
         model_field_iri[full_iri] = model_field
 
-    n3dict = {}
-    for binding in res.bindings:
-        _id = binding['?id'].n3()
-        if _id not in n3dict:
-            n3dict[_id] = {}
-        p = binding['p'].__str__()
-        _, predicate = split_URIRef(p)
-        objectn3 = binding['?o'].n3()
-        object = binding['?o'].__str__()
-        if objectn3.startswith('<'):
-            # it is a URIRef
-            if predicate != 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type':  # and _o may be an ID
-                assert object.startswith('http') or object.startswith('_:')
-                object = _qurey_by_id(g, object)
+    kwargs: Dict = expand_sparql_res(res.bindings, g)
 
-        if predicate in n3dict[_id]:
-            if isinstance(n3dict[_id][predicate], list):
-                n3dict[_id][predicate].append(object)
-            else:
-                n3dict[_id][predicate] = [n3dict[_id][predicate], object]
-        else:
-            n3dict[_id][predicate] = object
+    return cls.model_validate(kwargs)
 
     results = []
-    for _id, _params in n3dict.items():
-        results.append(cls.model_validate({'id': _id[1:-1], **_params}))
+    for _id, _params in kwargs.items():
+        results.append(cls.model_validate({kwargs}))
     return results

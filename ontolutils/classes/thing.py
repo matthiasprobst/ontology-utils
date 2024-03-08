@@ -79,6 +79,9 @@ def serialize_fields(
     # if no ID is given, generate a local one:
     if obj.id is not None:
         out["@id"] = obj.id
+    else:
+        import uuid
+        out["@id"] = f"local:{uuid.uuid4()}"
     return out
 
 
@@ -339,3 +342,8 @@ class Thing(ThingModel):
         ns, key = split_URIRef(iri_short)
         ns_iri = NamespaceManager[cls].get(ns, None)
         return f'{ns_iri}{key}'
+
+    @classmethod
+    def get_context(cls):
+        """Return the context of the class"""
+        return NamespaceManager[cls]

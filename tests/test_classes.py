@@ -33,10 +33,10 @@ class TestNamespaces(unittest.TestCase):
         jsonld_str1 = agent.model_dump_jsonld(rdflib_serialize=False)
         jsonld_str2 = agent.model_dump_jsonld(rdflib_serialize=True)
         jsonld_str2_dict = json.loads(jsonld_str2)
-        self.assertNotEquals(json.loads(jsonld_str1),
+        self.assertNotEqual(json.loads(jsonld_str1),
                              jsonld_str2_dict)
         jsonld_str2_dict.pop('@id')
-        self.assertEquals(json.loads(jsonld_str1),
+        self.assertEqual(json.loads(jsonld_str1),
                           jsonld_str2_dict)
 
         # serialize with a "@import"
@@ -119,7 +119,7 @@ class TestNamespaces(unittest.TestCase):
 
         agent = Agent(mbox='m@email.com')
         self.assertEqual(agent.mbox, 'm@email.com')
-        self.assertEqual(agent.mbox, agent.dict()['mbox'])
+        self.assertEqual(agent.mbox, agent.model_dump()['mbox'])
         self.assertEqual(Agent.iri(), 'https://www.w3.org/ns/prov#Agent')
         self.assertEqual(Agent.iri(compact=True), 'prov:Agent')
         self.assertEqual(Agent.iri('mbox'), 'http://xmlns.com/foaf/0.1/mbox')

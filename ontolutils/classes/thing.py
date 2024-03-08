@@ -5,8 +5,7 @@ from datetime import datetime
 from typing import Dict, Union, Optional
 
 import rdflib
-from pydantic import BaseModel
-from pydantic import HttpUrl, FileUrl
+from pydantic import HttpUrl, FileUrl, BaseModel, ConfigDict
 
 from .decorator import urirefs, namespaces, URIRefManager, NamespaceManager
 from .model import ThingModel
@@ -15,16 +14,13 @@ from .utils import split_URIRef
 
 logger = logging.getLogger('ontolutils')
 
-EXTRA = 'allow'  # or allow or ignore
+EXTRA = 'allow'  # or 'forbid' or 'ignore'
 
 
 class ThingModel(abc.ABC, BaseModel):
     """Abstract class to be used by model classes used within PIVMetalib"""
 
-    class Config:
-        validate_assignment = True
-        # extra = Extra.forbid
-        extra = EXTRA
+    model_config = ConfigDict(extra=EXTRA)
 
     @abc.abstractmethod
     def _repr_html_(self) -> str:
@@ -60,7 +56,7 @@ def serialize_fields(
     else:
         serialized_fields = {URIRefManager[obj.__class__][k]: getattr(obj, k) for k in obj.model_fields if
                              k not in ('id', '@id')}
-    if obj.Config.extra == 'allow':
+    if obj.model_config['extra'] == 'allow':
         for k, v in obj.model_extra.items():
             serialized_fields[URIRefManager[obj.__class__].get(k, k)] = v
 
@@ -295,7 +291,7 @@ class Thing(ThingModel):
     def __repr__(self):
         _fields = {k: getattr(self, k) for k in self.model_fields if getattr(self, k) is not None}
         repr_fields = ", ".join([f"{k}={v}" for k, v in _fields.items()])
-        if self.Config.extra == 'allow':
+        if self.model_config['extra'] == 'allow':
             if len(self.model_extra) > 0:
                 repr_extra = ", ".join([f"{k}={v}" for k, v in self.model_extra.items()])
                 return f"{self.__class__.__name__}({repr_fields}, {repr_extra})"

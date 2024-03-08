@@ -97,7 +97,7 @@ class QueryResult:
         return f"{self.__class__.__name__}(cls={self.cls.__name__})"
 
     def parse(self):
-        return self.cls.model_validate(self.dict())
+        return self.cls.model_validate(self.model_dump())
 
 
 def _qurey_by_id(graph, id: Union[str, rdflib.URIRef]):

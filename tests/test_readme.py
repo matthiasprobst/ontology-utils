@@ -1,4 +1,5 @@
 """Testing code used in the README.md file"""
+import pathlib
 
 from pydantic import EmailStr
 
@@ -35,3 +36,5 @@ with open("agent.json", "w") as f:
 found_agents = Agent.from_jsonld(source="agent.json")
 found_agent = found_agents[0]
 print(found_agent.mbox)
+
+pathlib.Path("agent.json").unlink(missing_ok=True)

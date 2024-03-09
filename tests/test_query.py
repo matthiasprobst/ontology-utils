@@ -70,10 +70,10 @@ class TestQuery(unittest.TestCase):
         supersuperagent = SuperSuperAgent(label='supersuperagent',
                                           hasSuperAgent=superagent)
 
-        with open('supersuperagent.json', 'w') as f:
+        with open(__this_dir__ / 'supersuperagent.json', 'w') as f:
             f.write(supersuperagent.model_dump_jsonld())
 
-        cc = SuperSuperAgent.from_jsonld('supersuperagent.json')[0]
+        cc = SuperSuperAgent.from_jsonld(__this_dir__ / 'supersuperagent.json')[0]
         self.assertEqual(cc.hasSuperAgent.hasAgent.label, 'agent1')
         self.assertEqual(cc.hasSuperAgent.label, 'superagent')
         self.assertEqual(cc.label, 'supersuperagent')

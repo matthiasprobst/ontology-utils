@@ -81,7 +81,3 @@ def urirefs(**kwargs):
         return cls
 
     return _decorator
-
-
-def get_iri(cls):
-    return NamespaceManager[cls]

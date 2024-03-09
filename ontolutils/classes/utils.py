@@ -85,8 +85,7 @@ def is_zip_file(mediaType: Union[str, rdflib.URIRef]):
 def download_file(url,
                   dest_filename=None,
                   known_hash=None,
-                  overwrite_existing: bool = False,
-                  show_pbar: bool = False) -> pathlib.Path:
+                  overwrite_existing: bool = False) -> pathlib.Path:
     """Download a file from a URL and check its hash
     
     Parameter
@@ -99,8 +98,6 @@ def download_file(url,
         The expected hash of the file
     overwrite_existing: bool
         Whether to overwrite an existing file
-    show_pbar: bool
-        Whether to show a progress bar
     
     Returns
     -------
@@ -112,6 +109,8 @@ def download_file(url,
     HTTPError if the request is not successful
     ValueError if the hash of the downloaded file does not match the expected hash
     """
+    from ..cache import get_cache_dir
+
     logger.debug(f'Performing request to {url}')
     response = requests.get(url, stream=True)
     if not response.ok:
@@ -151,18 +150,7 @@ def download_file(url,
             logger.debug(f'Destination filename found: {dest_filename}. Returning it')
             return dest_filename
 
-    if show_pbar:
-        try:
-            from tqdm import tqdm
-        except ImportError:
-            raise ImportError('tqdm is required to show progress bar. Please install it or set show_pbar to False.')
-        with tqdm(total=total_size, unit="B", unit_scale=True) as progress_bar:
-            with open(dest_filename, "wb") as f:
-                for data in response.iter_content(block_size):
-                    progress_bar.update(len(data))
-                    f.write(data)
-    else:
-        with open(dest_filename, "wb") as f:
-            f.write(content)
+    with open(dest_filename, "wb") as f:
+        f.write(content)
 
     return dest_filename

@@ -7,11 +7,16 @@ from pydantic import EmailStr
 from ontolutils import Thing
 from ontolutils import set_logging_level
 from ontolutils import urirefs, namespaces
+from ontolutils.classes import decorator
 
 set_logging_level('WARNING')
 
 
 class TestNamespaces(unittest.TestCase):
+
+    def test_decorator(self):
+        self.assertTrue(decorator._is_http_url('http://example.com/'))
+        self.assertFalse(decorator._is_http_url('example.com/'))
 
     def test_model_dump_jsonld(self):
         @namespaces(foaf="http://xmlns.com/foaf/0.1/")

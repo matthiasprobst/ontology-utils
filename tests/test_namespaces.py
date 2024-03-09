@@ -8,6 +8,10 @@ from ontolutils import namespacelib
 
 class TestNamespaces(unittest.TestCase):
 
+    def test_iana(self):
+        self.assertEqual(namespacelib.IANA.application['zip'],
+                         'https://www.iana.org/assignments/media-types/application/zip')
+
     def test_m4i(self):
         self.assertIsInstance(ontolutils.M4I.Tool, rdflib.URIRef)
         self.assertIsInstance(namespacelib.M4I.Tool, rdflib.URIRef)

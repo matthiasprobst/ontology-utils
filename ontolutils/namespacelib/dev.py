@@ -8,10 +8,10 @@ from typing import Iterable, Dict, Union
 import requests
 from rdflib import Graph
 
-from . import __version__
+from ontolutils import __version__
 
 __this_dir__ = pathlib.Path(__file__).parent
-__package_dir = __this_dir__.parent / 'namespacs'
+__package_dir__ = __this_dir__.parent / 'namespacelib'
 
 
 def generate_namespace_file_from_ttl(namespace: str,
@@ -285,11 +285,11 @@ def codemeta():
 
 def build_namespace_files():
     """Call this only if you are a developer and want to build the namespace files"""
-    with open(__package_dir / '__init__.py', 'w') as f:
+    with open(__package_dir__ / '__init__.py', 'w') as f:
         f.write('Auto-generated file. Do not edit!\n')
     # f.write('from ._version import __version__\n')
 
-    with open(__package_dir / '__init__.py', 'a') as f:
+    with open(__package_dir__ / '__init__.py', 'a') as f:
         m4i()
         f.write('from .m4i import M4I\n')
 
@@ -314,7 +314,7 @@ def build_namespace_files():
         ssno()
         f.write('from .ssno import SSNO\n')
 
-    for jld in __package_dir.glob('*.jsonld'):
+    for jld in __package_dir__.glob('*.jsonld'):
         jld.unlink()
 
 

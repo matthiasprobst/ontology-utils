@@ -7,14 +7,15 @@ class LanguageExtension:
 
 class PIVMETA(DefinedNamespace):
     # uri = "https://w3id.org/nfdi4ing/metadata4ing#"
-    # Generated with namespacelib version 0.3.0
-    # Date: 2024-03-02 13:35:41.244037
+    # Generated with None version 0.2.0a3
+    # Date: 2024-03-09 20:30:58.080699
     _fail = True
     time: URIRef  # ['time']
     BackgroundImageGeneration: URIRef  # ['background image generation']
     BackgroundSubtractionMethod: URIRef  # ['background subtraction']
     CorrelationMethod: URIRef  # ['correlation method']
     DigitalCamera: URIRef  # ['Digital Camera']
+    DigitalCameraModel: URIRef  # ['Digital Camera Model']
     ImageDewarp: URIRef  # ['image dewarp']
     ImageFilter: URIRef  # ['image filter']
     ImageRotation: URIRef  # ['image rotation']
@@ -65,8 +66,9 @@ class PIVMETA(DefinedNamespace):
     image_particle_diameter: URIRef  # ['image_particle_diameter']
     piv_image_index: URIRef  # ['piv_image_index']
     inplane_velocity: URIRef  # ['inplane_velocity']
+    model_laser_sheet_thickness: URIRef  # ['model_laser_sheet_thickness']
     laser_sheet_thickness: URIRef  # ['laser_sheet_thickness']
-    laser_sheet_shape_factor: URIRef  # ['laser_sheet_shape_factor']
+    model_laser_sheet_shape_factor: URIRef  # ['model_laser_sheet_shape_factor']
     mean_seeding_particle_size: URIRef  # ['mean_seeding_particle_size']
     number_of_particles: URIRef  # ['number_of_particles']
     laser_pulse_delay: URIRef  # ['laser_pulse_delay']
@@ -110,6 +112,7 @@ setattr(PIVMETA, "background_image_generation", PIVMETA.BackgroundImageGeneratio
 setattr(PIVMETA, "background_subtraction", PIVMETA.BackgroundSubtractionMethod)
 setattr(PIVMETA, "correlation_method", PIVMETA.CorrelationMethod)
 setattr(PIVMETA, "Digital_Camera", PIVMETA.DigitalCamera)
+setattr(PIVMETA, "Digital_Camera_Model", PIVMETA.DigitalCameraModel)
 setattr(PIVMETA, "image_dewarp", PIVMETA.ImageDewarp)
 setattr(PIVMETA, "image_filter", PIVMETA.ImageFilter)
 setattr(PIVMETA, "image_rotation", PIVMETA.ImageRotation)
@@ -160,8 +163,9 @@ setattr(PIVMETA, "image_density", PIVMETA.image_density)
 setattr(PIVMETA, "image_particle_diameter", PIVMETA.image_particle_diameter)
 setattr(PIVMETA, "piv_image_index", PIVMETA.piv_image_index)
 setattr(PIVMETA, "inplane_velocity", PIVMETA.inplane_velocity)
+setattr(PIVMETA, "model_laser_sheet_thickness", PIVMETA.model_laser_sheet_thickness)
 setattr(PIVMETA, "laser_sheet_thickness", PIVMETA.laser_sheet_thickness)
-setattr(PIVMETA, "laser_sheet_shape_factor", PIVMETA.laser_sheet_shape_factor)
+setattr(PIVMETA, "model_laser_sheet_shape_factor", PIVMETA.model_laser_sheet_shape_factor)
 setattr(PIVMETA, "mean_seeding_particle_size", PIVMETA.mean_seeding_particle_size)
 setattr(PIVMETA, "number_of_particles", PIVMETA.number_of_particles)
 setattr(PIVMETA, "laser_pulse_delay", PIVMETA.laser_pulse_delay)

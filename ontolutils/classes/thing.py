@@ -202,9 +202,6 @@ class Thing(ThingModel):
         str
             The JSON-LD string
         """
-
-
-
         jsonld_dict = self.get_jsonld_dict(
             context=context,
             exclude_none=exclude_none
@@ -225,71 +222,74 @@ class Thing(ThingModel):
                            context=_context,
                            indent=4)
 
-    def model_dump_hdf(self, g):
-        """Write the object to an hdf group. Nested dictionaries result in nested groups"""
-
-        def _get_explained_dict(obj):
-            model_fields = {k: getattr(obj, k) for k in obj.model_fields if getattr(obj, k) is not None}
-            model_fields.pop('id', None)
-            _context_manager = URIRefManager[obj.__class__]
-            _namespace_manager = NamespaceManager[obj.__class__]
-            namespaced_fields = {}
-
-            assert isinstance(obj, ThingModel)
-
-            rdf_type = URIRefManager[obj.__class__][obj.__class__.__name__]
-            if ':' in rdf_type:
-                ns, field = rdf_type.split(':', 1)
-                at_type = f'{_namespace_manager[ns]}{field}'
-            else:
-                at_type = rdf_type
-            namespaced_fields[('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', '@type')] = at_type
-            if obj.id is not None:
-                namespaced_fields[('http://www.w3.org/1999/02/22-rdf-syntax-ns#id', '@id')] = obj.id
-
-            for k, v in model_fields.items():
-                nskey = _context_manager.get(k, k)
-                if ':' in nskey:
-                    ns, field = nskey.split(':', 1)
-                    ns_iri = _namespace_manager.get(ns, None)
-                    explained_key = (f'{ns_iri}{k}', k)
-                else:
-                    explained_key = (None, k)
-
-                if isinstance(v, ThingModel):
-                    namespaced_fields[explained_key] = _get_explained_dict(v)
-                else:
-                    if isinstance(v, list):
-                        if all(isinstance(i, ThingModel) for i in v):
-                            namespaced_fields[explained_key] = [_get_explained_dict(i) for i in v]
-                        else:
-                            namespaced_fields[explained_key] = v
-                    else:
-                        namespaced_fields[explained_key] = v
-            return namespaced_fields
-
-        def _dump_hdf(g, explained_data: Dict):
-            for (iri, key), v in explained_data.items():
-                if isinstance(v, dict):
-                    sub_g = g.create_group(key)
-                    if iri:
-                        sub_g.iri.subject = iri
-                    _dump_hdf(sub_g, v)
-                elif isinstance(v, list):
-                    sub_g = g.create_group(key)
-                    if iri:
-                        sub_g.iri.subject = iri
-                    for i, item in enumerate(v):
-                        assert isinstance(item, dict)
-                        if isinstance(item, dict):
-                            sub_sub_g = sub_g.create_group(str(i))
-                            _dump_hdf(sub_sub_g, item)
-                else:
-                    g.attrs[key] = v
-                    if iri:
-                        g.attrs[key, iri] = v
-
-        _dump_hdf(g, _get_explained_dict(self))
+    # def model_dump_hdf(self, g):
+    #     """Write the object to an hdf group. Nested dictionaries result in nested groups.
+    #
+    #
+    #     """
+    #
+    #     def _get_explained_dict(obj):
+    #         model_fields = {k: getattr(obj, k) for k in obj.model_fields if getattr(obj, k) is not None}
+    #         model_fields.pop('id', None)
+    #         _context_manager = URIRefManager[obj.__class__]
+    #         _namespace_manager = NamespaceManager[obj.__class__]
+    #         namespaced_fields = {}
+    #
+    #         assert isinstance(obj, ThingModel)
+    #
+    #         rdf_type = URIRefManager[obj.__class__][obj.__class__.__name__]
+    #         if ':' in rdf_type:
+    #             ns, field = rdf_type.split(':', 1)
+    #             at_type = f'{_namespace_manager[ns]}{field}'
+    #         else:
+    #             at_type = rdf_type
+    #         namespaced_fields[('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', '@type')] = at_type
+    #         if obj.id is not None:
+    #             namespaced_fields[('http://www.w3.org/1999/02/22-rdf-syntax-ns#id', '@id')] = obj.id
+    #
+    #         for k, v in model_fields.items():
+    #             nskey = _context_manager.get(k, k)
+    #             if ':' in nskey:
+    #                 ns, field = nskey.split(':', 1)
+    #                 ns_iri = _namespace_manager.get(ns, None)
+    #                 explained_key = (f'{ns_iri}{k}', k)
+    #             else:
+    #                 explained_key = (None, k)
+    #
+    #             if isinstance(v, ThingModel):
+    #                 namespaced_fields[explained_key] = _get_explained_dict(v)
+    #             else:
+    #                 if isinstance(v, list):
+    #                     if all(isinstance(i, ThingModel) for i in v):
+    #                         namespaced_fields[explained_key] = [_get_explained_dict(i) for i in v]
+    #                     else:
+    #                         namespaced_fields[explained_key] = v
+    #                 else:
+    #                     namespaced_fields[explained_key] = v
+    #         return namespaced_fields
+    #
+    #     def _dump_hdf(g, explained_data: Dict):
+    #         for (iri, key), v in explained_data.items():
+    #             if isinstance(v, dict):
+    #                 sub_g = g.create_group(key)
+    #                 if iri:
+    #                     sub_g.iri.subject = iri
+    #                 _dump_hdf(sub_g, v)
+    #             elif isinstance(v, list):
+    #                 sub_g = g.create_group(key)
+    #                 if iri:
+    #                     sub_g.iri.subject = iri
+    #                 for i, item in enumerate(v):
+    #                     assert isinstance(item, dict)
+    #                     if isinstance(item, dict):
+    #                         sub_sub_g = sub_g.create_group(str(i))
+    #                         _dump_hdf(sub_sub_g, item)
+    #             else:
+    #                 g.attrs[key] = v
+    #                 if iri:
+    #                     g.attrs[key, iri] = v
+    #
+    #     _dump_hdf(g, _get_explained_dict(self))
 
     def __repr__(self):
         _fields = {k: getattr(self, k) for k in self.model_fields if getattr(self, k) is not None}

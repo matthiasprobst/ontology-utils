@@ -67,39 +67,6 @@ WHERE {{{{
     return query_str
 
 
-class QueryResult:
-
-    def __init__(self, cls, source: Union[str, Dict, pathlib.Path], n3dict):
-        self.cls = cls
-        self.source = source  # Dict or json-ld file!
-        for k, v in n3dict.items():
-            assert k.startswith('?')
-            if v.startswith('<') and k != '?id':
-                # it is a URIRef
-                mfield = cls.model_fields[k[1:]]
-                if isinstance(mfield, Thing):
-                    # it is a Thing
-                    setattr(self, k[1:], mfield.cls(id=v[1:-1]))
-                else:
-                    flag = False
-                    for arg in mfield.annotation.__args__:
-                        if issubclass(arg, Thing):
-                            # it is a Thing
-                            setattr(self, k[1:], arg(id=v[1:-1]))
-                            flag = True
-                            break
-                    if not flag:
-                        setattr(self, k[1:], v[1:-1])
-            else:
-                setattr(self, k[1:], v[1:-1])
-
-    def __repr__(self):
-        return f"{self.__class__.__name__}(cls={self.cls.__name__})"
-
-    def parse(self):
-        return self.cls.model_validate(self.model_dump())
-
-
 def _qurey_by_id(graph, id: Union[str, rdflib.URIRef]):
     _sub_query_string = """SELECT ?p ?o WHERE { <%s> ?p ?o }""" % id
     _sub_res = graph.query(_sub_query_string)

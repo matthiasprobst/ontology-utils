@@ -6,5 +6,4 @@ from .pivmeta import PIVMETA
 from .codemeta import CODEMETA
 from .schema import SCHEMA
 from .ssno import SSNO
-from ._iana_utils import IANACLS
-IANA = IANACLS()
+from ._iana_utils import IANA

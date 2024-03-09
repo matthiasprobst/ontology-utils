@@ -27,9 +27,12 @@ def read_csv_file(filename, prefix: str) -> Dict[str, str]:
 
 
 def get_media_type(category: str) -> dict:
-    download_link = f'https://www.iana.org/assignments/media-types/{category}.csv'
-    csv_fname = download_file(download_link,
-                              dest_filename=iana_cache / f'{category}.csv')
+    """Return a dictionary of media types for the given category."""
+    csv_fname = iana_cache / f'{category}.csv'
+    if not csv_fname.exists():
+        download_link = f'https://www.iana.org/assignments/media-types/{category}.csv'
+        csv_fname = download_file(download_link,
+                                  dest_filename=iana_cache / f'{category}.csv')
     return read_csv_file(csv_fname, 'https://www.iana.org/assignments/media-types/')
 
 

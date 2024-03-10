@@ -3,7 +3,8 @@ import logging
 from ._version import __version__
 from .classes import Thing
 from .classes import namespaces, urirefs
-from .classes import query
+from .classes import query, dquery
+from .classes.utils import merge_jsonld
 from .namespacelib import *
 
 DEFAULT_LOGGING_LEVEL = logging.WARNING
@@ -26,4 +27,6 @@ __all__ = ['Thing',
            'namespaces',
            'urirefs',
            'query',
-           'set_logging_level']
+           'set_logging_level',
+           'merge_jsonld',
+           ]

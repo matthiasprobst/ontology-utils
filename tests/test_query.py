@@ -21,7 +21,35 @@ class TestQuery(unittest.TestCase):
 
         self.Agent = Agent
 
-    def test_query_muliple_classes_in_jsonld(self):
+    def test_query_get_dict(self):
+        """query excepts a class or a type string"""
+        agent1 = self.Agent(
+            label='agent1',
+        )
+        agent2 = self.Agent(
+            label='agent2',
+        )
+
+        agents_jsonld = ontolutils.merge_jsonld(
+            [agent1.model_dump_jsonld(),
+             agent2.model_dump_jsonld()]
+        )
+
+        with open(__this_dir__ / 'agent1.jsonld', 'w') as f:
+            f.write(
+                agents_jsonld
+            )
+        agents = ontolutils.dquery(
+            type='prov:Agent', source=__this_dir__ / 'agent1.jsonld',
+            context={'prov': 'https://www.w3.org/ns/prov#',
+                     'foaf': 'http://xmlns.com/foaf/0.1/'}
+        )
+        self.assertEqual(len(agents), 2)
+        self.assertEqual(agents[0]['label'], 'agent1')
+        self.assertEqual(agents[1]['label'], 'agent2')
+        (__this_dir__ / 'agent1.jsonld').unlink(missing_ok=True)
+
+    def test_query_multiple_classes_in_jsonld(self):
         from ontolutils.classes.utils import merge_jsonld
 
         agent1 = self.Agent(

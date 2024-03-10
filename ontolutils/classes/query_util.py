@@ -158,6 +158,46 @@ def expand_sparql_res(bindings, graph):
     return out
 
 
+def dquery(type: str,
+           source: Optional[Union[str, pathlib.Path]] = None,
+           data: Optional[Union[str, Dict]] = None,
+           context: Optional[Dict] = None) -> List[Dict]:
+    """Return a list of resutls. The entries are dictionaries.
+
+    Example
+    -------
+    >>> # Query all agents from the source file
+    >>> import ontolutils
+    >>> ontolutils.query(type='prov:Agent', source='agent1.jsonld')
+    """
+    g = rdflib.Graph()
+    g.parse(source=source,
+            data=data,
+            format='json-ld',
+            context=context)
+    # for k, v in context.items():
+    #     g.bind(k, v)
+
+    prefixes = "".join([f"PREFIX {k}: <{p}>\n" for k, p in context.items() if not k.startswith('@')])
+
+    query_str = f"""
+    SELECT *
+    WHERE {{{{
+        ?id a {type}.
+        ?id ?p ?o .
+}}}}"""
+
+    res = g.query(prefixes + query_str)
+
+    if len(res) == 0:
+        return None
+
+    kwargs: Dict = expand_sparql_res(res.bindings, g)
+    for id in kwargs:
+        kwargs[id]['id'] = id
+    return [v for v in kwargs.values()]
+
+
 def query(cls: Thing,
           source: Optional[Union[str, pathlib.Path]] = None,
           data: Optional[Union[str, Dict]] = None,
@@ -175,7 +215,6 @@ def query(cls: Thing,
     context : Optional[Union[Dict, str]]
         The context of the json-ld file
     """
-
     query_string = get_query_string(cls)
     g = rdflib.Graph()
 
@@ -230,8 +269,3 @@ def query(cls: Thing,
     kwargs: Dict = expand_sparql_res(res.bindings, g)
 
     return [cls.model_validate({'id': k, **v}) for k, v in kwargs.items()]
-
-    results = []
-    for _id, _params in kwargs.items():
-        results.append(cls.model_validate({kwargs}))
-    return results

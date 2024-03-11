@@ -7,10 +7,6 @@ from ontolutils.classes.utils import download_file
 iana_cache = get_cache_dir() / 'iana'
 iana_cache.mkdir(exist_ok=True)
 
-text_filename = download_file('https://www.iana.org/assignments/media-types/text.csv',
-                              dest_filename=iana_cache / 'text.csv')
-assert text_filename.parent == iana_cache
-
 
 def read_csv_file(filename, prefix: str) -> Dict[str, str]:
     with open(filename) as f:

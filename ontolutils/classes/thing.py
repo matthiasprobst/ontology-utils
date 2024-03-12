@@ -50,12 +50,20 @@ def serialize_fields(
     if isinstance(obj, (int, str, float, bool)):
         return obj
 
-    if exclude_none:
-        serialized_fields = {URIRefManager[obj.__class__][k]: getattr(obj, k) for k in obj.model_fields if
-                             getattr(obj, k) is not None and k not in ('id', '@id')}
-    else:
-        serialized_fields = {URIRefManager[obj.__class__][k]: getattr(obj, k) for k in obj.model_fields if
-                             k not in ('id', '@id')}
+    uri_ref_manager = URIRefManager.get(obj.__class__, None)
+    if uri_ref_manager is None:
+        return obj
+
+    try:
+        if exclude_none:
+            serialized_fields = {URIRefManager[obj.__class__][k]: getattr(obj, k) for k in obj.model_fields if
+                                 getattr(obj, k) is not None and k not in ('id', '@id')}
+        else:
+            serialized_fields = {URIRefManager[obj.__class__][k]: getattr(obj, k) for k in obj.model_fields if
+                                 k not in ('id', '@id')}
+    except AttributeError as e:
+        raise AttributeError(f"Could not serialize {obj} ({obj.__class__}). Orig. err: {e}") from e
+
     if obj.model_config['extra'] == 'allow':
         for k, v in obj.model_extra.items():
             serialized_fields[URIRefManager[obj.__class__].get(k, k)] = v
@@ -310,10 +318,10 @@ class Thing(ThingModel):
         return f"{self.__class__.__name__}({repr_fields})"
 
     @classmethod
-    def from_jsonld(cls, source=None, data=None):
+    def from_jsonld(cls, source=None, data=None, limit=None):
         """Initialize the class from a JSON-LD source"""
         from . import query
-        return query(cls, source=source, data=data)
+        return query(cls, source=source, data=data, limit=limit)
 
     @classmethod
     def iri(cls, key: str = None, compact: bool = False):

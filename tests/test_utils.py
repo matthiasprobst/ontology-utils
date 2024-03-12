@@ -30,7 +30,8 @@ class TestUtils(unittest.TestCase):
             """
             mbox: EmailStr = None
 
-        self.assertEqual({}, unm.get(Agent))
+        self.assertEqual({}, unm.get(Agent, {}))
+        self.assertEqual(None, unm.get(Agent, None))
         unm[Agent]['foaf'] = 'http://xmlns.com/foaf/0.1/'
         self.assertEqual(unm.__repr__(), f'UNManager({Agent.__name__})')
 

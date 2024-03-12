@@ -47,6 +47,10 @@ class TestQuery(unittest.TestCase):
         self.assertEqual(len(agents), 2)
         self.assertEqual(agents[0]['label'], 'agent1')
         self.assertEqual(agents[1]['label'], 'agent2')
+
+        agent_load = self.Agent.from_jsonld(__this_dir__ / 'agent1.jsonld', limit=1)
+        self.assertEqual(agent_load.label, 'agent1')
+
         (__this_dir__ / 'agent1.jsonld').unlink(missing_ok=True)
 
     def test_query_multiple_classes_in_jsonld(self):

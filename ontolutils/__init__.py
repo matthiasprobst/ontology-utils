@@ -8,13 +8,19 @@ from .classes.utils import merge_jsonld
 from .namespacelib import *
 
 DEFAULT_LOGGING_LEVEL = logging.WARNING
-logging.basicConfig()
-logger = logging.getLogger(__package__)
+_formatter = logging.Formatter(
+    '%(asctime)s,%(msecs)d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s',
+    datefmt='%Y-%m-%d_%H:%M:%S'
+)
+logger = logging.Logger('synpivimage')
+# logger = logging.getLogger(__package__)
 _sh = logging.StreamHandler()
+_sh.setFormatter(_formatter)
 logger.addHandler(_sh)
 
 
 def set_logging_level(level: str):
+    """Set the logging level for the package and all its handlers."""
     logger.setLevel(level)
     for h in logger.handlers:
         h.setLevel(level)

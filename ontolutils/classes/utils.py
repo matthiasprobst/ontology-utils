@@ -20,7 +20,7 @@ class UNManager:
         """Get the Namespace for the class."""
         ret = self.data.get(cls, other)
         if ret is None:
-            return {}
+            return other
         return ret
 
     def __repr__(self):

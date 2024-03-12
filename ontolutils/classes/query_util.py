@@ -39,7 +39,7 @@ logger = logging.getLogger('ontolutils')
 #     return query_str
 
 
-def get_query_string(cls) -> str:
+def get_query_string(cls, limit: int = None) -> str:
     def _get_namespace(key):
         ns = URIRefManager[cls].get(key, f'local:{key}')
         if ':' in ns:
@@ -53,17 +53,14 @@ def get_query_string(cls) -> str:
 
     query_str = f"""
 SELECT *
-WHERE {{{{
+WHERE {{
     ?id a {_get_namespace(cls.__name__)} .
     ?id ?p ?o ."""
-
-    # for field in cls.model_fields.keys():
-    #     if field != 'id':
-    #         if cls.model_fields[field].is_required():
-    #             query_str += f"\n    ?id {_get_namespace(field)} ?{field} ."
-    #         else:
-    #             query_str += f"\n    OPTIONAL {{ ?id {_get_namespace(field)} ?{field} . }}"
-    query_str += "\n}}"
+    if limit is not None:
+        query_str += f"""
+}} LIMIT {limit}"""
+    else:
+        query_str += "\n}"
     return query_str
 
 
@@ -201,7 +198,8 @@ def dquery(type: str,
 def query(cls: Thing,
           source: Optional[Union[str, pathlib.Path]] = None,
           data: Optional[Union[str, Dict]] = None,
-          context: Optional[Union[Dict, str]] = None) -> List:
+          context: Optional[Union[Dict, str]] = None,
+          limit: Optional[int] = None) -> Union[Thing, List]:
     """Return a generator of results from the query.
 
     Parameters
@@ -214,6 +212,9 @@ def query(cls: Thing,
         The data of the json-ld file
     context : Optional[Union[Dict, str]]
         The context of the json-ld file
+    limit: Optional[int]
+        The limit of the query. Default is None (no limit).
+        If limit equals to 1, the result will be a single object, not a list.
     """
     query_string = get_query_string(cls)
     g = rdflib.Graph()
@@ -246,26 +247,33 @@ def query(cls: Thing,
             context=_context)
 
     gquery = prefixes + query_string
-    logger.debug(f"Querying {cls.__name__} with query: {gquery}")
-    res = g.query(gquery)
 
-    # print(prefixes+ query_string)
+    logger.debug(f"Querying {cls.__name__} with query: {gquery}")
+    # print(prefixes + query_string)
+    res = g.query(gquery)
 
     if len(res) == 0:
         return
 
     # get model field dict as IRI
     # e.g. {'http://www.w3.org/2000/01/rdf-schema#description': 'description'}
-    model_field_iri = {}
-    for model_field, iri in URIRefManager[cls].items():
-        ns, key = iri.split(':', 1)
-        ns_iri = NamespaceManager[cls].get(ns, None)
-        if ns_iri is None:
-            full_iri = key
-        else:
-            full_iri = f'{NamespaceManager[cls].get(ns)}{key}'
-        model_field_iri[full_iri] = model_field
+    # model_field_iri = {}
+    # for model_field, iri in URIRefManager[cls].items():
+    #     ns, key = iri.split(':', 1)
+    #     ns_iri = NamespaceManager[cls].get(ns, None)
+    #     if ns_iri is None:
+    #         full_iri = key
+    #     else:
+    #         full_iri = f'{NamespaceManager[cls].get(ns)}{key}'
+    #     model_field_iri[full_iri] = model_field
 
     kwargs: Dict = expand_sparql_res(res.bindings, g)
-
+    if limit is not None:
+        out = []
+        for i, (k, v) in enumerate(kwargs.items()):
+            if limit == 1:
+                return cls.model_validate({'id': k, **v})
+            out.append(cls.model_validate({'id': k, **v}))
+            if i == limit:
+                return out
     return [cls.model_validate({'id': k, **v}) for k, v in kwargs.items()]

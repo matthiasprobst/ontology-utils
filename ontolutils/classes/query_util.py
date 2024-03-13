@@ -83,21 +83,51 @@ WHERE {
     return len(out) == 1
 
 
-def find_subsequent_fields(bindings, graph):
+def get_firsts(node: str, graph):
+    if not rdflib.BNode(node).startswith('_:'):
+        return []
+
+    query = """
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT ?x ?first
+WHERE {
+  ?x rdf:first ?first .
+  FILTER isBlank(?x)
+}"""
+    out = graph.query(query)
+    return out
+
+
+def is_rest_in_list_of_things(node: str, graph):
+    query = """SELECT ?subject
+WHERE {
+  ?subject <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> %s .
+}""" % node
+    out = graph.query(query)
+    return len(out) == 1
+
+
+def find_subsequent_fields(bindings, graph, add_type):
     out = {}
     for binding in bindings:
         p = binding['p'].__str__()
         _, predicate = split_URIRef(p)
         if predicate == 'type':
+            if add_type:
+                out['@type'] = binding['o'].__str__()
             continue
         objectn3 = binding['?o'].n3()
         object = binding['?o'].__str__()
 
+        # if object is a node, two scenarios are possible (to my knowledge):
+        # 1. the node describes a type. exists_as_type(objectn3, graph) is True.
+        #          then in the data, we can find (_obj | rdf:type | XYZ)
+        # 2. The node is in a list. get_firsts(objectn3, graph) is True.
         if exists_as_type(objectn3, graph):
             sub_query = """SELECT ?p ?o WHERE { <%s> ?p ?o }""" % object
             sub_res = graph.query(sub_query)
             assert len(sub_res) > 0
-            _data = find_subsequent_fields(sub_res.bindings, graph)
+            _data = find_subsequent_fields(sub_res.bindings, graph, add_type)
             if predicate in out:
                 if isinstance(out[predicate], list):
                     out[predicate].append(_data)
@@ -106,27 +136,56 @@ def find_subsequent_fields(bindings, graph):
             else:
                 out[predicate] = _data
         else:
-            if predicate in out:
-                if isinstance(out[predicate], list):
-                    out[predicate].append(object)
-                else:
-                    out[predicate] = [out[predicate], object]
+            if objectn3.startswith('_:'):
+                # is a blank node, not a type. maybe starts with?
+                firsts = get_firsts(objectn3, graph)
+                for first in firsts:
+                    if str(first[0]) == object:
+                        assert first[1].startswith('http')
+                        sub_query = """SELECT ?p ?o WHERE { <%s> ?p ?o }""" % first[1]
+                        sub_res = graph.query(sub_query)
+                        assert len(sub_res) > 0
+                        _data = find_subsequent_fields(sub_res.bindings, graph, add_type)
+
+                        if predicate in out:
+                            if isinstance(out[predicate], list):
+                                out[predicate].append(_data)
+                            else:
+                                out[predicate] = [out[predicate], _data]
+                        else:
+                            out[predicate] = _data
             else:
-                out[predicate] = object
+                if predicate in out:
+                    if isinstance(out[predicate], list):
+                        out[predicate].append(object)
+                    else:
+                        out[predicate] = [out[predicate], object]
+                else:
+                    out[predicate] = object
     return out
 
 
-def expand_sparql_res(bindings, graph):
+def expand_sparql_res(bindings,
+                      graph,
+                      add_type: bool,
+                      add_context: bool):
     out = {}
+
     for binding in bindings:
         _id = str(binding['?id'])  # .n3()
         if _id not in out:
             out[_id] = {}
+            if add_context:
+                out[_id] = {'@context': {}}
         p = binding['p'].__str__()
         _, predicate = split_URIRef(p)
 
         if predicate == 'type':
+            if add_type:
+                out[_id]['@type'] = str(binding['o'])
             continue
+        if add_context:
+            out[_id]['@context'][predicate] = str(p)
 
         objectn3 = binding['?o'].n3()
         object = binding['?o'].__str__()
@@ -135,7 +194,7 @@ def expand_sparql_res(bindings, graph):
             sub_query = """SELECT ?p ?o WHERE { %s ?p ?o }""" % objectn3
             sub_res = graph.query(sub_query)
             assert len(sub_res) > 0
-            _data = find_subsequent_fields(sub_res.bindings, graph)
+            _data = find_subsequent_fields(sub_res.bindings, graph, add_type)
             if predicate in out[_id]:
                 if isinstance(out[_id][predicate], list):
                     out[_id][predicate].append(_data)
@@ -144,13 +203,32 @@ def expand_sparql_res(bindings, graph):
             else:
                 out[_id][predicate] = _data
         else:
-            if predicate in out[_id]:
-                if isinstance(out[_id][predicate], list):
-                    out[_id][predicate].append(object)
-                else:
-                    out[_id][predicate] = [out[_id][predicate], object]
+            if objectn3.startswith('_:'):
+                # is a blank node, not a type. maybe starts with?
+                firsts = get_firsts(objectn3, graph)
+                for first in firsts:
+                    if str(first[0]) == object:
+                        assert first[1].startswith('http')
+                        sub_query = """SELECT ?p ?o WHERE { <%s> ?p ?o }""" % first[1]
+                        sub_res = graph.query(sub_query)
+                        assert len(sub_res) > 0
+                        _data = find_subsequent_fields(sub_res.bindings, graph, add_type)
+
+                        if predicate in out[_id]:
+                            if isinstance(out[_id][predicate], list):
+                                out[_id][predicate].append(_data)
+                            else:
+                                out[_id][predicate] = [out[_id][predicate], _data]
+                        else:
+                            out[_id][predicate] = _data
             else:
-                out[_id][predicate] = object
+                if predicate in out[_id]:
+                    if isinstance(out[_id][predicate], list):
+                        out[_id][predicate].append(object)
+                    else:
+                        out[_id][predicate] = [out[_id][predicate], object]
+                else:
+                    out[_id][predicate] = object
 
     return out
 
@@ -165,7 +243,7 @@ def dquery(type: str,
     -------
     >>> # Query all agents from the source file
     >>> import ontolutils
-    >>> ontolutils.query(type='prov:Agent', source='agent1.jsonld')
+    >>> ontolutils.dquery(type='prov:Agent', source='agent1.jsonld')
     """
     g = rdflib.Graph()
     g.parse(source=source,
@@ -189,7 +267,7 @@ def dquery(type: str,
     if len(res) == 0:
         return None
 
-    kwargs: Dict = expand_sparql_res(res.bindings, g)
+    kwargs: Dict = expand_sparql_res(res.bindings, g, True, True)
     for id in kwargs:
         kwargs[id]['id'] = id
     return [v for v in kwargs.values()]
@@ -267,7 +345,7 @@ def query(cls: Thing,
     #         full_iri = f'{NamespaceManager[cls].get(ns)}{key}'
     #     model_field_iri[full_iri] = model_field
 
-    kwargs: Dict = expand_sparql_res(res.bindings, g)
+    kwargs: Dict = expand_sparql_res(res.bindings, g, False, False)
     if limit is not None:
         out = []
         for i, (k, v) in enumerate(kwargs.items()):

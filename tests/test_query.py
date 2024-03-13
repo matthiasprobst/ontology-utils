@@ -21,6 +21,24 @@ class TestQuery(unittest.TestCase):
 
         self.Agent = Agent
 
+    def test_dquery(self):
+        test_data = """{"@context": {"foaf": "http://xmlns.com/foaf/0.1/", "prov": "http://www.w3.org/ns/prov#",
+"schema": "http://www.w3.org/2000/01/rdf-schema#", "schema": "https://schema.org/"},
+"@id": "local:testperson",
+"@type": "prov:Person",
+"foaf:firstName": "John",
+"foaf:lastName": "Doe",
+"age": 1,
+"schema:affiliation": {
+    "@id": "local:affiliation",
+    "@type": "schema:Affiliation",
+    "rdfs:label": "MyAffiliation"
+    }
+}"""
+        res = ontolutils.dquery(type="prov:Person", data=test_data,
+                                context={"prov": "http://www.w3.org/ns/prov#", "local": "http://example.org"})
+        print(res)
+
     def test_query_get_dict(self):
         """query excepts a class or a type string"""
         agent1 = self.Agent(

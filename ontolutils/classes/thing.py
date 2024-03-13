@@ -318,10 +318,10 @@ class Thing(ThingModel):
         return f"{self.__class__.__name__}({repr_fields})"
 
     @classmethod
-    def from_jsonld(cls, source=None, data=None, limit=None):
+    def from_jsonld(cls, source=None, data=None, limit=None, context=None):
         """Initialize the class from a JSON-LD source"""
         from . import query
-        return query(cls, source=source, data=data, limit=limit)
+        return query(cls, source=source, data=data, limit=limit, context=context)
 
     @classmethod
     def iri(cls, key: str = None, compact: bool = False):

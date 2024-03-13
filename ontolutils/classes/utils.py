@@ -126,7 +126,7 @@ def download_file(url,
             raise ValueError('File does not match the expected has')
 
     total_size = int(response.headers.get("content-length", 0))
-    block_size = 1024
+    # block_size = 1024
 
     # Save the content to a file
     if dest_filename is None:

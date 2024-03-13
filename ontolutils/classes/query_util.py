@@ -83,15 +83,17 @@ WHERE {
     return len(out) == 1
 
 
-def get_firsts(node: str, graph):
+def get_collection(node: str, graph):
+    """see https://www.w3.org/TR/rdf-schema/#ch_collectionvocab """
     if not rdflib.BNode(node).startswith('_:'):
         return []
 
     query = """
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-SELECT ?x ?first
+SELECT ?x ?first ?rest
 WHERE {
   ?x rdf:first ?first .
+  ?x rdf:rest ?rest .
   FILTER isBlank(?x)
 }"""
     out = graph.query(query)
@@ -122,7 +124,7 @@ def find_subsequent_fields(bindings, graph, add_type):
         # if object is a node, two scenarios are possible (to my knowledge):
         # 1. the node describes a type. exists_as_type(objectn3, graph) is True.
         #          then in the data, we can find (_obj | rdf:type | XYZ)
-        # 2. The node is in a list. get_firsts(objectn3, graph) is True.
+        # 2. The node is in a list. get_collection(objectn3, graph) is True.
         if exists_as_type(objectn3, graph):
             sub_query = """SELECT ?p ?o WHERE { <%s> ?p ?o }""" % object
             sub_res = graph.query(sub_query)
@@ -138,22 +140,23 @@ def find_subsequent_fields(bindings, graph, add_type):
         else:
             if objectn3.startswith('_:'):
                 # is a blank node, not a type. maybe starts with?
-                firsts = get_firsts(objectn3, graph)
-                for first in firsts:
-                    if str(first[0]) == object:
-                        assert first[1].startswith('http')
-                        sub_query = """SELECT ?p ?o WHERE { <%s> ?p ?o }""" % first[1]
-                        sub_res = graph.query(sub_query)
-                        assert len(sub_res) > 0
-                        _data = find_subsequent_fields(sub_res.bindings, graph, add_type)
+                collection = get_collection(objectn3, graph)
+                for col in collection:
+                    _node, _first, _rest = col
+                    assert _first.startswith('http')
+                    sub_query = """SELECT ?p ?o WHERE { <%s> ?p ?o }""" % _first
+                    sub_res = graph.query(sub_query)
+                    assert len(sub_res) > 0
+                    _data = find_subsequent_fields(sub_res.bindings, graph, add_type)
+                    out['id'] = _first
 
-                        if predicate in out:
-                            if isinstance(out[predicate], list):
-                                out[predicate].append(_data)
-                            else:
-                                out[predicate] = [out[predicate], _data]
+                    if predicate in out:
+                        if isinstance(out[predicate], list):
+                            out[predicate].append(_data)
                         else:
-                            out[predicate] = _data
+                            out[predicate] = [out[predicate], _data]
+                    else:
+                        out[predicate] = _data
             else:
                 if predicate in out:
                     if isinstance(out[predicate], list):
@@ -203,24 +206,26 @@ def expand_sparql_res(bindings,
             else:
                 out[_id][predicate] = _data
         else:
+            print(predicate, objectn3)
             if objectn3.startswith('_:'):
                 # is a blank node, not a type. maybe starts with?
-                firsts = get_firsts(objectn3, graph)
-                for first in firsts:
-                    if str(first[0]) == object:
-                        assert first[1].startswith('http')
-                        sub_query = """SELECT ?p ?o WHERE { <%s> ?p ?o }""" % first[1]
-                        sub_res = graph.query(sub_query)
-                        assert len(sub_res) > 0
-                        _data = find_subsequent_fields(sub_res.bindings, graph, add_type)
+                collection = get_collection(objectn3, graph)
+                for col in collection:
+                    _node, _first, _rest = col
+                    assert _first.startswith('http')
+                    sub_query = """SELECT ?p ?o WHERE { <%s> ?p ?o }""" % _first
+                    sub_res = graph.query(sub_query)
+                    assert len(sub_res) > 0
+                    _data = find_subsequent_fields(sub_res.bindings, graph, add_type)
+                    out[_id]['id'] = _first
 
-                        if predicate in out[_id]:
-                            if isinstance(out[_id][predicate], list):
-                                out[_id][predicate].append(_data)
-                            else:
-                                out[_id][predicate] = [out[_id][predicate], _data]
+                    if predicate in out[_id]:
+                        if isinstance(out[_id][predicate], list):
+                            out[_id][predicate].append(_data)
                         else:
-                            out[_id][predicate] = _data
+                            out[_id][predicate] = [out[_id][predicate], _data]
+                    else:
+                        out[_id][predicate] = _data
             else:
                 if predicate in out[_id]:
                     if isinstance(out[_id][predicate], list):
@@ -332,18 +337,6 @@ def query(cls: Thing,
 
     if len(res) == 0:
         return
-
-    # get model field dict as IRI
-    # e.g. {'http://www.w3.org/2000/01/rdf-schema#description': 'description'}
-    # model_field_iri = {}
-    # for model_field, iri in URIRefManager[cls].items():
-    #     ns, key = iri.split(':', 1)
-    #     ns_iri = NamespaceManager[cls].get(ns, None)
-    #     if ns_iri is None:
-    #         full_iri = key
-    #     else:
-    #         full_iri = f'{NamespaceManager[cls].get(ns)}{key}'
-    #     model_field_iri[full_iri] = model_field
 
     kwargs: Dict = expand_sparql_res(res.bindings, g, False, False)
     if limit is not None:

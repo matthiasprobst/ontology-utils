@@ -12,7 +12,7 @@ from .utils import split_URIRef
 logger = logging.getLogger('ontolutils')
 
 
-def process_object(_id, predicate, obj: Union[rdflib.URIRef, rdflib.BNode, rdflib.Literal], graph):
+def process_object(_id, predicate, obj: Union[rdflib.URIRef, rdflib.BNode, rdflib.Literal], graph, add_type):
     if isinstance(obj, rdflib.Literal):
         logger.debug(f'Object "{obj}" for predicate "{predicate}" is a literal.')
         return str(obj)
@@ -42,11 +42,11 @@ WHERE {
                     list_res = graph.query(qs)
 
                     _ids = list(set([str(_id[0]) for _id in list_res]))
-                    _data = [_query_by_id(graph, _id, False) for _id in _ids]
+                    _data = [_query_by_id(graph, _id, add_type) for _id in _ids]
                     return _data
                 elif p == rdflib.RDF.type:
-                    sub_data["@type"] = str(o)
-                    logger.debug(f'Need to find children of rest: {o}')
+                    if add_type:
+                        sub_data["@type"] = str(o)
                 else:
                     logger.debug(f'dont know what to do with {p} and {o}')
         if predicate in sub_data:
@@ -114,7 +114,7 @@ def _query_by_id(graph, _id: Union[str, rdflib.URIRef], add_type: bool):
             # in this case, we return the object as a string
             out[key] = str(obj)
         else:
-            out[key] = process_object(id, predicate, obj, graph)
+            out[key] = process_object(id, predicate, obj, graph, add_type)
 
         # ns, key = split_URIRef(o)
         # if o.startswith('http'):
@@ -177,7 +177,7 @@ def expand_sparql_res(bindings,
         obj = str(binding['?o'])
 
         logger.debug(f'Processing object "{obj}" for predicate "{predicate}".')
-        data = process_object(_id, predicate, binding['?o'], graph)
+        data = process_object(_id, predicate, binding['?o'], graph, add_type)
 
         # well obj is just a data field, add it
         if predicate in out[_id]:
@@ -191,7 +191,7 @@ def expand_sparql_res(bindings,
     return out
 
 
-def dquery(type: str,
+def dquery(subject: str,
            source: Optional[Union[str, pathlib.Path]] = None,
            data: Optional[Union[str, Dict]] = None,
            context: Optional[Dict] = None) -> List[Dict]:
@@ -201,7 +201,7 @@ def dquery(type: str,
     -------
     >>> # Query all agents from the source file
     >>> import ontolutils
-    >>> ontolutils.dquery(type='prov:Agent', source='agent1.jsonld')
+    >>> ontolutils.dquery(subject='prov:Agent', source='agent1.jsonld')
     """
     g = rdflib.Graph()
     g.parse(source=source,
@@ -213,17 +213,17 @@ def dquery(type: str,
 
     query_str = f"""
     SELECT *
-    WHERE {{{{
-        ?id a {type}.
+    WHERE {{
+        ?id a {subject}.
         ?id ?p ?o .
-}}}}"""
+}}"""
 
     res = g.query(prefixes + query_str)
 
     if len(res) == 0:
         return None
 
-    logger.debug(f'Querying @type="{type}" with query: "{prefixes + query_str}" and got {len(res)} results')
+    logger.debug(f'Querying subject="{subject}" with query: "{prefixes + query_str}" and got {len(res)} results')
 
     kwargs: Dict = expand_sparql_res(res.bindings, g, True, True)
     for id in kwargs:

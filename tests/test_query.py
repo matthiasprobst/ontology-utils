@@ -5,6 +5,7 @@ import unittest
 from pydantic import EmailStr
 
 import ontolutils
+from ontolutils import __version__
 from ontolutils import set_logging_level
 
 __this_dir__ = pathlib.Path(__file__).parent
@@ -47,10 +48,28 @@ class TestQuery(unittest.TestCase):
     }
 }"""
         res = ontolutils.dquery(
-            type="prov:Person", data=test_data,
+            subject="prov:Person", data=test_data,
             context={"prov": "http://www.w3.org/ns/prov#", "local": "http://example.org"}
         )
         print(res)
+
+    def test_dquery_codemeta(self):
+        """Read the codemeta.json file and query for schema:SoftwareSourceCode"""
+        codemeta_filename = __this_dir__ / '../codemeta.json'
+        self.assertTrue(codemeta_filename.exists())
+        res = ontolutils.dquery(
+            subject="schema:SoftwareSourceCode",
+            source=codemeta_filename,
+            context={"schema": "http://schema.org/"}
+        )
+        isinstance(res, list)
+        self.assertTrue(len(res) == 1)
+        self.assertTrue(res[0]['version'] == __version__)
+        self.assertTrue('author' in res[0])
+        print(res[0]['author'])
+        self.assertIsInstance(res[0]['author'], list)
+        self.assertEqual(res[0]['author'][0]['@type'], 'http://schema.org/Person')
+        self.assertEqual(res[0]['author'][0]['givenName'], 'Matthias')
 
     def test_query_get_dict(self):
         """query excepts a class or a type string"""
@@ -71,7 +90,7 @@ class TestQuery(unittest.TestCase):
                 agents_jsonld
             )
         agents = ontolutils.dquery(
-            type='prov:Agent', source=__this_dir__ / 'agent1.jsonld',
+            subject='prov:Agent', source=__this_dir__ / 'agent1.jsonld',
             context={'prov': 'https://www.w3.org/ns/prov#',
                      'foaf': 'http://xmlns.com/foaf/0.1/'}
         )

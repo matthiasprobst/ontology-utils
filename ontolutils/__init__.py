@@ -12,8 +12,7 @@ _formatter = logging.Formatter(
     '%(asctime)s,%(msecs)d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s',
     datefmt='%Y-%m-%d_%H:%M:%S'
 )
-logger = logging.Logger('synpivimage')
-# logger = logging.getLogger(__package__)
+logger = logging.getLogger('ontolutils')
 _sh = logging.StreamHandler()
 _sh.setFormatter(_formatter)
 logger.addHandler(_sh)

@@ -1,4 +1,5 @@
 import json
+import logging
 import unittest
 
 import pydantic
@@ -9,10 +10,22 @@ from ontolutils import set_logging_level
 from ontolutils import urirefs, namespaces
 from ontolutils.classes import decorator
 
-set_logging_level('WARNING')
+LOG_LEVEL = logging.DEBUG
 
 
 class TestNamespaces(unittest.TestCase):
+
+    def setUp(self):
+        logger = logging.getLogger('ontolutils')
+        self.INITIAL_LOG_LEVEL = logger.level
+
+        set_logging_level(LOG_LEVEL)
+
+        assert logger.level == LOG_LEVEL
+
+    def tearDown(self):
+        set_logging_level(self.INITIAL_LOG_LEVEL)
+        assert logging.getLogger('ontolutils').level == self.INITIAL_LOG_LEVEL
 
     def test_decorator(self):
         self.assertTrue(decorator._is_http_url('http://example.com/'))

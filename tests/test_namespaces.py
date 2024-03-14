@@ -1,12 +1,26 @@
+import logging
 import unittest
 
 import rdflib
 
 import ontolutils
-from ontolutils import namespacelib
+from ontolutils import namespacelib, set_logging_level
+
+LOG_LEVEL = logging.DEBUG
 
 
 class TestNamespaces(unittest.TestCase):
+    def setUp(self):
+        logger = logging.getLogger('ontolutils')
+        self.INITIAL_LOG_LEVEL = logger.level
+
+        set_logging_level(LOG_LEVEL)
+
+        assert logger.level == LOG_LEVEL
+
+    def tearDown(self):
+        set_logging_level(self.INITIAL_LOG_LEVEL)
+        assert logging.getLogger('ontolutils').level == self.INITIAL_LOG_LEVEL
 
     def test_iana(self):
         self.assertEqual(namespacelib.IANA.application['zip'],

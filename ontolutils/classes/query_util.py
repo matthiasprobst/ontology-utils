@@ -208,8 +208,6 @@ def dquery(type: str,
             data=data,
             format='json-ld',
             context=context)
-    # for k, v in context.items():
-    #     g.bind(k, v)
 
     prefixes = "".join([f"PREFIX {k}: <{p}>\n" for k, p in context.items() if not k.startswith('@')])
 

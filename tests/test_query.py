@@ -1,16 +1,27 @@
+import logging
 import pathlib
 import unittest
 
 from pydantic import EmailStr
 
 import ontolutils
+from ontolutils import set_logging_level
 
 __this_dir__ = pathlib.Path(__file__).parent
+
+LOG_LEVEL = logging.DEBUG
 
 
 class TestQuery(unittest.TestCase):
 
     def setUp(self):
+        logger = logging.getLogger('ontolutils')
+        self.INITIAL_LOG_LEVEL = logger.level
+
+        set_logging_level(LOG_LEVEL)
+
+        assert logger.level == LOG_LEVEL
+
         @ontolutils.namespaces(prov="https://www.w3.org/ns/prov#",
                                foaf="http://xmlns.com/foaf/0.1/")
         @ontolutils.urirefs(Agent='prov:Agent',
@@ -35,8 +46,10 @@ class TestQuery(unittest.TestCase):
     "rdfs:label": "MyAffiliation"
     }
 }"""
-        res = ontolutils.dquery(type="prov:Person", data=test_data,
-                                context={"prov": "http://www.w3.org/ns/prov#", "local": "http://example.org"})
+        res = ontolutils.dquery(
+            type="prov:Person", data=test_data,
+            context={"prov": "http://www.w3.org/ns/prov#", "local": "http://example.org"}
+        )
         print(res)
 
     def test_query_get_dict(self):
@@ -145,3 +158,6 @@ class TestQuery(unittest.TestCase):
         pathlib.Path(__this_dir__ / 'agents.jsonld').unlink(missing_ok=True)
         pathlib.Path(__this_dir__ / 'superagent.json').unlink(missing_ok=True)
         pathlib.Path(__this_dir__ / 'supersuperagent.json').unlink(missing_ok=True)
+
+        set_logging_level(self.INITIAL_LOG_LEVEL)
+        assert logging.getLogger('ontolutils').level == self.INITIAL_LOG_LEVEL

@@ -4,7 +4,7 @@
     "license": "https://spdx.org/licenses/MIT",
     "codeRepository": "https://github.com/matthiasprobst/ontology-utils",
     "name": "Ontolutils",
-    "version": "0.2.0a9",
+    "version": "0.2.0a10",
     "description": "Utility library for the work with ontologies.",
     "programmingLanguage": [
         "Python 3",

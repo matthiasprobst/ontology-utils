@@ -27,6 +27,37 @@ class TestNamespaces(unittest.TestCase):
         set_logging_level(self.INITIAL_LOG_LEVEL)
         assert logging.getLogger('ontolutils').level == self.INITIAL_LOG_LEVEL
 
+    def test_sort_classes(self):
+        thing1 = Thing(label='Thing 1')
+        thing2 = Thing(label='Thing 2')
+        self.assertFalse(thing1 < thing2)
+        with self.assertRaises(TypeError):
+            thing1 < 4
+        thing1 = Thing(label='Thing 1', id='http://example.com/thing1')
+        thing2 = Thing(label='Thing 2', id='http://example.com/thing2')
+        self.assertTrue(thing1 < thing2)
+
+    def test__repr_html_(self):
+        thing = Thing(label='Thing 1')
+        self.assertEqual(thing._repr_html_(), 'Thing(label=Thing 1)')
+
+    def test_thing_get_jsonld_dict(self):
+        with self.assertRaises(pydantic.ValidationError):
+            _ = Thing(id=1, label='Thing 1')
+
+        thing = Thing(id='https://example.org/TestThing', label='Test Thing')
+        with self.assertRaises(TypeError):
+            thing.get_jsonld_dict(context=1)
+
+        thing_dict = thing.get_jsonld_dict()
+        self.assertIsInstance(thing_dict, dict)
+        self.assertDictEqual(thing_dict['@context'], {'local': 'http://example.org/',
+                                                      'owl': 'http://www.w3.org/2002/07/owl#',
+                                                      'rdfs': 'http://www.w3.org/2000/01/rdf-schema#'})
+        self.assertEqual(thing_dict['@id'], 'https://example.org/TestThing')
+        self.assertEqual(thing_dict['rdfs:label'], 'Test Thing')
+        self.assertEqual(thing_dict['@type'], 'owl:Thing')
+
     def test_decorator(self):
         self.assertTrue(decorator._is_http_url('http://example.com/'))
         self.assertFalse(decorator._is_http_url('example.com/'))

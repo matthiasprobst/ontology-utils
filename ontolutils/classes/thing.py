@@ -93,20 +93,6 @@ def serialize_fields(
     return out
 
 
-def _repr(obj) -> str:
-    """Return the string representation of an object. If the object has a _repr_html_ method,
-    this will be used. If the object is a list, the method will be called recursively for each
-    element in the list. If the object is a URIRef, the string representation will be returned.
-    Otherwise, the repr() of the object will be returned."""
-    if hasattr(obj, '_repr_html_'):
-        return obj._repr_html_()
-    if isinstance(obj, list):
-        return f"[{', '.join([_repr(i) for i in obj])}]"
-    if isinstance(obj, rdflib.URIRef):
-        return str(obj)
-    return repr(obj)
-
-
 @namespaces(owl='http://www.w3.org/2002/07/owl#',
             rdfs='http://www.w3.org/2000/01/rdf-schema#',
             local='http://example.org/')
@@ -117,7 +103,12 @@ class Thing(ThingModel):
     id: Union[str, HttpUrl, FileUrl, BlankNodeType, None] = None  # @id
     label: str = None  # rdfs:label
 
-    def __lt__(self, other):
+    def __lt__(self, other: ThingModel) -> bool:
+        """Less than comparison. Useful to sort Thing objects.
+        Comparison can only be done with other Thing objects and if an ID is given.
+        If one of the objects has no ID, then False is returned."""
+        if not isinstance(other, ThingModel):
+            raise TypeError(f"Cannot compare {self.__class__} with {type(other)}")
         if self.id is None or other.id is None:
             return False
         return self.id <= other.id

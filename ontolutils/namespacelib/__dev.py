@@ -1,4 +1,11 @@
-"""utility for developers to automatically write namespaces python files automatically"""
+"""
+
+utility for developers to automatically write namespaces python files automatically
+
+This module should not be called during normal operation. It is only for developers who want to
+update the namespace files.
+
+"""
 import datetime
 import json
 import pathlib

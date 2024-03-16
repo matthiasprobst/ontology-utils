@@ -5,6 +5,7 @@ import rdflib
 
 import ontolutils
 from ontolutils import namespacelib, set_logging_level
+from ontolutils.namespacelib import _iana_utils
 
 LOG_LEVEL = logging.DEBUG
 
@@ -25,6 +26,44 @@ class TestNamespaces(unittest.TestCase):
     def test_iana(self):
         self.assertEqual(namespacelib.IANA.application['zip'],
                          'https://www.iana.org/assignments/media-types/application/zip')
+
+        self.assertEqual(namespacelib.IANA.audio['mp4'],
+                         'https://www.iana.org/assignments/media-types/audio/mp4')
+        self.assertEqual(namespacelib.IANA.image['png'],
+                         'https://www.iana.org/assignments/media-types/image/png')
+
+        self.assertEqual(namespacelib.IANA.text['html'],
+                         'https://www.iana.org/assignments/media-types/text/html')
+
+        self.assertEqual(namespacelib.IANA.video['mp4'],
+                         'https://www.iana.org/assignments/media-types/video/mp4')
+
+        self.assertEqual(namespacelib.IANA.model['gltf+json'],
+                         'https://www.iana.org/assignments/media-types/model/gltf+json')
+
+        self.assertEqual(namespacelib.IANA.multipart['form-data'],
+                         'https://www.iana.org/assignments/media-types/multipart/form-data')
+
+        self.assertEqual(namespacelib.IANA.application['json'],
+                         'https://www.iana.org/assignments/media-types/application/json')
+
+        self.assertEqual(namespacelib.IANA.application['ld+json'],
+                         'https://www.iana.org/assignments/media-types/application/ld+json')
+
+        self.assertEqual(namespacelib.IANA.message['http'],
+                         'https://www.iana.org/assignments/media-types/message/http')
+
+        self.assertEqual(namespacelib.IANA.font['woff'],
+                         'https://www.iana.org/assignments/media-types/font/woff')
+
+        # test download
+        self.assertTrue(_iana_utils.iana_cache.is_dir())
+        self.assertTrue(_iana_utils.iana_cache.exists())
+        application_csv = _iana_utils.iana_cache / 'application.csv'
+        application_csv.unlink(missing_ok=True)
+        self.assertFalse(application_csv.exists())
+        namespacelib._iana_utils.get_media_type('application')
+        self.assertTrue(application_csv.exists())
 
     def test_m4i(self):
         self.assertIsInstance(ontolutils.M4I.Tool, rdflib.URIRef)

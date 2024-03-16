@@ -16,8 +16,8 @@ logger = logging.getLogger('ontolutils')
 EXTRA = 'allow'  # or 'forbid' or 'ignore'
 
 
-class ThingModel(abc.ABC, BaseModel):
-    """Abstract class to be used by model classes used within PIVMetalib"""
+class ThingModel(BaseModel, abc.ABC):
+    """Abstract base model class to be used by model classes used within ontolutils"""
 
     model_config = ConfigDict(extra=EXTRA)
 
@@ -93,7 +93,11 @@ def serialize_fields(
     return out
 
 
-def _repr(obj):
+def _repr(obj) -> str:
+    """Return the string representation of an object. If the object has a _repr_html_ method,
+    this will be used. If the object is a list, the method will be called recursively for each
+    element in the list. If the object is a URIRef, the string representation will be returned.
+    Otherwise, the repr() of the object will be returned."""
     if hasattr(obj, '_repr_html_'):
         return obj._repr_html_()
     if isinstance(obj, list):
@@ -101,29 +105,6 @@ def _repr(obj):
     if isinstance(obj, rdflib.URIRef):
         return str(obj)
     return repr(obj)
-
-
-def _html_repr(obj):
-    if hasattr(obj, '_repr_html_'):
-        return obj._repr_html_()
-    if isinstance(obj, list):
-        return f"[{', '.join([_repr(i) for i in obj])}]"
-    if isinstance(obj, rdflib.URIRef):
-        return f"<a href='{obj}'>{obj}</a>"
-    return repr(obj)
-
-
-def dump_hdf(g, data: Dict, iris: Dict = None):
-    """Write a dictionary to a hdf group. Nested dictionaries result in nested groups"""
-    iris = iris or {}
-    for k, v in data.items():
-        if isinstance(v, dict):
-            sub_g = g.create_group(k)
-            if k in iris:
-                sub_g.iri = iris[k]
-            dump_hdf(sub_g, v, iris)
-        else:
-            g.attrs[k] = v
 
 
 @namespaces(owl='http://www.w3.org/2002/07/owl#',
@@ -229,75 +210,6 @@ class Thing(ThingModel):
         return g.serialize(format='json-ld',
                            context=_context,
                            indent=4)
-
-    # def model_dump_hdf(self, g):
-    #     """Write the object to an hdf group. Nested dictionaries result in nested groups.
-    #
-    #
-    #     """
-    #
-    #     def _get_explained_dict(obj):
-    #         model_fields = {k: getattr(obj, k) for k in obj.model_fields if getattr(obj, k) is not None}
-    #         model_fields.pop('id', None)
-    #         _context_manager = URIRefManager[obj.__class__]
-    #         _namespace_manager = NamespaceManager[obj.__class__]
-    #         namespaced_fields = {}
-    #
-    #         assert isinstance(obj, ThingModel)
-    #
-    #         rdf_type = URIRefManager[obj.__class__][obj.__class__.__name__]
-    #         if ':' in rdf_type:
-    #             ns, field = rdf_type.split(':', 1)
-    #             at_type = f'{_namespace_manager[ns]}{field}'
-    #         else:
-    #             at_type = rdf_type
-    #         namespaced_fields[('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', '@type')] = at_type
-    #         if obj.id is not None:
-    #             namespaced_fields[('http://www.w3.org/1999/02/22-rdf-syntax-ns#id', '@id')] = obj.id
-    #
-    #         for k, v in model_fields.items():
-    #             nskey = _context_manager.get(k, k)
-    #             if ':' in nskey:
-    #                 ns, field = nskey.split(':', 1)
-    #                 ns_iri = _namespace_manager.get(ns, None)
-    #                 explained_key = (f'{ns_iri}{k}', k)
-    #             else:
-    #                 explained_key = (None, k)
-    #
-    #             if isinstance(v, ThingModel):
-    #                 namespaced_fields[explained_key] = _get_explained_dict(v)
-    #             else:
-    #                 if isinstance(v, list):
-    #                     if all(isinstance(i, ThingModel) for i in v):
-    #                         namespaced_fields[explained_key] = [_get_explained_dict(i) for i in v]
-    #                     else:
-    #                         namespaced_fields[explained_key] = v
-    #                 else:
-    #                     namespaced_fields[explained_key] = v
-    #         return namespaced_fields
-    #
-    #     def _dump_hdf(g, explained_data: Dict):
-    #         for (iri, key), v in explained_data.items():
-    #             if isinstance(v, dict):
-    #                 sub_g = g.create_group(key)
-    #                 if iri:
-    #                     sub_g.iri.subject = iri
-    #                 _dump_hdf(sub_g, v)
-    #             elif isinstance(v, list):
-    #                 sub_g = g.create_group(key)
-    #                 if iri:
-    #                     sub_g.iri.subject = iri
-    #                 for i, item in enumerate(v):
-    #                     assert isinstance(item, dict)
-    #                     if isinstance(item, dict):
-    #                         sub_sub_g = sub_g.create_group(str(i))
-    #                         _dump_hdf(sub_sub_g, item)
-    #             else:
-    #                 g.attrs[key] = v
-    #                 if iri:
-    #                     g.attrs[key, iri] = v
-    #
-    #     _dump_hdf(g, _get_explained_dict(self))
 
     def __repr__(self):
         _fields = {k: getattr(self, k) for k in self.model_fields if getattr(self, k) is not None}

@@ -1,3 +1,4 @@
+"""This module contains the query utility functions for the Thing class."""
 import json
 import logging
 import pathlib
@@ -12,10 +13,17 @@ from .utils import split_URIRef
 logger = logging.getLogger('ontolutils')
 
 
-def process_object(_id, predicate, obj: Union[rdflib.URIRef, rdflib.BNode, rdflib.Literal], graph, add_type):
+def process_object(
+        _id,
+        predicate,
+        obj: Union[rdflib.URIRef, rdflib.BNode, rdflib.Literal],
+        graph,
+        add_type):
+    """Process the object of a triple."""
     if isinstance(obj, rdflib.Literal):
         logger.debug(f'Object "{obj}" for predicate "{predicate}" is a literal.')
         return str(obj)
+
     if isinstance(obj, rdflib.BNode):
         logger.debug(f'"{predicate}" has blank node obj! not optimal... difficult to find children...')
         # find children for predicate with blank node obj
@@ -25,10 +33,10 @@ def process_object(_id, predicate, obj: Union[rdflib.URIRef, rdflib.BNode, rdfli
             # logger.debug(s, p, o, obj)
             if str(s) == str(obj):
                 if isinstance(o, rdflib.Literal):
-                    ns, key = split_URIRef(p)
+                    _, key = split_URIRef(p)
                     sub_data[key] = str(o)
                     continue
-                # if p == rdflib.RDF.first or p == rdflib.RDF.rest:
+
                 if p == rdflib.RDF.first:
                     # first means we have a collection
                     logger.debug(f'Need to find children of first: {o}')
@@ -44,17 +52,14 @@ WHERE {
                     _ids = list(set([str(_id[0]) for _id in list_res]))
                     _data = [_query_by_id(graph, _id, add_type) for _id in _ids]
                     return _data
-                elif p == rdflib.RDF.type:
-                    if add_type:
-                        sub_data["@type"] = str(o)
+
+                if p == rdflib.RDF.type and add_type:
+                    sub_data["@type"] = str(o)
                 else:
                     logger.debug(f'dont know what to do with {p} and {o}')
         if predicate in sub_data:
             return sub_data[predicate]
         return sub_data
-        # querystr = """SELECT ?p ?o WHERE { %s ?p ?o }""" % objn3
-        # logger.debug(querystr)
-        # continue
 
     if isinstance(obj, rdflib.URIRef):
         # could be a type definition or a web IRI
@@ -63,24 +68,19 @@ WHERE {
             if obj == _id:
                 return str(obj)
             return _query_by_id(graph=graph, _id=obj, add_type=False)
-            # check if it is a web IRI or refers to a type in the graph
-            # object_definition = _query_by_id(graph, obj)
-            # continue
+
     logger.debug(f'"{obj}" for predicate "{predicate}" is a simple data field.')
     return str(obj)
 
 
 def get_query_string(cls, limit: int = None) -> str:
+    """Return the query string for the class."""
+
     def _get_namespace(key):
         ns = URIRefManager[cls].get(key, f'local:{key}')
         if ':' in ns:
             return ns
         return f'{ns}:{key}'
-
-    # generate query automatically based on fields
-    # fields = " ".join([f"?{k}" for k in cls.model_fields.keys() if k != 'id'])
-    # better in a one-liner:
-    # query_str = "".join([f"PREFIX {k}: <{v}>\n" for k, v in NamespaceManager.namespaces.items()])
 
     query_str = f"""
 SELECT *
@@ -95,7 +95,8 @@ WHERE {{
     return query_str
 
 
-def _query_by_id(graph, _id: Union[str, rdflib.URIRef], add_type: bool):
+def _query_by_id(graph, _id: Union[str, rdflib.URIRef], add_type: bool) -> Dict:
+    """Query the graph by the id. Return the data as a dictionary."""
     _sub_query_string = """SELECT DISTINCT ?p ?o WHERE { <%s> ?p ?o }""" % _id
     _sub_res = graph.query(_sub_query_string)
     out = {'id': str(_id)}
@@ -108,21 +109,14 @@ def _query_by_id(graph, _id: Union[str, rdflib.URIRef], add_type: bool):
                 out['@type'] = str(obj)
             continue
 
-        ns, key = split_URIRef(predicate)
+        _, key = split_URIRef(predicate)
         if str(_id) == str(obj):
             # would lead to a circular reference. Example for it: "landingPage" and "_id" are the same.
             # in this case, we return the object as a string
             out[key] = str(obj)
         else:
-            out[key] = process_object(id, predicate, obj, graph, add_type)
+            out[key] = process_object(_id, predicate, obj, graph, add_type)
 
-        # ns, key = split_URIRef(o)
-        # if o.startswith('http'):
-        #     pass
-        # elif o.startswith('_:'):
-        #     pass
-        # else:
-        #     out[key] = str(o)
     return out
 
 
@@ -133,14 +127,15 @@ SELECT DISTINCT ?o WHERE { <%s> rdf:type ?o }""" % iri
     return len(_sub_res) == 1
 
 
-def exists_as_type(obj: str, graph):
+def exists_as_type(obj: str, graph) -> bool:
+    """Check if the object exists as a type in the graph."""
     query = """SELECT ?x ?obj ?p ?o
 WHERE {
   ?x <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?obj .
   ?x ?p ?o .
 }"""
     out = graph.query(query)
-    for _id, _type, p, o in out:
+    for _id, _type, _, _ in out:
         if obj.startswith('_:'):
             if str(_id) == str(obj[2:]):
                 return True
@@ -153,7 +148,8 @@ WHERE {
 def expand_sparql_res(bindings,
                       graph,
                       add_type: bool,
-                      add_context: bool):
+                      add_context: bool) -> Dict:
+    """Expand the SPARQL results. Return a dictionary."""
     out = {}
     # n_ = len(bindings)
     for i, binding in enumerate(bindings):
@@ -226,8 +222,8 @@ def dquery(subject: str,
     logger.debug(f'Querying subject="{subject}" with query: "{prefixes + query_str}" and got {len(res)} results')
 
     kwargs: Dict = expand_sparql_res(res.bindings, g, True, True)
-    for id in kwargs:
-        kwargs[id]['id'] = id
+    for _id in kwargs:
+        kwargs[_id]['id'] = _id
     return [v for v in kwargs.values()]
 
 

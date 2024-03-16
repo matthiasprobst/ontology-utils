@@ -22,3 +22,4 @@ docs/class_structure_pub.svg
 *.doc
 
 .pypirc
+.pylint

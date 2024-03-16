@@ -9,6 +9,18 @@ NamespaceManager = utils.UNManager()
 
 
 def _is_http_url(url: str) -> bool:
+    """Check if a string is a valid http url.
+
+    Parameters
+    ----------
+    url : str
+        The string to check.
+
+    Returns
+    -------
+    bool
+        True if the string is a valid http url, False otherwise.
+    """
     if not str(url).startswith("http"):
         return False
     # now, check for pattern
@@ -45,9 +57,8 @@ def namespaces(**kwargs):
     """
 
     def _decorator(cls):
+        """The actual decorator function. It assigns the namespaces to the class."""
         for k, v in kwargs.items():
-            # if not _is_http_url(v):
-            #     raise ValueError(f"{v} is not a valid URL")
             NamespaceManager[cls][k] = str(HttpUrl(v))
         return cls
 
@@ -67,6 +78,7 @@ def urirefs(**kwargs):
     """
 
     def _decorator(cls):
+        """The actual decorator function. It assigns the URIRefs to the fields of the class."""
         fields = list(cls.model_fields.keys())
         fields.append(cls.__name__)
 

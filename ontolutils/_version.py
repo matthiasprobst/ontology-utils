@@ -1,3 +1,4 @@
+"""Version library for ontolutils package. Determines the version of the package."""
 try:
     from importlib.metadata import version as _version
 except ImportError as e:

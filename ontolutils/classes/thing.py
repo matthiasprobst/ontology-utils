@@ -1,6 +1,7 @@
 import abc
 import json
 import logging
+import uuid
 from datetime import datetime
 from typing import Dict, Union, Optional
 
@@ -51,7 +52,7 @@ def serialize_fields(
     """
     if isinstance(obj, (int, str, float, bool)):
         return obj
-    elif isinstance(obj, datetime):
+    if isinstance(obj, datetime):
         return obj.isoformat()
 
     uri_ref_manager = URIRefManager.get(obj.__class__, None)
@@ -92,7 +93,6 @@ def serialize_fields(
     if obj.id is not None:
         out["@id"] = obj.id
     else:
-        import uuid
         out["@id"] = f"local:{uuid.uuid4()}"
     return out
 

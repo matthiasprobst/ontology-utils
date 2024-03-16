@@ -27,7 +27,7 @@ class ThingModel(BaseModel, abc.ABC):
 
 
 def serialize_fields(
-        obj,
+        obj: Union[ThingModel, int, str, float, bool, datetime],
         exclude_none: bool = True
 ) -> Dict:
     """Serializes the fields of a Thing object into a json-ld
@@ -36,8 +36,10 @@ def serialize_fields(
 
     Parameter
     ---------
-    obj: Thing
-        The object to serialize
+    obj: Union[ThingModel, int, str, float, bool, datetime]
+        The object to serialize (a subclass of ThingModel). All other types will
+        be returned as is. One exception is datetime, which will be serialized
+        to an ISO string.
     exclude_none: bool=True
         If True, fields with None values will be excluded from the
         serialization
@@ -49,6 +51,8 @@ def serialize_fields(
     """
     if isinstance(obj, (int, str, float, bool)):
         return obj
+    elif isinstance(obj, datetime):
+        return obj.isoformat()
 
     uri_ref_manager = URIRefManager.get(obj.__class__, None)
     if uri_ref_manager is None:
@@ -73,7 +77,7 @@ def serialize_fields(
         _field = serialized_fields.pop(k)
         key = k
         if isinstance(v, datetime):
-            serialized_fields[key] = v.isoformat()
+            serialized_fields[key] = serialize_fields(v)
         elif isinstance(v, Thing):
             serialized_fields[key] = serialize_fields(v, exclude_none=exclude_none)
         elif isinstance(v, list):

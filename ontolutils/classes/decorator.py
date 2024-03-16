@@ -8,7 +8,7 @@ URIRefManager = utils.UNManager()
 NamespaceManager = utils.UNManager()
 
 
-def _is_http_url(url) -> bool:
+def _is_http_url(url: str) -> bool:
     if not str(url).startswith("http"):
         return False
     # now, check for pattern
@@ -46,9 +46,9 @@ def namespaces(**kwargs):
 
     def _decorator(cls):
         for k, v in kwargs.items():
-            if not _is_http_url(v):
-                raise RuntimeError(f"{v} is not a valid URL")
-            NamespaceManager[cls][k] = v
+            # if not _is_http_url(v):
+            #     raise ValueError(f"{v} is not a valid URL")
+            NamespaceManager[cls][k] = str(HttpUrl(v))
         return cls
 
     return _decorator
@@ -72,6 +72,8 @@ def urirefs(**kwargs):
 
         # add fields to the class
         for k, v in kwargs.items():
+            if not isinstance(v, str):
+                raise TypeError(f"{v} must be a string, not {type(v)}")
             if _is_http_url(v):
                 ns, key = split_URIRef(v)
                 NamespaceManager[cls][k] = ns

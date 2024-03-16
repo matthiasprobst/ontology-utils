@@ -14,6 +14,12 @@ set_logging_level('WARNING')
 
 class TestUtils(unittest.TestCase):
 
+    # def test_is_zip_file(self):
+    #     self.assertTrue(utils.is_zip_media_type('zip'))
+    #     self.assertTrue(utils.is_zip_media_type('application/zip'))
+    #     self.assertTrue(utils.is_zip_media_type('https://www.iana.org/assignments/media-types/application/zip'))
+    #     self.assertFalse(utils.is_zip_media_type('csv'))
+
     def test_UNManager(self):
         unm = utils.UNManager()
         self.assertEqual(unm.__repr__(), 'UNManager()')

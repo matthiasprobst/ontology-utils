@@ -1,6 +1,8 @@
+import datetime
 import json
 import logging
 import unittest
+from typing import List
 
 import pydantic
 from pydantic import EmailStr
@@ -37,6 +39,49 @@ class TestNamespaces(unittest.TestCase):
         thing2 = Thing(label='Thing 2', id='http://example.com/thing2')
         self.assertTrue(thing1 < thing2)
 
+    def test_serialize_fields(self):
+        from ontolutils.classes.thing import serialize_fields
+        self.assertEqual(serialize_fields(1), 1)
+        self.assertEqual(serialize_fields(1.1), 1.1)
+        self.assertEqual(serialize_fields('1'), '1')
+        self.assertEqual(serialize_fields(True), True)
+        thing = Thing(label='Thing 1')
+
+        class RandomClass:
+            """Random Class"""
+
+        rc = RandomClass()
+        self.assertEqual(serialize_fields(rc), rc)
+
+        self.assertDictEqual(serialize_fields(Thing(id='_:b1', label='Thing 1')),
+                             {'@type': 'owl:Thing', 'rdfs:label': 'Thing 1', '@id': '_:b1'})
+
+        @namespaces(owl='http://www.w3.org/2002/07/owl#',
+                    local='http://example.org/')
+        @urirefs(Process='local:Process',
+                 startTime='local:startTime',
+                 listOfTimes='local:listOfTimes')
+        class Process(Thing):
+            """Process Thing"""
+            startTime: datetime.datetime = None
+            listOfTimes: List[datetime.datetime] = None
+
+        process = Process(id='_:b1', label='Process 1',
+                          startTime=datetime.datetime(2021, 1, 1))
+        self.assertEqual(serialize_fields(process),
+                         {'@type': 'local:Process', 'rdfs:label': 'Process 1', 'local:startTime': '2021-01-01T00:00:00',
+                          '@id': '_:b1'})
+
+        process = Process(id='_:b1',
+                          label='Process 1',
+                          listOfTimes=[datetime.datetime(2021, 1, 1),
+                                       datetime.datetime(2021, 1, 2)])
+
+        self.assertEqual(serialize_fields(process),
+                         {'@type': 'local:Process', 'rdfs:label': 'Process 1',
+                          'local:listOfTimes': ['2021-01-01T00:00:00', '2021-01-02T00:00:00'],
+                          '@id': '_:b1'})
+
     def test__repr_html_(self):
         thing = Thing(label='Thing 1')
         self.assertEqual(thing._repr_html_(), 'Thing(label=Thing 1)')
@@ -61,6 +106,7 @@ class TestNamespaces(unittest.TestCase):
     def test_decorator(self):
         self.assertTrue(decorator._is_http_url('http://example.com/'))
         self.assertFalse(decorator._is_http_url('example.com/'))
+        self.assertFalse(decorator._is_http_url('http:invalid.123'))
 
     def test_model_dump_jsonld(self):
         @namespaces(foaf="http://xmlns.com/foaf/0.1/")

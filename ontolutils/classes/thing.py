@@ -279,3 +279,13 @@ class Thing(ThingModel):
     def get_context(cls):
         """Return the context of the class"""
         return NamespaceManager[cls]
+
+    @property
+    def namespaces(self):
+        """Return the namespaces of the class"""
+        return NamespaceManager[self.__class__]
+
+    @property
+    def urirefs(self):
+        """Return the URIRefs of the class"""
+        return URIRefManager[self.__class__]

@@ -253,3 +253,38 @@ class TestNamespaces(unittest.TestCase):
 
         self.assertDictEqual(json.loads(p.model_dump_jsonld()),
                              jsonld)
+
+    def test_update_namespace_and_uri(self):
+        class CustomPerson(Thing):
+            pass
+
+        mt = CustomPerson()
+        print(mt.get_context())
+        print(mt.namespaces)
+        print(mt.urirefs)
+
+        mt = CustomPerson(first_name='John', last_name='Doe')
+        with self.assertRaises(AttributeError):
+            mt.namespaces = 'http://xmlns.com/foaf/0.1/'
+        with self.assertRaises(AttributeError):
+            mt.urirefs = 'foaf:lastName'
+        mt.namespaces['foaf'] = 'http://xmlns.com/foaf/0.1/'
+        mt.urirefs['first_name'] = 'foaf:firstName'
+        mt.urirefs['last_name'] = 'foaf:lastName'
+        # print(mt.model_dump_json(indent=2, exclude_none=True))
+        ref_jsonld = {
+            "@context": {
+                "owl": "http://www.w3.org/2002/07/owl#",
+                "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+                "local": "http://example.org/",
+                "foaf": "http://xmlns.com/foaf/0.1/"
+            },
+            "@type": "CustomPerson",
+            "foaf:firstName": "John",
+            "foaf:lastName": "Doe",
+            # "@id": "local:30d80c1d-d470-4602-87d5-75390ee295fd"
+        }
+        jsonld_dict = json.loads(mt.model_dump_jsonld())
+        jsonld_dict.pop('@id')
+        self.assertDictEqual(jsonld_dict,
+                             ref_jsonld)

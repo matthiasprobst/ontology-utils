@@ -30,7 +30,7 @@ class ThingModel(BaseModel, abc.ABC):
 def serialize_fields(
         obj: Union[ThingModel, int, str, float, bool, datetime],
         exclude_none: bool = True
-) -> Dict:
+) -> Union[Dict, int, str, float, bool]:
     """Serializes the fields of a Thing object into a json-ld
     dictionary (without context!). Note, that IDs can automatically be
     generated (with a local prefix)
@@ -47,8 +47,8 @@ def serialize_fields(
 
     Returns
     -------
-    dict
-        The serialized fields
+    Union[Dict, int, str, float, bool]
+        The serialized fields or the object as is
     """
     if isinstance(obj, (int, str, float, bool)):
         return obj

@@ -19,13 +19,13 @@
       ~Thing.dict
       ~Thing.from_jsonld
       ~Thing.from_orm
+      ~Thing.get_context
       ~Thing.get_jsonld_dict
       ~Thing.iri
       ~Thing.json
       ~Thing.model_construct
       ~Thing.model_copy
       ~Thing.model_dump
-      ~Thing.model_dump_hdf
       ~Thing.model_dump_json
       ~Thing.model_dump_jsonld
       ~Thing.model_json_schema

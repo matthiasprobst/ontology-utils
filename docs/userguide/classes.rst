@@ -1,0 +1,99 @@
+Classes
+=======
+
+This subpackage provides an object-oriented interface to work with ontologies. It is based on `pydantic` models and
+`rdflib` for the serialization and deserialization of the objects.
+
+The core class is called `Thing`. A realization of a concept of an ontology inherits from it.
+For instance, an "Person" from ontology "prov" can be constructed to describe and validate a person.
+The properties of a "prov:Person" are defined as attributes of the class. To refer the properties to the ontology,
+the class is decorated with `@urirefs` and `@namespaces`. The former assigns the properties to the IRIs of the ontology
+(e.g. `firstName='foaf:firstName'`), the latter provides the context and assigns the prefixes to the full IRI
+(`prov="http://www.w3.org/ns/prov#"`).
+
+.. code-block:: python
+
+    from ontolutils import Thing, urirefs, namespaces
+    from pydantic import EmailStr
+
+    @namespaces(prov="http://www.w3.org/ns/prov#",
+               foaf="http://xmlns.com/foaf/0.1/")
+    @urirefs(Person='prov:Person',
+             firstName='foaf:firstName',
+             lastName='foaf:lastName',
+             mbox='foaf:mbox')
+    class Person(Thing):
+        firstName: str
+        lastName: str = None
+        mbox: EmailStr = None
+
+Note, that in the above example, `mbox` must be of type `EmailStr` (from `pydantic`), which is a string that is a valid
+email address. The `firstName` is a string. The `lastName` is not required (in this example),
+as it is not annotated with a default value.
+
+Also note, that `Thing` already defines two properties, `id` and `label`.
+
+The like this created class can be used to create an instance of an person:
+
+.. code-block:: python
+
+    person = Person(id='_:123uf4', label='test_person', firstName="John", mbox="john@email.com")
+
+The advantage of creating such classes are twofold: 1. The properties (predicates of the ontology) are (type-)validated.
+2. The class can be serialized to JSON-LD and back. The latter is shown next:
+
+Dump/Serialize
+..............
+
+.. code-block:: python
+
+    person = Person(id='_:123uf4', label='test_person', firstName="John", mbox="john@email.com")
+    person.model_dump_jsonld()
+
+The return value is a JSON-LD string:
+
+.. code-block:: json
+
+    {
+        "@context": {
+            "owl": "http://www.w3.org/2002/07/owl#",
+            "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+            "local": "http://example.org/",
+            "prov": "http://www.w3.org/ns/prov#",
+            "foaf": "http://xmlns.com/foaf/0.1/"
+        },
+        "@type": "prov:Person",
+        "@id": "_:123uf4",
+        "rdfs:label": "test_person",
+        "foaf:mbox": "john@email.com",
+        "firstName": "John"
+    }
+
+
+Save to file
+............
+
+The use case of the serialization is to store the object in a file or to send it over the network. Storing the data
+in a file is shown next:
+
+.. code-block:: python
+
+    with open("person.json", "w") as f:
+        f.write(person.model_dump_jsonld())
+
+
+Load from file
+..............
+
+Let's load an person from a file:
+
+.. code-block:: python3
+
+    loaded_person = Person.from_jsonld(source="person.json", limit=1)
+    print(loaded_person)
+    # Person(id=123uf4, label=test_person, firstName=John, mbox=john@email.com)
+
+
+
+
+

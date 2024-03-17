@@ -190,7 +190,7 @@ def expand_sparql_res(bindings,
 def dquery(subject: str,
            source: Optional[Union[str, pathlib.Path]] = None,
            data: Optional[Union[str, Dict]] = None,
-           context: Optional[Dict] = None) -> List[Dict]:
+           context: Optional[Dict] = None) -> Union[List[Dict], None]:
     """Return a list of resutls. The entries are dictionaries.
 
     Example

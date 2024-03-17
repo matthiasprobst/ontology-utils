@@ -74,15 +74,6 @@ def merge_jsonld(jsonld_strings: List[str]) -> str:
     return json.dumps(out, indent=2)
 
 
-# def is_zip_media_type(mediaType: Union[str, rdflib.URIRef]):
-#     """checks the media type"""
-#     return str(mediaType) in (
-#         'https://www.iana.org/assignments/media-types/application/zip',
-#         'application/zip',
-#         'zip',
-#     )
-
-
 def download_file(url,
                   dest_filename=None,
                   known_hash=None,

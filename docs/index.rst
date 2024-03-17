@@ -1,5 +1,3 @@
-.. include:: ../README.rst
-
 Documentation
 =============
 
@@ -15,7 +13,6 @@ Documentation
 
 .. toctree::
 
-   Home <self>
-   usage
+   installation
+   userguide/index
    api
-   dev

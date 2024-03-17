@@ -39,7 +39,7 @@ the JSON-LD file yourself is too cumbersome *and* you want validation of the par
 lets you design classes, which describe ontology classes like this:
 
 
-.. code-block:: python
+.. code:: python
 
     from ontolutils import Thing, urirefs, namespaces
     from pydantic import EmailStr
@@ -63,7 +63,7 @@ lets you design classes, which describe ontology classes like this:
 
 Now, you can instantiate the class and use the `model_dump_jsonld()` method to get a JSON-LD string:
 
-.. code-block:: json
+.. code:: json
 
     {
         "@context": {

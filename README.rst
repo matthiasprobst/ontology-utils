@@ -1,5 +1,5 @@
-Ontolutils - Utilities for "pythonic Things"
-============================================
+Ontolutils - Object-oriented "Things"
+=====================================
 
 .. image:: https://github.com/matthiasprobst/ontology-utils/actions/workflows/tests.yml/badge.svg
     :target: https://github.com/matthiasprobst/ontology-utils/actions/workflows/tests.yml/badge.svg

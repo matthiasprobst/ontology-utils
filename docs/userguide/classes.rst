@@ -36,7 +36,7 @@ as it is not annotated with a default value.
 
 Also note, that `Thing` already defines two properties, `id` and `label`.
 
-The like this created class can be used to create an instance of an person:
+The like this created class can be used to create an instance of a person:
 
 .. code-block:: python
 
@@ -88,7 +88,7 @@ in a file is shown next:
 Load from file
 ..............
 
-Let's load an person from a file:
+Let's load a person from a file:
 
 .. code-block:: python3
 

@@ -31,6 +31,7 @@ Install the package:
 
     pip install ontolutils
 
+
 Usage
 ~~~~~
 Imagine you want to describe a `prov:Person` with a first name, last name and an email address but writing

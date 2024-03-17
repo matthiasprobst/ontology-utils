@@ -1,15 +1,14 @@
 import datetime
 import json
 import logging
+import pydantic
 import unittest
+from pydantic import EmailStr
+from rdflib import FOAF
 from typing import List
 
-import pydantic
-from pydantic import EmailStr
-
-from ontolutils import Thing
+from ontolutils import Thing, urirefs, namespaces
 from ontolutils import set_logging_level
-from ontolutils import urirefs, namespaces
 from ontolutils.classes import decorator
 
 LOG_LEVEL = logging.DEBUG
@@ -222,3 +221,35 @@ class TestNamespaces(unittest.TestCase):
         self.assertEqual(Agent.iri(compact=True), 'prov:Agent')
         self.assertEqual(Agent.iri('mbox'), 'http://xmlns.com/foaf/0.1/mbox')
         self.assertEqual(Agent.iri('mbox', compact=True), 'foaf:mbox')
+
+    def test_person(self):
+        @namespaces(prov="http://www.w3.org/ns/prov#",
+                    foaf="http://xmlns.com/foaf/0.1/")
+        @urirefs(Person='prov:Person',
+                 firstName='foaf:firstName',
+                 lastName=FOAF.lastName,
+                 mbox='foaf:mbox')
+        class Person(Thing):
+            firstName: str
+            lastName: str = None
+            mbox: EmailStr = None
+
+        p = Person(id="local:cde4c79c-21f2-4ab7-b01d-28de6e4aade4", firstName='John', lastName='Doe')
+        jsonld = {
+            "@context": {
+                "owl": "http://www.w3.org/2002/07/owl#",
+                "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+                "local": "http://example.org/",
+                "lastName": "http://xmlns.com/foaf/0.1/",
+                "prov": "http://www.w3.org/ns/prov#",
+                "foaf": "http://xmlns.com/foaf/0.1/"
+            },
+            "@id": "local:cde4c79c-21f2-4ab7-b01d-28de6e4aade4",
+            "@type": "prov:Person",
+            "foaf:firstName": "John",
+            "lastName": "Doe"
+        }
+        print(p.model_dump_jsonld())
+
+        self.assertDictEqual(json.loads(p.model_dump_jsonld()),
+                             jsonld)

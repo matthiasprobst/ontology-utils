@@ -1,14 +1,13 @@
 import abc
 import json
 import logging
+import rdflib
 import uuid
 from datetime import datetime
+from pydantic import HttpUrl, FileUrl, BaseModel, ConfigDict
 from typing import Dict, Union, Optional
 
-import rdflib
-from pydantic import HttpUrl, FileUrl, BaseModel, ConfigDict
-
-from .decorator import urirefs, namespaces, URIRefManager, NamespaceManager
+from .decorator import urirefs, namespaces, URIRefManager, NamespaceManager, _is_http_url
 from .typing import BlankNodeType
 from .utils import split_URIRef
 
@@ -61,17 +60,35 @@ def serialize_fields(
 
     try:
         if exclude_none:
-            serialized_fields = {URIRefManager[obj.__class__][k]: getattr(obj, k) for k in obj.model_fields if
-                                 getattr(obj, k) is not None and k not in ('id', '@id')}
+            serialized_fields = {}
+            for k in obj.model_fields:
+                value = getattr(obj, k)
+                if value is not None and k not in ('id', '@id'):
+                    iri = uri_ref_manager[k]
+                    if _is_http_url(iri):
+                        serialized_fields[k] = value
+                    else:
+                        serialized_fields[iri] = value
         else:
-            serialized_fields = {URIRefManager[obj.__class__][k]: getattr(obj, k) for k in obj.model_fields if
-                                 k not in ('id', '@id')}
+            serialized_fields = {}
+            for k in obj.model_fields:
+                value = getattr(obj, k)
+                if value not in ('id', '@id'):
+                    iri = uri_ref_manager[k]
+                    if _is_http_url(iri):
+                        serialized_fields[k] = value
+                    else:
+                        serialized_fields[iri] = value
     except AttributeError as e:
         raise AttributeError(f"Could not serialize {obj} ({obj.__class__}). Orig. err: {e}") from e
 
     if obj.model_config['extra'] == 'allow':
         for k, v in obj.model_extra.items():
-            serialized_fields[URIRefManager[obj.__class__].get(k, k)] = v
+            iri = uri_ref_manager.get(k, k)
+            if _is_http_url(iri):
+                serialized_fields[k] = v
+            else:
+                serialized_fields[iri] = v
 
     # datetime
     for k, v in serialized_fields.copy().items():

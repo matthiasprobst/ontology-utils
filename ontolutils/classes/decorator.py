@@ -88,10 +88,10 @@ def urirefs(**kwargs):
                 raise TypeError(f"{v} must be a string, not {type(v)}")
             if _is_http_url(v):
                 ns, key = split_URIRef(v)
-                NamespaceManager[cls][k] = ns
+                NamespaceManager[cls][k] = str(ns)
             if k not in fields:
                 raise KeyError(f"Field '{k}' not found in {cls.__name__}")
-            URIRefManager[cls][k] = v
+            URIRefManager[cls][k] = str(v)
         return cls
 
     return _decorator

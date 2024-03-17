@@ -1,3 +1,5 @@
+.. _classes:
+
 Classes
 =======
 

@@ -1,7 +1,58 @@
 Documentation
 =============
 
-**Ontolutils** is a Python package that provides a set of utilities to work with ontologies.
+**Ontolutils** is a Python package that provides a object-oriented way of working with ontologies.
+Also, namespace objects are available to easily work with IRIs.
+
+The package mainly depends on two libraries:
+
+- rdflib
+- pydantic
+
+
+Quick example
+-------------
+
+The object oriented way of defining an ontology class which then can be used to create validated instances and
+serialize them to RDF is shown below. More information can be found in the :doc:`documentation <userguide/classes>`
+
+.. code-block:: python
+
+    from ontolutils import Thing, urirefs, namespaces
+    from pydantic import EmailStr
+    from rdflib import FOAF
+
+    @namespaces(prov="http://www.w3.org/ns/prov#",
+               foaf="http://xmlns.com/foaf/0.1/")
+    @urirefs(Person='prov:Person',
+             firstName='foaf:firstName',
+             lastName=FOAF.lastName,
+             mbox='foaf:mbox')
+    class Person(Thing):
+        firstName: str
+        lastName: str = None
+        mbox: EmailStr = None
+
+    p = Person(id="local:cde4c79c-21f2-4ab7-b01d-28de6e4aade4",
+               firstName='John', lastName='Doe')
+    p.model_dump_jsonld()
+
+.. code-block:: json
+
+    {
+        "@context": {
+            "owl": "http://www.w3.org/2002/07/owl#",
+            "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+            "local": "http://example.org/",
+            "lastName": "http://xmlns.com/foaf/0.1/",
+            "prov": "http://www.w3.org/ns/prov#",
+            "foaf": "http://xmlns.com/foaf/0.1/"
+        },
+        "@id": "local:cde4c79c-21f2-4ab7-b01d-28de6e4aade4",
+        "@type": "prov:Person",
+        "foaf:firstName": "John",
+        "lastName": "Doe"
+    }
 
 
 .. note::

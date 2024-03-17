@@ -27,7 +27,7 @@ Installation
 
 Install the package:
 
-.. code-block:: bash
+.. code:: bash
 
     pip install ontolutils
 

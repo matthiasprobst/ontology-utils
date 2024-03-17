@@ -4,6 +4,9 @@ Classes
 This subpackage provides an object-oriented interface to work with ontologies. It is based on `pydantic` models and
 `rdflib` for the serialization and deserialization of the objects.
 
+Design a class
+..............
+
 The core class is called `Thing`. A realization of a concept of an ontology inherits from it.
 For instance, an "Person" from ontology "prov" can be constructed to describe and validate a person.
 The properties of a "prov:Person" are defined as attributes of the class. To refer the properties to the ontology,

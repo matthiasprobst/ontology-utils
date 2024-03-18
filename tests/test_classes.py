@@ -95,9 +95,9 @@ class TestNamespaces(unittest.TestCase):
 
         thing_dict = thing.get_jsonld_dict()
         self.assertIsInstance(thing_dict, dict)
-        self.assertDictEqual(thing_dict['@context'], {'local': 'http://example.org/',
-                                                      'owl': 'http://www.w3.org/2002/07/owl#',
-                                                      'rdfs': 'http://www.w3.org/2000/01/rdf-schema#'})
+        self.assertDictEqual(thing_dict['@context'],
+                             {'owl': 'http://www.w3.org/2002/07/owl#',
+                              'rdfs': 'http://www.w3.org/2000/01/rdf-schema#'})
         self.assertEqual(thing_dict['@id'], 'https://example.org/TestThing')
         self.assertEqual(thing_dict['rdfs:label'], 'Test Thing')
         self.assertEqual(thing_dict['@type'], 'owl:Thing')
@@ -239,7 +239,6 @@ class TestNamespaces(unittest.TestCase):
             "@context": {
                 "owl": "http://www.w3.org/2002/07/owl#",
                 "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
-                "local": "http://example.org/",
                 "lastName": "http://xmlns.com/foaf/0.1/",
                 "prov": "http://www.w3.org/ns/prov#",
                 "foaf": "http://xmlns.com/foaf/0.1/"
@@ -276,7 +275,6 @@ class TestNamespaces(unittest.TestCase):
             "@context": {
                 "owl": "http://www.w3.org/2002/07/owl#",
                 "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
-                "local": "http://example.org/",
                 "foaf": "http://xmlns.com/foaf/0.1/"
             },
             "@type": "CustomPerson",

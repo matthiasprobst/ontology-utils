@@ -1,0 +1,46 @@
+{
+  "@context": {
+    "hdf5": "http://purl.allotrope.org/ontologies/hdf5/1.8#",
+    "m4i": "http://w3id.org/nfdi4ing/metadata4ing#",
+    "ssno": "https://matthiasprobst.github.io/ssno/#",
+    "name": "schema:name"
+  },
+  "@graph": [
+    {
+      "@id": "_;b3",
+      "@type": "hdf5:Dataset",
+      "hdf5:name": "rel_time",
+      "hdf5:attributes": [
+        {
+          "@id": "_:b1",
+          "@type": "hdf5:Attributes",
+          "hdf5:name": "_:b2",
+          "hdf5:value": "x_velocity"
+        }
+      ]
+    }
+  ]
+}{
+  "@context": {
+    "hdf5": "http://purl.allotrope.org/ontologies/hdf5/1.8#",
+    "m4i": "http://w3id.org/nfdi4ing/metadata4ing#",
+    "ssno": "https://matthiasprobst.github.io/ssno/#",
+    "name": "schema:name"
+  },
+  "@graph": [
+    {
+      "@id": "_:b3",
+      "@type": "hdf5:Dataset",
+      "hdf5:name": "rel_time",
+      "hdf5:attributes": [
+        {
+          "@id": "_:b1",
+          "@type": "hdf5:Attributes",
+          "hdf5:name": "_:b2",
+          "hdf5:value": "x_velocity"
+        }
+      ]
+    }
+  ]
+}
+

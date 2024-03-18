@@ -2,7 +2,6 @@ import abc
 import json
 import logging
 import rdflib
-import uuid
 from datetime import datetime
 from pydantic import HttpUrl, FileUrl, BaseModel, ConfigDict
 from typing import Dict, Union, Optional
@@ -110,13 +109,12 @@ def serialize_fields(
     if obj.id is not None:
         out["@id"] = obj.id
     else:
-        out["@id"] = f"local:{uuid.uuid4()}"
+        out["@id"] = rdflib.BNode()
     return out
 
 
 @namespaces(owl='http://www.w3.org/2002/07/owl#',
-            rdfs='http://www.w3.org/2000/01/rdf-schema#',
-            local='http://example.org/')
+            rdfs='http://www.w3.org/2000/01/rdf-schema#')
 @urirefs(Thing='owl:Thing', label='rdfs:label')
 class Thing(ThingModel):
     """owl:Thing

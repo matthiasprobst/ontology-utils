@@ -9,11 +9,10 @@ update the namespace files.
 import datetime
 import json
 import pathlib
-import warnings
-from typing import Iterable, Dict, Union
-
 import requests
+import warnings
 from rdflib import Graph
+from typing import Iterable, Dict, Union
 
 from ontolutils import __version__
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.2.6
+
+- removed default local namespace
+
 ## v0.2.0a2
 
 - added documentation

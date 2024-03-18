@@ -41,7 +41,7 @@ class Person(Thing):
     mbox: EmailStr = None
 
 
-p = Person(id="local:cde4c79c-21f2-4ab7-b01d-28de6e4aade4",
+p = Person(id="cde4c79c-21f2-4ab7-b01d-28de6e4aade4",
            firstName='John', lastName='Doe')
 p.model_dump_jsonld()
 ```
@@ -53,12 +53,11 @@ Now, you can instantiate the class and use the `model_dump_jsonld()` method to g
   "@context": {
     "owl": "http://www.w3.org/2002/07/owl#",
     "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
-    "local": "http://example.org/",
     "lastName": "http://xmlns.com/foaf/0.1/",
     "prov": "http://www.w3.org/ns/prov#",
     "foaf": "http://xmlns.com/foaf/0.1/"
   },
-  "@id": "local:cde4c79c-21f2-4ab7-b01d-28de6e4aade4",
+  "@id": "cde4c79c-21f2-4ab7-b01d-28de6e4aade4",
   "@type": "prov:Person",
   "foaf:firstName": "John",
   "lastName": "Doe"

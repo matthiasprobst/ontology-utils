@@ -60,7 +60,7 @@ class TestQuery(unittest.TestCase):
         res = ontolutils.dquery(
             subject="schema:SoftwareSourceCode",
             source=codemeta_filename,
-            context={"schema": "http://schema.org/"}
+            context={"schema": "https://schema.org/"}
         )
         isinstance(res, list)
         self.assertTrue(len(res) == 1)
@@ -68,7 +68,7 @@ class TestQuery(unittest.TestCase):
         self.assertTrue('author' in res[0])
         print(res[0]['author'])
         self.assertIsInstance(res[0]['author'], list)
-        self.assertEqual(res[0]['author'][0]['@type'], 'http://schema.org/Person')
+        self.assertEqual(res[0]['author'][0]['@type'], 'https://schema.org/Person')
         self.assertEqual(res[0]['author'][0]['givenName'], 'Matthias')
 
     def test_query_get_dict(self):

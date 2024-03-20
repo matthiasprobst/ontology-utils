@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.2.8
+
+- bugfix serialization of json-ld. context was not properly generated
+
 ## v0.2.7
 
 - bugfix schema.org namespace (https instead of http)

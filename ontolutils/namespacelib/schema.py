@@ -16581,4 +16581,4 @@ class SCHEMA(DefinedNamespace):
     FoodService = URIRef("https://schema.org/FoodService")
     EventStatusType = URIRef("https://schema.org/EventStatusType")
 
-    _NS = Namespace("https://qudt.org/vocab/unit/")
+    _NS = Namespace("https://schema.org/")

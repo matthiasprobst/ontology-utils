@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.7
+
+- bugfix schema.org namespace (https instead of http)
+- bugfix NS in qudt_kind
+- bugfix _dev.py
+
 ## v0.2.6
 
 - removed default local namespace

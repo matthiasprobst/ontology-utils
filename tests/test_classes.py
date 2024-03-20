@@ -177,12 +177,12 @@ class TestNamespaces(unittest.TestCase):
             """
             mbox: EmailStr = None
 
-        @namespaces(schema="https://schema.org/")
+        @namespaces(schema="http://schema.org/")
         @urirefs(Organization='prov:Organization')
         class Organization(Agent):
             """Pydantic Model for https://www.w3.org/ns/prov/Agent"""
 
-        @namespaces(schema="https://schema.org/")
+        @namespaces(schema="http://schema.org/")
         @urirefs(Person='foaf:Person',
                  affiliation='schema:affiliation')
         class Person(Agent):

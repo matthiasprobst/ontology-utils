@@ -22,6 +22,7 @@ __package_dir__ = __this_dir__.parent / 'namespacelib'
 
 def generate_namespace_file_from_ttl(namespace: str,
                                      source: str,
+                                     ns: str,
                                      target_dir: Union[str, pathlib.Path, None] = None,
                                      fail=True):
     """Generate M4I_NAMESPACE.py file from m4i_context.jsonld
@@ -54,7 +55,7 @@ def generate_namespace_file_from_ttl(namespace: str,
                 uri = str(s)
                 f.write(f'\n    {u} = URIRef("{uri}")')
 
-        f.write('\n\n    _NS = Namespace("https://qudt.org/vocab/unit/")')
+        f.write(f'\n\n    _NS = Namespace("{ns}")')
 
         # f.write('\n\n')
         # f.write('\n\nQUDT_UNIT = _QUDT_UNIT()')
@@ -251,6 +252,7 @@ def qudt_unit():
     generate_namespace_file_from_ttl(
         namespace='qudt_unit',
         source='https://qudt.org/vocab/unit/',
+        ns='http://qudt.org/vocab/unit/',
     )
 
 
@@ -258,13 +260,15 @@ def qudt_quantitykind():
     generate_namespace_file_from_ttl(
         namespace='qudt_kind',
         source='https://qudt.org/vocab/quantitykind/',
+        ns='http://qudt.org/vocab/quantitykind/',
     )
 
 
 def schema():
     generate_namespace_file_from_ttl(
         namespace='schema',
-        source='https://schema.org/version/latest/schemaorg-current-https.jsonld',
+        source='http://schema.org/version/latest/schemaorg-current-https.jsonld',
+        ns='http://schema.org/',
     )
 
 

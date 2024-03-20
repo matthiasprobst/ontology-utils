@@ -35,7 +35,7 @@ class TestQuery(unittest.TestCase):
 
     def test_dquery(self):
         test_data = """{"@context": {"foaf": "http://xmlns.com/foaf/0.1/", "prov": "http://www.w3.org/ns/prov#",
-"schema": "http://www.w3.org/2000/01/rdf-schema#", "schema": "https://schema.org/"},
+"schema": "http://www.w3.org/2000/01/rdf-schema#", "schema": "http://schema.org/"},
 "@id": "local:testperson",
 "@type": "prov:Person",
 "foaf:firstName": "John",

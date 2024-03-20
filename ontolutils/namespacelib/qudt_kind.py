@@ -22588,4 +22588,4 @@ class QUDT_KIND(DefinedNamespace):
     PhononMeanFreePath = URIRef("http://qudt.org/vocab/quantitykind/PhononMeanFreePath")
     ReynoldsNumber = URIRef("http://qudt.org/vocab/quantitykind/ReynoldsNumber")
 
-    _NS = Namespace("https://qudt.org/vocab/unit/")
+    _NS = Namespace("http://qudt.org/vocab/quantitykind/")

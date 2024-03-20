@@ -25,94 +25,6 @@ class ThingModel(BaseModel, abc.ABC):
         """Returns the HTML representation of the class"""
 
 
-def serialize_fields(
-        obj: Union[ThingModel, int, str, float, bool, datetime],
-        exclude_none: bool = True
-) -> Union[Dict, int, str, float, bool]:
-    """Serializes the fields of a Thing object into a json-ld
-    dictionary (without context!). Note, that IDs can automatically be
-    generated (with a local prefix)
-
-    Parameter
-    ---------
-    obj: Union[ThingModel, int, str, float, bool, datetime]
-        The object to serialize (a subclass of ThingModel). All other types will
-        be returned as is. One exception is datetime, which will be serialized
-        to an ISO string.
-    exclude_none: bool=True
-        If True, fields with None values will be excluded from the
-        serialization
-
-    Returns
-    -------
-    Union[Dict, int, str, float, bool]
-        The serialized fields or the object as is
-    """
-    if isinstance(obj, (int, str, float, bool)):
-        return obj
-    if isinstance(obj, datetime):
-        return obj.isoformat()
-
-    uri_ref_manager = URIRefManager.get(obj.__class__, None)
-    if uri_ref_manager is None:
-        return obj
-
-    try:
-        if exclude_none:
-            serialized_fields = {}
-            for k in obj.model_fields:
-                value = getattr(obj, k)
-                if value is not None and k not in ('id', '@id'):
-                    iri = uri_ref_manager[k]
-                    if _is_http_url(iri):
-                        serialized_fields[k] = value
-                    else:
-                        serialized_fields[iri] = value
-        else:
-            serialized_fields = {}
-            for k in obj.model_fields:
-                value = getattr(obj, k)
-                if value not in ('id', '@id'):
-                    iri = uri_ref_manager[k]
-                    if _is_http_url(iri):
-                        serialized_fields[k] = value
-                    else:
-                        serialized_fields[iri] = value
-    except AttributeError as e:
-        raise AttributeError(f"Could not serialize {obj} ({obj.__class__}). Orig. err: {e}") from e
-
-    if obj.model_config['extra'] == 'allow':
-        for k, v in obj.model_extra.items():
-            iri = uri_ref_manager.get(k, k)
-            if _is_http_url(iri):
-                serialized_fields[k] = v
-            else:
-                serialized_fields[iri] = v
-
-    # datetime
-    for k, v in serialized_fields.copy().items():
-        _field = serialized_fields.pop(k)
-        key = k
-        if isinstance(v, datetime):
-            serialized_fields[key] = serialize_fields(v)
-        elif isinstance(v, Thing):
-            serialized_fields[key] = serialize_fields(v, exclude_none=exclude_none)
-        elif isinstance(v, list):
-            serialized_fields[key] = [serialize_fields(i, exclude_none=exclude_none) for i in v]
-        else:
-            serialized_fields[key] = str(v)
-
-    _type = URIRefManager[obj.__class__].get(obj.__class__.__name__, obj.__class__.__name__)
-
-    out = {"@type": _type, **serialized_fields}
-    # if no ID is given, generate a local one:
-    if obj.id is not None:
-        out["@id"] = obj.id
-    else:
-        out["@id"] = rdflib.BNode()
-    return out
-
-
 @namespaces(owl='http://www.w3.org/2002/07/owl#',
             rdfs='http://www.w3.org/2000/01/rdf-schema#')
 @urirefs(Thing='owl:Thing', label='rdfs:label')
@@ -166,9 +78,101 @@ class Thing(ThingModel):
 
         logger.debug(f'The context is "{at_context}".')
 
+        def serialize_fields(
+                obj: Union[ThingModel, int, str, float, bool, datetime],
+                exclude_none: bool = True
+        ) -> Union[Dict, int, str, float, bool]:
+            """Serializes the fields of a Thing object into a json-ld
+            dictionary (without context!). Note, that IDs can automatically be
+            generated (with a local prefix)
+
+            Parameter
+            ---------
+            obj: Union[ThingModel, int, str, float, bool, datetime]
+                The object to serialize (a subclass of ThingModel). All other types will
+                be returned as is. One exception is datetime, which will be serialized
+                to an ISO string.
+            exclude_none: bool=True
+                If True, fields with None values will be excluded from the
+                serialization
+
+            Returns
+            -------
+            Union[Dict, int, str, float, bool]
+                The serialized fields or the object as is
+            """
+            if isinstance(obj, (int, str, float, bool)):
+                return obj
+            if isinstance(obj, datetime):
+                return obj.isoformat()
+
+            uri_ref_manager = URIRefManager.get(obj.__class__, None)
+            at_context.update(NamespaceManager.get(obj.__class__, {}))
+            if uri_ref_manager is None:
+                return obj
+
+            try:
+                if exclude_none:
+                    serialized_fields = {}
+                    for k in obj.model_dump(exclude_none=True):
+                        value = getattr(obj, k)
+                        if value is not None and k not in ('id', '@id'):
+                            iri = uri_ref_manager.get(k, k)
+                            if _is_http_url(iri):
+                                serialized_fields[iri] = value
+                            if isinstance(value, str):  # this turn URLs into base strings
+                                serialized_fields[iri] = str(value)
+                            else:
+                                serialized_fields[iri] = value
+                else:
+                    serialized_fields = {}
+                    for k in obj.model_dump(exclude_none=True):
+                        value = getattr(obj, k)
+                        if value not in ('id', '@id'):
+                            iri = uri_ref_manager[k]
+                            if _is_http_url(iri):
+                                serialized_fields[k] = value
+                            else:
+                                serialized_fields[iri] = value
+            except AttributeError as e:
+                raise AttributeError(f"Could not serialize {obj} ({obj.__class__}). Orig. err: {e}") from e
+
+            if obj.model_config['extra'] == 'allow':
+                for k, v in obj.model_extra.items():
+                    iri = uri_ref_manager.get(k, k)
+                    if _is_http_url(iri):
+                        serialized_fields[k] = v
+                    else:
+                        serialized_fields[iri] = v
+
+            # datetime
+            for k, v in serialized_fields.copy().items():
+                _field = serialized_fields.pop(k)
+                key = k
+                if isinstance(v, datetime):
+                    serialized_fields[key] = serialize_fields(v)
+                elif isinstance(v, Thing):
+                    serialized_fields[key] = serialize_fields(v, exclude_none=exclude_none)
+                elif isinstance(v, list):
+                    serialized_fields[key] = [serialize_fields(i, exclude_none=exclude_none) for i in v]
+                else:
+                    serialized_fields[key] = str(v)
+
+            _type = URIRefManager[obj.__class__].get(obj.__class__.__name__, obj.__class__.__name__)
+
+            out = {"@type": _type, **serialized_fields}
+            # if no ID is given, generate a local one:
+            if obj.id is not None:
+                out["@id"] = obj.id
+            else:
+                out["@id"] = rdflib.BNode()
+            return out
+
+        serialization = serialize_fields(self, exclude_none=exclude_none)
+
         jsonld = {
             "@context": at_context,
-            **serialize_fields(self, exclude_none=exclude_none)
+            **serialization
         }
         return jsonld
 

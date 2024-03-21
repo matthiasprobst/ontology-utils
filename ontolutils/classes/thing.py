@@ -245,8 +245,17 @@ class Thing(ThingModel):
 
     @classmethod
     def from_jsonld(cls, source=None, data=None, limit=None, context=None):
-        """Initialize the class from a JSON-LD source"""
+        """Initialize the class from a JSON-LD source
+
+        Note the inconsistency in the schema.org protocol. Codemeta for instance uses http whereas
+        https is the current standard. This repo only works with https. If you have a http schema,
+        this method will replace http with https.
+        """
         from . import query
+        if data is not None and isinstance(data, str):
+            if 'http://schema.org/' in data:
+                print('Replacing http with https in the JSON-LD data. This is a workaround for the schema.org inconsistency.')
+                data = data.replace('http://schema.org/', 'https://schema.org/')
         return query(cls, source=source, data=data, limit=limit, context=context)
 
     @classmethod

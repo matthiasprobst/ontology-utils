@@ -7,8 +7,8 @@ class LanguageExtension:
 
 class PIVMETA(DefinedNamespace):
     # uri = "https://w3id.org/nfdi4ing/metadata4ing#"
-    # Generated with None version 0.2.7
-    # Date: 2024-03-21 13:54:42.163510
+    # Generated with None version 0.2.0a3
+    # Date: 2024-03-09 20:30:58.080699
     _fail = True
     time: URIRef  # ['time']
     BackgroundImageGeneration: URIRef  # ['background image generation']
@@ -22,6 +22,8 @@ class PIVMETA(DefinedNamespace):
     ImageType: URIRef  # ['image type']
     InterrogationMethod: URIRef  # ['interrogation method']
     MaskGeneration: URIRef  # ['mask generation']
+    Multigrid: URIRef  # ['multi grid']
+    Multipass: URIRef  # ['multi pass']
     OutlierDetectionMethod: URIRef  # ['outlier detection method']
     OutlierReplacementScheme: URIRef  # ['outlier replacement scheme']
     PIVEvaluation: URIRef  # ['piv evaluation']
@@ -34,6 +36,7 @@ class PIVMETA(DefinedNamespace):
     PivPreProcessing: URIRef  # ['piv pre processing']
     PivProcessingStep: URIRef  # ['piv processing step']
     PivResultDistribution: URIRef  # ['piv result distribution']
+    Singlepass: URIRef  # ['single pass']
     hasStandardName: URIRef  # ['has standard name']
     pivImageType: URIRef  # ['piv image type']
     useOutlierReplacementScheme: URIRef  # ['uses outlier replacement scheme']
@@ -43,10 +46,7 @@ class PIVMETA(DefinedNamespace):
     ExperimentalImage: URIRef  # ['experimental image']
     Interpolation: URIRef  # ['interpolation']
     LeftRightFlip: URIRef  # ['left right flip']
-    Multigrid: URIRef  # ['Multigrid']
-    Multipass: URIRef  # ['Multipass']
     ReEvaluateWithLargerSample: URIRef  # ['re-evaluate with larger sample']
-    Singlepass: URIRef  # ['Singlepass']
     SplitImage: URIRef  # ['split image']
     SyntheticImage: URIRef  # ['synthetic image']
     TopBottomFlip: URIRef  # ['top bottom flip']
@@ -119,6 +119,8 @@ setattr(PIVMETA, "image_rotation", PIVMETA.ImageRotation)
 setattr(PIVMETA, "image_type", PIVMETA.ImageType)
 setattr(PIVMETA, "interrogation_method", PIVMETA.InterrogationMethod)
 setattr(PIVMETA, "mask_generation", PIVMETA.MaskGeneration)
+setattr(PIVMETA, "multi_grid", PIVMETA.Multigrid)
+setattr(PIVMETA, "multi_pass", PIVMETA.Multipass)
 setattr(PIVMETA, "outlier_detection_method", PIVMETA.OutlierDetectionMethod)
 setattr(PIVMETA, "outlier_replacement_scheme", PIVMETA.OutlierReplacementScheme)
 setattr(PIVMETA, "piv_evaluation", PIVMETA.PIVEvaluation)
@@ -131,6 +133,7 @@ setattr(PIVMETA, "piv_post_processing", PIVMETA.PivPostProcessing)
 setattr(PIVMETA, "piv_pre_processing", PIVMETA.PivPreProcessing)
 setattr(PIVMETA, "piv_processing_step", PIVMETA.PivProcessingStep)
 setattr(PIVMETA, "piv_result_distribution", PIVMETA.PivResultDistribution)
+setattr(PIVMETA, "single_pass", PIVMETA.Singlepass)
 setattr(PIVMETA, "has_standard_name", PIVMETA.hasStandardName)
 setattr(PIVMETA, "piv_image_type", PIVMETA.pivImageType)
 setattr(PIVMETA, "uses_outlier_replacement_scheme", PIVMETA.useOutlierReplacementScheme)
@@ -140,10 +143,7 @@ setattr(PIVMETA, "number_of_records", PIVMETA.numberOfRecords)
 setattr(PIVMETA, "experimental_image", PIVMETA.ExperimentalImage)
 setattr(PIVMETA, "interpolation", PIVMETA.Interpolation)
 setattr(PIVMETA, "left_right_flip", PIVMETA.LeftRightFlip)
-setattr(PIVMETA, "Multigrid", PIVMETA.Multigrid)
-setattr(PIVMETA, "Multipass", PIVMETA.Multipass)
 setattr(PIVMETA, "re-evaluate_with_larger_sample", PIVMETA.ReEvaluateWithLargerSample)
-setattr(PIVMETA, "Singlepass", PIVMETA.Singlepass)
 setattr(PIVMETA, "split_image", PIVMETA.SplitImage)
 setattr(PIVMETA, "synthetic_image", PIVMETA.SyntheticImage)
 setattr(PIVMETA, "top_bottom_flip", PIVMETA.TopBottomFlip)

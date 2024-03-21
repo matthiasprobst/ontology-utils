@@ -3,6 +3,7 @@
 ## v0.2.8
 
 - bugfix serialization of json-ld. context was not properly generated
+- updated PIVMETA namespace
 
 ## v0.2.7
 

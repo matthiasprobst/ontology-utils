@@ -7,8 +7,8 @@ class LanguageExtension:
 
 class PIVMETA(DefinedNamespace):
     # uri = "https://w3id.org/nfdi4ing/metadata4ing#"
-    # Generated with None version 0.2.0a3
-    # Date: 2024-03-09 20:30:58.080699
+    # Generated with None version 0.2.8
+    # Date: 2024-03-21 14:56:33.894991
     _fail = True
     time: URIRef  # ['time']
     BackgroundImageGeneration: URIRef  # ['background image generation']
@@ -44,10 +44,12 @@ class PIVMETA(DefinedNamespace):
     fnumber: URIRef  # ['fnumber']
     numberOfRecords: URIRef  # ['number of records']
     ExperimentalImage: URIRef  # ['experimental image']
+    GaussWindowWeightingFunction: URIRef  # ['gauss']
     Interpolation: URIRef  # ['interpolation']
     LeftRightFlip: URIRef  # ['left right flip']
     ReEvaluateWithLargerSample: URIRef  # ['re-evaluate with larger sample']
     SplitImage: URIRef  # ['split image']
+    SquareWindowWeightingFunction: URIRef  # ['square']
     SyntheticImage: URIRef  # ['synthetic image']
     TopBottomFlip: URIRef  # ['top bottom flip']
     TryLowerOrderPeaks: URIRef  # ['try lower order peaks']
@@ -141,10 +143,12 @@ setattr(PIVMETA, "filename_pattern", PIVMETA.filenamePattern)
 setattr(PIVMETA, "fnumber", PIVMETA.fnumber)
 setattr(PIVMETA, "number_of_records", PIVMETA.numberOfRecords)
 setattr(PIVMETA, "experimental_image", PIVMETA.ExperimentalImage)
+setattr(PIVMETA, "gauss", PIVMETA.GaussWindowWeightingFunction)
 setattr(PIVMETA, "interpolation", PIVMETA.Interpolation)
 setattr(PIVMETA, "left_right_flip", PIVMETA.LeftRightFlip)
 setattr(PIVMETA, "re-evaluate_with_larger_sample", PIVMETA.ReEvaluateWithLargerSample)
 setattr(PIVMETA, "split_image", PIVMETA.SplitImage)
+setattr(PIVMETA, "square", PIVMETA.SquareWindowWeightingFunction)
 setattr(PIVMETA, "synthetic_image", PIVMETA.SyntheticImage)
 setattr(PIVMETA, "top_bottom_flip", PIVMETA.TopBottomFlip)
 setattr(PIVMETA, "try_lower_order_peaks", PIVMETA.TryLowerOrderPeaks)

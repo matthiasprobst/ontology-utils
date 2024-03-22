@@ -56,6 +56,8 @@
       ~Thing.model_extra
       ~Thing.model_fields
       ~Thing.model_fields_set
+      ~Thing.namespaces
+      ~Thing.urirefs
       ~Thing.id
       ~Thing.label
    

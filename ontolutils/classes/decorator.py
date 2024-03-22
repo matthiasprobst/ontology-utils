@@ -95,3 +95,4 @@ def urirefs(**kwargs):
         return cls
 
     return _decorator
+

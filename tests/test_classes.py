@@ -4,7 +4,7 @@ import pydantic
 import unittest
 from pydantic import EmailStr
 
-from ontolutils import Thing, urirefs, namespaces
+from ontolutils import Thing, urirefs, namespaces, get_urirefs, get_namespaces
 from ontolutils import set_logging_level
 from ontolutils.classes import decorator
 
@@ -14,6 +14,7 @@ LOG_LEVEL = logging.DEBUG
 class TestNamespaces(unittest.TestCase):
 
     def setUp(self):
+        self.maxDiff = None
         logger = logging.getLogger('ontolutils')
         self.INITIAL_LOG_LEVEL = logger.level
 
@@ -24,6 +25,22 @@ class TestNamespaces(unittest.TestCase):
     def tearDown(self):
         set_logging_level(self.INITIAL_LOG_LEVEL)
         assert logging.getLogger('ontolutils').level == self.INITIAL_LOG_LEVEL
+
+    def test_thing_custom_prop(self):
+        """It is helpful to have the properties equal to the urirefs keys,
+        however, this should not be required!"""
+
+        @namespaces(foaf='http://xmlns.com/foaf/0.1/',
+                    prov='http://www.w3.org/ns/prov#')
+        @urirefs(Person='prov:Person',
+                 first_name='foaf:firstName',
+                 lastName='foaf:lastName')
+        class Person(Thing):
+            first_name: str = None
+            lastName: str
+
+        p = Person(first_name='John', lastName='Doe')
+        print(p.model_dump_jsonld(resolve_keys=False))
 
     def test_sort_classes(self):
         thing1 = Thing(label='Thing 1')
@@ -255,15 +272,19 @@ class TestNamespaces(unittest.TestCase):
             pass
 
         mt = CustomPerson()
-        print(mt.get_context())
-        print(mt.namespaces)
-        print(mt.urirefs)
+        # custom person has no
+        self.assertDictEqual(mt.urirefs, get_urirefs(Thing))
+        self.assertDictEqual(mt.urirefs, {'Thing': 'owl:Thing', 'label': 'rdfs:label'})
+        self.assertDictEqual(mt.namespaces, get_namespaces(Thing))
+        self.assertDictEqual(mt.namespaces, {'owl': 'http://www.w3.org/2002/07/owl#',
+                                             'rdfs': 'http://www.w3.org/2000/01/rdf-schema#'})
 
         mt = CustomPerson(first_name='John', last_name='Doe')
         with self.assertRaises(AttributeError):
             mt.namespaces = 'http://xmlns.com/foaf/0.1/'
         with self.assertRaises(AttributeError):
             mt.urirefs = 'foaf:lastName'
+
         mt.namespaces['foaf'] = 'http://xmlns.com/foaf/0.1/'
         mt.urirefs['first_name'] = 'foaf:firstName'
         mt.urirefs['last_name'] = 'foaf:lastName'
@@ -276,10 +297,26 @@ class TestNamespaces(unittest.TestCase):
             },
             "@type": "CustomPerson",
             "foaf:firstName": "John",
-            "foaf:lastName": "Doe",
-            # "@id": "local:30d80c1d-d470-4602-87d5-75390ee295fd"
+            "foaf:lastName": "Doe"
         }
-        jsonld_dict = json.loads(mt.model_dump_jsonld())
+        jsonld_dict = json.loads(mt.model_dump_jsonld(resolve_keys=True))
+        jsonld_dict.pop('@id')
+        self.assertDictEqual(jsonld_dict,
+                             ref_jsonld)
+
+        ref_jsonld = {
+            "@context": {
+                "owl": "http://www.w3.org/2002/07/owl#",
+                "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+                "foaf": "http://xmlns.com/foaf/0.1/",
+                "first_name": "http://xmlns.com/foaf/0.1/firstName",
+                "last_name": "http://xmlns.com/foaf/0.1/lastName"
+            },
+            "@type": "CustomPerson",
+            "first_name": "John",
+            "last_name": "Doe"
+        }
+        jsonld_dict = json.loads(mt.model_dump_jsonld(resolve_keys=False))
         jsonld_dict.pop('@id')
         self.assertDictEqual(jsonld_dict,
                              ref_jsonld)

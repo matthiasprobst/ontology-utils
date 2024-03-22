@@ -1,6 +1,5 @@
 """Testing code used in the README.md file"""
 import pathlib
-
 from pydantic import EmailStr
 
 from ontolutils import Thing, namespaces, urirefs
@@ -38,3 +37,17 @@ found_agent = found_agents[0]
 print(found_agent.mbox)
 
 pathlib.Path("agent.json").unlink(missing_ok=True)
+
+
+@namespaces(prov='http://www.w3.org/ns/prov#',
+
+            foaf='http://xmlns.com/foaf/0.1/')
+@urirefs(Person='prov:Person', first_name='foaf:firstName')
+class Person(Thing):
+    first_name: str = None
+    last_name: str = None
+
+p = Person(first_name='John', last_name='Doe', age=30)
+print(p.model_dump_jsonld())
+
+# Person(first_name=1)

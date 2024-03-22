@@ -1,6 +1,7 @@
 import abc
 import json
 import logging
+import pathlib
 import rdflib
 from datetime import datetime
 from pydantic import HttpUrl, FileUrl, BaseModel, ConfigDict
@@ -25,11 +26,69 @@ class ThingModel(BaseModel, abc.ABC):
         """Returns the HTML representation of the class"""
 
 
+def resolve_iri(iri: str, context: Dict) -> str:
+    """Resolves short iri string which uses prefix, e.g.
+     converts 'foaf:firstName' to 'http://xmlns.com/foaf/0.1/firstName'
+     if the prefix is not found in context, the input iri string is
+     returned.
+     """
+    if iri.startswith('http'):
+        return iri
+    ns, key = split_URIRef(iri)
+    prefix_iri = context.get(ns, None)
+    if prefix_iri is None:
+        return iri
+    return f'{prefix_iri}{key}'
+
+
 @namespaces(owl='http://www.w3.org/2002/07/owl#',
             rdfs='http://www.w3.org/2000/01/rdf-schema#')
 @urirefs(Thing='owl:Thing', label='rdfs:label')
 class Thing(ThingModel):
-    """owl:Thing
+    """Most basic concept class owl:Thing (see also https://www.w3.org/TR/owl-guide/)
+
+    This class is basis to model other concepts.
+
+    Example for `prov:Person`:
+
+    >>> @namespaces(prov='http://www.w3.org/ns/prov#',
+    >>>             foaf='http://xmlns.com/foaf/0.1/')
+    >>> @urirefs(Person='prov:Person', first_name='foaf:firstName')
+    >>> class Person(Thing):
+    >>>     first_name: str = None
+    >>>     last_name: str = None
+
+    >>> p = Person(first_name='John', last_name='Doe', age=30)
+    >>> # Note, that age is not defined in the class! This is allowed, but may not be
+    >>> # serialized into an IRI although the ontology defines it
+
+    >>> print(p.model_dump_jsonld())
+    >>> {
+    >>>     "@context": {
+    >>>         "prov": "http://www.w3.org/ns/prov#",
+    >>>         "foaf": "http://xmlns.com/foaf/0.1/",
+    >>>         "first_name": "foaf:firstName"
+    >>>     },
+    >>>     "@id": "N23036f1a4eb149edb7db41b2f5f4268c",
+    >>>     "@type": "prov:Person",
+    >>>     "foaf:firstName": "John",
+    >>>     "last_name": "Doe",
+    >>>     "age": "30"  # Age appears as a field without context!
+    >>> }
+
+    Note, that values are validated, as `Thing` is a subclass of `pydantic.BaseModel`:
+
+    >>> Person(first_name=1)
+
+    Will lead to a validation error:
+
+    >>> # Traceback (most recent call last):
+    >>> # ...
+    >>> # pydantic_core._pydantic_core.ValidationError: 1 validation error for Person
+    >>> # first_name
+    >>> #   Input should be a valid string [type=string_type, input_value=1, input_type=int]
+    >>> #     For further information visit https://errors.pydantic.dev/2.4/v/string_type
+
     """
     id: Union[str, HttpUrl, FileUrl, BlankNodeType, None] = None  # @id
     label: str = None  # rdfs:label
@@ -46,7 +105,8 @@ class Thing(ThingModel):
 
     def get_jsonld_dict(self,
                         context: Optional[Union[Dict, str]] = None,
-                        exclude_none: bool = True) -> Dict:
+                        exclude_none: bool = True,
+                        resolve_keys: bool = False) -> Dict:
         """Return the JSON-LD dictionary of the object. This will include the context
         and the fields of the object.
 
@@ -57,6 +117,42 @@ class Thing(ThingModel):
             be interpreted as an import statement and will be added to the context.
         exclude_none: bool=True
             Exclude fields with None values
+        resolve_keys: bool=False
+            If True, then attributes of a Thing class will be resolved to the full IRI and
+            explained in the context.
+
+            Example:
+
+                In the following example, first_name refers to foaf:firstName:
+
+                >>> @namespaces(foaf='http://xmlns.com/foaf/0.1/')
+                >>> @urirefs(Person='foaf:Person', first_name='foaf:firstName')
+                >>> class Person(Thing):
+                >>>     first_name: str = None
+
+                >>> p = Person(first_name='John')
+                >>> p.model_dump_jsonld(resolve_keys=True)
+
+                This will result "first_name": "foaf:firstName" showing up in the context:
+
+                >>> {
+                >>>     "@context": {
+                >>>         "foaf": "http://xmlns.com/foaf/0.1/",
+                >>>         "first_name": "foaf:firstName"
+                >>>     },
+                >>>     "@type": "foaf:Person",
+                >>>     "foaf:firstName": "John"
+                >>> }
+
+                While resolve_keys=False will result in:
+
+                >>> {
+                >>>     "@context": {
+                >>>         "foaf": "http://xmlns.com/foaf/0.1/"
+                >>>     },
+                >>>     "@type": "foaf:Person",
+                >>>     "foaf:firstName": "John"
+                >>> }
 
         Returns
         -------
@@ -121,7 +217,13 @@ class Thing(ThingModel):
                             if _is_http_url(iri):
                                 serialized_fields[iri] = value
                             if isinstance(value, str):  # this turn URLs into base strings
-                                serialized_fields[iri] = str(value)
+                                ns, key = split_URIRef(iri)
+                                if key != k and not resolve_keys:
+                                    at_context[k] = resolve_iri(iri,
+                                                                at_context)  # the key is not resolved, hence the key and iri is put into context dict:
+                                    serialized_fields[k] = str(value)
+                                else:
+                                    serialized_fields[iri] = str(value)
                             else:
                                 serialized_fields[iri] = value
                 else:
@@ -137,13 +239,13 @@ class Thing(ThingModel):
             except AttributeError as e:
                 raise AttributeError(f"Could not serialize {obj} ({obj.__class__}). Orig. err: {e}") from e
 
-            if obj.model_config['extra'] == 'allow':
-                for k, v in obj.model_extra.items():
-                    iri = uri_ref_manager.get(k, k)
-                    if _is_http_url(iri):
-                        serialized_fields[k] = v
-                    else:
-                        serialized_fields[iri] = v
+            # if obj.model_config['extra'] == 'allow':
+            #     for k, v in obj.model_extra.items():
+            #         iri = uri_ref_manager.get(k, k)
+            #         if _is_http_url(iri):
+            #             serialized_fields[k] = v
+            #         else:
+            #             serialized_fields[iri] = v
 
             # datetime
             for k, v in serialized_fields.copy().items():
@@ -179,7 +281,8 @@ class Thing(ThingModel):
     def model_dump_jsonld(self,
                           context: Optional[Dict] = None,
                           exclude_none: bool = True,
-                          rdflib_serialize: bool = False) -> str:
+                          rdflib_serialize: bool = False,
+                          resolve_keys: bool = False) -> str:
         """Similar to model_dump_json() but will return a JSON string with
         context resulting in a JSON-LD serialization. Using `rdflib_serialize=True`
         will use the rdflib to serialize. This will make the output a bit cleaner
@@ -199,6 +302,11 @@ class Thing(ThingModel):
             If True, the output will be serialized using rdflib. This results in a cleaner
             output but is not needed in most cases and just takes a bit more time (and requires
             an internet connection). Will also generate a blank node if no ID is set.
+        resolve_keys: bool=False
+            If True, then attributes of a Thing class will be resolved to the full IRI and
+            explained in the context.
+
+            .. seealso:: `Thing.get_jsonld_dict`
 
         Returns
         -------
@@ -207,7 +315,8 @@ class Thing(ThingModel):
         """
         jsonld_dict = self.get_jsonld_dict(
             context=context,
-            exclude_none=exclude_none
+            exclude_none=exclude_none,
+            resolve_keys=resolve_keys
         )
         jsonld_str = json.dumps(jsonld_dict, indent=4)
         if not rdflib_serialize:
@@ -244,17 +353,36 @@ class Thing(ThingModel):
         return f"{self.__class__.__name__}({repr_fields})"
 
     @classmethod
-    def from_jsonld(cls, source=None, data=None, limit=None, context=None):
+    def from_jsonld(cls,
+                    source: Optional[Union[str, pathlib.Path]] = None,
+                    data: Optional[Dict] = None,
+                    limit: Optional[int] = None,
+                    context: Optional[Dict] = None):
         """Initialize the class from a JSON-LD source
 
         Note the inconsistency in the schema.org protocol. Codemeta for instance uses http whereas
         https is the current standard. This repo only works with https. If you have a http schema,
         this method will replace http with https.
+
+        Parameters
+        ----------
+        source: Optional[Union[str, pathlib.Path]]=None
+            The source of the JSON-LD data (filename). Must be given if data is None.
+        data: Optional[str]=None
+            The JSON-LD data as a string. Must be given if source is None.
+        limit: Optional[int]=None
+            The limit of the number of objects to return. If None, all objects will be returned.
+            If limit is 1, then the first object will be returned, else a list of objects.
+        context: Optional[Dict]=None
+            The context to use for the JSON-LD serialization. If a string is given, it will
+            be interpreted as an import statement and will be added to the context.
+
         """
         from . import query
         if data is not None and isinstance(data, str):
             if 'http://schema.org/' in data:
-                print('Replacing http with https in the JSON-LD data. This is a workaround for the schema.org inconsistency.')
+                print(
+                    'Replacing http with https in the JSON-LD data. This is a workaround for the schema.org inconsistency.')
                 data = data.replace('http://schema.org/', 'https://schema.org/')
         return query(cls, source=source, data=data, limit=limit, context=context)
 
@@ -286,17 +414,27 @@ class Thing(ThingModel):
         ns_iri = NamespaceManager[cls].get(ns, None)
         return f'{ns_iri}{key}'
 
-    @classmethod
-    def get_context(cls):
-        """Return the context of the class"""
-        return NamespaceManager[cls]
-
     @property
-    def namespaces(self):
+    def namespaces(self) -> Dict:
         """Return the namespaces of the class"""
-        return NamespaceManager[self.__class__]
+        return get_namespaces(self.__class__)
 
     @property
-    def urirefs(self):
-        """Return the URIRefs of the class"""
-        return URIRefManager[self.__class__]
+    def urirefs(self) -> Dict:
+        """Return the urirefs of the class"""
+        return get_urirefs(self.__class__)
+
+    @classmethod
+    def get_context(cls) -> Dict:
+        """Return the context of the class"""
+        return get_namespaces(cls)
+
+
+def get_urirefs(cls: Thing) -> Dict:
+    """Return the URIRefs of the class"""
+    return URIRefManager[cls]
+
+
+def get_namespaces(cls: Thing) -> Dict:
+    """Return the namespaces of the class"""
+    return NamespaceManager[cls]

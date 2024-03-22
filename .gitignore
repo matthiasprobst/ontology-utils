@@ -5,6 +5,7 @@
 
 docs/*.jsonld
 docs/_build
+docs/generated
 
 *.pyc
 __pycache__/*

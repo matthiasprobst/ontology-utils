@@ -124,7 +124,8 @@ class TestNamespaces(unittest.TestCase):
     def test_model_dump_jsonld(self):
         @namespaces(foaf="http://xmlns.com/foaf/0.1/")
         @urirefs(Agent='foaf:Agent',
-                 mbox='foaf:mbox')
+                 mbox='foaf:mbox',
+                 age='foaf:age')
         class Agent(Thing):
             """Pydantic Model for http://xmlns.com/foaf/0.1/Agent
             Parameters
@@ -133,16 +134,22 @@ class TestNamespaces(unittest.TestCase):
                 Email address (foaf:mbox)
             """
             mbox: EmailStr = None
+            age: int = None
 
         agent = Agent(
             label='Agent 1',
-            mbox='my@email.com'
+            mbox='my@email.com',
+            age=23,
         )
+
         with self.assertRaises(pydantic.ValidationError):
             agent.mbox = 4.5
             agent.model_validate(agent.model_dump())
         agent.mbox = 'my@email.com'
         jsonld_str1 = agent.model_dump_jsonld(rdflib_serialize=False)
+
+        self.assertIsInstance(json.loads(jsonld_str1)['foaf:age'], int)
+
         jsonld_str2 = agent.model_dump_jsonld(rdflib_serialize=True)
         jsonld_str2_dict = json.loads(jsonld_str2)
         self.assertNotEqual(
@@ -365,3 +372,5 @@ class TestNamespaces(unittest.TestCase):
         jsonld_dict.pop('@id')
         self.assertDictEqual(jsonld_dict,
                              ref_jsonld)
+        from pprint import pprint
+        pprint(jsonld_dict)

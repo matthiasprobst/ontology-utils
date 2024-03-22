@@ -178,6 +178,51 @@ class TestNamespaces(unittest.TestCase):
             'https://git.rwth-aachen.de/nfdi4ing/metadata4ing/metadata4ing/-/raw/master/m4i_context.jsonld'
         )
 
+    def test_model_dump_jsonld_and_load_with_import(self):
+        @namespaces(foaf="http://xmlns.com/foaf/0.1/")
+        @urirefs(Agent='foaf:Agent',
+                 mbox='foaf:mbox')
+        class Agent(Thing):
+            """Pydantic Model for http://xmlns.com/foaf/0.1/Agent
+            Parameters
+            ----------
+            mbox: EmailStr = None
+                Email address (foaf:mbox)
+            """
+            mbox: EmailStr = None
+
+        agent = Agent(
+            label='Agent 1',
+            mbox='my@email.com'
+        )
+        ns = agent.namespaces
+        jsonld_string = agent.model_dump_jsonld(
+            context={
+                "@import": 'https://raw.githubusercontent.com/matthiasprobst/pivmeta/main/pivmeta_context.jsonld'
+            }
+        )
+        self.assertDictEqual(agent.namespaces, ns)
+        self.assertTrue('@import' in json.loads(jsonld_string)['@context'])
+        loaded_agent = Agent.from_jsonld(data=jsonld_string, limit=1)
+        self.assertDictEqual(loaded_agent.namespaces, ns)
+        self.assertEqual(loaded_agent.mbox, agent.mbox)
+
+    def test_schema_http(self):
+        @namespaces(foaf="http://xmlns.com/foaf/0.1/",
+                    schema="https://schema.org/")
+        @urirefs(Agent='foaf:Agent',
+                 name='schema:name')
+        class Agent(Thing):
+            name: str
+
+        agent = Agent(name='John Doe')
+        self.assertEqual(agent.name, 'John Doe')
+        agent_jsonld = agent.model_dump_jsonld()
+        print(agent_jsonld.replace('https://schema', 'http://schema'))
+        with self.assertWarns(UserWarning):
+            agent.from_jsonld(data=agent_jsonld.replace('https://schema', 'http://schema'),
+                              limit=1)
+
     def test_model_dump_jsonld_nested(self):
         @namespaces(foaf="http://xmlns.com/foaf/0.1/")
         @urirefs(Agent='foaf:Agent',

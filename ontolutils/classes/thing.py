@@ -3,6 +3,7 @@ import json
 import logging
 import pathlib
 import rdflib
+import warnings
 from datetime import datetime
 from pydantic import HttpUrl, FileUrl, BaseModel, ConfigDict
 from typing import Dict, Union, Optional
@@ -162,7 +163,7 @@ class Thing(ThingModel):
         logger.debug('Initializing RDF graph to dump the Thing to JSON-LD')
 
         # lets auto-generate the context
-        at_context: Dict = NamespaceManager.get(self.__class__, {})
+        at_context: Dict = NamespaceManager.get(self.__class__, {}).copy()
 
         if context is None:
             context = {}
@@ -204,6 +205,7 @@ class Thing(ThingModel):
 
             uri_ref_manager = URIRefManager.get(obj.__class__, None)
             at_context.update(NamespaceManager.get(obj.__class__, {}))
+
             if uri_ref_manager is None:
                 return obj
 
@@ -381,8 +383,9 @@ class Thing(ThingModel):
         from . import query
         if data is not None and isinstance(data, str):
             if 'http://schema.org/' in data:
-                print(
-                    'Replacing http with https in the JSON-LD data. This is a workaround for the schema.org inconsistency.')
+                warnings.warn('Replacing http with https in the JSON-LD data. '
+                              'This is a workaround for the schema.org inconsistency.',
+                              UserWarning)
                 data = data.replace('http://schema.org/', 'https://schema.org/')
         return query(cls, source=source, data=data, limit=limit, context=context)
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.9
+
+- attributes of Thing objects can be different to the ones defined in the schema. The user can decide whether to resolve
+  this using prefixes in the JSON-LD file or adding a entry in the context dictionary.
+- updated docstrings and documentation
+
 ## v0.2.8
 
 - bugfix serialization of json-ld. context was not properly generated

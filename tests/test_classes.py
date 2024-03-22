@@ -34,13 +34,42 @@ class TestNamespaces(unittest.TestCase):
                     prov='http://www.w3.org/ns/prov#')
         @urirefs(Person='prov:Person',
                  first_name='foaf:firstName',
-                 lastName='foaf:lastName')
+                 lastName='foaf:lastName',
+                 age='foaf:age')
         class Person(Thing):
             first_name: str = None
             lastName: str
+            age: int = None
 
-        p = Person(first_name='John', lastName='Doe')
-        print(p.model_dump_jsonld(resolve_keys=False))
+        p = Person(first_name='John', lastName='Doe', age=23)
+
+        p_from_jsonld = Person.from_jsonld(data=p.model_dump_jsonld(resolve_keys=True), limit=1)
+        self.assertEqual(p_from_jsonld.first_name, 'John')
+        self.assertEqual(p_from_jsonld.lastName, 'Doe')
+        self.assertEqual(p_from_jsonld.age, 23)
+
+        p_from_jsonld = Person.from_jsonld(data=p.model_dump_jsonld(resolve_keys=False), limit=1)
+        self.assertEqual(p_from_jsonld.first_name, 'John')
+        self.assertEqual(p_from_jsonld.lastName, 'Doe')
+        self.assertEqual(p_from_jsonld.age, 23)
+
+        p_from_jsonld = Person.from_jsonld(data=p.model_dump_jsonld(resolve_keys=True), limit=None)
+        self.assertEqual(p_from_jsonld[0].first_name, 'John')
+        self.assertEqual(p_from_jsonld[0].lastName, 'Doe')
+        self.assertEqual(p_from_jsonld[0].age, 23)
+
+        p_from_jsonld = Person.from_jsonld(data=p.model_dump_jsonld(resolve_keys=False), limit=None)
+        self.assertEqual(p_from_jsonld[0].first_name, 'John')
+        self.assertEqual(p_from_jsonld[0].lastName, 'Doe')
+        self.assertEqual(p_from_jsonld[0].age, 23)
+
+        # add additional non-urirefs property:
+        p.height = 183
+        self.assertEqual(p.height, 183)
+        self.assertEqual(json.loads(p.model_dump_jsonld(resolve_keys=True))['height'], 183)
+        p183_from_jsonld = Person.from_jsonld(data=p.model_dump_jsonld(resolve_keys=True), limit=1)
+        with self.assertRaises(AttributeError):  # height is not defined!
+            p183_from_jsonld.height
 
     def test_sort_classes(self):
         thing1 = Thing(label='Thing 1')

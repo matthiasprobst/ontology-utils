@@ -2,9 +2,8 @@
 import json
 import logging
 import pathlib
-from typing import Union, Dict, List, Optional
-
 import rdflib
+from typing import Union, Dict, List, Optional
 
 from .decorator import URIRefManager, NamespaceManager
 from .thing import Thing
@@ -291,12 +290,21 @@ def query(cls: Thing,
 
     logger.debug(f'Expanding SPARQL results...')
     kwargs: Dict = expand_sparql_res(res.bindings, g, False, False)
+
+    # in case that the model field names are different than the IRI names, we need to find the
+    # corresponding names. The urirefs translate the class model fields to a <prefix>:<name> format.
+    # As we have the latter, the inverse dictionary let's us find the model field names.
+    from . import get_urirefs
+    inverse_urirefs = {v.split(':', 1)[-1]: k for k, v in get_urirefs(cls).items()}
+
     if limit is not None:
         out = []
         for i, (k, v) in enumerate(kwargs.items()):
+            model_field_dict = {inverse_urirefs[key]: value for key, value in v.items()}
             if limit == 1:
-                return cls.model_validate({'id': k, **v})
-            out.append(cls.model_validate({'id': k, **v}))
+                return cls.model_validate({'id': k, **model_field_dict})
+            out.append(cls.model_validate({'id': k, **model_field_dict}))
             if i == limit:
                 return out
-    return [cls.model_validate({'id': k, **v}) for k, v in kwargs.items()]
+    return [cls.model_validate({'id': k, **{inverse_urirefs[key]: value for key, value in v.items()}}) for k, v in
+            kwargs.items()]

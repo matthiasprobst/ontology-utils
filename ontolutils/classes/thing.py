@@ -210,42 +210,20 @@ class Thing(ThingModel):
                 return obj
 
             try:
-                if exclude_none:
-                    serialized_fields = {}
-                    for k in obj.model_dump(exclude_none=True):
-                        value = getattr(obj, k)
-                        if value is not None and k not in ('id', '@id'):
-                            iri = uri_ref_manager.get(k, k)
-                            if _is_http_url(iri):
-                                serialized_fields[iri] = value
+                serialized_fields = {}
+                for k in obj.model_dump(exclude_none=exclude_none):
+                    value = getattr(obj, k)
+                    if value is not None and k not in ('id', '@id'):
+                        iri = uri_ref_manager.get(k, k)
+                        if _is_http_url(iri):
+                            serialized_fields[iri] = value
 
-                            ns, key = split_URIRef(iri)
-                            if key != k and not resolve_keys:
-                                at_context[k] = resolve_iri(iri, at_context)
-                                serialized_fields[k] = value
-                            else:
-                                serialized_fields[iri] = value
-
-                            # if isinstance(value, str):  # this turn URLs into base strings
-                            #     ns, key = split_URIRef(iri)
-                            #     if key != k and not resolve_keys:
-                            #         at_context[k] = resolve_iri(iri,
-                            #                                     at_context)  # the key is not resolved, hence the key and iri is put into context dict:
-                            #         serialized_fields[k] = str(value)
-                            #     else:
-                            #         serialized_fields[iri] = str(value)
-                            # else:
-                            #     serialized_fields[iri] = value
-                else:
-                    serialized_fields = {}
-                    for k in obj.model_dump(exclude_none=True):
-                        value = getattr(obj, k)
-                        if value not in ('id', '@id'):
-                            iri = uri_ref_manager[k]
-                            if _is_http_url(iri):
-                                serialized_fields[k] = value
-                            else:
-                                serialized_fields[iri] = value
+                        ns, key = split_URIRef(iri)
+                        if key != k and not resolve_keys:
+                            at_context[k] = resolve_iri(iri, at_context)
+                            serialized_fields[k] = value
+                        else:
+                            serialized_fields[iri] = value
             except AttributeError as e:
                 raise AttributeError(f"Could not serialize {obj} ({obj.__class__}). Orig. err: {e}") from e
 
@@ -267,10 +245,10 @@ class Thing(ThingModel):
                     serialized_fields[key] = serialize_fields(v, exclude_none=exclude_none)
                 elif isinstance(v, list):
                     serialized_fields[key] = [serialize_fields(i, exclude_none=exclude_none) for i in v]
-                elif isinstance(v, str):
-                    serialized_fields[key] = str(v)
-                else:
+                elif isinstance(v, (int, float)):
                     serialized_fields[key] = v
+                else:
+                    serialized_fields[key] = str(v)
 
             _type = URIRefManager[obj.__class__].get(obj.__class__.__name__, obj.__class__.__name__)
 

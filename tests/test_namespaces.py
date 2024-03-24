@@ -23,6 +23,18 @@ class TestNamespaces(unittest.TestCase):
         set_logging_level(self.INITIAL_LOG_LEVEL)
         assert logging.getLogger('ontolutils').level == self.INITIAL_LOG_LEVEL
 
+    def test_namespace_class_structure(self):
+        from ontolutils import SCHEMA, M4I, CODEMETA, SSNO, QUDT_UNIT, QUDT_KIND, OBO, PIVMETA
+        for ns in [SCHEMA, M4I, CODEMETA, SSNO, QUDT_UNIT, QUDT_KIND, OBO, PIVMETA]:
+            self.assertIsInstance(ns, rdflib.namespace.DefinedNamespaceMeta)
+            self.assertTrue(str(ns._NS).startswith('http'))
+            self.assertIsInstance(ns.__annotations__, dict)
+            self.assertTrue(len(ns.__annotations__) > 0, msg=f'No annotations found for {ns}')
+            for k, v in ns.__annotations__.items():
+                self.assertIsInstance(k, str)
+                if k[0] != '_':
+                    self.assertIsInstance(getattr(ns, k), rdflib.URIRef)
+
     def test_iana(self):
         self.assertEqual(namespacelib.IANA.application['zip'],
                          'https://www.iana.org/assignments/media-types/application/zip')

@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.2.11
+
+- Fixed duplicates in namespaces
+
+## v0.2.10
+
+- bugfixes serialization of json-ld
+
 ## v0.2.9
 
 - attributes of Thing objects can be different to the ones defined in the schema. The user can decide whether to resolve

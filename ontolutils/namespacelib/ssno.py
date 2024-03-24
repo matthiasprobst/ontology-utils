@@ -8,7 +8,7 @@ class LanguageExtension:
 class SSNO(DefinedNamespace):
     # uri = "https://w3id.org/nfdi4ing/metadata4ing#"
     # Generated with None version 0.2.10
-    # Date: 2024-03-23 12:18:41.770713
+    # Date: 2024-03-24 15:10:56.095881
     _fail = True
     StandardName: URIRef  # ['StandardName']
     StandardNameTable: URIRef  # ['StandardNameTable']

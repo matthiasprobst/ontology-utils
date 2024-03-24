@@ -7,8 +7,8 @@ class LanguageExtension:
 
 class OBO(DefinedNamespace):
     # uri = "https://w3id.org/nfdi4ing/metadata4ing#"
-    # Generated with namespacelib version 0.3.0
-    # Date: 2024-03-02 13:33:47.083605
+    # Generated with None version 0.2.10
+    # Date: 2024-03-24 15:10:45.600748
     _fail = True
     BFO_0000015: URIRef  # ['Prozess', 'process']
     BFO_0000017: URIRef  # ['realisierbare Entität', 'realizable entity']

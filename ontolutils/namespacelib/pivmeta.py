@@ -7,13 +7,12 @@ class LanguageExtension:
 
 class PIVMETA(DefinedNamespace):
     # uri = "https://w3id.org/nfdi4ing/metadata4ing#"
-    # Generated with None version 0.2.8
-    # Date: 2024-03-21 14:56:33.894991
+    # Generated with None version 0.2.10
+    # Date: 2024-03-24 15:10:53.848424
     _fail = True
     time: URIRef  # ['time']
     BackgroundImageGeneration: URIRef  # ['background image generation']
     BackgroundSubtractionMethod: URIRef  # ['background subtraction']
-    CorrelationMethod: URIRef  # ['correlation method']
     DigitalCamera: URIRef  # ['Digital Camera']
     DigitalCameraModel: URIRef  # ['Digital Camera Model']
     ImageDewarp: URIRef  # ['image dewarp']
@@ -42,6 +41,7 @@ class PIVMETA(DefinedNamespace):
     useOutlierReplacementScheme: URIRef  # ['uses outlier replacement scheme']
     filenamePattern: URIRef  # ['filename pattern']
     fnumber: URIRef  # ['fnumber']
+    material: URIRef  # ['material']
     numberOfRecords: URIRef  # ['number of records']
     ExperimentalImage: URIRef  # ['experimental image']
     GaussWindowWeightingFunction: URIRef  # ['gauss']
@@ -66,26 +66,37 @@ class PIVMETA(DefinedNamespace):
     image_particle_density: URIRef  # ['image_particle_density']
     image_density: URIRef  # ['image_density']
     image_particle_diameter: URIRef  # ['image_particle_diameter']
+    arithmetic_mean_of_image_particle_diameter: URIRef  # ['arithmetic_mean_of_image_particle_diameter']
+    standard_deviation_of_image_particle_diameter: URIRef  # ['standard_deviation_of_image_particle_diameter']
     piv_image_index: URIRef  # ['piv_image_index']
     inplane_velocity: URIRef  # ['inplane_velocity']
+    x_inplane_velocity: URIRef  # ['x_inplane_velocity']
+    y_inplane_velocity: URIRef  # ['y_inplane_velocity']
     model_laser_sheet_thickness: URIRef  # ['model_laser_sheet_thickness']
     laser_sheet_thickness: URIRef  # ['laser_sheet_thickness']
     model_laser_sheet_shape_factor: URIRef  # ['model_laser_sheet_shape_factor']
-    mean_seeding_particle_size: URIRef  # ['mean_seeding_particle_size']
+    arithmetic_mean_of_seeding_particle_size: URIRef  # ['arithmetic_mean_of_seeding_particle_size']
+    standard_deviation_of_seeding_particle_size: URIRef  # ['standard_deviation_of_seeding_particle_size']
     number_of_particles: URIRef  # ['number_of_particles']
     laser_pulse_delay: URIRef  # ['laser_pulse_delay']
     saturated_pixel_number: URIRef  # ['saturated_pixel_number']
     second_peak_x_displacement: URIRef  # ['second_peak_x_displacement']
     second_peak_y_displacement: URIRef  # ['second_peak_y_displacement']
-    seeding_material: URIRef  # ['seeding_material']
-    standard_deviation_of_image_particle_diameter: URIRef  # ['standard_deviation_of_image_particle_diameter']
     third_peak_x_displacement: URIRef  # ['third_peak_x_displacement']
     third_peak_y_displacement: URIRef  # ['third_peak_y_displacement']
     relative_time: URIRef  # ['relative_time']
-    velocity: URIRef  # ['velocity']
+    magnitude_of_velocity: URIRef  # ['magnitude_of_velocity']
+    x_velocity: URIRef  # ['x_velocity']
+    y_velocity: URIRef  # ['y_velocity']
+    z_velocity: URIRef  # ['z_velocity']
     displacement: URIRef  # ['displacement']
+    x_displacement: URIRef  # ['x_displacement']
+    y_displacement: URIRef  # ['y_displacement']
+    final_interrogation_window_overlap_size: URIRef  # ['final_interrogation_window_overlap_size']
     x_final_interrogation_window_overlap_size: URIRef  # ['x_final_interrogation_window_overlap_size']
+    final_interrogation_window_size: URIRef  # ['final_interrogation_window_size']
     x_final_interrogation_window_size: URIRef  # ['x_final_interrogation_window_size']
+    initial_interrogation_window_size: URIRef  # ['initial_interrogation_window_size']
     x_initial_interrogation_window_size: URIRef  # ['x_initial_interrogation_window_size']
     x_pixel_coordinate: URIRef  # ['x_pixel_coordinate']
     y_final_interrogation_window_overlap_size: URIRef  # ['y_final_interrogation_window_overlap_size']
@@ -93,7 +104,8 @@ class PIVMETA(DefinedNamespace):
     y_initial_interrogation_window_size: URIRef  # ['y_initial_interrogation_window_size']
     y_pixel_coordinate: URIRef  # ['y_pixel_coordinate']
     pixel_origin: URIRef  # ['pixel_origin']
-    coordinate: URIRef  # ['coordinate']
+    x_coordinate: URIRef  # ['x_coordinate']
+    y_coordinate: URIRef  # ['y_coordinate']
     signal_to_noise_ratio: URIRef  # ['signal_to_noise_ratio']
     least_square_residual_of_z_displacement_reconstruction: URIRef  # ['least_square_residual_of_z_displacement_reconstruction']
     piv_scaling_factor: URIRef  # ['piv_scaling_factor']
@@ -112,7 +124,6 @@ class PIVMETA(DefinedNamespace):
 setattr(PIVMETA, "time", PIVMETA.time)
 setattr(PIVMETA, "background_image_generation", PIVMETA.BackgroundImageGeneration)
 setattr(PIVMETA, "background_subtraction", PIVMETA.BackgroundSubtractionMethod)
-setattr(PIVMETA, "correlation_method", PIVMETA.CorrelationMethod)
 setattr(PIVMETA, "Digital_Camera", PIVMETA.DigitalCamera)
 setattr(PIVMETA, "Digital_Camera_Model", PIVMETA.DigitalCameraModel)
 setattr(PIVMETA, "image_dewarp", PIVMETA.ImageDewarp)
@@ -141,6 +152,7 @@ setattr(PIVMETA, "piv_image_type", PIVMETA.pivImageType)
 setattr(PIVMETA, "uses_outlier_replacement_scheme", PIVMETA.useOutlierReplacementScheme)
 setattr(PIVMETA, "filename_pattern", PIVMETA.filenamePattern)
 setattr(PIVMETA, "fnumber", PIVMETA.fnumber)
+setattr(PIVMETA, "material", PIVMETA.material)
 setattr(PIVMETA, "number_of_records", PIVMETA.numberOfRecords)
 setattr(PIVMETA, "experimental_image", PIVMETA.ExperimentalImage)
 setattr(PIVMETA, "gauss", PIVMETA.GaussWindowWeightingFunction)
@@ -165,26 +177,37 @@ setattr(PIVMETA, "piv_flag", PIVMETA.piv_flag)
 setattr(PIVMETA, "image_particle_density", PIVMETA.image_particle_density)
 setattr(PIVMETA, "image_density", PIVMETA.image_density)
 setattr(PIVMETA, "image_particle_diameter", PIVMETA.image_particle_diameter)
+setattr(PIVMETA, "arithmetic_mean_of_image_particle_diameter", PIVMETA.arithmetic_mean_of_image_particle_diameter)
+setattr(PIVMETA, "standard_deviation_of_image_particle_diameter", PIVMETA.standard_deviation_of_image_particle_diameter)
 setattr(PIVMETA, "piv_image_index", PIVMETA.piv_image_index)
 setattr(PIVMETA, "inplane_velocity", PIVMETA.inplane_velocity)
+setattr(PIVMETA, "x_inplane_velocity", PIVMETA.x_inplane_velocity)
+setattr(PIVMETA, "y_inplane_velocity", PIVMETA.y_inplane_velocity)
 setattr(PIVMETA, "model_laser_sheet_thickness", PIVMETA.model_laser_sheet_thickness)
 setattr(PIVMETA, "laser_sheet_thickness", PIVMETA.laser_sheet_thickness)
 setattr(PIVMETA, "model_laser_sheet_shape_factor", PIVMETA.model_laser_sheet_shape_factor)
-setattr(PIVMETA, "mean_seeding_particle_size", PIVMETA.mean_seeding_particle_size)
+setattr(PIVMETA, "arithmetic_mean_of_seeding_particle_size", PIVMETA.arithmetic_mean_of_seeding_particle_size)
+setattr(PIVMETA, "standard_deviation_of_seeding_particle_size", PIVMETA.standard_deviation_of_seeding_particle_size)
 setattr(PIVMETA, "number_of_particles", PIVMETA.number_of_particles)
 setattr(PIVMETA, "laser_pulse_delay", PIVMETA.laser_pulse_delay)
 setattr(PIVMETA, "saturated_pixel_number", PIVMETA.saturated_pixel_number)
 setattr(PIVMETA, "second_peak_x_displacement", PIVMETA.second_peak_x_displacement)
 setattr(PIVMETA, "second_peak_y_displacement", PIVMETA.second_peak_y_displacement)
-setattr(PIVMETA, "seeding_material", PIVMETA.seeding_material)
-setattr(PIVMETA, "standard_deviation_of_image_particle_diameter", PIVMETA.standard_deviation_of_image_particle_diameter)
 setattr(PIVMETA, "third_peak_x_displacement", PIVMETA.third_peak_x_displacement)
 setattr(PIVMETA, "third_peak_y_displacement", PIVMETA.third_peak_y_displacement)
 setattr(PIVMETA, "relative_time", PIVMETA.relative_time)
-setattr(PIVMETA, "velocity", PIVMETA.velocity)
+setattr(PIVMETA, "magnitude_of_velocity", PIVMETA.magnitude_of_velocity)
+setattr(PIVMETA, "x_velocity", PIVMETA.x_velocity)
+setattr(PIVMETA, "y_velocity", PIVMETA.y_velocity)
+setattr(PIVMETA, "z_velocity", PIVMETA.z_velocity)
 setattr(PIVMETA, "displacement", PIVMETA.displacement)
+setattr(PIVMETA, "x_displacement", PIVMETA.x_displacement)
+setattr(PIVMETA, "y_displacement", PIVMETA.y_displacement)
+setattr(PIVMETA, "final_interrogation_window_overlap_size", PIVMETA.final_interrogation_window_overlap_size)
 setattr(PIVMETA, "x_final_interrogation_window_overlap_size", PIVMETA.x_final_interrogation_window_overlap_size)
+setattr(PIVMETA, "final_interrogation_window_size", PIVMETA.final_interrogation_window_size)
 setattr(PIVMETA, "x_final_interrogation_window_size", PIVMETA.x_final_interrogation_window_size)
+setattr(PIVMETA, "initial_interrogation_window_size", PIVMETA.initial_interrogation_window_size)
 setattr(PIVMETA, "x_initial_interrogation_window_size", PIVMETA.x_initial_interrogation_window_size)
 setattr(PIVMETA, "x_pixel_coordinate", PIVMETA.x_pixel_coordinate)
 setattr(PIVMETA, "y_final_interrogation_window_overlap_size", PIVMETA.y_final_interrogation_window_overlap_size)
@@ -192,7 +215,8 @@ setattr(PIVMETA, "y_final_interrogation_window_size", PIVMETA.y_final_interrogat
 setattr(PIVMETA, "y_initial_interrogation_window_size", PIVMETA.y_initial_interrogation_window_size)
 setattr(PIVMETA, "y_pixel_coordinate", PIVMETA.y_pixel_coordinate)
 setattr(PIVMETA, "pixel_origin", PIVMETA.pixel_origin)
-setattr(PIVMETA, "coordinate", PIVMETA.coordinate)
+setattr(PIVMETA, "x_coordinate", PIVMETA.x_coordinate)
+setattr(PIVMETA, "y_coordinate", PIVMETA.y_coordinate)
 setattr(PIVMETA, "signal_to_noise_ratio", PIVMETA.signal_to_noise_ratio)
 setattr(PIVMETA, "least_square_residual_of_z_displacement_reconstruction", PIVMETA.least_square_residual_of_z_displacement_reconstruction)
 setattr(PIVMETA, "piv_scaling_factor", PIVMETA.piv_scaling_factor)

@@ -43,7 +43,8 @@ def split_URIRef(uri: rdflib.URIRef) -> List[Union[str, None]]:
     _uri = str(uri)
     if _uri.startswith('http'):
         if '#' in _uri:
-            return _uri.rsplit('#', 1)
+            _split = _uri.rsplit('#', 1)
+            return [f'{_split[0]}#', _split[1]]
         _split = _uri.rsplit('/', 1)
         return [f'{_split[0]}/', _split[1]]
     if ':' in _uri:

@@ -1,7 +1,9 @@
 import json
 import logging
-import pydantic
 import unittest
+
+import pydantic
+import rdflib
 from pydantic import EmailStr
 
 from ontolutils import Thing, urirefs, namespaces, get_urirefs, get_namespaces
@@ -25,6 +27,19 @@ class TestNamespaces(unittest.TestCase):
     def tearDown(self):
         set_logging_level(self.INITIAL_LOG_LEVEL)
         assert logging.getLogger('ontolutils').level == self.INITIAL_LOG_LEVEL
+
+    def test_split_URIRef(self):
+        from ontolutils.classes.utils import split_URIRef
+        self.assertListEqual(split_URIRef(rdflib.URIRef('http://example.com/')),
+                             ['http://example.com/', ''])
+        self.assertListEqual(split_URIRef(rdflib.URIRef('http://example.com/#test')),
+                             ['http://example.com/#', 'test'])
+        self.assertListEqual(split_URIRef(rdflib.URIRef('http://example.com/test')),
+                             ['http://example.com/', 'test'])
+        self.assertListEqual(split_URIRef(rdflib.URIRef('http://example.com/test#test')),
+                             ['http://example.com/test#', 'test'])
+        self.assertListEqual(split_URIRef(rdflib.URIRef('http://example.com/test:123')),
+                             ['http://example.com/', 'test:123'])
 
     def test_thing_custom_prop(self):
         """It is helpful to have the properties equal to the urirefs keys,

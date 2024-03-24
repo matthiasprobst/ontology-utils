@@ -35,6 +35,7 @@ def generate_namespace_file_from_ttl(namespace: str,
     else:
         target_dir = pathlib.Path(target_dir)
 
+    fields = []
     with open(target_dir / f'{namespace}.py', 'w',
               encoding='UTF8') as f:
         f.write('from rdflib.namespace import DefinedNamespace, Namespace\n')
@@ -45,15 +46,18 @@ def generate_namespace_file_from_ttl(namespace: str,
 
         for s in g.subjects():
             u = str(s).rsplit('/', 1)[-1].replace('-', '_')
-            if '#' in u:
-                warnings.warn(f'Skipping {u} ({s}) because it has a "#" in it.')
-            elif u[0].isdigit():
-                warnings.warn(f'Skipping {u} ({s}) because it starts with a digit.')
-            elif u in ('True', 'False', 'yield'):
-                warnings.warn(f'Skipping {u} ({s}) because it starts with "yield".')
-            else:
-                uri = str(s)
-                f.write(f'\n    {u} = URIRef("{uri}")')
+            if u not in fields:
+                fields.append(u)
+                if '#' in u:
+                    warnings.warn(f'Skipping {u} ({s}) because it has a "#" in it.')
+                elif u[0].isdigit():
+                    warnings.warn(f'Skipping {u} ({s}) because it starts with a digit.')
+                elif u in ('True', 'False', 'yield'):
+                    warnings.warn(f'Skipping {u} ({s}) because it starts with "yield".')
+                else:
+                    uri = str(s)
+                    f.write(f'\n    {u} = URIRef("{uri}")')
+                    # f.write(f'\n    {u}: URIRef')
 
         f.write(f'\n\n    _NS = Namespace("{ns}")')
 
@@ -103,6 +107,7 @@ def generate_namespace_file_from_context(namespace: str,
     else:
         target_dir = pathlib.Path(target_dir)
 
+    fields = []
     with open(target_dir / f'{namespace}.py', 'w',
               encoding='UTF8') as f:
         f.write('from rdflib.namespace import DefinedNamespace, Namespace\n')
@@ -114,7 +119,9 @@ def generate_namespace_file_from_context(namespace: str,
         f.write(f'\n    # Date: {datetime.datetime.now()}')
         f.write(f'\n    _fail = {fail}')
         for k, v in iris.items():
-            f.write(f'\n    {k}: URIRef  # {v["keys"]}')
+            if k not in fields:
+                fields.append(k)
+                f.write(f'\n    {k}: URIRef  # {v["keys"]}')
 
         f.write(f'\n\n    _NS = Namespace("{url}")')
 
@@ -296,33 +303,34 @@ def codemeta():
 def build_namespace_files():
     """Call this only if you are a developer and want to build the namespace files"""
     with open(__package_dir__ / '__init__.py', 'w') as f:
-        f.write('Auto-generated file. Do not edit!\n')
+        f.write('"""Auto-generated file. Do not edit!"""\n')
     # f.write('from ._version import __version__\n')
 
     with open(__package_dir__ / '__init__.py', 'a') as f:
         m4i()
-        f.write('from .m4i import M4I\n')
 
         obo()
-        f.write('from .obo import OBO\n')
 
         qudt_unit()
-        f.write('from .qudt_unit import QUDT_UNIT\n')
 
         qudt_quantitykind()
-        f.write('from .qudt_kind import QUDT_KIND\n')
 
         pivmeta()
-        f.write('from .pivmeta import PIVMETA\n')
 
         codemeta()
-        f.write('from .codemeta import CODEMETA\n')
 
         schema()
-        f.write('from .schema import SCHEMA\n')
 
         ssno()
+        f.write('from .m4i import M4I\n')
+        f.write('from .obo import OBO\n')
+        f.write('from .pivmeta import PIVMETA\n')
+        f.write('from .codemeta import CODEMETA\n')
+        f.write('from .qudt_unit import QUDT_UNIT\n')
+        f.write('from .qudt_kind import QUDT_KIND\n')
+        f.write('from .schema import SCHEMA\n')
         f.write('from .ssno import SSNO\n')
+        f.write('from ._iana_utils import IANA\n')
 
     for jld in __package_dir__.glob('*.jsonld'):
         jld.unlink()

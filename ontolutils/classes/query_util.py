@@ -2,8 +2,9 @@
 import json
 import logging
 import pathlib
-import rdflib
 from typing import Union, Dict, List, Optional
+
+import rdflib
 
 from .decorator import URIRefManager, NamespaceManager
 from .thing import Thing
@@ -306,5 +307,5 @@ def query(cls: Thing,
             out.append(cls.model_validate({'id': k, **model_field_dict}))
             if i == limit:
                 return out
-    return [cls.model_validate({'id': k, **{inverse_urirefs[key]: value for key, value in v.items()}}) for k, v in
-            kwargs.items()]
+    return [cls.model_validate({'id': k, **{inverse_urirefs.get(key, key): value for key, value in v.items()}}) for k, v
+            in kwargs.items()]

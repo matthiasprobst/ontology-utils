@@ -55,7 +55,7 @@ def resolve_iri(iri: str, context: Dict) -> Union[str, None]:
     ns, key = split_URIRef(iri)
     prefix_iri = context.get(ns, None)
     if prefix_iri is None:
-        return iri
+        return None  # could not resolve the iri
     return f'{prefix_iri}{key}'
 
 
@@ -192,7 +192,7 @@ class Thing(ThingModel):
 
         logger.debug(f'The context is "{at_context}".')
 
-        def serialize_fields(
+        def _serialize_fields(
                 obj: Union[ThingModel, int, str, float, bool, datetime],
                 exclude_none: bool = True
         ) -> Union[Dict, int, str, float, bool]:
@@ -224,7 +224,7 @@ class Thing(ThingModel):
             at_context.update(NamespaceManager.get(obj.__class__, {}))
 
             if uri_ref_manager is None:
-                return obj
+                return str(obj)
 
             try:
                 serialized_fields = {}
@@ -244,28 +244,18 @@ class Thing(ThingModel):
             except AttributeError as e:
                 raise AttributeError(f"Could not serialize {obj} ({obj.__class__}). Orig. err: {e}") from e
 
-            # if obj.model_config['extra'] == 'allow':
-            #     for k, v in obj.model_extra.items():
-            #         iri = uri_ref_manager.get(k, k)
-            #         if _is_http_url(iri):
-            #             serialized_fields[k] = v
-            #         else:
-            #             serialized_fields[iri] = v
-
             # datetime
             for k, v in serialized_fields.copy().items():
                 _field = serialized_fields.pop(k)
                 key = k
-                if isinstance(v, datetime):
-                    serialized_fields[key] = serialize_fields(v)
-                elif isinstance(v, Thing):
-                    serialized_fields[key] = serialize_fields(v, exclude_none=exclude_none)
+                if isinstance(v, Thing):
+                    serialized_fields[key] = _serialize_fields(v, exclude_none=exclude_none)
                 elif isinstance(v, list):
-                    serialized_fields[key] = [serialize_fields(i, exclude_none=exclude_none) for i in v]
+                    serialized_fields[key] = [_serialize_fields(i, exclude_none=exclude_none) for i in v]
                 elif isinstance(v, (int, float)):
                     serialized_fields[key] = v
                 else:
-                    serialized_fields[key] = str(v)
+                    serialized_fields[key] = _serialize_fields(v)
 
             _type = URIRefManager[obj.__class__].get(obj.__class__.__name__, obj.__class__.__name__)
 
@@ -277,7 +267,7 @@ class Thing(ThingModel):
                 out["@id"] = rdflib.BNode()
             return out
 
-        serialization = serialize_fields(self, exclude_none=exclude_none)
+        serialization = _serialize_fields(self, exclude_none=exclude_none)
 
         jsonld = {
             "@context": at_context,
@@ -289,7 +279,7 @@ class Thing(ThingModel):
                           context: Optional[Dict] = None,
                           exclude_none: bool = True,
                           rdflib_serialize: bool = False,
-                          resolve_keys: bool = False) -> str:
+                          resolve_keys: bool = True) -> str:
         """Similar to model_dump_json() but will return a JSON string with
         context resulting in a JSON-LD serialization. Using `rdflib_serialize=True`
         will use the rdflib to serialize. This will make the output a bit cleaner

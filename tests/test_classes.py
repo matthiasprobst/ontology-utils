@@ -1,3 +1,4 @@
+import datetime
 import json
 import logging
 import unittest
@@ -39,6 +40,10 @@ class TestNamespaces(unittest.TestCase):
         self.assertEqual(ret, 'http://xmlns.com/foaf/0.1/age')
         ret = resolve_iri('label', context={'age': 'http://xmlns.com/foaf/0.1/age'})
         self.assertEqual(ret, 'http://www.w3.org/2000/01/rdf-schema#label')
+        ret = resolve_iri('label', context={'label': {'@id': 'http://www.w3.org/2000/01/rdf-schema#label'}})
+        self.assertEqual(ret, 'http://www.w3.org/2000/01/rdf-schema#label')
+        ret = resolve_iri('prefix:label', {})
+        self.assertEqual(ret, None)
 
     def test_split_URIRef(self):
         self.assertListEqual(split_URIRef(rdflib.URIRef('http://example.com/')),
@@ -68,7 +73,7 @@ class TestNamespaces(unittest.TestCase):
             age: int = None
 
         p = Person(first_name='John', lastName='Doe', age=23)
-
+        print(p.model_dump_jsonld(resolve_keys=True))
         p_from_jsonld = Person.from_jsonld(data=p.model_dump_jsonld(resolve_keys=True), limit=1)
         self.assertEqual(p_from_jsonld.first_name, 'John')
         self.assertEqual(p_from_jsonld.lastName, 'Doe')
@@ -107,49 +112,6 @@ class TestNamespaces(unittest.TestCase):
         thing2 = Thing(label='Thing 2', id='http://example.com/thing2')
         self.assertTrue(thing1 < thing2)
 
-    # def test_serialize_fields(self):
-    #     from ontolutils.classes.thing import serialize_fields
-    #     self.assertEqual(serialize_fields(1), 1)
-    #     self.assertEqual(serialize_fields(1.1), 1.1)
-    #     self.assertEqual(serialize_fields('1'), '1')
-    #     self.assertEqual(serialize_fields(True), True)
-    #     thing = Thing(label='Thing 1')
-    #
-    #     class RandomClass:
-    #         """Random Class"""
-    #
-    #     rc = RandomClass()
-    #     self.assertEqual(serialize_fields(rc), rc)
-    #
-    #     self.assertDictEqual(serialize_fields(Thing(id='_:b1', label='Thing 1')),
-    #                          {'@type': 'owl:Thing', 'rdfs:label': 'Thing 1', '@id': '_:b1'})
-    #
-    #     @namespaces(owl='http://www.w3.org/2002/07/owl#',
-    #                 local='http://example.org/')
-    #     @urirefs(Process='local:Process',
-    #              startTime='local:startTime',
-    #              listOfTimes='local:listOfTimes')
-    #     class Process(Thing):
-    #         """Process Thing"""
-    #         startTime: datetime.datetime = None
-    #         listOfTimes: List[datetime.datetime] = None
-    #
-    #     process = Process(id='_:b1', label='Process 1',
-    #                       startTime=datetime.datetime(2021, 1, 1))
-    #     self.assertEqual(serialize_fields(process),
-    #                      {'@type': 'local:Process', 'rdfs:label': 'Process 1', 'local:startTime': '2021-01-01T00:00:00',
-    #                       '@id': '_:b1'})
-    #
-    #     process = Process(id='_:b1',
-    #                       label='Process 1',
-    #                       listOfTimes=[datetime.datetime(2021, 1, 1),
-    #                                    datetime.datetime(2021, 1, 2)])
-    #
-    #     self.assertEqual(serialize_fields(process),
-    #                      {'@type': 'local:Process', 'rdfs:label': 'Process 1',
-    #                       'local:listOfTimes': ['2021-01-01T00:00:00', '2021-01-02T00:00:00'],
-    #                       '@id': '_:b1'})
-
     def test__repr_html_(self):
         thing = Thing(label='Thing 1')
         self.assertEqual(thing._repr_html_(), 'Thing(label=Thing 1)')
@@ -158,7 +120,8 @@ class TestNamespaces(unittest.TestCase):
         with self.assertRaises(pydantic.ValidationError):
             _ = Thing(id=1, label='Thing 1')
 
-        thing = Thing(id='https://example.org/TestThing', label='Test Thing')
+        thing = Thing(id='https://example.org/TestThing', label='Test Thing', numerical_value=1.0,
+                      dt=datetime.datetime(2021, 1, 1))
         with self.assertRaises(TypeError):
             thing.get_jsonld_dict(context=1)
 

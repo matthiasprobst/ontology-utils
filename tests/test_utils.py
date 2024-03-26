@@ -1,5 +1,6 @@
 import pathlib
 import unittest
+from hashlib import sha256
 
 from pydantic import EmailStr
 
@@ -50,7 +51,29 @@ class TestUtils(unittest.TestCase):
 
     def test_download(self):
         text_filename = utils.download_file('https://www.iana.org/assignments/media-types/text.csv')
+
         self.assertIsInstance(text_filename, pathlib.Path)
         self.assertTrue(text_filename.exists())
-        print(text_filename)
         self.assertTrue(text_filename.parent.parent == get_cache_dir())
+
+        # compute hash:
+        with open(text_filename, 'rb') as f:
+            hash = sha256(f.read()).hexdigest()
+        text_filename = utils.download_file('https://www.iana.org/assignments/media-types/text.csv',
+                                            known_hash=hash,
+                                            dest_filename='not/existing/dir')
+        self.assertTrue(text_filename.parent, 'dir')
+
+        text_filename = utils.download_file('https://www.iana.org/assignments/media-types/text.csv',
+                                            known_hash=hash,
+                                            dest_filename='not/existing/dir',
+                                            overwrite_existing=False)
+        self.assertTrue(text_filename.exists())
+
+        text_filename = utils.download_file('https://www.iana.org/assignments/media-types/text.csv',
+                                            known_hash=hash,
+                                            dest_filename='not/existing/dir',
+                                            overwrite_existing=True)
+        self.assertTrue(text_filename.exists())
+
+        text_filename.unlink(missing_ok=True)

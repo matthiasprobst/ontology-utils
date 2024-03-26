@@ -295,12 +295,12 @@ def query(cls: Thing,
     # corresponding names. The urirefs translate the class model fields to a <prefix>:<name> format.
     # As we have the latter, the inverse dictionary let's us find the model field names.
     from . import get_urirefs
-    inverse_urirefs = {v.split(':', 1)[-1]: k for k, v in get_urirefs(cls).items()}
+    inverse_urirefs = {_v.split(':', 1)[-1]: _k for _k, _v in get_urirefs(cls).items()}
 
     if limit is not None:
         out = []
         for i, (k, v) in enumerate(kwargs.items()):
-            model_field_dict = {inverse_urirefs[key]: value for key, value in v.items()}
+            model_field_dict = {inverse_urirefs.get(key, key): value for key, value in v.items()}
             if limit == 1:
                 return cls.model_validate({'id': k, **model_field_dict})
             out.append(cls.model_validate({'id': k, **model_field_dict}))

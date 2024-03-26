@@ -9,6 +9,8 @@ from pydantic import EmailStr
 from ontolutils import Thing, urirefs, namespaces, get_urirefs, get_namespaces
 from ontolutils import set_logging_level
 from ontolutils.classes import decorator
+from ontolutils.classes.thing import resolve_iri
+from ontolutils.classes.utils import split_URIRef
 
 LOG_LEVEL = logging.DEBUG
 
@@ -28,8 +30,17 @@ class TestNamespaces(unittest.TestCase):
         set_logging_level(self.INITIAL_LOG_LEVEL)
         assert logging.getLogger('ontolutils').level == self.INITIAL_LOG_LEVEL
 
+    def test_resolve_iri(self):
+        ret = resolve_iri('foaf:age', context={'foaf': 'http://xmlns.com/foaf/0.1/'})
+        self.assertEqual(ret, 'http://xmlns.com/foaf/0.1/age')
+        ret = resolve_iri('age', context={'foaf': 'http://xmlns.com/foaf/0.1/'})
+        self.assertEqual(ret, None)
+        ret = resolve_iri('age', context={'age': 'http://xmlns.com/foaf/0.1/age'})
+        self.assertEqual(ret, 'http://xmlns.com/foaf/0.1/age')
+        ret = resolve_iri('label', context={'age': 'http://xmlns.com/foaf/0.1/age'})
+        self.assertEqual(ret, 'http://www.w3.org/2000/01/rdf-schema#label')
+
     def test_split_URIRef(self):
-        from ontolutils.classes.utils import split_URIRef
         self.assertListEqual(split_URIRef(rdflib.URIRef('http://example.com/')),
                              ['http://example.com/', ''])
         self.assertListEqual(split_URIRef(rdflib.URIRef('http://example.com/#test')),

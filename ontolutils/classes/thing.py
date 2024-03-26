@@ -2,11 +2,12 @@ import abc
 import json
 import logging
 import pathlib
-import rdflib
 import warnings
 from datetime import datetime
-from pydantic import HttpUrl, FileUrl, BaseModel, ConfigDict
 from typing import Dict, Union, Optional
+
+import rdflib
+from pydantic import HttpUrl, FileUrl, BaseModel, ConfigDict
 
 from .decorator import urirefs, namespaces, URIRefManager, NamespaceManager, _is_http_url
 from .typing import BlankNodeType
@@ -27,14 +28,30 @@ class ThingModel(BaseModel, abc.ABC):
         """Returns the HTML representation of the class"""
 
 
-def resolve_iri(iri: str, context: Dict) -> str:
+def resolve_iri(iri: str, context: Dict) -> Union[str, None]:
     """Resolves short iri string which uses prefix, e.g.
      converts 'foaf:firstName' to 'http://xmlns.com/foaf/0.1/firstName'
-     if the prefix is not found in context, the input iri string is
-     returned.
+
+     .. note::
+
+        This function will return 'http://www.w3.org/2000/01/rdf-schema#label' if the input iri is 'label'
+        and the context does not contain 'label'.
+        If the iri could not be resolved, None is returned.
+
+
      """
+    _iri = context.get(iri, None)
+    if _iri is not None:
+        if isinstance(_iri, dict):
+            iri = _iri.get('@id', iri)
+        else:
+            iri = _iri
     if iri.startswith('http'):
         return iri
+    if ':' not in iri:
+        if iri == 'label':
+            return 'http://www.w3.org/2000/01/rdf-schema#label'
+        return None
     ns, key = split_URIRef(iri)
     prefix_iri = context.get(ns, None)
     if prefix_iri is None:

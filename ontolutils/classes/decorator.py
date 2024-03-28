@@ -99,11 +99,12 @@ def urirefs(**kwargs):
                 ns, key = split_URIRef(v)
                 prefix = _prefix_dict.get(ns, None)
                 if prefix is None:
-                    raise ValueError(f"Cannot determine the prefix for {ns}")
-                NamespaceManager[cls][prefix] = str(ns)
-                if k not in fields:
-                    raise KeyError(f"Field '{k}' not found in {cls.__name__}")
-                URIRefManager[cls][k] = f"{prefix}:{key}"
+                    URIRefManager[cls][k] = str(v)
+                else:
+                    NamespaceManager[cls][prefix] = str(ns)
+                    if k not in fields:
+                        raise KeyError(f"Field '{k}' not found in {cls.__name__}")
+                    URIRefManager[cls][k] = f"{prefix}:{key}"
             else:
                 if k not in fields:
                     raise KeyError(f"Field '{k}' not found in {cls.__name__}")

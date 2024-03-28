@@ -24,25 +24,29 @@ the JSON-LD file yourself is too cumbersome *and* you want validation of the par
 lets you design classes, which describe ontology classes like this:
 
 ```python
+from pydantic import EmailStr, Field
+
 from ontolutils import Thing, urirefs, namespaces
-from pydantic import EmailStr
-from rdflib import FOAF
 
 
 @namespaces(prov="http://www.w3.org/ns/prov#",
             foaf="http://xmlns.com/foaf/0.1/")
 @urirefs(Person='prov:Person',
          firstName='foaf:firstName',
-         lastName=FOAF.lastName,
+         last_name='foaf:lastName',
          mbox='foaf:mbox')
 class Person(Thing):
     firstName: str
-    lastName: str = None
+    last_name: str = Field(default=None, alias="lastName")  # you may provide an alias
     mbox: EmailStr = None
 
 
 p = Person(id="cde4c79c-21f2-4ab7-b01d-28de6e4aade4",
+           firstName='John', last_name='Doe')
+# as we have set an alias, we can also use "lastName":
+p = Person(id="cde4c79c-21f2-4ab7-b01d-28de6e4aade4",
            firstName='John', lastName='Doe')
+# The jsonld representation of the object will be the same in both cases:
 p.model_dump_jsonld()
 ```
 

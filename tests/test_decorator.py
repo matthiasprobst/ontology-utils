@@ -21,20 +21,20 @@ class TestDecorator(unittest.TestCase):
                 """MyTHing"""
 
     def test_urirefs(self):
-        @urirefs(name='http://example.com/name')
+        with self.assertRaises(ValueError):
+            @urirefs(name='http://example.com/name')
+            class MyThing(Thing):
+                """MyTHing"""
+                name: str
+
+        @namespaces(ex='http://example.com/')
+        @urirefs(name='ex:name')
         class MyThing(Thing):
             """MyTHing"""
             name: str
 
         with self.assertRaises(TypeError):
             @urirefs(name=1.4)
-            class MyThing(Thing):
-                """MyTHing"""
-                name: str
-
-        with self.assertRaises(KeyError):
-            @urirefs(name='http://example.com/name',
-                     invalid='http://example.com/name')
             class MyThing(Thing):
                 """MyTHing"""
                 name: str

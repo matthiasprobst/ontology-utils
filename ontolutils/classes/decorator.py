@@ -65,6 +65,15 @@ def namespaces(**kwargs):
     return _decorator
 
 
+_prefix_dict = {
+    'http://xmlns.com/foaf/0.1/': 'foaf',
+    'http://www.w3.org/ns/prov#': 'prov',
+    'http://www.w3.org/1999/02/22-rdf-syntax-ns#': 'rdf',
+    'http://schema.org/': 'schema',
+    'http://w3id.org/nfdi4ing/metadata4ing#': 'm4i'
+}
+
+
 def urirefs(**kwargs):
     """decorator for model classes. It assigns the URIRefs to the fields of the class.
 
@@ -88,11 +97,17 @@ def urirefs(**kwargs):
                 raise TypeError(f"{v} must be a string, not {type(v)}")
             if _is_http_url(v):
                 ns, key = split_URIRef(v)
-                NamespaceManager[cls][k] = str(ns)
-            if k not in fields:
-                raise KeyError(f"Field '{k}' not found in {cls.__name__}")
-            URIRefManager[cls][k] = str(v)
+                prefix = _prefix_dict.get(ns, None)
+                if prefix is None:
+                    raise ValueError(f"Cannot determine the prefix for {ns}")
+                NamespaceManager[cls][prefix] = str(ns)
+                if k not in fields:
+                    raise KeyError(f"Field '{k}' not found in {cls.__name__}")
+                URIRefManager[cls][k] = f"{prefix}:{key}"
+            else:
+                if k not in fields:
+                    raise KeyError(f"Field '{k}' not found in {cls.__name__}")
+                URIRefManager[cls][k] = v
         return cls
 
     return _decorator
-

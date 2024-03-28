@@ -306,4 +306,4 @@ def query(cls: Thing,
             out.append(cls.model_validate({'id': k, **model_field_dict}))
             if i == limit:
                 return out
-    return [cls.model_validate({'id': k, **params}) for _id, params in kwargs.items()]
+    return [cls.model_validate({'id': _id, **params}) for _id, params in kwargs.items()]

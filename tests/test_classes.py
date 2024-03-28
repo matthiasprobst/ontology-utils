@@ -165,10 +165,11 @@ class TestNamespaces(unittest.TestCase):
             agent.model_validate(agent.model_dump())
         agent.mbox = 'my@email.com'
         jsonld_str1 = agent.model_dump_jsonld(rdflib_serialize=False)
+        self.assertTrue('@id' in json.loads(jsonld_str1))
 
         self.assertIsInstance(json.loads(jsonld_str1)['foaf:age'], int)
 
-        jsonld_str2 = agent.model_dump_jsonld(rdflib_serialize=True)
+        jsonld_str2 = agent.model_dump_jsonld(rdflib_serialize=True)  # will assign blank node! Pop it later
         jsonld_str2_dict = json.loads(jsonld_str2)
         self.assertNotEqual(
             json.loads(jsonld_str1),
@@ -370,7 +371,7 @@ class TestNamespaces(unittest.TestCase):
             "foaf:lastName": "Doe"
         }
         jsonld_dict = json.loads(mt.model_dump_jsonld(resolve_keys=True))
-        jsonld_dict.pop('@id')
+        jsonld_dict.pop('@id', None)
         self.assertDictEqual(jsonld_dict,
                              ref_jsonld)
 
@@ -387,7 +388,7 @@ class TestNamespaces(unittest.TestCase):
             "last_name": "Doe"
         }
         jsonld_dict = json.loads(mt.model_dump_jsonld(resolve_keys=False))
-        jsonld_dict.pop('@id')
+        jsonld_dict.pop('@id', None)
         self.assertDictEqual(jsonld_dict,
                              ref_jsonld)
         from pprint import pprint

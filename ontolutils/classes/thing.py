@@ -194,7 +194,7 @@ class Thing(ThingModel):
 
         def _serialize_fields(
                 obj: Union[ThingModel, int, str, float, bool, datetime],
-                exclude_none: bool = True
+                exclude_none: bool,
         ) -> Union[Dict, int, str, float, bool]:
             """Serializes the fields of a Thing object into a json-ld
             dictionary (without context!). Note, that IDs can automatically be
@@ -255,7 +255,7 @@ class Thing(ThingModel):
                 elif isinstance(v, (int, float)):
                     serialized_fields[key] = v
                 else:
-                    serialized_fields[key] = _serialize_fields(v)
+                    serialized_fields[key] = _serialize_fields(v, exclude_none=exclude_none)
 
             _type = URIRefManager[obj.__class__].get(obj.__class__.__name__, obj.__class__.__name__)
 

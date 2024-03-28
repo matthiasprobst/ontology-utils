@@ -21,7 +21,7 @@ EXTRA = 'allow'  # or 'forbid' or 'ignore'
 class ThingModel(BaseModel, abc.ABC):
     """Abstract base model class to be used by model classes used within ontolutils"""
 
-    model_config = ConfigDict(extra=EXTRA)
+    model_config = ConfigDict(extra=EXTRA, populate_by_name=True)
 
     @abc.abstractmethod
     def _repr_html_(self) -> str:

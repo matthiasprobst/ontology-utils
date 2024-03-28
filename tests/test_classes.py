@@ -5,7 +5,7 @@ import unittest
 
 import pydantic
 import rdflib
-from pydantic import EmailStr
+from pydantic import EmailStr, Field
 
 from ontolutils import Thing, urirefs, namespaces, get_urirefs, get_namespaces
 from ontolutils import set_logging_level
@@ -30,6 +30,34 @@ class TestNamespaces(unittest.TestCase):
     def tearDown(self):
         set_logging_level(self.INITIAL_LOG_LEVEL)
         assert logging.getLogger('ontolutils').level == self.INITIAL_LOG_LEVEL
+
+    def test_model_fields(self):
+        @namespaces(foaf="http://xmlns.com/foaf/0.1/")
+        @urirefs(Agent='foaf:Agent',
+                 name='foaf:lastName',
+                 age='foaf:age')
+        class Agent(Thing):
+            """Pydantic Model for http://xmlns.com/foaf/0.1/Agent
+            Parameters
+            ----------
+            mbox: EmailStr = None
+                Email address (foaf:mbox)
+            """
+            name: str = Field(default=None, alias="lastName")  # name is synonymous to lastName
+            age: int = None
+
+        agent = Agent(name='John Doe', age=23)
+        self.assertEqual(agent.name, 'John Doe')
+        self.assertEqual(agent.age, 23)
+
+        # extra fields are allowed and either the model field or its uriref can be used
+        agent = Agent(lastName='Doe', age=23)
+        self.assertEqual(agent.name, 'Doe')
+        self.assertEqual(agent.age, 23)
+
+        agent = Agent(age=23)
+        self.assertEqual(agent.name, None)
+        self.assertEqual(agent.age, 23)
 
     def test_resolve_iri(self):
         ret = resolve_iri('foaf:age', context={'foaf': 'http://xmlns.com/foaf/0.1/'})
@@ -68,7 +96,7 @@ class TestNamespaces(unittest.TestCase):
                  lastName='foaf:lastName',
                  age='foaf:age')
         class Person(Thing):
-            first_name: str = None
+            first_name: str = Field(default=None, alias='firstName')
             lastName: str
             age: int = None
 

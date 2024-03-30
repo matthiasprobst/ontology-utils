@@ -121,10 +121,21 @@ class Thing(ThingModel):
             return False
         return self.id <= other.id
 
+    def pop_blank_node_id(self) -> Union[None, str]:
+        """Remove the ID if it is blank node"""
+        if self.id is None:
+            return
+        if self.id.startswith('http'):
+            return
+        _id = self.id
+        self.id = None
+        return _id
+
     def get_jsonld_dict(self,
                         context: Optional[Union[Dict, str]] = None,
                         exclude_none: bool = True,
-                        resolve_keys: bool = False) -> Dict:
+                        resolve_keys: bool = False,
+                        assign_bnode: bool = True) -> Dict:
         """Return the JSON-LD dictionary of the object. This will include the context
         and the fields of the object.
 
@@ -138,6 +149,8 @@ class Thing(ThingModel):
         resolve_keys: bool=False
             If True, then attributes of a Thing class will be resolved to the full IRI and
             explained in the context.
+        assign_bnode: bool=True
+            Assigns a blank node if no ID is set.
 
             Example:
 
@@ -194,7 +207,7 @@ class Thing(ThingModel):
 
         def _serialize_fields(
                 obj: Union[ThingModel, int, str, float, bool, datetime],
-                exclude_none: bool,
+                exclude_none: bool
         ) -> Union[Dict, int, str, float, bool]:
             """Serializes the fields of a Thing object into a json-ld
             dictionary (without context!). Note, that IDs can automatically be
@@ -251,7 +264,8 @@ class Thing(ThingModel):
                 if isinstance(v, Thing):
                     serialized_fields[key] = _serialize_fields(v, exclude_none=exclude_none)
                 elif isinstance(v, list):
-                    serialized_fields[key] = [_serialize_fields(i, exclude_none=exclude_none) for i in v]
+                    serialized_fields[key] = [
+                        _serialize_fields(i, exclude_none=exclude_none) for i in v]
                 elif isinstance(v, (int, float)):
                     serialized_fields[key] = v
                 else:
@@ -264,7 +278,8 @@ class Thing(ThingModel):
             if obj.id is not None:
                 out["@id"] = obj.id
             else:
-                out["@id"] = rdflib.BNode()
+                if assign_bnode:
+                    out["@id"] = rdflib.BNode().n3()
             return out
 
         serialization = _serialize_fields(self, exclude_none=exclude_none)
@@ -279,7 +294,8 @@ class Thing(ThingModel):
                           context: Optional[Dict] = None,
                           exclude_none: bool = True,
                           rdflib_serialize: bool = False,
-                          resolve_keys: bool = True) -> str:
+                          resolve_keys: bool = True,
+                          assign_bnode: bool = True) -> str:
         """Similar to model_dump_json() but will return a JSON string with
         context resulting in a JSON-LD serialization. Using `rdflib_serialize=True`
         will use the rdflib to serialize. This will make the output a bit cleaner
@@ -302,6 +318,8 @@ class Thing(ThingModel):
         resolve_keys: bool=False
             If True, then attributes of a Thing class will be resolved to the full IRI and
             explained in the context.
+        assign_bnode: bool=True
+            Assigns a blank node if no ID is set.
 
             .. seealso:: `Thing.get_jsonld_dict`
 
@@ -313,7 +331,8 @@ class Thing(ThingModel):
         jsonld_dict = self.get_jsonld_dict(
             context=context,
             exclude_none=exclude_none,
-            resolve_keys=resolve_keys
+            resolve_keys=resolve_keys,
+            assign_bnode=assign_bnode
         )
         jsonld_str = json.dumps(jsonld_dict, indent=4)
         if not rdflib_serialize:
@@ -331,23 +350,21 @@ class Thing(ThingModel):
                            context=_context,
                            indent=4)
 
-    def __repr__(self):
+    def __repr__(self, limit: Optional[int] = None):
         _fields = {k: getattr(self, k) for k in self.model_fields if getattr(self, k) is not None}
-        repr_fields = ", ".join([f"{k}={v}" for k, v in _fields.items()])
-        if self.model_config['extra'] == 'allow':
-            if len(self.model_extra) > 0:
-                repr_extra = ", ".join([f"{k}={v}" for k, v in self.model_extra.items()])
-                return f"{self.__class__.__name__}({repr_fields}, {repr_extra})"
-        return f"{self.__class__.__name__}({repr_fields})"
+        repr_extra = ", ".join([f"{k}={v}" for k, v in {**_fields, **self.model_extra}.items()])
+        if limit is None or len(repr_extra) < limit:
+            return f"{self.__class__.__name__}({repr_extra})"
+        return f"{self.__class__.__name__}({repr_extra[0:limit]}...)"
 
-    def __str__(self):
-        return self.__repr__()
+    def __str__(self, limit: Optional[int] = None):
+        return self.__repr__(limit=limit)
 
     def _repr_html_(self) -> str:
         """Returns the HTML representation of the class"""
-        _fields = {k: getattr(self, k) for k in self.model_fields if getattr(self, k) is not None}
-        repr_fields = ", ".join([f"{k}={v}" for k, v in _fields.items()])
-        return f"{self.__class__.__name__}({repr_fields})"
+        # _fields = {k: getattr(self, k) for k in self.model_fields if getattr(self, k) is not None}
+        # repr_fields = ", ".join([f"{k}={v}" for k, v in _fields.items()])
+        return self.__repr__()
 
     @classmethod
     def from_jsonld(cls,

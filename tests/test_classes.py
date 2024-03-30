@@ -249,6 +249,7 @@ class TestNamespaces(unittest.TestCase):
             label='Agent 1',
             mbox='my@email.com'
         )
+        self.assertEqual(agent.id, None)
         ns = agent.namespaces
         jsonld_string = agent.model_dump_jsonld(
             context={
@@ -260,6 +261,14 @@ class TestNamespaces(unittest.TestCase):
         loaded_agent = Agent.from_jsonld(data=jsonld_string, limit=1)
         self.assertDictEqual(loaded_agent.namespaces, ns)
         self.assertEqual(loaded_agent.mbox, agent.mbox)
+
+        # do the same with thing:
+        thing = Thing.from_jsonld(data=jsonld_string, limit=1)
+        self.assertEqual(thing.label, 'Agent 1')
+        self.assertTrue(thing.id.startswith('_:'))
+        _id = thing.id
+        self.assertEqual(thing.pop_blank_node_id(), _id)
+        self.assertEqual(thing.id, None)
 
     def test_schema_http(self):
         @namespaces(foaf="http://xmlns.com/foaf/0.1/",

@@ -56,7 +56,13 @@ WHERE {
                 if p == rdflib.RDF.type and add_type:
                     sub_data["@type"] = str(o)
                 else:
-                    logger.debug(f'dont know what to do with {p} and {o}')
+                    # may point to another blank node:
+                    if isinstance(o, rdflib.BNode):
+                        logger.debug(f'"{o}" is a blank node. Need to find children of it...')
+                        _, key = split_URIRef(p)
+                        sub_data[key] = process_object(_id, p, o, graph, add_type)
+                    else:
+                        logger.debug(f'dont know what to do with {p} and {o}')
         if predicate in sub_data:
             return sub_data[predicate]
         return sub_data
@@ -127,24 +133,6 @@ SELECT DISTINCT ?o WHERE { <%s> rdf:type ?o }""" % iri
     return len(_sub_res) == 1
 
 
-def exists_as_type(obj: str, graph) -> bool:
-    """Check if the object exists as a type in the graph."""
-    query = """SELECT ?x ?obj ?p ?o
-WHERE {
-  ?x <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?obj .
-  ?x ?p ?o .
-}"""
-    out = graph.query(query)
-    for _id, _type, _, _ in out:
-        if obj.startswith('_:'):
-            if str(_id) == str(obj[2:]):
-                return True
-        else:
-            if str(_id) == str(obj):
-                return True
-    return False
-
-
 def expand_sparql_res(bindings,
                       graph,
                       add_type: bool,
@@ -154,8 +142,9 @@ def expand_sparql_res(bindings,
     # n_ = len(bindings)
     for i, binding in enumerate(bindings):
         logger.debug(
-            f'Expanding SPARQL results {i}/{len(bindings)}: {binding["?id"]}, {binding["p"]}, {binding["?o"]}.')
-        _id = str(binding['?id'])  # .n3()
+            f'Expanding SPARQL results {i + 1}/{len(bindings)}: {binding["?id"]}, {binding["p"]}, {binding["?o"]}.')
+        # _id = str(binding['?id'])  # .n3()
+        _id = binding['?id'].n3()
         if _id not in out:
             out[_id] = {}
             if add_context:
@@ -248,7 +237,10 @@ def query(cls: Thing,
         The limit of the query. Default is None (no limit).
         If limit equals to 1, the result will be a single obj, not a list.
     """
-    query_string = get_query_string(cls)
+    if cls == Thing:
+        query_string = '\nSELECT *\nWHERE {\n    ?id a ?type .\n    ?id ?p ?o .\n}'
+    else:
+        query_string = get_query_string(cls)
     g = rdflib.Graph()
 
     ns_keys = [_ns[0] for _ns in g.namespaces()]

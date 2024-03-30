@@ -125,40 +125,43 @@ class TestQuery(unittest.TestCase):
     def test_recursive_query(self):
         @ontolutils.namespaces(prov="https://www.w3.org/ns/prov#",
                                foaf="http://xmlns.com/foaf/0.1/")
-        @ontolutils.urirefs(Agent='prov:Agent',
-                            mbox='foaf:mbox')
-        class Agent(ontolutils.Thing):
+        @ontolutils.urirefs(Student='prov:Student',
+                            mbox='foaf:mbox',
+                            age='foaf:age')
+        class Student(ontolutils.Thing):
             """Pydantic Model for https://www.w3.org/ns/prov#Agent"""
             mbox: EmailStr = None  # foaf:mbox
+            age: int = None
 
         @ontolutils.namespaces(prov="https://www.w3.org/ns/prov#",
                                foaf="http://xmlns.com/foaf/0.1/")
-        @ontolutils.urirefs(SuperAgent='prov:SuperAgent',
-                            hasAgent='foaf:hasAgent')
-        class SuperAgent(ontolutils.Thing):
+        @ontolutils.urirefs(SectionLeader='prov:SectionLeader',
+                            hasStudent='foaf:hasStudent')
+        class SectionLeader(ontolutils.Thing):
             """Pydantic Model for https://www.w3.org/ns/prov#Agent"""
-            hasAgent: Agent = None  # foaf:mbox
+            hasStudent: Student = None  # foaf:mbox
 
         @ontolutils.namespaces(prov="https://www.w3.org/ns/prov#",
                                foaf="http://xmlns.com/foaf/0.1/")
-        @ontolutils.urirefs(SuperSuperAgent='prov:SuperSuperAgent',
-                            hasSuperAgent='foaf:hasSuperAgent')
-        class SuperSuperAgent(ontolutils.Thing):
+        @ontolutils.urirefs(Professor='prov:Professor',
+                            hasSectionLeader='foaf:hasSectionLeader')
+        class Professor(ontolutils.Thing):
             """Pydantic Model for https://www.w3.org/ns/prov#Agent"""
-            hasSuperAgent: SuperAgent = None  # foaf:mbox
+            hasSectionLeader: SectionLeader = None  # foaf:mbox
 
-        superagent = SuperAgent(label='superagent',
-                                hasAgent=Agent(label='agent1'))
-        supersuperagent = SuperSuperAgent(label='supersuperagent',
-                                          hasSuperAgent=superagent)
+        section_leader = SectionLeader(label='section_leader',
+                                       hasStudent=Student(label='student', age=30))
+        prof = Professor(label='Professor',
+                         hasSectionLeader=section_leader)
 
         with open(__this_dir__ / 'supersuperagent.json', 'w') as f:
-            f.write(supersuperagent.model_dump_jsonld())
+            f.write(prof.model_dump_jsonld())
 
-        cc = SuperSuperAgent.from_jsonld(__this_dir__ / 'supersuperagent.json')[0]
-        self.assertEqual(cc.hasSuperAgent.hasAgent.label, 'agent1')
-        self.assertEqual(cc.hasSuperAgent.label, 'superagent')
-        self.assertEqual(cc.label, 'supersuperagent')
+        p = Professor.from_jsonld(__this_dir__ / 'supersuperagent.json')[0]
+        self.assertEqual(p.label, 'Professor')
+        self.assertEqual(p.hasSectionLeader.label, 'section_leader')
+        self.assertEqual(p.hasSectionLeader.hasStudent.label, 'student')
+        self.assertEqual(p.hasSectionLeader.hasStudent.age, 30)
 
     def test_query(self):
         agent = self.Agent(mbox='e@mail.com')

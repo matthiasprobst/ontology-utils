@@ -35,7 +35,8 @@ class TestQuery(unittest.TestCase):
 
     def test_dquery(self):
         test_data = """{"@context": {"foaf": "http://xmlns.com/foaf/0.1/", "prov": "http://www.w3.org/ns/prov#",
-"schema": "http://www.w3.org/2000/01/rdf-schema#", "schema": "http://schema.org/"},
+"schema": "http://www.w3.org/2000/01/rdf-schema#", "schema": "http://schema.org/",
+"local": "http://example.org/"},
 "@id": "local:testperson",
 "@type": "prov:Person",
 "foaf:firstName": "John",
@@ -49,9 +50,14 @@ class TestQuery(unittest.TestCase):
 }"""
         res = ontolutils.dquery(
             subject="prov:Person", data=test_data,
-            context={"prov": "http://www.w3.org/ns/prov#", "local": "http://example.org"}
+            context={"prov": "http://www.w3.org/ns/prov#",
+                     "local": "http://example.org",
+                     "schema": "http://schema.org/"}
         )
-        print(res)
+        self.assertIsInstance(res, list)
+        self.assertTrue(len(res) == 1)
+        self.assertTrue(res[0]['@type'] == 'http://www.w3.org/ns/prov#Person')
+        self.assertTrue(res[0]['@id'] == 'http://example.org/testperson')
 
     def test_dquery_codemeta(self):
         """Read the codemeta.json file and query for schema:SoftwareSourceCode"""

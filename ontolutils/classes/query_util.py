@@ -73,7 +73,7 @@ WHERE {
             logger.debug('points to a type definition inside the data')
             if obj == _id:
                 return str(obj)
-            return _query_by_id(graph=graph, _id=obj, add_type=False)
+            return _query_by_id(graph=graph, _id=obj, add_type=True)
 
     logger.debug(f'"{obj}" for predicate "{predicate}" is a simple data field.')
     return str(obj)
@@ -105,7 +105,7 @@ def _query_by_id(graph, _id: Union[str, rdflib.URIRef], add_type: bool) -> Dict:
     """Query the graph by the id. Return the data as a dictionary."""
     _sub_query_string = """SELECT DISTINCT ?p ?o WHERE { <%s> ?p ?o }""" % _id
     _sub_res = graph.query(_sub_query_string)
-    out = {'id': str(_id)}
+    out = {'@id': str(_id)}
     for binding in _sub_res.bindings:
         predicate = binding['p']
         obj = binding['o']
@@ -143,8 +143,11 @@ def expand_sparql_res(bindings,
     for i, binding in enumerate(bindings):
         logger.debug(
             f'Expanding SPARQL results {i + 1}/{len(bindings)}: {binding["?id"]}, {binding["p"]}, {binding["?o"]}.')
-        # _id = str(binding['?id'])  # .n3()
-        _id = binding['?id'].n3()
+
+        if isinstance(binding['?id'], rdflib.URIRef):
+            _id = str(binding['?id'])
+        else:
+            _id = binding['?id'].n3()
         if _id not in out:
             out[_id] = {}
             if add_context:
@@ -212,7 +215,7 @@ def dquery(subject: str,
 
     kwargs: Dict = expand_sparql_res(res.bindings, g, True, True)
     for _id in kwargs:
-        kwargs[_id]['id'] = _id
+        kwargs[_id]['@id'] = _id
     return [v for v in kwargs.values()]
 
 

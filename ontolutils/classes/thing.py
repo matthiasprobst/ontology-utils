@@ -8,6 +8,7 @@ from typing import Dict, Union, Optional
 
 import rdflib
 from pydantic import HttpUrl, FileUrl, BaseModel, ConfigDict
+from rdflib.plugins.shared.jsonld.context import Context
 
 from .decorator import urirefs, namespaces, URIRefManager, NamespaceManager, _is_http_url
 from .typing import BlankNodeType
@@ -28,35 +29,20 @@ class ThingModel(BaseModel, abc.ABC):
         """Returns the HTML representation of the class"""
 
 
-def resolve_iri(iri: str, context: Dict) -> Union[str, None]:
-    """Resolves short iri string which uses prefix, e.g.
-     converts 'foaf:firstName' to 'http://xmlns.com/foaf/0.1/firstName'
-
-     .. note::
-
-        This function will return 'http://www.w3.org/2000/01/rdf-schema#label' if the input iri is 'label'
-        and the context does not contain 'label'.
-        If the iri could not be resolved, None is returned.
-
-
-     """
-    _iri = context.get(iri, None)
-    if _iri is not None:
-        if isinstance(_iri, dict):
-            iri = _iri.get('@id', iri)
-        else:
-            iri = _iri
-    if iri.startswith('http'):
-        return iri
-    if ':' not in iri:
-        if iri == 'label':
+def resolve_iri(key_or_iri: str, context: Context) -> Optional[str]:
+    """Resolve a key or IRI to a full IRI using the context."""
+    if key_or_iri.startswith('http'):
+        return str(key_or_iri)
+    if ':' in key_or_iri:
+        iri = context.resolve(key_or_iri)
+        if iri.startswith('http'):
+            return iri
+    try:
+        return context.terms.get(key_or_iri).id
+    except AttributeError:
+        if key_or_iri == 'label':
             return 'http://www.w3.org/2000/01/rdf-schema#label'
-        return None
-    ns, key = split_URIRef(iri)
-    prefix_iri = context.get(ns, None)
-    if prefix_iri is None:
-        return None  # could not resolve the iri
-    return f'{prefix_iri}{key}'
+    return
 
 
 @namespaces(owl='http://www.w3.org/2002/07/owl#',
@@ -185,6 +171,7 @@ class Thing(ThingModel):
                 >>>     "foaf:firstName": "John"
                 >>> }
 
+
         Returns
         -------
         Dict
@@ -202,6 +189,8 @@ class Thing(ThingModel):
             raise TypeError(f"Context must be a dict, not {type(context)}")
 
         at_context.update(**context)
+
+        ctx = Context(source={**at_context, **URIRefManager.get(self.__class__)})
 
         logger.debug(f'The context is "{at_context}".')
 
@@ -248,12 +237,16 @@ class Thing(ThingModel):
                         if _is_http_url(iri):
                             serialized_fields[iri] = value
 
-                        ns, key = split_URIRef(iri)
-                        if key != k and not resolve_keys:
-                            at_context[k] = resolve_iri(iri, at_context)
-                            serialized_fields[k] = value
-                        else:
+                        if resolve_keys:
                             serialized_fields[iri] = value
+                        else:
+                            term = ctx.find_term(ctx.expand(iri))
+                            if term:
+                                if ctx.shrink_iri(term.id).split(':')[1] != k:
+                                    at_context[k] = term.id
+                                    serialized_fields[k] = value
+                                else:
+                                    serialized_fields[iri] = value
             except AttributeError as e:
                 raise AttributeError(f"Could not serialize {obj} ({obj.__class__}). Orig. err: {e}") from e
 

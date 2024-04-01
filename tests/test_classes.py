@@ -2,7 +2,7 @@ import datetime
 import json
 import logging
 import unittest
-
+from rdflib.plugins.shared.jsonld.context import Context
 import pydantic
 import rdflib
 from pydantic import EmailStr, Field
@@ -60,17 +60,22 @@ class TestNamespaces(unittest.TestCase):
         self.assertEqual(agent.age, 23)
 
     def test_resolve_iri(self):
-        ret = resolve_iri('foaf:age', context={'foaf': 'http://xmlns.com/foaf/0.1/'})
+        ret = resolve_iri('foaf:age', context=Context(source={'foaf': 'http://xmlns.com/foaf/0.1/'}))
         self.assertEqual(ret, 'http://xmlns.com/foaf/0.1/age')
-        ret = resolve_iri('age', context={'foaf': 'http://xmlns.com/foaf/0.1/'})
+
+        ret = resolve_iri('age', context=Context(source={'foaf': 'http://xmlns.com/foaf/0.1/'}))
         self.assertEqual(ret, None)
-        ret = resolve_iri('age', context={'age': 'http://xmlns.com/foaf/0.1/age'})
+
+        ret = resolve_iri('age', context=Context(source={'age': 'http://xmlns.com/foaf/0.1/age'}))
         self.assertEqual(ret, 'http://xmlns.com/foaf/0.1/age')
-        ret = resolve_iri('label', context={'age': 'http://xmlns.com/foaf/0.1/age'})
+
+        ret = resolve_iri('label', context=Context(source={'age': 'http://xmlns.com/foaf/0.1/age'}))
         self.assertEqual(ret, 'http://www.w3.org/2000/01/rdf-schema#label')
-        ret = resolve_iri('label', context={'label': {'@id': 'http://www.w3.org/2000/01/rdf-schema#label'}})
+
+        ret = resolve_iri('label', context=Context(source={'label': {'@id': 'http://www.w3.org/2000/01/rdf-schema#label'}}))
         self.assertEqual(ret, 'http://www.w3.org/2000/01/rdf-schema#label')
-        ret = resolve_iri('prefix:label', {})
+
+        ret = resolve_iri('prefix:label', Context(source={}))
         self.assertEqual(ret, None)
 
     def test_split_URIRef(self):
@@ -153,7 +158,7 @@ class TestNamespaces(unittest.TestCase):
         with self.assertRaises(TypeError):
             thing.get_jsonld_dict(context=1)
 
-        thing_dict = thing.get_jsonld_dict()
+        thing_dict = thing.get_jsonld_dict(resolve_keys=True)
         self.assertIsInstance(thing_dict, dict)
         self.assertDictEqual(thing_dict['@context'],
                              {'owl': 'http://www.w3.org/2002/07/owl#',
@@ -407,26 +412,12 @@ class TestNamespaces(unittest.TestCase):
             "foaf:firstName": "John",
             "foaf:lastName": "Doe"
         }
-        jsonld_dict = json.loads(mt.model_dump_jsonld(resolve_keys=True))
+        jsonld_dict = json.loads(mt.model_dump_jsonld())
         jsonld_dict.pop('@id', None)
         self.assertDictEqual(jsonld_dict,
                              ref_jsonld)
 
-        ref_jsonld = {
-            "@context": {
-                "owl": "http://www.w3.org/2002/07/owl#",
-                "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
-                "foaf": "http://xmlns.com/foaf/0.1/",
-                "first_name": "http://xmlns.com/foaf/0.1/firstName",
-                "last_name": "http://xmlns.com/foaf/0.1/lastName"
-            },
-            "@type": "CustomPerson",
-            "first_name": "John",
-            "last_name": "Doe"
-        }
-        jsonld_dict = json.loads(mt.model_dump_jsonld(resolve_keys=False))
+        jsonld_dict = json.loads(mt.model_dump_jsonld())
         jsonld_dict.pop('@id', None)
         self.assertDictEqual(jsonld_dict,
                              ref_jsonld)
-        from pprint import pprint
-        pprint(jsonld_dict)

@@ -7,8 +7,8 @@ class LanguageExtension:
 
 class PIVMETA(DefinedNamespace):
     # uri = "https://w3id.org/nfdi4ing/metadata4ing#"
-    # Generated with None version 0.2.10
-    # Date: 2024-03-24 15:10:53.848424
+    # Generated with None version 0.2.15
+    # Date: 2024-03-30 18:33:56.363343
     _fail = True
     time: URIRef  # ['time']
     BackgroundImageGeneration: URIRef  # ['background image generation']
@@ -36,6 +36,8 @@ class PIVMETA(DefinedNamespace):
     PivProcessingStep: URIRef  # ['piv processing step']
     PivResultDistribution: URIRef  # ['piv result distribution']
     Singlepass: URIRef  # ['single pass']
+    Particle: URIRef  # ['Particle']
+    PivValidation: URIRef  # ['piv validation']
     hasStandardName: URIRef  # ['has standard name']
     pivImageType: URIRef  # ['piv image type']
     useOutlierReplacementScheme: URIRef  # ['uses outlier replacement scheme']
@@ -147,6 +149,8 @@ setattr(PIVMETA, "piv_pre_processing", PIVMETA.PivPreProcessing)
 setattr(PIVMETA, "piv_processing_step", PIVMETA.PivProcessingStep)
 setattr(PIVMETA, "piv_result_distribution", PIVMETA.PivResultDistribution)
 setattr(PIVMETA, "single_pass", PIVMETA.Singlepass)
+setattr(PIVMETA, "Particle", PIVMETA.Particle)
+setattr(PIVMETA, "piv_validation", PIVMETA.PivValidation)
 setattr(PIVMETA, "has_standard_name", PIVMETA.hasStandardName)
 setattr(PIVMETA, "piv_image_type", PIVMETA.pivImageType)
 setattr(PIVMETA, "uses_outlier_replacement_scheme", PIVMETA.useOutlierReplacementScheme)

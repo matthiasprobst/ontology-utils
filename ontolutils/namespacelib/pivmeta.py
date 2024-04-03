@@ -8,26 +8,31 @@ class LanguageExtension:
 class PIVMETA(DefinedNamespace):
     # uri = "https://w3id.org/nfdi4ing/metadata4ing#"
     # Generated with None version 0.2.15
-    # Date: 2024-03-30 18:33:56.363343
+    # Date: 2024-04-03 22:35:03.807320
     _fail = True
     time: URIRef  # ['time']
     BackgroundImageGeneration: URIRef  # ['background image generation']
     BackgroundSubtractionMethod: URIRef  # ['background subtraction']
+    CorrelationMethod: URIRef  # ['Correlation Method']
     DigitalCamera: URIRef  # ['Digital Camera']
     DigitalCameraModel: URIRef  # ['Digital Camera Model']
     ImageDewarp: URIRef  # ['image dewarp']
     ImageFilter: URIRef  # ['image filter']
+    ImageManipulationMethod: URIRef  # ['Image Manipulation Method']
     ImageRotation: URIRef  # ['image rotation']
-    ImageType: URIRef  # ['image type']
-    InterrogationMethod: URIRef  # ['interrogation method']
+    ImageType: URIRef  # ['Image Type']
+    InterrogationMethod: URIRef  # ['Interrogation Method']
+    LaserModel: URIRef  # ['Laser Model']
     MaskGeneration: URIRef  # ['mask generation']
-    Multigrid: URIRef  # ['multi grid']
-    Multipass: URIRef  # ['multi pass']
-    OutlierDetectionMethod: URIRef  # ['outlier detection method']
-    OutlierReplacementScheme: URIRef  # ['outlier replacement scheme']
+    Multigrid: URIRef  # ['Multigrid']
+    Multipass: URIRef  # ['Multipass']
+    OutlierDetectionMethod: URIRef  # ['Outlier Detection Method']
+    OutlierReplacementScheme: URIRef  # ['Outlier Replacement Scheme']
     PIVEvaluation: URIRef  # ['piv evaluation']
+    PIVHardware: URIRef  # ['PIV Hardware']
     PIVSoftware: URIRef  # ['Piv Software']
-    PeakSearchMethod: URIRef  # ['peak search method']
+    Particle: URIRef  # ['Particle']
+    PeakSearchMethod: URIRef  # ['Peak Search Method']
     PivDistribution: URIRef  # ['piv distribution']
     PivImageDistribution: URIRef  # ['piv image distribution']
     PivMaskDistribution: URIRef  # ['piv mask distribution']
@@ -35,30 +40,40 @@ class PIVMETA(DefinedNamespace):
     PivPreProcessing: URIRef  # ['piv pre processing']
     PivProcessingStep: URIRef  # ['piv processing step']
     PivResultDistribution: URIRef  # ['piv result distribution']
-    Singlepass: URIRef  # ['single pass']
-    Particle: URIRef  # ['Particle']
+    PivType: URIRef  # ['PIV Type']
     PivValidation: URIRef  # ['piv validation']
+    Singlepass: URIRef  # ['Singlepass']
+    SyntheticParticle: URIRef  # ['Synthetic Particle']
+    WindowWeightingFunction: URIRef  # ['Window Weighting Function']
     hasStandardName: URIRef  # ['has standard name']
+    outlierReplacementScheme: URIRef  # ['outlier replacement scheme']
     pivImageType: URIRef  # ['piv image type']
-    useOutlierReplacementScheme: URIRef  # ['uses outlier replacement scheme']
+    windowWeightingFunction: URIRef  # ['window weighting function']
     filenamePattern: URIRef  # ['filename pattern']
+    flagMeanings: URIRef  # ['flag meanings']
+    flagValues: URIRef  # ['flag values']
     fnumber: URIRef  # ['fnumber']
     material: URIRef  # ['material']
     numberOfRecords: URIRef  # ['number of records']
     ExperimentalImage: URIRef  # ['experimental image']
-    GaussWindowWeightingFunction: URIRef  # ['gauss']
-    Interpolation: URIRef  # ['interpolation']
+    GaussianWindow: URIRef  # ['Gaussian Window']
+    HammingWindow: URIRef  # ['Hamming Window']
+    HannWindow: URIRef  # ['Hann Window']
+    Interpolation: URIRef  # ['Interpolation']
     LeftRightFlip: URIRef  # ['left right flip']
+    MilliM_PER_PIXEL: URIRef  # ['millimetre per pixel']
+    ParticleImageVelocimetry: URIRef  # ['Particle Image Velocimetry']
+    ParticleTrackingVelocimetry: URIRef  # ['Particle Tracking Velocimetry']
     ReEvaluateWithLargerSample: URIRef  # ['re-evaluate with larger sample']
+    SpatialResolution: URIRef  # ['spatial resolution']
     SplitImage: URIRef  # ['split image']
-    SquareWindowWeightingFunction: URIRef  # ['square']
+    SquareWindow: URIRef  # ['Square Window']
     SyntheticImage: URIRef  # ['synthetic image']
     TopBottomFlip: URIRef  # ['top bottom flip']
     TryLowerOrderPeaks: URIRef  # ['try lower order peaks']
-    micro_piv: URIRef  # ['micro piv']
-    piv: URIRef  # ['piv']
+    TukeyWindow: URIRef  # ['Tukey Window']
+    microPIV: URIRef  # ['Micro PIV']
     piv_first_peak_correlation_coefficient: URIRef  # ['piv_first_peak_correlation_coefficient']
-    ptv: URIRef  # ['ptv']
     piv_correlation_coefficient: URIRef  # ['piv_correlation_coefficient']
     piv_second_peak_correlation_coefficient: URIRef  # ['piv_second_peak_correlation_coefficient']
     piv_third_peak_correlation_coefficient: URIRef  # ['piv_third_peak_correlation_coefficient']
@@ -80,7 +95,6 @@ class PIVMETA(DefinedNamespace):
     arithmetic_mean_of_seeding_particle_size: URIRef  # ['arithmetic_mean_of_seeding_particle_size']
     standard_deviation_of_seeding_particle_size: URIRef  # ['standard_deviation_of_seeding_particle_size']
     number_of_particles: URIRef  # ['number_of_particles']
-    laser_pulse_delay: URIRef  # ['laser_pulse_delay']
     saturated_pixel_number: URIRef  # ['saturated_pixel_number']
     second_peak_x_displacement: URIRef  # ['second_peak_x_displacement']
     second_peak_y_displacement: URIRef  # ['second_peak_y_displacement']
@@ -105,7 +119,10 @@ class PIVMETA(DefinedNamespace):
     y_final_interrogation_window_size: URIRef  # ['y_final_interrogation_window_size']
     y_initial_interrogation_window_size: URIRef  # ['y_initial_interrogation_window_size']
     y_pixel_coordinate: URIRef  # ['y_pixel_coordinate']
-    pixel_origin: URIRef  # ['pixel_origin']
+    x_image_origin_coordinate: URIRef  # ['x_image_origin_coordinate']
+    x_origin_offset: URIRef  # ['x_origin_offset']
+    y_image_origin_coordinate: URIRef  # ['y_image_origin_coordinate']
+    y_origin_offset: URIRef  # ['y_origin_offset']
     x_coordinate: URIRef  # ['x_coordinate']
     y_coordinate: URIRef  # ['y_coordinate']
     signal_to_noise_ratio: URIRef  # ['signal_to_noise_ratio']
@@ -120,27 +137,34 @@ class PIVMETA(DefinedNamespace):
     sensor_pixel_width_fill_factor: URIRef  # ['sensor_pixel_width_fill_factor']
     sensor_pixel_height_fill_factor: URIRef  # ['sensor_pixel_height_fill_factor']
     image_bit_depth: URIRef  # ['image_bit_depth']
+    optical_magnification: URIRef  # ['optical_magnification']
+    laser_pulse_delay: URIRef  # ['laser_pulse_delay']
 
     _NS = Namespace("https://matthiasprobst.github.io/pivmeta#")
 
 setattr(PIVMETA, "time", PIVMETA.time)
 setattr(PIVMETA, "background_image_generation", PIVMETA.BackgroundImageGeneration)
 setattr(PIVMETA, "background_subtraction", PIVMETA.BackgroundSubtractionMethod)
+setattr(PIVMETA, "Correlation_Method", PIVMETA.CorrelationMethod)
 setattr(PIVMETA, "Digital_Camera", PIVMETA.DigitalCamera)
 setattr(PIVMETA, "Digital_Camera_Model", PIVMETA.DigitalCameraModel)
 setattr(PIVMETA, "image_dewarp", PIVMETA.ImageDewarp)
 setattr(PIVMETA, "image_filter", PIVMETA.ImageFilter)
+setattr(PIVMETA, "Image_Manipulation_Method", PIVMETA.ImageManipulationMethod)
 setattr(PIVMETA, "image_rotation", PIVMETA.ImageRotation)
-setattr(PIVMETA, "image_type", PIVMETA.ImageType)
-setattr(PIVMETA, "interrogation_method", PIVMETA.InterrogationMethod)
+setattr(PIVMETA, "Image_Type", PIVMETA.ImageType)
+setattr(PIVMETA, "Interrogation_Method", PIVMETA.InterrogationMethod)
+setattr(PIVMETA, "Laser_Model", PIVMETA.LaserModel)
 setattr(PIVMETA, "mask_generation", PIVMETA.MaskGeneration)
-setattr(PIVMETA, "multi_grid", PIVMETA.Multigrid)
-setattr(PIVMETA, "multi_pass", PIVMETA.Multipass)
-setattr(PIVMETA, "outlier_detection_method", PIVMETA.OutlierDetectionMethod)
-setattr(PIVMETA, "outlier_replacement_scheme", PIVMETA.OutlierReplacementScheme)
+setattr(PIVMETA, "Multigrid", PIVMETA.Multigrid)
+setattr(PIVMETA, "Multipass", PIVMETA.Multipass)
+setattr(PIVMETA, "Outlier_Detection_Method", PIVMETA.OutlierDetectionMethod)
+setattr(PIVMETA, "Outlier_Replacement_Scheme", PIVMETA.OutlierReplacementScheme)
 setattr(PIVMETA, "piv_evaluation", PIVMETA.PIVEvaluation)
+setattr(PIVMETA, "PIV_Hardware", PIVMETA.PIVHardware)
 setattr(PIVMETA, "Piv_Software", PIVMETA.PIVSoftware)
-setattr(PIVMETA, "peak_search_method", PIVMETA.PeakSearchMethod)
+setattr(PIVMETA, "Particle", PIVMETA.Particle)
+setattr(PIVMETA, "Peak_Search_Method", PIVMETA.PeakSearchMethod)
 setattr(PIVMETA, "piv_distribution", PIVMETA.PivDistribution)
 setattr(PIVMETA, "piv_image_distribution", PIVMETA.PivImageDistribution)
 setattr(PIVMETA, "piv_mask_distribution", PIVMETA.PivMaskDistribution)
@@ -148,30 +172,40 @@ setattr(PIVMETA, "piv_post_processing", PIVMETA.PivPostProcessing)
 setattr(PIVMETA, "piv_pre_processing", PIVMETA.PivPreProcessing)
 setattr(PIVMETA, "piv_processing_step", PIVMETA.PivProcessingStep)
 setattr(PIVMETA, "piv_result_distribution", PIVMETA.PivResultDistribution)
-setattr(PIVMETA, "single_pass", PIVMETA.Singlepass)
-setattr(PIVMETA, "Particle", PIVMETA.Particle)
+setattr(PIVMETA, "PIV_Type", PIVMETA.PivType)
 setattr(PIVMETA, "piv_validation", PIVMETA.PivValidation)
+setattr(PIVMETA, "Singlepass", PIVMETA.Singlepass)
+setattr(PIVMETA, "Synthetic_Particle", PIVMETA.SyntheticParticle)
+setattr(PIVMETA, "Window_Weighting_Function", PIVMETA.WindowWeightingFunction)
 setattr(PIVMETA, "has_standard_name", PIVMETA.hasStandardName)
+setattr(PIVMETA, "outlier_replacement_scheme", PIVMETA.outlierReplacementScheme)
 setattr(PIVMETA, "piv_image_type", PIVMETA.pivImageType)
-setattr(PIVMETA, "uses_outlier_replacement_scheme", PIVMETA.useOutlierReplacementScheme)
+setattr(PIVMETA, "window_weighting_function", PIVMETA.windowWeightingFunction)
 setattr(PIVMETA, "filename_pattern", PIVMETA.filenamePattern)
+setattr(PIVMETA, "flag_meanings", PIVMETA.flagMeanings)
+setattr(PIVMETA, "flag_values", PIVMETA.flagValues)
 setattr(PIVMETA, "fnumber", PIVMETA.fnumber)
 setattr(PIVMETA, "material", PIVMETA.material)
 setattr(PIVMETA, "number_of_records", PIVMETA.numberOfRecords)
 setattr(PIVMETA, "experimental_image", PIVMETA.ExperimentalImage)
-setattr(PIVMETA, "gauss", PIVMETA.GaussWindowWeightingFunction)
-setattr(PIVMETA, "interpolation", PIVMETA.Interpolation)
+setattr(PIVMETA, "Gaussian_Window", PIVMETA.GaussianWindow)
+setattr(PIVMETA, "Hamming_Window", PIVMETA.HammingWindow)
+setattr(PIVMETA, "Hann_Window", PIVMETA.HannWindow)
+setattr(PIVMETA, "Interpolation", PIVMETA.Interpolation)
 setattr(PIVMETA, "left_right_flip", PIVMETA.LeftRightFlip)
+setattr(PIVMETA, "millimetre_per_pixel", PIVMETA.MilliM_PER_PIXEL)
+setattr(PIVMETA, "Particle_Image_Velocimetry", PIVMETA.ParticleImageVelocimetry)
+setattr(PIVMETA, "Particle_Tracking_Velocimetry", PIVMETA.ParticleTrackingVelocimetry)
 setattr(PIVMETA, "re-evaluate_with_larger_sample", PIVMETA.ReEvaluateWithLargerSample)
+setattr(PIVMETA, "spatial_resolution", PIVMETA.SpatialResolution)
 setattr(PIVMETA, "split_image", PIVMETA.SplitImage)
-setattr(PIVMETA, "square", PIVMETA.SquareWindowWeightingFunction)
+setattr(PIVMETA, "Square_Window", PIVMETA.SquareWindow)
 setattr(PIVMETA, "synthetic_image", PIVMETA.SyntheticImage)
 setattr(PIVMETA, "top_bottom_flip", PIVMETA.TopBottomFlip)
 setattr(PIVMETA, "try_lower_order_peaks", PIVMETA.TryLowerOrderPeaks)
-setattr(PIVMETA, "micro_piv", PIVMETA.micro_piv)
-setattr(PIVMETA, "piv", PIVMETA.piv)
+setattr(PIVMETA, "Tukey_Window", PIVMETA.TukeyWindow)
+setattr(PIVMETA, "Micro_PIV", PIVMETA.microPIV)
 setattr(PIVMETA, "piv_first_peak_correlation_coefficient", PIVMETA.piv_first_peak_correlation_coefficient)
-setattr(PIVMETA, "ptv", PIVMETA.ptv)
 setattr(PIVMETA, "piv_correlation_coefficient", PIVMETA.piv_correlation_coefficient)
 setattr(PIVMETA, "piv_second_peak_correlation_coefficient", PIVMETA.piv_second_peak_correlation_coefficient)
 setattr(PIVMETA, "piv_third_peak_correlation_coefficient", PIVMETA.piv_third_peak_correlation_coefficient)
@@ -193,7 +227,6 @@ setattr(PIVMETA, "model_laser_sheet_shape_factor", PIVMETA.model_laser_sheet_sha
 setattr(PIVMETA, "arithmetic_mean_of_seeding_particle_size", PIVMETA.arithmetic_mean_of_seeding_particle_size)
 setattr(PIVMETA, "standard_deviation_of_seeding_particle_size", PIVMETA.standard_deviation_of_seeding_particle_size)
 setattr(PIVMETA, "number_of_particles", PIVMETA.number_of_particles)
-setattr(PIVMETA, "laser_pulse_delay", PIVMETA.laser_pulse_delay)
 setattr(PIVMETA, "saturated_pixel_number", PIVMETA.saturated_pixel_number)
 setattr(PIVMETA, "second_peak_x_displacement", PIVMETA.second_peak_x_displacement)
 setattr(PIVMETA, "second_peak_y_displacement", PIVMETA.second_peak_y_displacement)
@@ -218,7 +251,10 @@ setattr(PIVMETA, "y_final_interrogation_window_overlap_size", PIVMETA.y_final_in
 setattr(PIVMETA, "y_final_interrogation_window_size", PIVMETA.y_final_interrogation_window_size)
 setattr(PIVMETA, "y_initial_interrogation_window_size", PIVMETA.y_initial_interrogation_window_size)
 setattr(PIVMETA, "y_pixel_coordinate", PIVMETA.y_pixel_coordinate)
-setattr(PIVMETA, "pixel_origin", PIVMETA.pixel_origin)
+setattr(PIVMETA, "x_image_origin_coordinate", PIVMETA.x_image_origin_coordinate)
+setattr(PIVMETA, "x_origin_offset", PIVMETA.x_origin_offset)
+setattr(PIVMETA, "y_image_origin_coordinate", PIVMETA.y_image_origin_coordinate)
+setattr(PIVMETA, "y_origin_offset", PIVMETA.y_origin_offset)
 setattr(PIVMETA, "x_coordinate", PIVMETA.x_coordinate)
 setattr(PIVMETA, "y_coordinate", PIVMETA.y_coordinate)
 setattr(PIVMETA, "signal_to_noise_ratio", PIVMETA.signal_to_noise_ratio)
@@ -233,3 +269,5 @@ setattr(PIVMETA, "sensor_pixel_height", PIVMETA.sensor_pixel_height)
 setattr(PIVMETA, "sensor_pixel_width_fill_factor", PIVMETA.sensor_pixel_width_fill_factor)
 setattr(PIVMETA, "sensor_pixel_height_fill_factor", PIVMETA.sensor_pixel_height_fill_factor)
 setattr(PIVMETA, "image_bit_depth", PIVMETA.image_bit_depth)
+setattr(PIVMETA, "optical_magnification", PIVMETA.optical_magnification)
+setattr(PIVMETA, "laser_pulse_delay", PIVMETA.laser_pulse_delay)

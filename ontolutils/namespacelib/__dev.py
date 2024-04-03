@@ -19,6 +19,7 @@ from ontolutils import __version__
 __this_dir__ = pathlib.Path(__file__).parent
 __package_dir__ = __this_dir__.parent / 'namespacelib'
 
+FORCE_DOWNLOAD = True
 
 def generate_namespace_file_from_ttl(namespace: str,
                                      source: str,
@@ -74,7 +75,8 @@ def generate_namespace_file_from_context(namespace: str,
     languages = languages or {}
     assert isinstance(languages, dict)
     context_file = __this_dir__ / f'{namespace}.jsonld'
-    if not context_file.exists():
+
+    if not context_file.exists() or FORCE_DOWNLOAD:
         with open(context_file, 'w', encoding='utf-8') as f:
             f.write(requests.get(context_ld).text, )
 

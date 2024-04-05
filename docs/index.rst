@@ -3,6 +3,11 @@ Documentation
 
 **Ontolutils** is a Python package that provides a object-oriented way of working with ontologies.
 Also, namespace objects are available to easily work with IRIs.
+It is maintained on `GitHub <https://github.com/matthiasprobst/ontology-utils>`_ and can be installed via pip:
+
+.. code-block:: bash
+
+    pip install ontolutils
 
 The package mainly depends on two libraries:
 

@@ -79,4 +79,5 @@ class TestUtils(unittest.TestCase):
 
         text_filename.unlink(missing_ok=True)
 
-        shutil.rmtree('not/existing/dir')
+        if pathlib.Path('not/existing/dir').exists():
+            shutil.rmtree('not/existing/dir')

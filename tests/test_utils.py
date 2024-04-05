@@ -1,4 +1,5 @@
 import pathlib
+import shutil
 import unittest
 from hashlib import sha256
 
@@ -77,3 +78,5 @@ class TestUtils(unittest.TestCase):
         self.assertTrue(text_filename.exists())
 
         text_filename.unlink(missing_ok=True)
+
+        shutil.rmtree('not/existing/dir')

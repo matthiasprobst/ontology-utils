@@ -123,7 +123,10 @@ def generate_namespace_file_from_context(namespace: str,
         for k, v in iris.items():
             if k not in fields:
                 fields.append(k)
-                f.write(f'\n    {k}: URIRef  # {v["keys"]}')
+                if '-' in k:
+                    f.write(f'\n    {k.replace("-", "_")} = URIRef("{url}{k}")  # {v["keys"]}')
+                else:
+                    f.write(f'\n    {k}: URIRef  # {v["keys"]}')
 
         f.write(f'\n\n    _NS = Namespace("{url}")')
 
@@ -138,10 +141,10 @@ def generate_namespace_file_from_context(namespace: str,
                 key = kk.replace(' ', '_')
                 for lang_key, lang_values in languages.items():
                     if key in lang_values:
-                        f.write(f'\nsetattr({lang_key}, "{key}", {namespace.upper()}.{k})')
+                        f.write(f'\nsetattr({lang_key}, "{key}", {namespace.upper()}.{k.replace("-", "_")})')
                         found_language_key = True
                 if not found_language_key:
-                    f.write(f'\nsetattr({namespace.upper()}, "{key}", {namespace.upper()}.{k})')
+                    f.write(f'\nsetattr({namespace.upper()}, "{key}", {namespace.upper()}.{k.replace("-", "_")})')
 
         for lang in languages:
             f.write(f'\n\nsetattr({namespace.upper()}, "{lang}", {lang})')

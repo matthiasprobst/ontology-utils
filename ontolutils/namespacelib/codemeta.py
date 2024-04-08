@@ -7,8 +7,8 @@ class LanguageExtension:
 
 class CODEMETA(DefinedNamespace):
     # uri = "https://w3id.org/nfdi4ing/metadata4ing#"
-    # Generated with None version 0.2.10
-    # Date: 2024-03-24 15:10:54.311802
+    # Generated with None version 0.2.16
+    # Date: 2024-04-08 15:01:30.249226
     _fail = True
     softwareSuggestions: URIRef  # ['softwareSuggestions']
     contIntegration: URIRef  # ['contIntegration']

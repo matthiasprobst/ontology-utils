@@ -7,8 +7,8 @@ class LanguageExtension:
 
 class PIVMETA(DefinedNamespace):
     # uri = "https://w3id.org/nfdi4ing/metadata4ing#"
-    # Generated with None version 0.2.15
-    # Date: 2024-04-03 22:35:03.807320
+    # Generated with None version 0.2.16
+    # Date: 2024-04-08 15:01:29.767768
     _fail = True
     time: URIRef  # ['time']
     BackgroundImageGeneration: URIRef  # ['background image generation']
@@ -61,7 +61,8 @@ class PIVMETA(DefinedNamespace):
     HannWindow: URIRef  # ['Hann Window']
     Interpolation: URIRef  # ['Interpolation']
     LeftRightFlip: URIRef  # ['left right flip']
-    MilliM_PER_PIXEL: URIRef  # ['millimetre per pixel']
+    MilliM_PER_PIXEL = URIRef("https://matthiasprobst.github.io/pivmeta#MilliM-PER-PIXEL")  # ['millimetre per pixel']
+    PER_PIXEL = URIRef("https://matthiasprobst.github.io/pivmeta#PER-PIXEL")  # ['per pixel']
     ParticleImageVelocimetry: URIRef  # ['Particle Image Velocimetry']
     ParticleTrackingVelocimetry: URIRef  # ['Particle Tracking Velocimetry']
     ReEvaluateWithLargerSample: URIRef  # ['re-evaluate with larger sample']
@@ -79,13 +80,20 @@ class PIVMETA(DefinedNamespace):
     piv_third_peak_correlation_coefficient: URIRef  # ['piv_third_peak_correlation_coefficient']
     first_peak_x_displacement: URIRef  # ['first_peak_x_displacement']
     first_peak_y_displacement: URIRef  # ['first_peak_y_displacement']
+    x_derivative_of_x_velocity: URIRef  # ['x_derivative_of_x_velocity']
+    x_derivative_of_y_velocity: URIRef  # ['x_derivative_of_y_velocity']
+    y_derivative_of_x_velocity: URIRef  # ['y_derivative_of_x_velocity']
+    y_derivative_of_y_velocity: URIRef  # ['y_derivative_of_y_velocity']
+    x_derivative_of_z_velocity: URIRef  # ['x_derivative_of_z_velocity']
+    y_derivative_of_z_velocity: URIRef  # ['y_derivative_of_z_velocity']
+    z_derivative_of_x_velocity: URIRef  # ['z_derivative_of_x_velocity']
     piv_flag: URIRef  # ['piv_flag']
     image_particle_density: URIRef  # ['image_particle_density']
     image_density: URIRef  # ['image_density']
     image_particle_diameter: URIRef  # ['image_particle_diameter']
     arithmetic_mean_of_image_particle_diameter: URIRef  # ['arithmetic_mean_of_image_particle_diameter']
     standard_deviation_of_image_particle_diameter: URIRef  # ['standard_deviation_of_image_particle_diameter']
-    piv_image_index: URIRef  # ['piv_image_index']
+    image_index: URIRef  # ['image_index']
     inplane_velocity: URIRef  # ['inplane_velocity']
     x_inplane_velocity: URIRef  # ['x_inplane_velocity']
     y_inplane_velocity: URIRef  # ['y_inplane_velocity']
@@ -119,9 +127,9 @@ class PIVMETA(DefinedNamespace):
     y_final_interrogation_window_size: URIRef  # ['y_final_interrogation_window_size']
     y_initial_interrogation_window_size: URIRef  # ['y_initial_interrogation_window_size']
     y_pixel_coordinate: URIRef  # ['y_pixel_coordinate']
-    x_image_origin_coordinate: URIRef  # ['x_image_origin_coordinate']
+    x_image_coordinate: URIRef  # ['x_image_coordinate']
     x_origin_offset: URIRef  # ['x_origin_offset']
-    y_image_origin_coordinate: URIRef  # ['y_image_origin_coordinate']
+    y_image_coordinate: URIRef  # ['y_image_coordinate']
     y_origin_offset: URIRef  # ['y_origin_offset']
     x_coordinate: URIRef  # ['x_coordinate']
     y_coordinate: URIRef  # ['y_coordinate']
@@ -194,6 +202,7 @@ setattr(PIVMETA, "Hann_Window", PIVMETA.HannWindow)
 setattr(PIVMETA, "Interpolation", PIVMETA.Interpolation)
 setattr(PIVMETA, "left_right_flip", PIVMETA.LeftRightFlip)
 setattr(PIVMETA, "millimetre_per_pixel", PIVMETA.MilliM_PER_PIXEL)
+setattr(PIVMETA, "per_pixel", PIVMETA.PER_PIXEL)
 setattr(PIVMETA, "Particle_Image_Velocimetry", PIVMETA.ParticleImageVelocimetry)
 setattr(PIVMETA, "Particle_Tracking_Velocimetry", PIVMETA.ParticleTrackingVelocimetry)
 setattr(PIVMETA, "re-evaluate_with_larger_sample", PIVMETA.ReEvaluateWithLargerSample)
@@ -211,13 +220,20 @@ setattr(PIVMETA, "piv_second_peak_correlation_coefficient", PIVMETA.piv_second_p
 setattr(PIVMETA, "piv_third_peak_correlation_coefficient", PIVMETA.piv_third_peak_correlation_coefficient)
 setattr(PIVMETA, "first_peak_x_displacement", PIVMETA.first_peak_x_displacement)
 setattr(PIVMETA, "first_peak_y_displacement", PIVMETA.first_peak_y_displacement)
+setattr(PIVMETA, "x_derivative_of_x_velocity", PIVMETA.x_derivative_of_x_velocity)
+setattr(PIVMETA, "x_derivative_of_y_velocity", PIVMETA.x_derivative_of_y_velocity)
+setattr(PIVMETA, "y_derivative_of_x_velocity", PIVMETA.y_derivative_of_x_velocity)
+setattr(PIVMETA, "y_derivative_of_y_velocity", PIVMETA.y_derivative_of_y_velocity)
+setattr(PIVMETA, "x_derivative_of_z_velocity", PIVMETA.x_derivative_of_z_velocity)
+setattr(PIVMETA, "y_derivative_of_z_velocity", PIVMETA.y_derivative_of_z_velocity)
+setattr(PIVMETA, "z_derivative_of_x_velocity", PIVMETA.z_derivative_of_x_velocity)
 setattr(PIVMETA, "piv_flag", PIVMETA.piv_flag)
 setattr(PIVMETA, "image_particle_density", PIVMETA.image_particle_density)
 setattr(PIVMETA, "image_density", PIVMETA.image_density)
 setattr(PIVMETA, "image_particle_diameter", PIVMETA.image_particle_diameter)
 setattr(PIVMETA, "arithmetic_mean_of_image_particle_diameter", PIVMETA.arithmetic_mean_of_image_particle_diameter)
 setattr(PIVMETA, "standard_deviation_of_image_particle_diameter", PIVMETA.standard_deviation_of_image_particle_diameter)
-setattr(PIVMETA, "piv_image_index", PIVMETA.piv_image_index)
+setattr(PIVMETA, "image_index", PIVMETA.image_index)
 setattr(PIVMETA, "inplane_velocity", PIVMETA.inplane_velocity)
 setattr(PIVMETA, "x_inplane_velocity", PIVMETA.x_inplane_velocity)
 setattr(PIVMETA, "y_inplane_velocity", PIVMETA.y_inplane_velocity)
@@ -251,9 +267,9 @@ setattr(PIVMETA, "y_final_interrogation_window_overlap_size", PIVMETA.y_final_in
 setattr(PIVMETA, "y_final_interrogation_window_size", PIVMETA.y_final_interrogation_window_size)
 setattr(PIVMETA, "y_initial_interrogation_window_size", PIVMETA.y_initial_interrogation_window_size)
 setattr(PIVMETA, "y_pixel_coordinate", PIVMETA.y_pixel_coordinate)
-setattr(PIVMETA, "x_image_origin_coordinate", PIVMETA.x_image_origin_coordinate)
+setattr(PIVMETA, "x_image_coordinate", PIVMETA.x_image_coordinate)
 setattr(PIVMETA, "x_origin_offset", PIVMETA.x_origin_offset)
-setattr(PIVMETA, "y_image_origin_coordinate", PIVMETA.y_image_origin_coordinate)
+setattr(PIVMETA, "y_image_coordinate", PIVMETA.y_image_coordinate)
 setattr(PIVMETA, "y_origin_offset", PIVMETA.y_origin_offset)
 setattr(PIVMETA, "x_coordinate", PIVMETA.x_coordinate)
 setattr(PIVMETA, "y_coordinate", PIVMETA.y_coordinate)

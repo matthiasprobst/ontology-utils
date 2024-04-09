@@ -12,7 +12,7 @@ import pathlib
 import requests
 import warnings
 from rdflib import Graph
-from typing import Iterable, Dict, Union
+from typing import Iterable, Dict, Union, Optional
 
 from ontolutils import __version__
 
@@ -21,10 +21,11 @@ __package_dir__ = __this_dir__.parent / 'namespacelib'
 
 FORCE_DOWNLOAD = True
 
+
 def generate_namespace_file_from_ttl(namespace: str,
                                      source: str,
                                      ns: str,
-                                     target_dir: Union[str, pathlib.Path, None] = None,
+                                     target_dir: Optional[Union[str, pathlib.Path]] = None,
                                      fail=True):
     """Generate M4I_NAMESPACE.py file from m4i_context.jsonld
     """
@@ -68,9 +69,10 @@ def generate_namespace_file_from_ttl(namespace: str,
 
 def generate_namespace_file_from_context(namespace: str,
                                          context_ld: str,
-                                         languages: Dict[str, Iterable[str]] = None,
-                                         target_dir: Union[str, pathlib.Path, None] = None,
-                                         fail=True):
+                                         languages: Optional[Dict[str, Iterable[str]]] = None,
+                                         target_dir: Optional[Union[str, pathlib.Path]] = None,
+                                         fail: bool = True,
+                                         filename: Optional[Union[str, pathlib.Path]] = None):
     """Generate M4I_NAMESPACE.py file from m4i_context.jsonld"""
     languages = languages or {}
     assert isinstance(languages, dict)
@@ -110,7 +112,12 @@ def generate_namespace_file_from_context(namespace: str,
         target_dir = pathlib.Path(target_dir)
 
     fields = []
-    with open(target_dir / f'{namespace}.py', 'w',
+
+    if filename is None:
+        filename = target_dir / f'{namespace}.py'
+    else:
+        filename = pathlib.Path(filename)
+    with open(filename, 'w',
               encoding='UTF8') as f:
         f.write('from rdflib.namespace import DefinedNamespace, Namespace\n')
         f.write('from rdflib.term import URIRef\n')
@@ -148,7 +155,7 @@ def generate_namespace_file_from_context(namespace: str,
 
         for lang in languages:
             f.write(f'\n\nsetattr({namespace.upper()}, "{lang}", {lang})')
-    # context_file.unlink()
+    context_file.unlink(missing_ok=True)
 
 
 def m4i():
@@ -284,10 +291,11 @@ def schema():
     )
 
 
-def pivmeta():
+def pivmeta(filename: Union[str, pathlib.Path] = None):
     generate_namespace_file_from_context(
         namespace='pivmeta',
         context_ld='https://raw.githubusercontent.com/matthiasprobst/pivmeta/main/pivmeta_context.jsonld',
+        filename=filename
     )
 
 
@@ -307,35 +315,35 @@ def codemeta():
 
 def build_namespace_files():
     """Call this only if you are a developer and want to build the namespace files"""
-    with open(__package_dir__ / '__init__.py', 'w') as f:
-        f.write('"""Auto-generated file. Do not edit!"""\n')
+    # with open(__package_dir__ / '__init__.py', 'w') as f:
+    #     f.write('"""Auto-generated file. Do not edit!"""\n')
     # f.write('from ._version import __version__\n')
 
-    with open(__package_dir__ / '__init__.py', 'a') as f:
-        m4i()
+    m4i()
 
-        obo()
+    obo()
 
-        qudt_unit()
+    qudt_unit()
 
-        qudt_quantitykind()
+    qudt_quantitykind()
 
-        pivmeta()
+    # pivmeta()
 
-        codemeta()
+    codemeta()
 
-        schema()
+    schema()
 
-        ssno()
-        f.write('from .m4i import M4I\n')
-        f.write('from .obo import OBO\n')
-        f.write('from .pivmeta import PIVMETA\n')
-        f.write('from .codemeta import CODEMETA\n')
-        f.write('from .qudt_unit import QUDT_UNIT\n')
-        f.write('from .qudt_kind import QUDT_KIND\n')
-        f.write('from .schema import SCHEMA\n')
-        f.write('from .ssno import SSNO\n')
-        f.write('from ._iana_utils import IANA\n')
+    ssno()
+    # with open(__package_dir__ / '__init__.py', 'a') as f:
+    # f.write('from .m4i import M4I\n')
+    # f.write('from .obo import OBO\n')
+    # f.write('from .pivmeta import PIVMETA\n')
+    # f.write('from .codemeta import CODEMETA\n')
+    # f.write('from .qudt_unit import QUDT_UNIT\n')
+    # f.write('from .qudt_kind import QUDT_KIND\n')
+    # f.write('from .schema import SCHEMA\n')
+    # f.write('from .ssno import SSNO\n')
+    # f.write('from ._iana_utils import IANA\n')
 
     for jld in __package_dir__.glob('*.jsonld'):
         jld.unlink()

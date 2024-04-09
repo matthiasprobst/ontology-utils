@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.2.18
+
+- solving problem of changing ontologies which are under development by generating the
+  context python files dynamically, which takes time but is better than having to update the package every time the
+
+## v0.2.12 - v0.2.17
+
+- updates according to changes in context.jsonld of the ontologies
+- bugfixes
+
 ## v0.2.11
 
 - Fixed duplicates in namespaces

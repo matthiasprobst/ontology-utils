@@ -123,7 +123,7 @@ def generate_namespace_file_from_context(namespace: str,
         f.write('from rdflib.term import URIRef\n')
         f.write('\n\nclass LanguageExtension:\n    pass')
         f.write(f'\n\nclass {namespace.upper()}(DefinedNamespace):')
-        f.write('\n    # uri = "https://w3id.org/nfdi4ing/metadata4ing#"')
+        f.write(f'\n    # uri = "{url}"')
         f.write(f'\n    # Generated with {__package__} version {__version__}')
         f.write(f'\n    # Date: {datetime.datetime.now()}')
         f.write(f'\n    _fail = {fail}')

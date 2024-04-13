@@ -1,6 +1,8 @@
 """Auto-generated file. Do not edit!"""
 import sys
 
+import requests
+
 from . import __dev
 from ._iana_utils import IANA
 from .codemeta import CODEMETA
@@ -13,7 +15,10 @@ from .ssno import SSNO
 from ..cache import package_user_dir
 
 # create pivmeta module in local user directory
-__dev.pivmeta(filename=package_user_dir / 'pivmeta.py')
+try:
+    __dev.pivmeta(filename=package_user_dir / 'pivmeta.py')
+except requests.exceptions.ConnectionError:
+    pass  # no internet connection, the pivmeta module may not be up to date
 
 sys.path.insert(0, str(package_user_dir))
 

@@ -93,6 +93,12 @@ class TestNamespaces(unittest.TestCase):
     def test_thing_custom_prop(self):
         """It is helpful to have the properties equal to the urirefs keys,
         however, this should not be required!"""
+        @namespaces(foaf='http://xmlns.com/foaf/0.1/',
+                    schema='http://www.schema.org/')
+        @urirefs(Affiliation='prov:Affiliation',
+                 name='schema:name')
+        class Affiliation(Thing):
+            name: str
 
         @namespaces(foaf='http://xmlns.com/foaf/0.1/',
                     prov='http://www.w3.org/ns/prov#')
@@ -104,9 +110,14 @@ class TestNamespaces(unittest.TestCase):
             first_name: str = Field(default=None, alias='firstName')
             lastName: str
             age: int = None
+            affiliation: Affiliation=None
 
         p = Person(first_name='John', lastName='Doe', age=23)
-        print(p.model_dump_jsonld(resolve_keys=True))
+        person_json = p.model_dump_jsonld(resolve_keys=False)
+        self.assertEqual(json.loads(person_json)['first_name'], 'John')
+        person_json = p.model_dump_jsonld(resolve_keys=True)
+        self.assertEqual(json.loads(person_json)['foaf:firstName'], 'John')
+
         p_from_jsonld = Person.from_jsonld(data=p.model_dump_jsonld(resolve_keys=True), limit=1)
         self.assertEqual(p_from_jsonld.first_name, 'John')
         self.assertEqual(p_from_jsonld.lastName, 'Doe')
@@ -322,7 +333,14 @@ class TestNamespaces(unittest.TestCase):
                 label='Organization 1'
             ),
         )
-        jsonld_str = person.model_dump_jsonld()
+        jsonld_str = person.model_dump_jsonld(resolve_keys=True)
+        jsonld_dict = json.loads(jsonld_str)
+
+        self.assertEqual(jsonld_dict['schema:affiliation']['@type'], 'prov:Organization')
+        self.assertEqual(jsonld_dict['schema:affiliation']['rdfs:label'], 'Organization 1')
+        self.assertEqual(jsonld_dict['rdfs:label'], 'Person 1')
+        self.assertEqual(jsonld_dict['@type'], 'foaf:Person')
+
 
     def test_prov(self):
         @namespaces(prov="https://www.w3.org/ns/prov#",

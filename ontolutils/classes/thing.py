@@ -190,13 +190,13 @@ class Thing(ThingModel):
 
         at_context.update(**context)
 
-        ctx = Context(source={**at_context, **URIRefManager.get(self.__class__)})
+        # ctx = Context(source={**at_context, **URIRefManager.get(self.__class__)})
 
         logger.debug(f'The context is "{at_context}".')
 
         def _serialize_fields(
                 obj: Union[ThingModel, int, str, float, bool, datetime],
-                exclude_none: bool
+                _exclude_none: bool
         ) -> Union[Dict, int, str, float, bool]:
             """Serializes the fields of a Thing object into a json-ld
             dictionary (without context!). Note, that IDs can automatically be
@@ -208,7 +208,7 @@ class Thing(ThingModel):
                 The object to serialize (a subclass of ThingModel). All other types will
                 be returned as is. One exception is datetime, which will be serialized
                 to an ISO string.
-            exclude_none: bool=True
+            _exclude_none: bool=True
                 If True, fields with None values will be excluded from the
                 serialization
 
@@ -225,12 +225,16 @@ class Thing(ThingModel):
             uri_ref_manager = URIRefManager.get(obj.__class__, None)
             at_context.update(NamespaceManager.get(obj.__class__, {}))
 
+            obj_ctx = Context(source={**context,
+                                      **NamespaceManager.get(obj.__class__, {}),
+                                      **URIRefManager.get(obj.__class__)})
+
             if uri_ref_manager is None:
                 return str(obj)
 
             try:
                 serialized_fields = {}
-                for k in obj.model_dump(exclude_none=exclude_none):
+                for k in obj.model_dump(exclude_none=_exclude_none):
                     value = getattr(obj, k)
                     if value is not None and k not in ('id', '@id'):
                         iri = uri_ref_manager.get(k, k)
@@ -240,9 +244,9 @@ class Thing(ThingModel):
                         if resolve_keys:
                             serialized_fields[iri] = value
                         else:
-                            term = ctx.find_term(ctx.expand(iri))
+                            term = obj_ctx.find_term(obj_ctx.expand(iri))
                             if term:
-                                if ctx.shrink_iri(term.id).split(':')[1] != k:
+                                if obj_ctx.shrink_iri(term.id).split(':')[1] != k:
                                     at_context[k] = term.id
                                     serialized_fields[k] = value
                                 else:
@@ -255,14 +259,14 @@ class Thing(ThingModel):
                 _field = serialized_fields.pop(k)
                 key = k
                 if isinstance(v, Thing):
-                    serialized_fields[key] = _serialize_fields(v, exclude_none=exclude_none)
+                    serialized_fields[key] = _serialize_fields(v, _exclude_none=_exclude_none)
                 elif isinstance(v, list):
                     serialized_fields[key] = [
-                        _serialize_fields(i, exclude_none=exclude_none) for i in v]
+                        _serialize_fields(i, _exclude_none=_exclude_none) for i in v]
                 elif isinstance(v, (int, float)):
                     serialized_fields[key] = v
                 else:
-                    serialized_fields[key] = _serialize_fields(v, exclude_none=exclude_none)
+                    serialized_fields[key] = _serialize_fields(v, _exclude_none=_exclude_none)
 
             _type = URIRefManager[obj.__class__].get(obj.__class__.__name__, obj.__class__.__name__)
 
@@ -275,7 +279,7 @@ class Thing(ThingModel):
                     out["@id"] = rdflib.BNode().n3()
             return out
 
-        serialization = _serialize_fields(self, exclude_none=exclude_none)
+        serialization = _serialize_fields(self, _exclude_none=exclude_none)
 
         jsonld = {
             "@context": at_context,

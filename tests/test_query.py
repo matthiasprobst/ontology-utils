@@ -181,6 +181,56 @@ class TestQuery(unittest.TestCase):
         self.assertEqual(len(found_agents), 1)
         self.assertEqual(found_agents[0].mbox, 'e@mail.com')
 
+        with open(__this_dir__ / 'agent.jsonld', 'w') as f:
+            f.write(
+                """
+                {
+                    "@context": {
+                        "prov": "https://www.w3.org/ns/prov#",
+                        "foaf": "http://xmlns.com/foaf/0.1/"
+                    },
+                    "@graph": [
+                        {
+                            "@id": "local:agent1",
+                            "@type": "prov:Agent",
+                            "foaf:mbox": "a@mail.com"
+                        },
+                        {
+                            "@id": "local:agent2",
+                            "@type": "prov:Agent",
+                            "foaf:mbox": "b@mail.com"
+                        },
+                        {
+                            "@id": "local:agent3",
+                            "@type": "prov:Agent",
+                            "foaf:mbox": "c@mail.com"
+                        }
+                    ]
+                }"""
+            )
+        found_agents = ontolutils.query(self.Agent, source=__this_dir__ / 'agent.jsonld',
+                                        limit=2)
+        self.assertEqual(len(found_agents), 2)
+        self.assertEqual(found_agents[0].mbox, 'a@mail.com')
+        self.assertEqual(found_agents[1].mbox, 'b@mail.com')
+
+        # find none:
+
+        @ontolutils.namespaces(prov="https://www.w3.org/ns/prov#",
+                               foaf="http://xmlns.com/foaf/0.1/")
+        @ontolutils.urirefs(Mything='prov:Mything')
+        class Mything(ontolutils.Thing):
+            pass
+
+        found_Mything = ontolutils.query(Mything, source=__this_dir__ / 'agent.jsonld')
+        self.assertEqual(len(found_Mything), 0)
+
+        found_Mything = ontolutils.dquery(subject="prov:Mything",
+                                          source=__this_dir__ / 'agent.jsonld',
+                                          context=None
+                                          )
+        self.assertEqual(len(found_Mything), 0)
+
     def tearDown(self):
         pathlib.Path(__this_dir__ / 'agent.jsonld').unlink(missing_ok=True)
         pathlib.Path(__this_dir__ / 'agents.jsonld').unlink(missing_ok=True)

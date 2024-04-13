@@ -79,7 +79,7 @@ WHERE {
     return str(obj)
 
 
-def get_query_string(cls, limit: int = None) -> str:
+def get_query_string(cls) -> str:
     """Return the query string for the class."""
 
     def _get_namespace(key):
@@ -92,12 +92,8 @@ def get_query_string(cls, limit: int = None) -> str:
 SELECT *
 WHERE {{
     ?id a {_get_namespace(cls.__name__)} .
-    ?id ?p ?o ."""
-    if limit is not None:
-        query_str += f"""
-}} LIMIT {limit}"""
-    else:
-        query_str += "\n}"
+    ?id ?p ?o .
+}}"""
     return query_str
 
 
@@ -182,7 +178,7 @@ def expand_sparql_res(bindings,
 def dquery(subject: str,
            source: Optional[Union[str, pathlib.Path]] = None,
            data: Optional[Union[str, Dict]] = None,
-           context: Optional[Dict] = None) -> Union[List[Dict], None]:
+           context: Optional[Dict] = None) -> List[Dict]:
     """Return a list of resutls. The entries are dictionaries.
 
     Example
@@ -196,8 +192,11 @@ def dquery(subject: str,
             data=data,
             format='json-ld',
             context=context)
-
+    if context is None:
+        context = {}
     prefixes = "".join([f"PREFIX {k}: <{p}>\n" for k, p in context.items() if not k.startswith('@')])
+
+    assert isinstance(subject, str), f"Subject must be a string, not {type(subject)}"
 
     query_str = f"""
     SELECT *
@@ -209,7 +208,7 @@ def dquery(subject: str,
     res = g.query(prefixes + query_str)
 
     if len(res) == 0:
-        return None
+        return []
 
     logger.debug(f'Querying subject="{subject}" with query: "{prefixes + query_str}" and got {len(res)} results')
 
@@ -243,7 +242,8 @@ def query(cls: Thing,
     if cls == Thing:
         query_string = '\nSELECT *\nWHERE {\n    ?id a ?type .\n    ?id ?p ?o .\n}'
     else:
-        query_string = get_query_string(cls)
+        query_string = get_query_string(
+            cls)  # TODO: limit should be passed here, however the sparql query must be written yet
     g = rdflib.Graph()
 
     ns_keys = [_ns[0] for _ns in g.namespaces()]
@@ -282,7 +282,7 @@ def query(cls: Thing,
     logger.debug(f'Querying resulted in {len(res)} results')
 
     if len(res) == 0:
-        return
+        return []
 
     logger.debug(f'Expanding SPARQL results...')
     kwargs: Dict = expand_sparql_res(res.bindings, g, False, False)
@@ -299,6 +299,6 @@ def query(cls: Thing,
             if limit == 1:
                 return cls.model_validate({'id': k, **model_field_dict})
             out.append(cls.model_validate({'id': k, **model_field_dict}))
-            if i == limit:
+            if i == limit - 1:
                 return out
     return [cls.model_validate({'id': _id, **params}) for _id, params in kwargs.items()]

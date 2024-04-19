@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.2.21
+  - pivmeta namespace is automatically generated from the context.jsonld file
+  - bugfixes
+
+## v0.2.20 - skipped
+
+## v0.2.19 - skipped
+
 ## v0.2.18
 
 - solving problem of changing ontologies which are under development by generating the

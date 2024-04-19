@@ -227,7 +227,7 @@ class Thing(ThingModel):
 
             obj_ctx = Context(source={**context,
                                       **NamespaceManager.get(obj.__class__, {}),
-                                      **URIRefManager.get(obj.__class__)})
+                                      **URIRefManager.get(obj.__class__, {})})
 
             if uri_ref_manager is None:
                 return str(obj)

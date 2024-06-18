@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.2.23
+  - update `qudt_lookup`
+
 ## v0.2.22
   - add function `parse_unit`, which converts string to QUDT unit
 

@@ -68,7 +68,7 @@ qudt_lookup = {
     'm**3/s': QUDT_UNIT.M3_PER_SEC,
     'm**3 s-1': QUDT_UNIT.M3_PER_SEC,
     'm**3*s-1': QUDT_UNIT.M3_PER_SEC,
-    'm**3 s-1': QUDT_UNIT.M3_PER_SEC,
+    'm**3 s**-1': QUDT_UNIT.M3_PER_SEC,
     # density
     'kg/m**3': QUDT_UNIT.KiloGM_PER_M3,
     'kg/m^3': QUDT_UNIT.KiloGM_PER_M3,

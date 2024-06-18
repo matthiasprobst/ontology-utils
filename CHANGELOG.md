@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.2.22
+  - add function `parse_unit`, which converts string to QUDT unit
+
 ## v0.2.21
   - pivmeta namespace is automatically generated from the context.jsonld file
   - bugfixes

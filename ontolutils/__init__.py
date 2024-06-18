@@ -7,6 +7,7 @@ from .classes import namespaces, urirefs
 from .classes import query, dquery
 from .classes.utils import merge_jsonld
 from .namespacelib import *
+from .utils.qudt_units import parse_unit
 
 DEFAULT_LOGGING_LEVEL = logging.WARNING
 _formatter = logging.Formatter(
@@ -38,4 +39,5 @@ __all__ = ['Thing',
            'dquery',
            'get_urirefs',
            'get_namespaces',
+           'parse_unit'
            ]

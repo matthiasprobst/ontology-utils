@@ -3,8 +3,10 @@ import shutil
 import unittest
 from hashlib import sha256
 
+import rdflib
 from pydantic import EmailStr
 
+import ontolutils
 from ontolutils import Thing
 from ontolutils import namespaces, urirefs
 from ontolutils import set_logging_level
@@ -81,3 +83,6 @@ class TestUtils(unittest.TestCase):
 
         if pathlib.Path('not/existing/dir').exists():
             shutil.rmtree('not/existing/dir')
+
+    def test_parse_qudt_units(self):
+        self.assertEqual(ontolutils.parse_unit('m/s'), rdflib.URIRef('http://qudt.org/vocab/unit/M-PER-SEC'))

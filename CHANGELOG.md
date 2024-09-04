@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.3.0
+  - Add `validate_assignment=True`, so property assignments are validated against the schema
+
 ## v0.2.23
   - update `qudt_lookup`
 

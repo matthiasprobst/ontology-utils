@@ -19,7 +19,7 @@ logger = logging.getLogger('ontolutils')
 EXTRA = 'allow'  # or 'forbid' or 'ignore'
 
 
-class ThingModel(BaseModel, abc.ABC):
+class ThingModel(BaseModel, abc.ABC, validate_assignment=True):
     """Abstract base model class to be used by model classes used within ontolutils"""
 
     model_config = ConfigDict(extra=EXTRA, populate_by_name=True)

@@ -2,10 +2,13 @@ import datetime
 import json
 import logging
 import unittest
-from rdflib.plugins.shared.jsonld.context import Context
+from typing import Optional
+
 import pydantic
 import rdflib
-from pydantic import EmailStr, Field
+from pydantic import EmailStr
+from pydantic import field_validator, Field
+from rdflib.plugins.shared.jsonld.context import Context
 
 from ontolutils import Thing, urirefs, namespaces, get_urirefs, get_namespaces
 from ontolutils import set_logging_level
@@ -45,6 +48,13 @@ class TestNamespaces(unittest.TestCase):
             """
             name: str = Field(default=None, alias="lastName")  # name is synonymous to lastName
             age: int = None
+            special_field: Optional[str] = None
+
+            @field_validator('special_field', mode="before")
+            @classmethod
+            def _special_field(cls, value):
+                assert value == "special_string", f"Special field must be 'special_string' not {value}"
+                return value
 
         agent = Agent(name='John Doe', age=23)
         self.assertEqual(agent.name, 'John Doe')
@@ -59,6 +69,17 @@ class TestNamespaces(unittest.TestCase):
         self.assertEqual(agent.name, None)
         self.assertEqual(agent.age, 23)
 
+        # property assignment should fail:
+        with self.assertRaises(pydantic.ValidationError):
+            agent.age = "invalid"
+
+        with self.assertRaises(pydantic.ValidationError):
+            agent.special_field = "invalid"
+        self.assertEqual(agent.special_field, None)
+
+        agent.special_field = "special_string"
+        self.assertEqual(agent.special_field, "special_string")
+
     def test_resolve_iri(self):
         ret = resolve_iri('foaf:age', context=Context(source={'foaf': 'http://xmlns.com/foaf/0.1/'}))
         self.assertEqual(ret, 'http://xmlns.com/foaf/0.1/age')
@@ -72,7 +93,8 @@ class TestNamespaces(unittest.TestCase):
         ret = resolve_iri('label', context=Context(source={'age': 'http://xmlns.com/foaf/0.1/age'}))
         self.assertEqual(ret, 'http://www.w3.org/2000/01/rdf-schema#label')
 
-        ret = resolve_iri('label', context=Context(source={'label': {'@id': 'http://www.w3.org/2000/01/rdf-schema#label'}}))
+        ret = resolve_iri('label',
+                          context=Context(source={'label': {'@id': 'http://www.w3.org/2000/01/rdf-schema#label'}}))
         self.assertEqual(ret, 'http://www.w3.org/2000/01/rdf-schema#label')
 
         ret = resolve_iri('prefix:label', Context(source={}))
@@ -93,6 +115,7 @@ class TestNamespaces(unittest.TestCase):
     def test_thing_custom_prop(self):
         """It is helpful to have the properties equal to the urirefs keys,
         however, this should not be required!"""
+
         @namespaces(foaf='http://xmlns.com/foaf/0.1/',
                     schema='http://www.schema.org/')
         @urirefs(Affiliation='prov:Affiliation',
@@ -110,7 +133,7 @@ class TestNamespaces(unittest.TestCase):
             first_name: str = Field(default=None, alias='firstName')
             lastName: str
             age: int = None
-            affiliation: Affiliation=None
+            affiliation: Affiliation = None
 
         p = Person(first_name='John', lastName='Doe', age=23)
         person_json = p.model_dump_jsonld(resolve_keys=False)
@@ -340,7 +363,6 @@ class TestNamespaces(unittest.TestCase):
         self.assertEqual(jsonld_dict['schema:affiliation']['rdfs:label'], 'Organization 1')
         self.assertEqual(jsonld_dict['rdfs:label'], 'Person 1')
         self.assertEqual(jsonld_dict['@type'], 'foaf:Person')
-
 
     def test_prov(self):
         @namespaces(prov="https://www.w3.org/ns/prov#",

@@ -7,7 +7,7 @@ from datetime import datetime
 from typing import Dict, Union, Optional
 
 import rdflib
-from pydantic import HttpUrl, FileUrl, BaseModel, ConfigDict
+from pydantic import HttpUrl, FileUrl, BaseModel, ConfigDict, field_validator, Field
 from rdflib.plugins.shared.jsonld.context import Context
 
 from .decorator import urirefs, namespaces, URIRefManager, NamespaceManager, _is_http_url
@@ -44,7 +44,8 @@ def resolve_iri(key_or_iri: str, context: Context) -> Optional[str]:
             return 'http://www.w3.org/2000/01/rdf-schema#label'
     return
 
-
+def build_blank_n3():
+    return rdflib.BNode().n3()
 @namespaces(owl='http://www.w3.org/2002/07/owl#',
             rdfs='http://www.w3.org/2000/01/rdf-schema#')
 @urirefs(Thing='owl:Thing', label='rdfs:label')
@@ -94,8 +95,15 @@ class Thing(ThingModel):
     >>> #     For further information visit https://errors.pydantic.dev/2.4/v/string_type
 
     """
-    id: Union[str, HttpUrl, FileUrl, BlankNodeType, None] = None  # @id
+    id: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, None]] = Field(default_factory=build_blank_n3)  # @id
     label: str = None  # rdfs:label
+
+    @field_validator('id')
+    @classmethod
+    def _id(cls, id: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType]]) -> str:
+        if id is None:
+            return rdflib.BNode().n3()
+        return str(id)
 
     def __lt__(self, other: ThingModel) -> bool:
         """Less than comparison. Useful to sort Thing objects.
@@ -106,16 +114,6 @@ class Thing(ThingModel):
         if self.id is None or other.id is None:
             return False
         return self.id <= other.id
-
-    def pop_blank_node_id(self) -> Union[None, str]:
-        """Remove the ID if it is blank node"""
-        if self.id is None:
-            return
-        if self.id.startswith('http'):
-            return
-        _id = self.id
-        self.id = None
-        return _id
 
     def get_jsonld_dict(self,
                         context: Optional[Union[Dict, str]] = None,

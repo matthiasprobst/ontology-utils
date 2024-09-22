@@ -170,9 +170,9 @@ class TestNamespaces(unittest.TestCase):
             p183_from_jsonld.height
 
     def test_sort_classes(self):
-        thing1 = Thing(label='Thing 1')
-        thing2 = Thing(label='Thing 2')
-        self.assertFalse(thing1 < thing2)
+        thing1 = Thing(label='Thing 1', id='_:1')
+        thing2 = Thing(label='Thing 2', id='_:2')
+        self.assertFalse(thing1 > thing2)
         with self.assertRaises(TypeError):
             thing1 < 4
         thing1 = Thing(label='Thing 1', id='http://example.com/thing1')
@@ -181,7 +181,7 @@ class TestNamespaces(unittest.TestCase):
 
     def test__repr_html_(self):
         thing = Thing(label='Thing 1')
-        self.assertEqual(thing._repr_html_(), 'Thing(label=Thing 1)')
+        self.assertEqual(thing._repr_html_(), f'Thing(id={thing.id}, label=Thing 1)')
 
     def test_thing_get_jsonld_dict(self):
         with self.assertRaises(pydantic.ValidationError):
@@ -238,7 +238,7 @@ class TestNamespaces(unittest.TestCase):
 
         jsonld_str2 = agent.model_dump_jsonld(rdflib_serialize=True)  # will assign blank node! Pop it later
         jsonld_str2_dict = json.loads(jsonld_str2)
-        self.assertNotEqual(
+        self.assertDictEqual(
             json.loads(jsonld_str1),
             jsonld_str2_dict
         )
@@ -288,7 +288,7 @@ class TestNamespaces(unittest.TestCase):
             label='Agent 1',
             mbox='my@email.com'
         )
-        self.assertEqual(agent.id, None)
+        self.assertNotEqual(agent.id, None)
         ns = agent.namespaces
         jsonld_string = agent.model_dump_jsonld(
             context={
@@ -306,8 +306,6 @@ class TestNamespaces(unittest.TestCase):
         self.assertEqual(thing.label, 'Agent 1')
         self.assertTrue(thing.id.startswith('_:'))
         _id = thing.id
-        self.assertEqual(thing.pop_blank_node_id(), _id)
-        self.assertEqual(thing.id, None)
 
     def test_schema_http(self):
         @namespaces(foaf="http://xmlns.com/foaf/0.1/",

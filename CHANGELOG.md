@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.4.0
+  - A blank ID is automatically assigned to a Thing if not provided during initialization
+
 ## v0.3.0
   - Add `validate_assignment=True`, so property assignments are validated against the schema
 

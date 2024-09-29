@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.4.1
+  - Bugfix considering extra fields in constructing the `__repr__` method of the `Thing` class
+
 ## v0.4.0
   - A blank ID is automatically assigned to a Thing if not provided during initialization
 

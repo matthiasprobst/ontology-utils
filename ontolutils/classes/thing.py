@@ -347,7 +347,10 @@ class Thing(ThingModel):
 
     def __repr__(self, limit: Optional[int] = None):
         _fields = {k: getattr(self, k) for k in self.model_fields if getattr(self, k) is not None}
-        repr_extra = ", ".join([f"{k}={v}" for k, v in {**_fields, **self.model_extra}.items()])
+        if self.model_extra:
+            repr_extra = ", ".join([f"{k}={v}" for k, v in {**_fields, **self.model_extra}.items()])
+        else:
+            repr_extra = ", ".join([f"{k}={v}" for k, v in {**_fields}.items()])
         if limit is None or len(repr_extra) < limit:
             return f"{self.__class__.__name__}({repr_extra})"
         return f"{self.__class__.__name__}({repr_extra[0:limit]}...)"

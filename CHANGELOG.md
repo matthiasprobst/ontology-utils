@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.4.3
+  - Cause a KeyError if unit is not available in lookup table
+
 ## v0.4.2
   - Bugfix in qudt lookup table.
 

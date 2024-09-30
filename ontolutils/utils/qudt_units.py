@@ -237,6 +237,4 @@ def parse_unit(unit_str: str) -> Optional[rdflib.URIRef]:
     KeyError
         If the unit string is not in the lookup table
     """
-    if unit_str == '1e-3':
-        return qudt_lookup['dimensionless']
-    return qudt_lookup.get(unit_str, None)
+    return qudt_lookup[unit_str]

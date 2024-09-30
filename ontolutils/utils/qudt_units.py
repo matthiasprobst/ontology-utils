@@ -1,6 +1,7 @@
 import rdflib
 
 from ontolutils import QUDT_UNIT
+from typing import Optional
 
 qudt_lookup = {
     's': QUDT_UNIT.SEC,  # time
@@ -61,7 +62,11 @@ qudt_lookup = {
     'mm**3': QUDT_UNIT.MilliM3,
     # volume flow rate
     'm3/s': QUDT_UNIT.M3_PER_SEC,
+    'm^3/s': QUDT_UNIT.M3_PER_SEC,
     'm3 s-1': QUDT_UNIT.M3_PER_SEC,
+    'm3 s^-1': QUDT_UNIT.M3_PER_SEC,
+    'm^3 s-1': QUDT_UNIT.M3_PER_SEC,
+    'm^3 s^-1': QUDT_UNIT.M3_PER_SEC,
     'm3*s-1': QUDT_UNIT.M3_PER_SEC,
     'm3*s^-1': QUDT_UNIT.M3_PER_SEC,
     'm3*s**-1': QUDT_UNIT.M3_PER_SEC,
@@ -169,7 +174,7 @@ qudt_lookup = {
     'mol': QUDT_UNIT.MOL,
     'mol s-1': QUDT_UNIT.MOL_PER_SEC,
     'mol m-2': QUDT_UNIT.MOL_PER_M2,
-    'g kg-1:': QUDT_UNIT.GM_PER_KiloGM,
+    'g kg-1': QUDT_UNIT.GM_PER_KiloGM,
     'Pa m': QUDT_UNIT.PA_M,
     'K m s-1': QUDT_UNIT.K_M_PER_SEC,
     's-1 m-3': QUDT_UNIT.PER_M3_SEC,
@@ -214,7 +219,7 @@ qudt_lookup = {
 }
 
 
-def parse_unit(unit_str: str) -> rdflib.URIRef:
+def parse_unit(unit_str: str) -> Optional[rdflib.URIRef]:
     """Return IRI for a unit str. E.g. 'm/s' returns QUDT_UNIT.M_PER_SEC.
 
     Parameters
@@ -232,4 +237,6 @@ def parse_unit(unit_str: str) -> rdflib.URIRef:
     KeyError
         If the unit string is not in the lookup table
     """
-    return qudt_lookup[unit_str]
+    if unit_str == '1e-3':
+        return qudt_lookup['dimensionless']
+    return qudt_lookup.get(unit_str, None)

@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.4.2
+  - Bugfix in qudt lookup table.
+
 ## v0.4.1
   - Bugfix considering extra fields in constructing the `__repr__` method of the `Thing` class
 

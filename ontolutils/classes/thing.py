@@ -44,8 +44,11 @@ def resolve_iri(key_or_iri: str, context: Context) -> Optional[str]:
             return 'http://www.w3.org/2000/01/rdf-schema#label'
     return
 
+
 def build_blank_n3():
     return rdflib.BNode().n3()
+
+
 @namespaces(owl='http://www.w3.org/2002/07/owl#',
             rdfs='http://www.w3.org/2000/01/rdf-schema#')
 @urirefs(Thing='owl:Thing', label='rdfs:label')
@@ -290,7 +293,8 @@ class Thing(ThingModel):
                           exclude_none: bool = True,
                           rdflib_serialize: bool = False,
                           resolve_keys: bool = True,
-                          assign_bnode: bool = True) -> str:
+                          assign_bnode: bool = True,
+                          indent: int = 4) -> str:
         """Similar to model_dump_json() but will return a JSON string with
         context resulting in a JSON-LD serialization. Using `rdflib_serialize=True`
         will use the rdflib to serialize. This will make the output a bit cleaner
@@ -315,6 +319,8 @@ class Thing(ThingModel):
             explained in the context.
         assign_bnode: bool=True
             Assigns a blank node if no ID is set.
+        indent: int=4
+            The indent of the JSON-LD string
 
             .. seealso:: `Thing.get_jsonld_dict`
 
@@ -343,7 +349,7 @@ class Thing(ThingModel):
 
         return g.serialize(format='json-ld',
                            context=_context,
-                           indent=4)
+                           indent=indent)
 
     def __repr__(self, limit: Optional[int] = None):
         _fields = {k: getattr(self, k) for k in self.model_fields if getattr(self, k) is not None}

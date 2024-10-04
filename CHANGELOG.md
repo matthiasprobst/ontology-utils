@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.4.4
+  - Indentation can be defined for model_dump_jsonld(). Default is 4.
+
 ## v0.4.3
   - Cause a KeyError if unit is not available in lookup table
 

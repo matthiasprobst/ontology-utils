@@ -1,7 +1,8 @@
+from typing import Optional
+
 import rdflib
 
 from ontolutils import QUDT_UNIT
-from typing import Optional
 
 qudt_lookup = {
     's': QUDT_UNIT.SEC,  # time

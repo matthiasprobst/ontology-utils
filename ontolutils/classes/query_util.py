@@ -61,6 +61,12 @@ WHERE {
                         logger.debug(f'"{o}" is a blank node. Need to find children of it...')
                         _, key = split_URIRef(p)
                         sub_data[key] = process_object(_id, p, o, graph, add_type)
+                    elif str(o).startswith('http'):
+                        # it might be a IRI which is defined inside the JSON-LD:
+                        _sub_data = process_object(_id, p, o, graph, add_type)
+                        if _sub_data:
+                            _, key = split_URIRef(p)
+                            sub_data[key] = _sub_data
                     else:
                         logger.debug(f'dont know what to do with {p} and {o}')
         if predicate in sub_data:

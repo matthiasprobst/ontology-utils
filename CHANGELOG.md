@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.4.5
+  - Bugfix parsing JSON-LD data to instantiate a Thing object
+
 ## v0.4.4
   - Indentation can be defined for model_dump_jsonld(). Default is 4.
 

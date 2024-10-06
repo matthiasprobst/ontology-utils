@@ -169,6 +169,48 @@ class TestNamespaces(unittest.TestCase):
         with self.assertRaises(AttributeError):  # height is not defined!
             p183_from_jsonld.height
 
+    def test_from_jsonld_for_nested_objects(self):
+
+        @namespaces(prov='http://www.w3.org/ns/prov#')
+        @urirefs(A='prov:A',
+                 name='prov:name')
+        class A(Thing):
+            name: str = None
+
+        @namespaces(prov='http://www.w3.org/ns/prov#')
+        @urirefs(B='prov:B',
+                 a='prov:a')
+        class B(Thing):
+            a: A = None
+
+        @namespaces(prov='http://www.w3.org/ns/prov#')
+        @urirefs(C='prov:C',
+                 b='prov:b')
+        class C(Thing):
+            b: B = None
+
+        @namespaces(prov='http://www.w3.org/ns/prov#')
+        @urirefs(D='prov:D',
+                 c='prov:c')
+        class D(Thing):
+            c: C = None
+
+        aj = A(name="myname").model_dump_jsonld()
+        an = A.from_jsonld(data=aj, limit=1)
+        self.assertEqual("myname", an.name)
+
+        bj = B(a=(A(name="myname"))).model_dump_jsonld()
+        bn = B.from_jsonld(data=bj, limit=1)
+        self.assertEqual("myname", bn.a.name)
+
+        cj = C(b=B(a=(A(name="myname")))).model_dump_jsonld()
+        cn = C.from_jsonld(data=cj, limit=1)
+        self.assertEqual("myname", cn.b.a.name)
+
+        dj = D(c=C(b=B(a=(A(name="myname"))))).model_dump_jsonld()
+        dn = D.from_jsonld(data=dj, limit=1)
+        self.assertEqual("myname", dn.c.b.a.name)
+
     def test_sort_classes(self):
         thing1 = Thing(label='Thing 1', id='_:1')
         thing2 = Thing(label='Thing 2', id='_:2')
@@ -413,7 +455,6 @@ class TestNamespaces(unittest.TestCase):
             "foaf:firstName": "John",
             "foaf:lastName": "Doe"
         }
-        print(p.model_dump_jsonld())
 
         self.assertDictEqual(json.loads(p.model_dump_jsonld()),
                              jsonld)

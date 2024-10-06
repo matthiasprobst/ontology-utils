@@ -60,7 +60,13 @@ WHERE {
                     if isinstance(o, rdflib.BNode):
                         logger.debug(f'"{o}" is a blank node. Need to find children of it...')
                         _, key = split_URIRef(p)
-                        sub_data[key] = process_object(_id, p, o, graph, add_type)
+                        if key in sub_data:
+                            if isinstance(sub_data[key], list):
+                                sub_data[key].append(process_object(_id, p, o, graph, add_type))
+                            else:
+                                sub_data[key] = [sub_data[key], process_object(_id, p, o, graph, add_type)]
+                        else:
+                            sub_data[key] = process_object(_id, p, o, graph, add_type)
                     elif str(o).startswith('http'):
                         # it might be a IRI which is defined inside the JSON-LD:
                         _sub_data = process_object(_id, p, o, graph, add_type)

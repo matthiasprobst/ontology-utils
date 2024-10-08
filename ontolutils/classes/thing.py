@@ -4,6 +4,7 @@ import logging
 import pathlib
 import warnings
 from datetime import datetime
+from sys import modules
 from typing import Dict, Union, Optional
 
 import rdflib
@@ -286,6 +287,15 @@ class Thing(ThingModel):
             "@context": at_context,
             **serialization
         }
+        for field_name, field_value in self.__class__.model_fields.items():
+            if field_value.json_schema_extra:
+                use_as_id = field_value.json_schema_extra.get('use_as_id', None)
+                if use_as_id:
+                    _id = getattr(self, field_name)
+                    if str(_id).startswith(("_:", "http")):
+                        jsonld["@id"] = getattr(self, field_name)
+                    else:
+                        raise ValueError("The ID must be a valid IRI or blank node.")
         return jsonld
 
     def model_dump_jsonld(self,

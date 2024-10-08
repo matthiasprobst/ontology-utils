@@ -170,7 +170,6 @@ class TestNamespaces(unittest.TestCase):
             p183_from_jsonld.height
 
     def test_from_jsonld_for_nested_objects(self):
-
         @namespaces(prov='http://www.w3.org/ns/prov#')
         @urirefs(A='prov:A',
                  name='prov:name')
@@ -431,29 +430,39 @@ class TestNamespaces(unittest.TestCase):
 
     def test_person(self):
         @namespaces(prov="http://www.w3.org/ns/prov#",
-                    foaf="http://xmlns.com/foaf/0.1/")
+                    foaf="http://xmlns.com/foaf/0.1/",
+                    m4i="http://w3id.org/nfdi4ing/metadata4ing#"
+                    )
         @urirefs(Person='prov:Person',
                  firstName='foaf:firstName',
                  # lastName=FOAF.lastName,
                  lastName='foaf:lastName',
+                 orcidId='m4i:orcidId',
                  mbox='foaf:mbox')
         class Person(Thing):
             firstName: str
             lastName: str = None
             mbox: EmailStr = None
+            orcidId: str = Field(default=None, alias="orcid_id", use_as_id=True)
 
-        p = Person(id="local:cde4c79c-21f2-4ab7-b01d-28de6e4aade4", firstName='John', lastName='Doe')
+        p = Person(
+            id="local:cde4c79c-21f2-4ab7-b01d-28de6e4aade4",
+            firstName='John',
+            lastName='Doe',
+            orcidId='https://orcid.org/0000-0001-8729-0482', )
         jsonld = {
             "@context": {
+                'm4i': 'http://w3id.org/nfdi4ing/metadata4ing#',
                 "owl": "http://www.w3.org/2002/07/owl#",
+                "prov": "http://www.w3.org/ns/prov#",
                 "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
                 "foaf": "http://xmlns.com/foaf/0.1/",
-                "prov": "http://www.w3.org/ns/prov#",
             },
-            "@id": "local:cde4c79c-21f2-4ab7-b01d-28de6e4aade4",
             "@type": "prov:Person",
             "foaf:firstName": "John",
-            "foaf:lastName": "Doe"
+            "foaf:lastName": "Doe",
+            "m4i:orcidId": "https://orcid.org/0000-0001-8729-0482",
+            "@id": "https://orcid.org/0000-0001-8729-0482",
         }
 
         self.assertDictEqual(json.loads(p.model_dump_jsonld()),

@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.4.7
+  - use_as_id=True in Field() will use the value as ID if available
+
 ## v0.4.6
   - Hotfix parsing JSON-LD data to instantiate a Thing object
 

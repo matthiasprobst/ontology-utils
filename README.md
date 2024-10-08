@@ -1,3 +1,5 @@
+from pydantic.v1 import HttpUrl
+
 # Ontolutils - Object-oriented "Things"
 
 ![Tests Status](https://github.com/matthiasprobst/ontology-utils/actions/workflows/tests.yml/badge.svg)
@@ -27,7 +29,7 @@ lets you design classes, which describe ontology classes like this:
 from pydantic import EmailStr, Field
 
 from ontolutils import Thing, urirefs, namespaces
-
+from pydantic import HttpUrl
 
 @namespaces(prov="http://www.w3.org/ns/prov#",
             foaf="http://xmlns.com/foaf/0.1/")
@@ -39,13 +41,14 @@ class Person(Thing):
     firstName: str
     last_name: str = Field(default=None, alias="lastName")  # you may provide an alias
     mbox: EmailStr = None
+    orcidId: HttpUrl = Field(default=None, alias="foaf:orcidId", use_as_id=True)  # use this as ID if available
 
 
-p = Person(id="cde4c79c-21f2-4ab7-b01d-28de6e4aade4",
-           firstName='John', last_name='Doe')
+p = Person(id="https://orcid.org/0000-0001-8729-0482",
+           firstName='Matthias', last_name='Probst')
 # as we have set an alias, we can also use "lastName":
-p = Person(id="cde4c79c-21f2-4ab7-b01d-28de6e4aade4",
-           firstName='John', lastName='Doe')
+p = Person(id="https://orcid.org/0000-0001-8729-0482",
+           firstName='Matthias', lastName='Probst')
 # The jsonld representation of the object will be the same in both cases:
 p.model_dump_jsonld()
 ```
@@ -57,14 +60,13 @@ Now, you can instantiate the class and use the `model_dump_jsonld()` method to g
   "@context": {
     "owl": "http://www.w3.org/2002/07/owl#",
     "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
-    "lastName": "http://xmlns.com/foaf/0.1/",
     "prov": "http://www.w3.org/ns/prov#",
     "foaf": "http://xmlns.com/foaf/0.1/"
   },
-  "@id": "cde4c79c-21f2-4ab7-b01d-28de6e4aade4",
+  "@id": "https://orcid.org/0000-0001-8729-0482",
   "@type": "prov:Person",
-  "foaf:firstName": "John",
-  "lastName": "Doe"
+  "foaf:firstName": "Matthias",
+  "foaf:lastName": "Probst"
 }
 ```
 

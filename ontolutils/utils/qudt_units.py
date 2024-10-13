@@ -29,6 +29,8 @@ qudt_lookup = {
     'm s-2': QUDT_UNIT.M_PER_SEC2,
     # velocity squared
     'm2/s2': QUDT_UNIT.M2_PER_SEC2,
+    'm^2/s^2': QUDT_UNIT.M2_PER_SEC2,
+    'm^2/s': QUDT_UNIT.M2_PER_SEC2,
     'm2/s^2': QUDT_UNIT.M2_PER_SEC2,
     'm2/s**2': QUDT_UNIT.M2_PER_SEC2,
     'm2 s^-2': QUDT_UNIT.M2_PER_SEC2,
@@ -187,6 +189,7 @@ qudt_lookup = {
     'K m': QUDT_UNIT.K_M,
     'mol m-2 s-1': QUDT_UNIT.MOL_PER_M2_SEC,
     'mol m-2 s-1 m-1': QUDT_UNIT.MOL_PER_M2_SEC_M,
+    'mol m-2 s-1 sr-1': QUDT_UNIT.MOL_PER_M2_SEC_SR,
     'W m-2 m-1': QUDT_UNIT.W_PER_M2_M,
     'W m-1': QUDT_UNIT.W_PER_M,
     'W m-2': QUDT_UNIT.W_PER_M2,
@@ -194,6 +197,7 @@ qudt_lookup = {
     'W m-2 sr-1': QUDT_UNIT.W_PER_M2_SR,
     'W m-2 m-1 sr-1': QUDT_UNIT.W_PER_M2_M_SR,
     'm3 s-2': QUDT_UNIT.M3_PER_SEC2,
+    'm^3 s-2': QUDT_UNIT.M3_PER_SEC2,
     'degree m-1': QUDT_UNIT.DEG_PER_M,
     'W m-1 K-1': QUDT_UNIT.W_PER_M_K,
     'K s-1': QUDT_UNIT.K_PER_SEC,
@@ -217,6 +221,23 @@ qudt_lookup = {
     'mm/pixel': "https://matthiasprobst.github.io/pivmeta#MilliM-PER-PIXEL",  # TODO: define this!!!
     'deg': QUDT_UNIT.DEG,
     'degC': QUDT_UNIT.DEG_C,
+    'W s m-2': QUDT_UNIT.W_SEC_PER_M2,
+    'N m-1': QUDT_UNIT.N_PER_M,
+    'mol mol-1': QUDT_UNIT.MOL_PER_MOL,
+    'm4 s-1': QUDT_UNIT.M4_PER_SEC,
+    'degree s-1': QUDT_UNIT.DEG_PER_SEC,
+    'K Pa s-1': QUDT_UNIT.K_PA_PER_SEC,
+    'W/m2': QUDT_UNIT.W_PER_M2,
+    'm2 s rad-1': QUDT_UNIT.M2_SEC_PER_RAD,
+    'K s': QUDT_UNIT.K_SEC,
+    'radian': QUDT_UNIT.RAD,
+    'sr': QUDT_UNIT.SR,
+    'sr-1': QUDT_UNIT.PER_SR,
+    'dbar': QUDT_UNIT.DeciBAR,
+    'mol m-2 s-1 m-1 sr-1': QUDT_UNIT.MOL_PER_M2_SEC_M_SR,
+    'm year-1': QUDT_UNIT.M_PER_YR,
+    'Pa m s-1': QUDT_UNIT.PA_M_PER_SEC,
+    'Pa m s-2': QUDT_UNIT.PA_M_PER_SEC2
 }
 
 

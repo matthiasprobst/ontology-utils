@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.4.8
+  - Add more entries to qudt lookup table
+
 ## v0.4.7
   - use_as_id=True in Field() will use the value as ID if available
 

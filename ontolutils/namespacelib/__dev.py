@@ -291,21 +291,6 @@ def schema():
     )
 
 
-def pivmeta(filename: Union[str, pathlib.Path] = None):
-    generate_namespace_file_from_context(
-        namespace='pivmeta',
-        context_ld='https://raw.githubusercontent.com/matthiasprobst/pivmeta/main/pivmeta_context.jsonld',
-        filename=filename
-    )
-
-
-def ssno():
-    generate_namespace_file_from_context(
-        namespace='ssno',
-        context_ld='https://raw.githubusercontent.com/matthiasprobst/ssno/main/ssno_context.jsonld',
-    )
-
-
 def codemeta():
     generate_namespace_file_from_context(
         namespace='codemeta',
@@ -327,13 +312,10 @@ def build_namespace_files():
 
     qudt_quantitykind()
 
-    # pivmeta()
-
     codemeta()
 
     schema()
 
-    ssno()
     # with open(__package_dir__ / '__init__.py', 'a') as f:
     # f.write('from .m4i import M4I\n')
     # f.write('from .obo import OBO\n')

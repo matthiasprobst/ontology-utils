@@ -24,8 +24,8 @@ class TestNamespaces(unittest.TestCase):
         assert logging.getLogger('ontolutils').level == self.INITIAL_LOG_LEVEL
 
     def test_namespace_class_structure(self):
-        from ontolutils import SCHEMA, M4I, CODEMETA, SSNO, QUDT_UNIT, QUDT_KIND, OBO, PIVMETA
-        for ns in [SCHEMA, M4I, CODEMETA, SSNO, QUDT_UNIT, QUDT_KIND, OBO, PIVMETA]:
+        from ontolutils import SCHEMA, M4I, CODEMETA, QUDT_UNIT, QUDT_KIND, OBO
+        for ns in [SCHEMA, M4I, CODEMETA, QUDT_UNIT, QUDT_KIND, OBO]:
             self.assertIsInstance(ns, rdflib.namespace.DefinedNamespaceMeta)
             self.assertTrue(str(ns._NS).startswith('http'))
             self.assertIsInstance(ns.__annotations__, dict)
@@ -112,10 +112,3 @@ class TestNamespaces(unittest.TestCase):
         self.assertIsInstance(namespacelib.SCHEMA.Person, rdflib.URIRef)
         self.assertEqual(str(namespacelib.SCHEMA.Person),
                          "https://schema.org/Person")
-
-    def test_ssno(self):
-        self.assertIsInstance(namespacelib.SSNO.StandardName, rdflib.URIRef)
-        self.assertEqual(str(namespacelib.SSNO.StandardName),
-                         "https://matthiasprobst.github.io/ssno#StandardName")
-        with self.assertRaises(AttributeError):
-            namespacelib.SSNO.METER

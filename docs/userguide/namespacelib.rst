@@ -41,7 +41,7 @@ Limitations
 
 Some namespaces may be incomplete due to vocabularies with names that are reserved words in Python. E.g. the
 ontology `schema.org` contains "yield" and "True", which are reserved words in Python. This means that the following
-code will raise an AttributeError:
+code will raise an `AttributeError`:
 
 .. code-block:: python
 

@@ -3,6 +3,10 @@
 *.bak
 
 
+*-checkpoint.ipynb*
+.ipynb_checkpoints
+
+
 docs/*.jsonld
 docs/_build
 docs/generated
@@ -26,3 +30,4 @@ docs/class_structure_pub.svg
 .pypirc
 .pylint
 not/existing/dir
+tutorials/person.json

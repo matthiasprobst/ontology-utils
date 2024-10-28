@@ -10,7 +10,7 @@ Design a class
 ..............
 
 The core class is called `Thing`. A realization of a concept of an ontology inherits from it.
-For instance, an "Person" from ontology "prov" can be constructed to describe and validate a person.
+For instance, a "Person" from ontology "prov" can be constructed to describe and validate a person.
 The properties of a "prov:Person" are defined as attributes of the class. To refer the properties to the ontology,
 the class is decorated with `@urirefs` and `@namespaces`. The former assigns the properties to the IRIs of the ontology
 (e.g. `firstName='foaf:firstName'`), the latter provides the context and assigns the prefixes to the full IRI

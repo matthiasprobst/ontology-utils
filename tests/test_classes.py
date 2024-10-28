@@ -63,6 +63,7 @@ class TestNamespaces(unittest.TestCase):
         # extra fields are allowed and either the model field or its uriref can be used
         agent = Agent(lastName='Doe', age=23)
         self.assertEqual(agent.name, 'Doe')
+        self.assertEqual(agent.lastName, 'Doe')
         self.assertEqual(agent.age, 23)
 
         agent = Agent(age=23)

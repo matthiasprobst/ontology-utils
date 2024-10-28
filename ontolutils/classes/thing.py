@@ -4,7 +4,6 @@ import logging
 import pathlib
 import warnings
 from datetime import datetime
-from sys import modules
 from typing import Dict, Union, Optional
 
 import rdflib
@@ -14,16 +13,21 @@ from rdflib.plugins.shared.jsonld.context import Context
 from .decorator import urirefs, namespaces, URIRefManager, NamespaceManager, _is_http_url
 from .typing import BlankNodeType
 from .utils import split_URIRef
+from ..config import PYDANTIC_EXTRA
 
 logger = logging.getLogger('ontolutils')
-
-EXTRA = 'allow'  # or 'forbid' or 'ignore'
 
 
 class ThingModel(BaseModel, abc.ABC, validate_assignment=True):
     """Abstract base model class to be used by model classes used within ontolutils"""
 
-    model_config = ConfigDict(extra=EXTRA, populate_by_name=True)
+    model_config = ConfigDict(extra=PYDANTIC_EXTRA, populate_by_name=True)
+
+    def __getattr__(self, item):
+        for field, meta in self.model_fields.items():
+            if meta.alias == item:
+                return getattr(self, field)
+        return super().__getattr__(item)
 
     @abc.abstractmethod
     def _repr_html_(self) -> str:
@@ -291,6 +295,7 @@ class Thing(ThingModel):
             if field_value.json_schema_extra:
                 use_as_id = field_value.json_schema_extra.get('use_as_id', None)
                 if use_as_id:
+                    print("USING AS ID: ", field_name)
                     _id = getattr(self, field_name)
                     if str(_id).startswith(("_:", "http")):
                         jsonld["@id"] = getattr(self, field_name)

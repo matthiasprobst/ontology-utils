@@ -1,8 +1,11 @@
 # Changelog
 
+## v0.5.1
+  - Fixing the README
+
 ## v0.5.0
   - Allowing to address alias fields instead of only the original field name
-  - Restricting depending pacakge versions to a lower bound
+  - Restricting depending on pacakge versions to a lower bound
 
 ## v0.4.8
   - Add more entries to qudt lookup table

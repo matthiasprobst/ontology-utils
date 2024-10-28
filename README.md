@@ -1,5 +1,3 @@
-from pydantic.v1 import HttpUrl
-
 # Ontolutils - Object-oriented "Things"
 
 ![Tests Status](https://github.com/matthiasprobst/ontology-utils/actions/workflows/tests.yml/badge.svg)

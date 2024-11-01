@@ -11,6 +11,7 @@ LOG_LEVEL = logging.DEBUG
 
 
 class TestNamespaces(unittest.TestCase):
+
     def setUp(self):
         logger = logging.getLogger('ontolutils')
         self.INITIAL_LOG_LEVEL = logger.level

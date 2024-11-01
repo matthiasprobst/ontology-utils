@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.6.1
+  - removing print statement and fixing docstrings
+
 ## v0.6.0
   - remove namespace SSNO and PIVMETA as they are not general enough to be part of the package
 

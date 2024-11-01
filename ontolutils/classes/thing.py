@@ -295,7 +295,6 @@ class Thing(ThingModel):
             if field_value.json_schema_extra:
                 use_as_id = field_value.json_schema_extra.get('use_as_id', None)
                 if use_as_id:
-                    print("USING AS ID: ", field_name)
                     _id = getattr(self, field_name)
                     if str(_id).startswith(("_:", "http")):
                         jsonld["@id"] = getattr(self, field_name)
@@ -388,7 +387,7 @@ class Thing(ThingModel):
     @classmethod
     def from_jsonld(cls,
                     source: Optional[Union[str, pathlib.Path]] = None,
-                    data: Optional[Dict] = None,
+                    data: Optional[Union[str, Dict]] = None,
                     limit: Optional[int] = None,
                     context: Optional[Dict] = None):
         """Initialize the class from a JSON-LD source
@@ -401,8 +400,8 @@ class Thing(ThingModel):
         ----------
         source: Optional[Union[str, pathlib.Path]]=None
             The source of the JSON-LD data (filename). Must be given if data is None.
-        data: Optional[str]=None
-            The JSON-LD data as a string. Must be given if source is None.
+        data: Optional[Union[str, Dict]]=None
+            The JSON-LD data as a str or dictionary. Must be given if source is None.
         limit: Optional[int]=None
             The limit of the number of objects to return. If None, all objects will be returned.
             If limit is 1, then the first object will be returned, else a list of objects.

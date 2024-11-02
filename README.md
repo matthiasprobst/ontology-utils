@@ -25,9 +25,10 @@ lets you design classes, which describe ontology classes like this:
 
 ```python
 from pydantic import EmailStr, Field
+from pydantic import HttpUrl, model_validator
 
-from ontolutils import Thing, urirefs, namespaces
-from pydantic import HttpUrl
+from ontolutils import Thing, urirefs, namespaces, as_id
+
 
 @namespaces(prov="http://www.w3.org/ns/prov#",
             foaf="http://xmlns.com/foaf/0.1/")
@@ -39,8 +40,12 @@ class Person(Thing):
     firstName: str
     last_name: str = Field(default=None, alias="lastName")  # you may provide an alias
     mbox: EmailStr = None
-    orcidId: HttpUrl = Field(default=None, alias="foaf:orcidId",
-                             json_schema_extra={'use_as_id': True})  # use this as ID if available
+    orcidId: HttpUrl = Field(default=None, alias="foaf:orcidId")
+
+    # the following will ensure, that if orcidId is set, it will be used as the id
+    @model_validator(mode="before")
+    def _change_id(self):
+        return as_id(self, "orcidId")
 
 
 p = Person(id="https://orcid.org/0000-0001-8729-0482",

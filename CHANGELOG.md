@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.7.0
+  - Removed `use_as_id`. Instead, using `model_validator`. This ensures correct behaviour also for nested Things.
+
 ## v0.6.2
   - Using a field for the @id tag must be set via `Field(..., json_schema_extra={'use_as_id': True})`
 

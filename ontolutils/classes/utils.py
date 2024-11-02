@@ -147,3 +147,19 @@ def download_file(url,
         f.write(content)
 
     return dest_filename
+
+
+def as_id(obj, field_name):
+    if isinstance(obj, dict):
+        return as_id_before(obj, field_name)
+    raise ValueError(f"You must use mode='before' for as_id")
+
+
+def as_id_before(obj: Dict, field_name: str):
+    if obj.get(field_name, None) is not None:
+        _id_url = obj[field_name]
+        if not str(_id_url).startswith(("_:", "http")):
+            raise ValueError(f"Field {field_name} is not a URIRef or BNode: {obj[field_name]}. "
+                             f"You can only set an id for URIRefs or BNodes.")
+        obj["id"] = _id_url
+    return obj

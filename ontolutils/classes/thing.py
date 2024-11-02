@@ -294,11 +294,13 @@ class Thing(ThingModel):
 
         properties = self.__class__.model_json_schema().get("properties", {})
         if not properties:
-            properties = self.__class__.model_json_schema().get("items", {}).get(self.__class__.__name__, {}).get("properties", {})
+            properties = self.__class__.model_json_schema().get("items", {}).get(self.__class__.__name__, {}).get(
+                "properties", {})
 
         for field_name, field_value in properties.items():
             _use_as_id = field_value.get("use_as_id", None)
             if _use_as_id is not None:
+                warnings.warn("The use_as_id field is deprecated. Use the @id field instead.", DeprecationWarning)
                 _id = getattr(self, field_name)
                 if _id is not None:
                     if str(_id).startswith(("_:", "http")):

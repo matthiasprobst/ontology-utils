@@ -2,16 +2,16 @@ import datetime
 import json
 import logging
 import unittest
-from cProfile import label
 from typing import Optional
 
 import pydantic
 import rdflib
-from pydantic import EmailStr
+from pydantic import EmailStr, model_validator
 from pydantic import field_validator, Field
 from rdflib.plugins.shared.jsonld.context import Context
 
 from ontolutils import Thing, urirefs, namespaces, get_urirefs, get_namespaces
+from ontolutils import as_id
 from ontolutils import set_logging_level
 from ontolutils.classes import decorator
 from ontolutils.classes.thing import resolve_iri
@@ -444,7 +444,11 @@ class TestNamespaces(unittest.TestCase):
             firstName: str
             lastName: str = None
             mbox: EmailStr = None
-            orcidId: str = Field(default=None, alias="orcid_id", json_schema_extra={'use_as_id': True})
+            orcidId: str = Field(default=None, alias="orcid_id")
+
+            @model_validator(mode="before")
+            def _change_id(self):
+                return as_id(self, "orcidId")
 
         p = Person(
             id="local:cde4c79c-21f2-4ab7-b01d-28de6e4aade4",
@@ -470,7 +474,6 @@ class TestNamespaces(unittest.TestCase):
                              jsonld)
 
     def test_use_as_id_V2(self):
-
         @namespaces(schema="https://schema.org/",
                     foaf="http://xmlns.com/foaf/0.1/",
                     )
@@ -479,9 +482,13 @@ class TestNamespaces(unittest.TestCase):
                  identifier="schema:identifier",
                  mbox='foaf:mbox')
         class Orga(Thing):
-            identifier: str = Field(default=None, alias="identifier", json_schema_extra={'use_as_id': True})
+            identifier: str = Field(default=None, alias="identifier")
             name: str = Field(default=None, alias="name")
             mbox: EmailStr = None
+
+            @model_validator(mode="before")
+            def _change_id(self):
+                return as_id(self, "identifier")
 
         @namespaces(prov="http://www.w3.org/ns/prov#",
                     foaf="http://xmlns.com/foaf/0.1/",
@@ -496,17 +503,77 @@ class TestNamespaces(unittest.TestCase):
             firstName: str
             lastName: str = None
             mbox: EmailStr = None
-            orcidId: str = Field(default=None, alias="orcid_id", json_schema_extra={'use_as_id': True})
+            orcidId: str = Field(default=None, alias="orcid_id")
             affiliation: Orga = None
 
+            @model_validator(mode="before")
+            def _change_id(self):
+                return as_id(self, "orcidId")
+
+        with self.assertRaises(ValueError):
+            p = Person(
+                id="local:cde4c79c-21f2-4ab7-b01d-28de6e4aade4",
+                firstName='John',
+                lastName='Doe',
+                orcidId='https://orcid.org/0000-0001-8729-0482',
+                affiliation=Orga(identifier='123', name='Orga 1')
+            )
         p = Person(
             id="local:cde4c79c-21f2-4ab7-b01d-28de6e4aade4",
             firstName='John',
             lastName='Doe',
             orcidId='https://orcid.org/0000-0001-8729-0482',
-            affiliation=Orga(identifier='123', name='Orga 1')
+            affiliation=Orga(identifier='https://example.org/123', name='Orga 1')
         )
-        print(p.model_dump_jsonld())
+        pdict = json.loads(p.model_dump_jsonld())
+        assert pdict['@id'] == 'https://orcid.org/0000-0001-8729-0482'
+        assert pdict['affiliation']["@id"] == 'https://example.org/123'
+
+    def test_use_as_id_V3(self):
+        @namespaces(schema="https://schema.org/",
+                    foaf="http://xmlns.com/foaf/0.1/",
+                    )
+        @urirefs(Orga='prov:Organization',
+                 name="schema:name",
+                 identifier="schema:identifier",
+                 mbox='foaf:mbox')
+        class Orga(Thing):
+            identifier: str = Field(default=None, alias="identifier")
+            name: str = Field(default=None, alias="name")
+            mbox: EmailStr = None
+
+            @model_validator(mode="after")
+            def _change_id(self):
+                return as_id(self, "identifier")
+
+        @namespaces(prov="http://www.w3.org/ns/prov#",
+                    foaf="http://xmlns.com/foaf/0.1/",
+                    m4i="http://w3id.org/nfdi4ing/metadata4ing#"
+                    )
+        @urirefs(Person='prov:Person',
+                 firstName='foaf:firstName',
+                 lastName='foaf:lastName',
+                 orcidId='m4i:orcidId',
+                 mbox='foaf:mbox')
+        class Person(Thing):
+            firstName: str
+            lastName: str = None
+            mbox: EmailStr = None
+            orcidId: str = Field(default=None, alias="orcid_id")
+            affiliation: Orga = None
+
+            @model_validator(mode="before")
+            def _change_id(self):
+                return as_id(self, "orcidId")
+
+        with self.assertRaises(ValueError):
+            Person(
+                id="local:cde4c79c-21f2-4ab7-b01d-28de6e4aade4",
+                firstName='John',
+                lastName='Doe',
+                orcidId='https://orcid.org/0000-0001-8729-0482',
+                affiliation=Orga(identifier='123', name='Orga 1')
+            )
 
     def test_update_namespace_and_uri(self):
         class CustomPerson(Thing):

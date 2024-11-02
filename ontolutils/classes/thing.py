@@ -291,7 +291,12 @@ class Thing(ThingModel):
             "@context": at_context,
             **serialization
         }
-        for field_name, field_value in self.__class__.model_json_schema()["properties"].items():
+
+        properties = self.__class__.model_json_schema().get("properties", {})
+        if not properties:
+            properties = self.__class__.model_json_schema().get("items", {}).get(self.__class__.__name__, {}).get("properties", {})
+
+        for field_name, field_value in properties.items():
             _use_as_id = field_value.get("use_as_id", None)
             if _use_as_id is not None:
                 _id = getattr(self, field_name)

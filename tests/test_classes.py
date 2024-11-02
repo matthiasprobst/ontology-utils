@@ -444,7 +444,7 @@ class TestNamespaces(unittest.TestCase):
             firstName: str
             lastName: str = None
             mbox: EmailStr = None
-            orcidId: str = Field(default=None, alias="orcid_id", use_as_id=True)
+            orcidId: str = Field(default=None, alias="orcid_id", json_schema_extra={'use_as_id': True})
 
         p = Person(
             id="local:cde4c79c-21f2-4ab7-b01d-28de6e4aade4",

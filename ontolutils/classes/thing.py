@@ -291,15 +291,15 @@ class Thing(ThingModel):
             "@context": at_context,
             **serialization
         }
-        for field_name, field_value in self.__class__.model_fields.items():
-            if field_value.json_schema_extra:
-                use_as_id = field_value.json_schema_extra.get('use_as_id', None)
-                if use_as_id:
-                    _id = getattr(self, field_name)
+        for field_name, field_value in self.__class__.model_json_schema()["properties"].items():
+            _use_as_id = field_value.get("use_as_id", None)
+            if _use_as_id is not None:
+                _id = getattr(self, field_name)
+                if _id is not None:
                     if str(_id).startswith(("_:", "http")):
                         jsonld["@id"] = getattr(self, field_name)
                     else:
-                        raise ValueError("The ID must be a valid IRI or blank node.")
+                        raise ValueError(f'The ID must be a valid IRI or blank node but got "{_id}".')
         return jsonld
 
     def model_dump_jsonld(self,

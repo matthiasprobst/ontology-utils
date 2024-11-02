@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.6.2
+  - Using a field for the @id tag must be set via `Field(..., json_schema_extra={'use_as_id': True})`
+
 ## v0.6.1
   - removing print statement and fixing docstrings
 

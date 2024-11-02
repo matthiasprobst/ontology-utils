@@ -39,7 +39,8 @@ class Person(Thing):
     firstName: str
     last_name: str = Field(default=None, alias="lastName")  # you may provide an alias
     mbox: EmailStr = None
-    orcidId: HttpUrl = Field(default=None, alias="foaf:orcidId", use_as_id=True)  # use this as ID if available
+    orcidId: HttpUrl = Field(default=None, alias="foaf:orcidId",
+                             json_schema_extra={'use_as_id': True})  # use this as ID if available
 
 
 p = Person(id="https://orcid.org/0000-0001-8729-0482",

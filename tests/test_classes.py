@@ -467,6 +467,28 @@ class TestNamespaces(unittest.TestCase):
             "foaf:firstName": "John",
             "foaf:lastName": "Doe",
             "m4i:orcidId": "https://orcid.org/0000-0001-8729-0482",
+            "@id": "local:cde4c79c-21f2-4ab7-b01d-28de6e4aade4",
+        }
+
+        self.assertDictEqual(json.loads(p.model_dump_jsonld()),
+                             jsonld)
+
+        p = Person(
+            firstName='John',
+            lastName='Doe',
+            orcidId='https://orcid.org/0000-0001-8729-0482', )
+        jsonld = {
+            "@context": {
+                'm4i': 'http://w3id.org/nfdi4ing/metadata4ing#',
+                "owl": "http://www.w3.org/2002/07/owl#",
+                "prov": "http://www.w3.org/ns/prov#",
+                "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+                "foaf": "http://xmlns.com/foaf/0.1/",
+            },
+            "@type": "prov:Person",
+            "foaf:firstName": "John",
+            "foaf:lastName": "Doe",
+            "m4i:orcidId": "https://orcid.org/0000-0001-8729-0482",
             "@id": "https://orcid.org/0000-0001-8729-0482",
         }
 
@@ -525,9 +547,19 @@ class TestNamespaces(unittest.TestCase):
             orcidId='https://orcid.org/0000-0001-8729-0482',
             affiliation=Orga(identifier='https://example.org/123', name='Orga 1')
         )
+        # Person was created with an explicit ID
+        self.assertEqual(p.id, "local:cde4c79c-21f2-4ab7-b01d-28de6e4aade4")
+
+        p = Person(
+            firstName='John',
+            lastName='Doe',
+            orcidId='https://orcid.org/0000-0001-8729-0482',
+            affiliation=Orga(identifier='https://example.org/123', name='Orga 1')
+        )
+
         pdict = json.loads(p.model_dump_jsonld())
-        assert pdict['@id'] == 'https://orcid.org/0000-0001-8729-0482'
-        assert pdict['affiliation']["@id"] == 'https://example.org/123'
+        self.assertEqual(pdict['@id'], 'https://orcid.org/0000-0001-8729-0482')
+        self.assertEqual(pdict['affiliation']["@id"], 'https://example.org/123')
 
     def test_use_as_id_V3(self):
         @namespaces(schema="https://schema.org/",

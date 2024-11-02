@@ -156,10 +156,13 @@ def as_id(obj, field_name):
 
 
 def as_id_before(obj: Dict, field_name: str):
-    if obj.get(field_name, None) is not None:
-        _id_url = obj[field_name]
-        if not str(_id_url).startswith(("_:", "http")):
+    current_id = obj.get("id", None)
+    if current_id is not None:
+        return obj
+    field_value = obj.get(field_name, None)
+    if field_value is not None:
+        if not str(field_value).startswith(("_:", "http")):
             raise ValueError(f"Field {field_name} is not a URIRef or BNode: {obj[field_name]}. "
                              f"You can only set an id for URIRefs or BNodes.")
-        obj["id"] = _id_url
+        obj["id"] = field_value
     return obj

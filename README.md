@@ -31,16 +31,18 @@ from ontolutils import Thing, urirefs, namespaces, as_id
 
 
 @namespaces(prov="http://www.w3.org/ns/prov#",
-            foaf="http://xmlns.com/foaf/0.1/")
+            foaf="http://xmlns.com/foaf/0.1/",
+            m4i='http://w3id.org/nfdi4ing/metadata4ing#')
 @urirefs(Person='prov:Person',
          firstName='foaf:firstName',
          last_name='foaf:lastName',
-         mbox='foaf:mbox')
+         mbox='foaf:mbox',
+         orcidId='m4i:orcidId')
 class Person(Thing):
     firstName: str
-    last_name: str = Field(default=None, alias="lastName")  # you may provide an alias
-    mbox: EmailStr = None
-    orcidId: HttpUrl = Field(default=None, alias="foaf:orcidId")
+    lastName: str = Field(default=None, alias="last_name")  # you may provide an alias
+    mbox: EmailStr = Field(default=None, alias="email")
+    orcidId: HttpUrl = Field(default=None, alias="orcid_id")
 
     # the following will ensure, that if orcidId is set, it will be used as the id
     @model_validator(mode="before")

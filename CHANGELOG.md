@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.8.0
+
+- Added `HDF5` Ontology from the Allotrope Foundation (http://purl.allotrope.org/ontologies/hdf5/1.8#)
+
 ## v0.7.1
 
 - If a potentially wrong ID is used through `id_as()` a `UserWarning` is raised, not an Error.

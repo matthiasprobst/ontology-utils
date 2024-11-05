@@ -113,3 +113,8 @@ class TestNamespaces(unittest.TestCase):
         self.assertIsInstance(namespacelib.SCHEMA.Person, rdflib.URIRef)
         self.assertEqual(str(namespacelib.SCHEMA.Person),
                          "https://schema.org/Person")
+
+    def test_hdf5(self):
+        self.assertIsInstance(namespacelib.HDF5.File, rdflib.URIRef)
+        self.assertEqual(str(namespacelib.HDF5.File),
+                         "http://purl.allotrope.org/ontologies/hdf5/1.8#File")

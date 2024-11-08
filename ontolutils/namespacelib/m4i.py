@@ -6,7 +6,7 @@ class LanguageExtension:
     pass
 
 class M4I(DefinedNamespace):
-    # uri = "https://w3id.org/nfdi4ing/metadata4ing#"
+    # uri = "http://w3id.org/nfdi4ing/metadata4ing#"
     # Generated with None version 0.8.0
     # Date: 2024-11-08 14:00:56.947782
     _fail = True
@@ -79,7 +79,7 @@ class M4I(DefinedNamespace):
     Supervisor: URIRef  # ['Betreuer*in', 'supervisor']
     WorkPackageLeader: URIRef  # ['Arbeitspaketleiter*in', 'work package leader']
 
-    _NS = Namespace("https://w3id.org/nfdi4ing/metadata4ing#")
+    _NS = Namespace("http://w3id.org/nfdi4ing/metadata4ing#")
 
 de = LanguageExtension()
 

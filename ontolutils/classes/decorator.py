@@ -70,7 +70,7 @@ _prefix_dict = {
     'https://www.w3.org/ns/prov#': 'prov',
     'https://www.w3.org/1999/02/22-rdf-syntax-ns#': 'rdf',
     'https://schema.org/': 'schema',
-    'https://w3id.org/nfdi4ing/metadata4ing#': 'm4i'
+    'http://w3id.org/nfdi4ing/metadata4ing#': 'm4i'
 }
 
 

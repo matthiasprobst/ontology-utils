@@ -162,7 +162,7 @@ def m4i():
     """generates namespace for metadata4Ing ontology (M4I)"""
     generate_namespace_file_from_context(
         'm4i',
-        context_ld='https://w3id.org/nfdi4ing/metadata4ing/m4i_context.jsonld',
+        context_ld='http://w3id.org/nfdi4ing/metadata4ing/m4i_context.jsonld',
         languages={'de': [
             'Methode',
             'numersiche_Zuweisung',
@@ -240,7 +240,7 @@ def obo():
     generate_namespace_file_from_context(
         'obo',
         # context_ld='https://raw.githubusercontent.com/biopragmatics/bioregistry/main/exports/contexts/obo.context.jsonld',
-        context_ld='https://w3id.org/nfdi4ing/metadata4ing/m4i_context.jsonld',
+        context_ld='http://w3id.org/nfdi4ing/metadata4ing/m4i_context.jsonld',
         languages={'de': ['Prozess',
                           'realisierbare_Entität',
                           'Teil_von',
@@ -270,16 +270,16 @@ def obo():
 def qudt_unit():
     generate_namespace_file_from_ttl(
         namespace='qudt_unit',
-        source='https://qudt.org/vocab/unit/',
-        ns='https://qudt.org/vocab/unit/',
+        source='http://qudt.org/vocab/unit/',
+        ns='http://qudt.org/vocab/unit/',
     )
 
 
 def qudt_quantitykind():
     generate_namespace_file_from_ttl(
         namespace='qudt_kind',
-        source='https://qudt.org/vocab/quantitykind/',
-        ns='https://qudt.org/vocab/quantitykind/',
+        source='http://qudt.org/vocab/quantitykind/',
+        ns='http://qudt.org/vocab/quantitykind/',
     )
 
 

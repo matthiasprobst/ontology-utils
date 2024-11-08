@@ -32,7 +32,7 @@ from ontolutils import Thing, urirefs, namespaces, as_id
 
 @namespaces(prov="https://www.w3.org/ns/prov#",
             foaf="https://xmlns.com/foaf/0.1/",
-            m4i='https://w3id.org/nfdi4ing/metadata4ing#')
+            m4i='http://w3id.org/nfdi4ing/metadata4ing#')
 @urirefs(Person='prov:Person',
          firstName='foaf:firstName',
          last_name='foaf:lastName',

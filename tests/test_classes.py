@@ -433,7 +433,7 @@ class TestNamespaces(unittest.TestCase):
     def test_use_as_id(self):
         @namespaces(prov="https://www.w3.org/ns/prov#",
                     foaf="https://xmlns.com/foaf/0.1/",
-                    m4i="https://w3id.org/nfdi4ing/metadata4ing#"
+                    m4i="http://w3id.org/nfdi4ing/metadata4ing#"
                     )
         @urirefs(Person='prov:Person',
                  firstName='foaf:firstName',
@@ -457,7 +457,7 @@ class TestNamespaces(unittest.TestCase):
             orcidId='https://orcid.org/0000-0001-8729-0482', )
         jsonld = {
             "@context": {
-                'm4i': 'https://w3id.org/nfdi4ing/metadata4ing#',
+                'm4i': 'http://w3id.org/nfdi4ing/metadata4ing#',
                 "owl": "https://www.w3.org/2002/07/owl#",
                 "prov": "https://www.w3.org/ns/prov#",
                 "rdfs": "https://www.w3.org/2000/01/rdf-schema#",
@@ -479,7 +479,7 @@ class TestNamespaces(unittest.TestCase):
             orcidId='https://orcid.org/0000-0001-8729-0482', )
         jsonld = {
             "@context": {
-                'm4i': 'https://w3id.org/nfdi4ing/metadata4ing#',
+                'm4i': 'http://w3id.org/nfdi4ing/metadata4ing#',
                 "owl": "https://www.w3.org/2002/07/owl#",
                 "prov": "https://www.w3.org/ns/prov#",
                 "rdfs": "https://www.w3.org/2000/01/rdf-schema#",
@@ -514,7 +514,7 @@ class TestNamespaces(unittest.TestCase):
 
         @namespaces(prov="https://www.w3.org/ns/prov#",
                     foaf="https://xmlns.com/foaf/0.1/",
-                    m4i="https://w3id.org/nfdi4ing/metadata4ing#"
+                    m4i="http://w3id.org/nfdi4ing/metadata4ing#"
                     )
         @urirefs(Person='prov:Person',
                  firstName='foaf:firstName',
@@ -580,7 +580,7 @@ class TestNamespaces(unittest.TestCase):
 
         @namespaces(prov="https://www.w3.org/ns/prov#",
                     foaf="https://xmlns.com/foaf/0.1/",
-                    m4i="https://w3id.org/nfdi4ing/metadata4ing#"
+                    m4i="http://w3id.org/nfdi4ing/metadata4ing#"
                     )
         @urirefs(Person='prov:Person',
                  firstName='foaf:firstName',

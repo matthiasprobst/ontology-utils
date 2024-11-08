@@ -10,7 +10,8 @@ from pydantic import EmailStr, model_validator
 from pydantic import field_validator, Field
 from rdflib.plugins.shared.jsonld.context import Context
 
-from ontolutils import Thing, urirefs, namespaces, get_urirefs, get_namespaces
+import ontolutils
+from ontolutils import Thing, urirefs, namespaces, get_urirefs, get_namespaces, set_config
 from ontolutils import as_id
 from ontolutils import set_logging_level
 from ontolutils.classes import decorator
@@ -648,3 +649,30 @@ class TestNamespaces(unittest.TestCase):
         jsonld_dict.pop('@id', None)
         self.assertDictEqual(jsonld_dict,
                              ref_jsonld)
+
+    def test_blank_node_prefix(self):
+        @namespaces(foaf='https://xmlns.com/foaf/0.1/',
+                    prov='https://www.w3.org/ns/prov#')
+        @urirefs(Person='prov:Person',
+                 first_name='foaf:firstName')
+        class Person(Thing):
+            first_name: str = Field(default=None, alias='firstName')
+
+        p = Person(firstName="John")
+        self.assertTrue(p.id.startswith("_:"))
+
+        with set_config(blank_node_prefix_name="local:"):
+            p = Person(firstName="John")
+            self.assertTrue(p.id.startswith("local:"))
+
+        p = Person(firstName="John")
+        self.assertTrue(p.id.startswith("_:"))
+
+        ontolutils.set_config(blank_node_prefix_name="test:")
+
+        p = Person(firstName="John")
+        self.assertTrue(p.id.startswith("test:"))
+
+        ontolutils.set_config(blank_node_prefix_name=None)
+        p = Person(firstName="John")
+        self.assertTrue(p.id.startswith("_:"))

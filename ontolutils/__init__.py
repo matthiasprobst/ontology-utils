@@ -1,6 +1,7 @@
 """Ontolutils package."""
 import logging
 
+from ._cfg import set_config, get_config
 from ._version import __version__
 from .classes import Thing, get_urirefs, get_namespaces, as_id
 from .classes import namespaces, urirefs

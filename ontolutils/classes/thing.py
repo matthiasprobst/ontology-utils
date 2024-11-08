@@ -13,6 +13,7 @@ from rdflib.plugins.shared.jsonld.context import Context
 from .decorator import urirefs, namespaces, URIRefManager, NamespaceManager, _is_http_url
 from .typing import BlankNodeType
 from .utils import split_URIRef
+from .. import get_config
 from ..config import PYDANTIC_EXTRA
 
 logger = logging.getLogger('ontolutils')
@@ -50,9 +51,12 @@ def resolve_iri(key_or_iri: str, context: Context) -> Optional[str]:
     return
 
 
-def build_blank_n3():
-    return rdflib.BNode().n3()
-
+def build_blank_n3() -> str:
+    _blank_node = rdflib.BNode().n3()
+    bnode_prefix_name = get_config("blank_node_prefix_name")
+    if bnode_prefix_name is None:
+        return _blank_node
+    return _blank_node.replace('_:', bnode_prefix_name)
 
 @namespaces(owl='https://www.w3.org/2002/07/owl#',
             rdfs='http://www.w3.org/2000/01/rdf-schema#')

@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.12.0
+
+- Allow to set a default prefix for blank nodes.
+
 ## v0.11.0
 
 - Undo more https fixes where it was not necessary

@@ -46,7 +46,7 @@ def resolve_iri(key_or_iri: str, context: Context) -> Optional[str]:
         return context.terms.get(key_or_iri).id
     except AttributeError:
         if key_or_iri == 'label':
-            return 'http://www.w3.org/2000/01/rdf-schema#label'
+            return 'https://www.w3.org/2000/01/rdf-schema#label'
     return
 
 
@@ -54,8 +54,8 @@ def build_blank_n3():
     return rdflib.BNode().n3()
 
 
-@namespaces(owl='http://www.w3.org/2002/07/owl#',
-            rdfs='http://www.w3.org/2000/01/rdf-schema#')
+@namespaces(owl='https://www.w3.org/2002/07/owl#',
+            rdfs='https://www.w3.org/2000/01/rdf-schema#')
 @urirefs(Thing='owl:Thing', label='rdfs:label')
 class Thing(ThingModel):
     """Most basic concept class owl:Thing (see also https://www.w3.org/TR/owl-guide/)
@@ -64,8 +64,8 @@ class Thing(ThingModel):
 
     Example for `prov:Person`:
 
-    >>> @namespaces(prov='http://www.w3.org/ns/prov#',
-    >>>             foaf='http://xmlns.com/foaf/0.1/')
+    >>> @namespaces(prov='https://www.w3.org/ns/prov#',
+    >>>             foaf='https://xmlns.com/foaf/0.1/')
     >>> @urirefs(Person='prov:Person', first_name='foaf:firstName')
     >>> class Person(Thing):
     >>>     first_name: str = None
@@ -78,8 +78,8 @@ class Thing(ThingModel):
     >>> print(p.model_dump_jsonld())
     >>> {
     >>>     "@context": {
-    >>>         "prov": "http://www.w3.org/ns/prov#",
-    >>>         "foaf": "http://xmlns.com/foaf/0.1/",
+    >>>         "prov": "https://www.w3.org/ns/prov#",
+    >>>         "foaf": "https://xmlns.com/foaf/0.1/",
     >>>         "first_name": "foaf:firstName"
     >>>     },
     >>>     "@id": "N23036f1a4eb149edb7db41b2f5f4268c",
@@ -148,7 +148,7 @@ class Thing(ThingModel):
 
                 In the following example, first_name refers to foaf:firstName:
 
-                >>> @namespaces(foaf='http://xmlns.com/foaf/0.1/')
+                >>> @namespaces(foaf='https://xmlns.com/foaf/0.1/')
                 >>> @urirefs(Person='foaf:Person', first_name='foaf:firstName')
                 >>> class Person(Thing):
                 >>>     first_name: str = None
@@ -160,7 +160,7 @@ class Thing(ThingModel):
 
                 >>> {
                 >>>     "@context": {
-                >>>         "foaf": "http://xmlns.com/foaf/0.1/",
+                >>>         "foaf": "https://xmlns.com/foaf/0.1/",
                 >>>         "first_name": "foaf:firstName"
                 >>>     },
                 >>>     "@type": "foaf:Person",
@@ -171,7 +171,7 @@ class Thing(ThingModel):
 
                 >>> {
                 >>>     "@context": {
-                >>>         "foaf": "http://xmlns.com/foaf/0.1/"
+                >>>         "foaf": "https://xmlns.com/foaf/0.1/"
                 >>>     },
                 >>>     "@type": "foaf:Person",
                 >>>     "foaf:firstName": "John"
@@ -419,11 +419,11 @@ class Thing(ThingModel):
         """
         from . import query
         if data is not None and isinstance(data, str):
-            if 'http://schema.org/' in data:
+            if 'https://schema.org/' in data:
                 warnings.warn('Replacing http with https in the JSON-LD data. '
                               'This is a workaround for the schema.org inconsistency.',
                               UserWarning)
-                data = data.replace('http://schema.org/', 'https://schema.org/')
+                data = data.replace('https://schema.org/', 'https://schema.org/')
         return query(cls, source=source, data=data, limit=limit, context=context)
 
     @classmethod
@@ -436,12 +436,12 @@ class Thing(ThingModel):
             The key (field) of the class
         compact: bool
             If True, returns the short form of the IRI, e.g. 'owl:Thing'
-            If False, returns the full IRI, e.g. 'http://www.w3.org/2002/07/owl#Thing'
+            If False, returns the full IRI, e.g. 'https://www.w3.org/2002/07/owl#Thing'
 
         Returns
         -------
         str
-            The IRI of the class or the key, e.g. 'http://www.w3.org/2002/07/owl#Thing' or
+            The IRI of the class or the key, e.g. 'https://www.w3.org/2002/07/owl#Thing' or
             'owl:Thing' if compact is True
         """
         if key is None:

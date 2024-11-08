@@ -82,7 +82,7 @@ class TestNamespaces(unittest.TestCase):
         self.assertIsInstance(ontolutils.M4I.Tool, rdflib.URIRef)
         self.assertIsInstance(namespacelib.M4I.Tool, rdflib.URIRef)
         self.assertEqual(str(namespacelib.M4I.Tool),
-                         'http://w3id.org/nfdi4ing/metadata4ing#Tool')
+                         'https://w3id.org/nfdi4ing/metadata4ing#Tool')
 
         with self.assertRaises(AttributeError):
             namespacelib.M4I.Invalid
@@ -90,14 +90,14 @@ class TestNamespaces(unittest.TestCase):
     def test_qudt_unit(self):
         self.assertIsInstance(namespacelib.QUDT_UNIT.M_PER_SEC, rdflib.URIRef)
         self.assertEqual(str(namespacelib.QUDT_UNIT.M_PER_SEC),
-                         'http://qudt.org/vocab/unit/M-PER-SEC')
+                         'https://qudt.org/vocab/unit/M-PER-SEC')
         with self.assertRaises(AttributeError):
             namespacelib.QUDT_UNIT.METER
 
     def test_qudt_kind(self):
         self.assertIsInstance(namespacelib.QUDT_KIND.Mass, rdflib.URIRef)
         self.assertEqual(str(namespacelib.QUDT_KIND.Mass),
-                         'http://qudt.org/vocab/quantitykind/Mass')
+                         'https://qudt.org/vocab/quantitykind/Mass')
 
     def test_rdflib(self):
         self.assertIsInstance(rdflib.PROV.Agent, rdflib.URIRef)
@@ -117,4 +117,4 @@ class TestNamespaces(unittest.TestCase):
     def test_hdf5(self):
         self.assertIsInstance(namespacelib.HDF5.File, rdflib.URIRef)
         self.assertEqual(str(namespacelib.HDF5.File),
-                         "http://purl.allotrope.org/ontologies/hdf5/1.8#File")
+                         "https://purl.allotrope.org/ontologies/hdf5/1.8#File")

@@ -85,4 +85,4 @@ class TestUtils(unittest.TestCase):
             shutil.rmtree('not/existing/dir')
 
     def test_parse_qudt_units(self):
-        self.assertEqual(ontolutils.parse_unit('m/s'), rdflib.URIRef('http://qudt.org/vocab/unit/M-PER-SEC'))
+        self.assertEqual(ontolutils.parse_unit('m/s'), rdflib.URIRef('https://qudt.org/vocab/unit/M-PER-SEC'))

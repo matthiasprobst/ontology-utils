@@ -271,7 +271,7 @@ def qudt_unit():
     generate_namespace_file_from_ttl(
         namespace='qudt_unit',
         source='https://qudt.org/vocab/unit/',
-        ns='http://qudt.org/vocab/unit/',
+        ns='https://qudt.org/vocab/unit/',
     )
 
 
@@ -279,15 +279,15 @@ def qudt_quantitykind():
     generate_namespace_file_from_ttl(
         namespace='qudt_kind',
         source='https://qudt.org/vocab/quantitykind/',
-        ns='http://qudt.org/vocab/quantitykind/',
+        ns='https://qudt.org/vocab/quantitykind/',
     )
 
 
 def schema():
     generate_namespace_file_from_ttl(
         namespace='schema',
-        source='http://schema.org/version/latest/schemaorg-current-https.jsonld',
-        ns='http://schema.org/',
+        source='https://schema.org/version/latest/schemaorg-current-https.jsonld',
+        ns='https://schema.org/',
     )
 
 

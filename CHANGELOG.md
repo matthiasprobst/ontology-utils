@@ -1,8 +1,13 @@
 # Changelog
 
+## v0.9.0
+
+ - Fix http to https in namespaces
+
+
 ## v0.8.0
 
-- Added `HDF5` Ontology from the Allotrope Foundation (http://purl.allotrope.org/ontologies/hdf5/1.8#)
+- Added `HDF5` Ontology from the Allotrope Foundation (https://purl.allotrope.org/ontologies/hdf5/1.8#)
 
 ## v0.7.1
 

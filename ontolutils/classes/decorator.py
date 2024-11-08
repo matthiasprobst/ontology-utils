@@ -36,7 +36,7 @@ def namespaces(**kwargs):
 
     Example:
     --------
-    @namespaces(ex="http://example.com/")
+    @namespaces(ex="https://example.com/")
     @urirefs(name="ex:name")
     class ExampleModel(ThingModel):
         name: str
@@ -45,7 +45,7 @@ def namespaces(**kwargs):
     print(em.dump_jsonld())
     # {
     #     "@context": {
-    #         "ex": "http://example.com/"
+    #         "ex": "https://example.com/"
     #     },
     #     "@graph": [
     #         {
@@ -66,11 +66,11 @@ def namespaces(**kwargs):
 
 
 _prefix_dict = {
-    'http://xmlns.com/foaf/0.1/': 'foaf',
-    'http://www.w3.org/ns/prov#': 'prov',
-    'http://www.w3.org/1999/02/22-rdf-syntax-ns#': 'rdf',
-    'http://schema.org/': 'schema',
-    'http://w3id.org/nfdi4ing/metadata4ing#': 'm4i'
+    'https://xmlns.com/foaf/0.1/': 'foaf',
+    'https://www.w3.org/ns/prov#': 'prov',
+    'https://www.w3.org/1999/02/22-rdf-syntax-ns#': 'rdf',
+    'https://schema.org/': 'schema',
+    'https://w3id.org/nfdi4ing/metadata4ing#': 'm4i'
 }
 
 
@@ -79,7 +79,7 @@ def urirefs(**kwargs):
 
     Example:
     --------
-    @urirefs(name=URIRef("http://example.com/name"))
+    @urirefs(name=URIRef("https://example.com/name"))
     class ExampleModel(ThingModel):
         name: str
 

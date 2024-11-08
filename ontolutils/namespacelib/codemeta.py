@@ -6,9 +6,9 @@ class LanguageExtension:
     pass
 
 class CODEMETA(DefinedNamespace):
-    # uri = "https://w3id.org/nfdi4ing/metadata4ing#"
-    # Generated with None version 0.2.16
-    # Date: 2024-04-08 15:01:30.249226
+    # uri = "https://codemeta.github.io/terms/"
+    # Generated with None version 0.8.0
+    # Date: 2024-11-08 14:04:02.126785
     _fail = True
     softwareSuggestions: URIRef  # ['softwareSuggestions']
     contIntegration: URIRef  # ['contIntegration']

@@ -3,7 +3,7 @@ from rdflib.term import URIRef
 
 
 class HDF5(DefinedNamespace):
-    # uri = "http://purl.allotrope.org/ontologies/hdf5/1.8#"
+    # uri = "https://purl.allotrope.org/ontologies/hdf5/1.8#"
     # Manually created, therefore is incomplete!!! Only basic definitions were taken.
     # Date: 2024-03-18
     _fail = True
@@ -37,4 +37,4 @@ class HDF5(DefinedNamespace):
     size: URIRef  # synonyms: size of datatype, size of dimension
     value: URIRef
 
-    _NS = Namespace("http://purl.allotrope.org/ontologies/hdf5/1.8#")
+    _NS = Namespace("https://purl.allotrope.org/ontologies/hdf5/1.8#")

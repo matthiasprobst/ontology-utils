@@ -7,8 +7,8 @@ class LanguageExtension:
 
 class M4I(DefinedNamespace):
     # uri = "https://w3id.org/nfdi4ing/metadata4ing#"
-    # Generated with None version 0.2.10
-    # Date: 2024-03-24 15:10:44.476048
+    # Generated with None version 0.8.0
+    # Date: 2024-11-08 14:00:56.947782
     _fail = True
     Method: URIRef  # ['Methode', 'method']
     NumericalAssignment: URIRef  # ['numerical assignment', 'numerische Zuweisung']
@@ -35,6 +35,7 @@ class M4I(DefinedNamespace):
     isEmployedToolIn: URIRef  # ['is employed tool', 'ist eingesetztes Werkzeug']
     projectParticipant: URIRef  # ['hat Projektmitglied', 'project participant']
     realizesMethod: URIRef  # ['realisiert Methode', 'realizes method']
+    representsVariable: URIRef  # ['repräsentiert Variable', 'represents variable']
     UsageInstruction: URIRef  # ['Verwendungshinweis', 'usage instruction']
     endOfProject: URIRef  # ['Projektenddatum', 'project end date']
     hasAssignmentTimestamp: URIRef  # ['has assignment timestamp', 'hat Zuweisungszeitstempel']
@@ -78,7 +79,7 @@ class M4I(DefinedNamespace):
     Supervisor: URIRef  # ['Betreuer*in', 'supervisor']
     WorkPackageLeader: URIRef  # ['Arbeitspaketleiter*in', 'work package leader']
 
-    _NS = Namespace("http://w3id.org/nfdi4ing/metadata4ing#")
+    _NS = Namespace("https://w3id.org/nfdi4ing/metadata4ing#")
 
 de = LanguageExtension()
 
@@ -132,6 +133,8 @@ setattr(de, "hat_Projektmitglied", M4I.projectParticipant)
 setattr(M4I, "project_participant", M4I.projectParticipant)
 setattr(de, "realisiert_Methode", M4I.realizesMethod)
 setattr(M4I, "realizes_method", M4I.realizesMethod)
+setattr(M4I, "repräsentiert_Variable", M4I.representsVariable)
+setattr(M4I, "represents_variable", M4I.representsVariable)
 setattr(de, "Verwendungshinweis", M4I.UsageInstruction)
 setattr(M4I, "usage_instruction", M4I.UsageInstruction)
 setattr(de, "Projektenddatum", M4I.endOfProject)

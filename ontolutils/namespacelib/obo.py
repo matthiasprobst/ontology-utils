@@ -6,9 +6,9 @@ class LanguageExtension:
     pass
 
 class OBO(DefinedNamespace):
-    # uri = "https://w3id.org/nfdi4ing/metadata4ing#"
-    # Generated with None version 0.2.10
-    # Date: 2024-03-24 15:10:45.600748
+    # uri = "http://purl.obolibrary.org/obo/"
+    # Generated with None version 0.8.0
+    # Date: 2024-11-08 14:00:57.682240
     _fail = True
     BFO_0000015: URIRef  # ['Prozess', 'process']
     BFO_0000017: URIRef  # ['realisierbare Entität', 'realizable entity']
@@ -17,8 +17,6 @@ class OBO(DefinedNamespace):
     BFO_0000054: URIRef  # ['realisiert in', 'realized in']
     BFO_0000055: URIRef  # ['realisiert', 'realizes']
     BFO_0000063: URIRef  # ['ist Voraussetzung für Schritt', 'precedes']
-    RO_0000056: URIRef  # ['ist beteiligt an', 'participates in']
-    RO_0000057: URIRef  # ['has participant', 'hat Teilnehmer']
     RO_0002090: URIRef  # ['immediately precedes', 'ist unmittelbare Voraussetzung für Schritt']
     RO_0002224: URIRef  # ['beginnt mit', 'starts with']
     RO_0002230: URIRef  # ['endet mit', 'ends with']
@@ -45,10 +43,6 @@ setattr(de, "realisiert", OBO.BFO_0000055)
 setattr(OBO, "realizes", OBO.BFO_0000055)
 setattr(de, "ist_Voraussetzung_für_Schritt", OBO.BFO_0000063)
 setattr(OBO, "precedes", OBO.BFO_0000063)
-setattr(de, "ist_beteiligt_an", OBO.RO_0000056)
-setattr(OBO, "participates_in", OBO.RO_0000056)
-setattr(OBO, "has_participant", OBO.RO_0000057)
-setattr(de, "hat_Teilnehmer", OBO.RO_0000057)
 setattr(OBO, "immediately_precedes", OBO.RO_0002090)
 setattr(de, "ist_unmittelbare_Voraussetzung_für_Schritt", OBO.RO_0002090)
 setattr(de, "beginnt_mit", OBO.RO_0002224)

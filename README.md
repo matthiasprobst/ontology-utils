@@ -65,7 +65,7 @@ Now, you can instantiate the class and use the `model_dump_jsonld()` method to g
 {
   "@context": {
     "owl": "https://www.w3.org/2002/07/owl#",
-    "rdfs": "https://www.w3.org/2000/01/rdf-schema#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
     "prov": "https://www.w3.org/ns/prov#",
     "foaf": "https://xmlns.com/foaf/0.1/"
   },

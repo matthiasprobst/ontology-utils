@@ -93,11 +93,11 @@ class TestNamespaces(unittest.TestCase):
         self.assertEqual(ret, 'https://xmlns.com/foaf/0.1/age')
 
         ret = resolve_iri('label', context=Context(source={'age': 'https://xmlns.com/foaf/0.1/age'}))
-        self.assertEqual(ret, 'https://www.w3.org/2000/01/rdf-schema#label')
+        self.assertEqual(ret, 'http://www.w3.org/2000/01/rdf-schema#label')
 
         ret = resolve_iri('label',
-                          context=Context(source={'label': {'@id': 'https://www.w3.org/2000/01/rdf-schema#label'}}))
-        self.assertEqual(ret, 'https://www.w3.org/2000/01/rdf-schema#label')
+                          context=Context(source={'label': {'@id': 'http://www.w3.org/2000/01/rdf-schema#label'}}))
+        self.assertEqual(ret, 'http://www.w3.org/2000/01/rdf-schema#label')
 
         ret = resolve_iri('prefix:label', Context(source={}))
         self.assertEqual(ret, None)
@@ -239,7 +239,7 @@ class TestNamespaces(unittest.TestCase):
         self.assertIsInstance(thing_dict, dict)
         self.assertDictEqual(thing_dict['@context'],
                              {'owl': 'https://www.w3.org/2002/07/owl#',
-                              'rdfs': 'https://www.w3.org/2000/01/rdf-schema#'})
+                              'rdfs': 'http://www.w3.org/2000/01/rdf-schema#'})
         self.assertEqual(thing_dict['@id'], 'https://example.org/TestThing')
         self.assertEqual(thing_dict['rdfs:label'], 'Test Thing')
         self.assertEqual(thing_dict['@type'], 'owl:Thing')
@@ -460,7 +460,7 @@ class TestNamespaces(unittest.TestCase):
                 'm4i': 'http://w3id.org/nfdi4ing/metadata4ing#',
                 "owl": "https://www.w3.org/2002/07/owl#",
                 "prov": "https://www.w3.org/ns/prov#",
-                "rdfs": "https://www.w3.org/2000/01/rdf-schema#",
+                "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
                 "foaf": "https://xmlns.com/foaf/0.1/",
             },
             "@type": "prov:Person",
@@ -482,7 +482,7 @@ class TestNamespaces(unittest.TestCase):
                 'm4i': 'http://w3id.org/nfdi4ing/metadata4ing#',
                 "owl": "https://www.w3.org/2002/07/owl#",
                 "prov": "https://www.w3.org/ns/prov#",
-                "rdfs": "https://www.w3.org/2000/01/rdf-schema#",
+                "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
                 "foaf": "https://xmlns.com/foaf/0.1/",
             },
             "@type": "prov:Person",
@@ -617,7 +617,7 @@ class TestNamespaces(unittest.TestCase):
         self.assertDictEqual(mt.urirefs, {'Thing': 'owl:Thing', 'label': 'rdfs:label'})
         self.assertDictEqual(mt.namespaces, get_namespaces(Thing))
         self.assertDictEqual(mt.namespaces, {'owl': 'https://www.w3.org/2002/07/owl#',
-                                             'rdfs': 'https://www.w3.org/2000/01/rdf-schema#'})
+                                             'rdfs': 'http://www.w3.org/2000/01/rdf-schema#'})
 
         mt = CustomPerson(first_name='John', last_name='Doe')
         with self.assertRaises(AttributeError):
@@ -632,7 +632,7 @@ class TestNamespaces(unittest.TestCase):
         ref_jsonld = {
             "@context": {
                 "owl": "https://www.w3.org/2002/07/owl#",
-                "rdfs": "https://www.w3.org/2000/01/rdf-schema#",
+                "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
                 "foaf": "https://xmlns.com/foaf/0.1/"
             },
             "@type": "CustomPerson",

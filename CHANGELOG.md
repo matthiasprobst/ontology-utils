@@ -1,8 +1,12 @@
 # Changelog
 
+## v0.11.0
+
+- Undo more https fixes where it was not necessary
+
 ## v0.10.0
 
-- undo https fixes where it was not necessary
+- Undo https fixes where it was not necessary
 
 ## v0.9.0
 

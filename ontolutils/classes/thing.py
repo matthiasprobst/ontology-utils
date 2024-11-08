@@ -46,7 +46,7 @@ def resolve_iri(key_or_iri: str, context: Context) -> Optional[str]:
         return context.terms.get(key_or_iri).id
     except AttributeError:
         if key_or_iri == 'label':
-            return 'https://www.w3.org/2000/01/rdf-schema#label'
+            return 'http://www.w3.org/2000/01/rdf-schema#label'
     return
 
 
@@ -55,7 +55,7 @@ def build_blank_n3():
 
 
 @namespaces(owl='https://www.w3.org/2002/07/owl#',
-            rdfs='https://www.w3.org/2000/01/rdf-schema#')
+            rdfs='http://www.w3.org/2000/01/rdf-schema#')
 @urirefs(Thing='owl:Thing', label='rdfs:label')
 class Thing(ThingModel):
     """Most basic concept class owl:Thing (see also https://www.w3.org/TR/owl-guide/)

@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.12.2
+
+- Bugfix owl namespace URL
+
+## v0.12.1
+
+- Bugfix missing OBO predicates
+
 ## v0.12.0
 
 - Allow to set a default prefix for blank nodes.

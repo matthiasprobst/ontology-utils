@@ -239,7 +239,7 @@ class TestNamespaces(unittest.TestCase):
         thing_dict = thing.get_jsonld_dict(resolve_keys=True)
         self.assertIsInstance(thing_dict, dict)
         self.assertDictEqual(thing_dict['@context'],
-                             {'owl': 'https://www.w3.org/2002/07/owl#',
+                             {'owl': 'http://www.w3.org/2002/07/owl#',
                               'rdfs': 'http://www.w3.org/2000/01/rdf-schema#'})
         self.assertEqual(thing_dict['@id'], 'https://example.org/TestThing')
         self.assertEqual(thing_dict['rdfs:label'], 'Test Thing')
@@ -459,7 +459,7 @@ class TestNamespaces(unittest.TestCase):
         jsonld = {
             "@context": {
                 'm4i': 'http://w3id.org/nfdi4ing/metadata4ing#',
-                "owl": "https://www.w3.org/2002/07/owl#",
+                "owl": "http://www.w3.org/2002/07/owl#",
                 "prov": "https://www.w3.org/ns/prov#",
                 "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
                 "foaf": "https://xmlns.com/foaf/0.1/",
@@ -481,7 +481,7 @@ class TestNamespaces(unittest.TestCase):
         jsonld = {
             "@context": {
                 'm4i': 'http://w3id.org/nfdi4ing/metadata4ing#',
-                "owl": "https://www.w3.org/2002/07/owl#",
+                "owl": "http://www.w3.org/2002/07/owl#",
                 "prov": "https://www.w3.org/ns/prov#",
                 "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
                 "foaf": "https://xmlns.com/foaf/0.1/",
@@ -617,7 +617,7 @@ class TestNamespaces(unittest.TestCase):
         self.assertDictEqual(mt.urirefs, get_urirefs(Thing))
         self.assertDictEqual(mt.urirefs, {'Thing': 'owl:Thing', 'label': 'rdfs:label'})
         self.assertDictEqual(mt.namespaces, get_namespaces(Thing))
-        self.assertDictEqual(mt.namespaces, {'owl': 'https://www.w3.org/2002/07/owl#',
+        self.assertDictEqual(mt.namespaces, {'owl': 'http://www.w3.org/2002/07/owl#',
                                              'rdfs': 'http://www.w3.org/2000/01/rdf-schema#'})
 
         mt = CustomPerson(first_name='John', last_name='Doe')
@@ -632,7 +632,7 @@ class TestNamespaces(unittest.TestCase):
         # print(mt.model_dump_json(indent=2, exclude_none=True))
         ref_jsonld = {
             "@context": {
-                "owl": "https://www.w3.org/2002/07/owl#",
+                "owl": "http://www.w3.org/2002/07/owl#",
                 "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
                 "foaf": "https://xmlns.com/foaf/0.1/"
             },

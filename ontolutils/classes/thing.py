@@ -58,7 +58,7 @@ def build_blank_n3() -> str:
         return _blank_node
     return _blank_node.replace('_:', bnode_prefix_name)
 
-@namespaces(owl='https://www.w3.org/2002/07/owl#',
+@namespaces(owl='http://www.w3.org/2002/07/owl#',
             rdfs='http://www.w3.org/2000/01/rdf-schema#')
 @urirefs(Thing='owl:Thing', label='rdfs:label')
 class Thing(ThingModel):
@@ -440,12 +440,12 @@ class Thing(ThingModel):
             The key (field) of the class
         compact: bool
             If True, returns the short form of the IRI, e.g. 'owl:Thing'
-            If False, returns the full IRI, e.g. 'https://www.w3.org/2002/07/owl#Thing'
+            If False, returns the full IRI, e.g. 'http://www.w3.org/2002/07/owl#Thing'
 
         Returns
         -------
         str
-            The IRI of the class or the key, e.g. 'https://www.w3.org/2002/07/owl#Thing' or
+            The IRI of the class or the key, e.g. 'http://www.w3.org/2002/07/owl#Thing' or
             'owl:Thing' if compact is True
         """
         if key is None:

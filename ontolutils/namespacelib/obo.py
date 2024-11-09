@@ -17,6 +17,8 @@ class OBO(DefinedNamespace):
     BFO_0000054: URIRef  # ['realisiert in', 'realized in']
     BFO_0000055: URIRef  # ['realisiert', 'realizes']
     BFO_0000063: URIRef  # ['ist Voraussetzung für Schritt', 'precedes']
+    RO_0000056: URIRef  # ['ist beteiligt an', 'participates in']
+    RO_0000057: URIRef  # ['has participant', 'hat Teilnehmer']
     RO_0002090: URIRef  # ['immediately precedes', 'ist unmittelbare Voraussetzung für Schritt']
     RO_0002224: URIRef  # ['beginnt mit', 'starts with']
     RO_0002230: URIRef  # ['endet mit', 'ends with']
@@ -57,5 +59,9 @@ setattr(de, "Input_von", OBO.RO_0002352)
 setattr(OBO, "input_of", OBO.RO_0002352)
 setattr(de, "Output_von", OBO.RO_0002353)
 setattr(OBO, "output_of", OBO.RO_0002353)
+setattr(de, "ist_beteiligt_an", OBO.RO_0000056)
+setattr(OBO, "participates_in", OBO.RO_0000056)
+setattr(OBO, "has_participant", OBO.RO_0000057)
+setattr(de, "hat_Teilnehmer", OBO.RO_0000057)
 
 setattr(OBO, "de", de)

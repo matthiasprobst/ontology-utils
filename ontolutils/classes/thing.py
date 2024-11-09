@@ -114,7 +114,7 @@ class Thing(ThingModel):
     @classmethod
     def _id(cls, id: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType]]) -> str:
         if id is None:
-            return rdflib.BNode().n3()
+            return build_blank_n3()
         return str(id)
 
     def __lt__(self, other: ThingModel) -> bool:

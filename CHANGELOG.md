@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.12.3
+
+- Hotfix for http://schema.org
+
 ## v0.12.2
 
 - Bugfix owl namespace URL

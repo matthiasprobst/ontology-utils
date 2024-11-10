@@ -362,9 +362,8 @@ class TestNamespaces(unittest.TestCase):
         agent = Agent(name='John Doe')
         self.assertEqual(agent.name, 'John Doe')
         agent_jsonld = agent.model_dump_jsonld()
-        print(agent_jsonld.replace('https://schema', 'https://schema'))
         with self.assertWarns(UserWarning):
-            agent.from_jsonld(data=agent_jsonld.replace('https://schema', 'https://schema'),
+            agent.from_jsonld(data=agent_jsonld.replace('https://schema', 'http://schema'),
                               limit=1)
 
     def test_model_dump_jsonld_nested(self):

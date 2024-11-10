@@ -58,6 +58,7 @@ def build_blank_n3() -> str:
         return _blank_node
     return _blank_node.replace('_:', bnode_prefix_name)
 
+
 @namespaces(owl='http://www.w3.org/2002/07/owl#',
             rdfs='http://www.w3.org/2000/01/rdf-schema#')
 @urirefs(Thing='owl:Thing', label='rdfs:label')
@@ -422,12 +423,14 @@ class Thing(ThingModel):
 
         """
         from . import query
-        if data is not None and isinstance(data, str):
-            if 'https://schema.org/' in data:
+        if data is not None:
+            if isinstance(data, dict):
+                data = json.dumps(data)
+            if 'http://schema.org/' in data:
                 warnings.warn('Replacing http with https in the JSON-LD data. '
                               'This is a workaround for the schema.org inconsistency.',
                               UserWarning)
-                data = data.replace('https://schema.org/', 'https://schema.org/')
+                data = data.replace('http://schema.org/', 'https://schema.org/')
         return query(cls, source=source, data=data, limit=limit, context=context)
 
     @classmethod

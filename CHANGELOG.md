@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.12.4
+
+- Hotfix for overwriting id by another field
+
 ## v0.12.3
 
 - Hotfix for http://schema.org

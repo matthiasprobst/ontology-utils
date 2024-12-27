@@ -473,6 +473,15 @@ class TestNamespaces(unittest.TestCase):
         self.assertDictEqual(json.loads(p.model_dump_jsonld()),
                              jsonld)
 
+        p_without_http_orcid = Person(
+            firstName='John',
+            lastName='Doe',
+            orcidId='0000-0001-8729-0482')
+        self.assertEqual(json.loads(p_without_http_orcid.model_dump_jsonld())["@id"],
+                         p_without_http_orcid.id)
+        self.assertEqual(json.loads(p_without_http_orcid.model_dump_jsonld())["m4i:orcidId"],
+                         '0000-0001-8729-0482')
+
         p = Person(
             firstName='John',
             lastName='Doe',
@@ -532,14 +541,6 @@ class TestNamespaces(unittest.TestCase):
             def _change_id(self):
                 return as_id(self, "orcidId")
 
-        with self.assertRaises(ValueError):
-            p = Person(
-                id="local:cde4c79c-21f2-4ab7-b01d-28de6e4aade4",
-                firstName='John',
-                lastName='Doe',
-                orcidId='https://orcid.org/0000-0001-8729-0482',
-                affiliation=Orga(identifier='123', name='Orga 1')
-            )
         p = Person(
             id="local:cde4c79c-21f2-4ab7-b01d-28de6e4aade4",
             firstName='John',

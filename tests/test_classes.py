@@ -7,12 +7,15 @@ from typing import Optional
 import pydantic
 import rdflib
 from pydantic import EmailStr, model_validator
+from pydantic import ValidationError
 from pydantic import field_validator, Field
 from rdflib.plugins.shared.jsonld.context import Context
+from typing_extensions import Annotated
 
 import ontolutils
-from ontolutils import Thing, urirefs, namespaces, get_urirefs, get_namespaces, set_config
+from ontolutils import Thing, urirefs, namespaces, build, Property
 from ontolutils import as_id
+from ontolutils import get_urirefs, get_namespaces, set_config
 from ontolutils import set_logging_level
 from ontolutils.classes import decorator
 from ontolutils.classes.thing import resolve_iri
@@ -676,3 +679,43 @@ class TestNamespaces(unittest.TestCase):
         ontolutils.set_config(blank_node_prefix_name=None)
         p = Person(firstName="John")
         self.assertTrue(p.id.startswith("_:"))
+
+    def test_dynamic_thing(self):
+        MyThing = build(
+            namespace="https://schema.org/",
+            namespace_prefix="schema",
+            class_name="MyThing",
+            properties=[Property(
+                name="about",
+                default=None,
+                property_type=str
+            )]
+        )
+        mything = MyThing(about="my thing")
+        self.assertEqual(mything.about, "my thing")
+
+    def test_dynamic_thing_with_validator(self):
+        def validate_str(cls, value):
+            if "thing" not in value:
+                raise ValueError("Value must contain 'thing'")
+            return value
+
+        PositiveInt = Annotated[int, Field(gt=0)]
+
+        MySpecialThing = build(
+            baseclass=Thing,
+            namespace="https://schema.org/",
+            namespace_prefix="schema",
+            class_name="MyThing",
+            properties=[Property(
+                name="value",
+                default=Field(default=None, alias="val"),
+                property_type=PositiveInt
+            )]
+        )
+        with self.assertRaises(ValidationError):
+            MySpecialThing(value=-1)
+        mst = MySpecialThing(value=3)
+        self.assertEqual(mst.value, 3)
+        mst = MySpecialThing(val=4)
+        self.assertEqual(mst.value, 4)

@@ -1,6 +1,6 @@
 import pydantic
 from pydantic import HttpUrl
-
+from typing import Dict, Type
 from . import utils
 from .utils import split_URIRef
 
@@ -30,6 +30,9 @@ def _is_http_url(url: str) -> bool:
         return False
     return True
 
+def _add_namesapces(cls, namespaces: Dict):
+    for k, v in namespaces.items():
+        NamespaceManager[cls][k] = str(HttpUrl(v))
 
 def namespaces(**kwargs):
     """Decorator for model classes. It assigns the namespaces used in the uri fields of the class.
@@ -58,8 +61,7 @@ def namespaces(**kwargs):
 
     def _decorator(cls):
         """The actual decorator function. It assigns the namespaces to the class."""
-        for k, v in kwargs.items():
-            NamespaceManager[cls][k] = str(HttpUrl(v))
+        _add_namesapces(cls, kwargs)
         return cls
 
     return _decorator
@@ -73,6 +75,28 @@ _prefix_dict = {
     'http://w3id.org/nfdi4ing/metadata4ing#': 'm4i'
 }
 
+def _decorate_urirefs(cls, **kwargs):
+    fields = list(cls.model_fields.keys())
+    fields.append(cls.__name__)
+
+    # add fields to the class
+    for k, v in kwargs.items():
+        if not isinstance(v, str):
+            raise TypeError(f"{v} must be a string, not {type(v)}")
+        if _is_http_url(v):
+            ns, key = split_URIRef(v)
+            prefix = _prefix_dict.get(ns, None)
+            if prefix is None:
+                URIRefManager[cls][k] = str(v)
+            else:
+                NamespaceManager[cls][prefix] = str(ns)
+                if k not in fields:
+                    raise KeyError(f"Field '{k}' not found in {cls.__name__}")
+                URIRefManager[cls][k] = f"{prefix}:{key}"
+        else:
+            if k not in fields:
+                raise KeyError(f"Field '{k}' not found in {cls.__name__}")
+            URIRefManager[cls][k] = v
 
 def urirefs(**kwargs):
     """decorator for model classes. It assigns the URIRefs to the fields of the class.
@@ -88,27 +112,7 @@ def urirefs(**kwargs):
 
     def _decorator(cls):
         """The actual decorator function. It assigns the URIRefs to the fields of the class."""
-        fields = list(cls.model_fields.keys())
-        fields.append(cls.__name__)
-
-        # add fields to the class
-        for k, v in kwargs.items():
-            if not isinstance(v, str):
-                raise TypeError(f"{v} must be a string, not {type(v)}")
-            if _is_http_url(v):
-                ns, key = split_URIRef(v)
-                prefix = _prefix_dict.get(ns, None)
-                if prefix is None:
-                    URIRefManager[cls][k] = str(v)
-                else:
-                    NamespaceManager[cls][prefix] = str(ns)
-                    if k not in fields:
-                        raise KeyError(f"Field '{k}' not found in {cls.__name__}")
-                    URIRefManager[cls][k] = f"{prefix}:{key}"
-            else:
-                if k not in fields:
-                    raise KeyError(f"Field '{k}' not found in {cls.__name__}")
-                URIRefManager[cls][k] = v
+        _decorate_urirefs(cls, **kwargs)
         return cls
 
     return _decorator

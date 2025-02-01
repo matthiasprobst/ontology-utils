@@ -2,7 +2,7 @@
 import json
 import logging
 import pathlib
-from typing import Union, Dict, List, Optional
+from typing import Union, Dict, List, Optional, Type
 
 import rdflib
 
@@ -230,7 +230,7 @@ def dquery(subject: str,
     return [v for v in kwargs.values()]
 
 
-def query(cls: Thing,
+def query(cls: Type[Thing],
           source: Optional[Union[str, pathlib.Path]] = None,
           data: Optional[Union[str, Dict]] = None,
           context: Optional[Union[Dict, str]] = None,

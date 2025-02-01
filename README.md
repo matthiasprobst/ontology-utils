@@ -57,6 +57,8 @@ p = Person(id="https://orcid.org/0000-0001-8729-0482",
            firstName='Matthias', lastName='Probst')
 # The jsonld representation of the object will be the same in both cases:
 p.model_dump_jsonld()
+# Alternatively use
+serialized_str = p.serialize(format="ttl") # or "json-ld", "n3", "nt", "xml"
 ```
 
 Now, you can instantiate the class and use the `model_dump_jsonld()` method to get a JSON-LD string:

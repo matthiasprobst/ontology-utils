@@ -314,6 +314,42 @@ class Thing(ThingModel):
                         raise ValueError(f'The ID must be a valid IRI or blank node but got "{_id}".')
         return jsonld
 
+    def serialize(self,
+                  format: str,
+                  context: Optional[Dict] = None,
+                  exclude_none: bool = True,
+                  resolve_keys: bool = True,
+                  assign_bnode: bool = True,
+                  **kwargs) -> str:
+        """
+        Serialize the object to a given format. This method calls rdflib.Graph().parse(),
+        so the available formats are the same as for the rdflib library:
+            ``"xml"``, ``"n3"``,
+           ``"turtle"``, ``"nt"``, ``"pretty-xml"``, ``"trix"``, ``"trig"``,
+           ``"nquads"``, ``"json-ld"`` and ``"hext"`` are built in.
+        The kwargs are passed to rdflib.Graph().parse()
+        """
+
+        jsonld_dict = self.get_jsonld_dict(
+            context=context,
+            exclude_none=exclude_none,
+            resolve_keys=resolve_keys,
+            assign_bnode=assign_bnode
+        )
+        jsonld_str = json.dumps(jsonld_dict)
+
+        logger.debug(f'Parsing the following jsonld dict to the RDF graph: {jsonld_str}')
+        g = rdflib.Graph()
+        g.parse(data=jsonld_str, format='json-ld')
+
+        _context = jsonld_dict.get('@context', {})
+        if context:
+            _context.update(context)
+
+        return g.serialize(format=format,
+                           context=_context,
+                           **kwargs)
+
     def model_dump_jsonld(self,
                           context: Optional[Dict] = None,
                           exclude_none: bool = True,

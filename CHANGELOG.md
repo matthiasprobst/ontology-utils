@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.12.5
+- fix type hint
+- add `serialize()` to allow serialization to more than just JSON-LD
+
 ## v0.12.4
 
 - Hotfix for overwriting id by another field

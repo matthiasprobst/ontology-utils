@@ -1,9 +1,11 @@
 import logging
 import unittest
+from typing import List
 from typing import Union
 
 from pydantic import Field, HttpUrl
 
+from ontolutils import Property
 from ontolutils import Thing, urirefs, namespaces, build
 
 LOG_LEVEL = logging.DEBUG
@@ -31,26 +33,42 @@ class TestSchema(unittest.TestCase):
 
     def test_event(self):
         # Event is not defined in the package
-        from typing import List
-        from ontolutils.classes.thing import Property
-        event = build(
+        event1 = build(
             namespace="https://schema.org/",
             namespace_prefix="schema",
             class_name="Event",
             properties=[Property(
                 name="about",
-                alias="about",
                 default=None,
                 property_type=Union[Thing, List[Thing]]
             )]
         )
         self.assertIsInstance(
-            event(), Thing
+            event1(), Thing
         )
-        conference = event(
+        conference1 = event1(
             about=[Thing(label="my conference")]
         )
-        serialized = conference.serialize("ttl")
+        serialized1 = conference1.serialize("ttl")
+
+        event2 = build(
+            namespace="https://schema.org/",
+            namespace_prefix="schema",
+            class_name="Event",
+            properties=[dict(
+                name="about",
+                default=None,
+                property_type=Union[Thing, List[Thing]]
+            )]
+        )
+        self.assertIsInstance(
+            event2(), Thing
+        )
+        conference2 = event2(
+            about=[Thing(label="my conference")]
+        )
+        serialized2 = conference2.serialize("ttl")
+
         expected_serialization = """@prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix schema: <https://schema.org/> .
@@ -60,4 +78,5 @@ class TestSchema(unittest.TestCase):
             rdfs:label "my conference" ] .
 
 """
-        self.assertEqual(serialized, expected_serialization)
+        self.assertEqual(serialized1, expected_serialization)
+        self.assertEqual(serialized2, expected_serialization)

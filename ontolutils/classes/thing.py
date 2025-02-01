@@ -8,7 +8,8 @@ from datetime import datetime
 from typing import Dict, Union, Optional, Any, List, Type
 
 import rdflib
-from pydantic import HttpUrl, FileUrl, BaseModel, ConfigDict, field_validator, Field
+from pydantic import HttpUrl, FileUrl, BaseModel, ConfigDict, Field
+from pydantic import field_validator
 from rdflib.plugins.shared.jsonld.context import Context
 
 from .decorator import urirefs, namespaces, URIRefManager, NamespaceManager, _is_http_url
@@ -527,7 +528,6 @@ def get_namespaces(cls: Thing) -> Dict:
 @dataclass
 class Property:
     name: str
-    alias: str
     default: Optional[Any]
     property_type: Any
     namespace: Optional[HttpUrl] = None
@@ -544,7 +544,8 @@ def build(
         namespace: HttpUrl,
         namespace_prefix: str,
         class_name: str,
-        properties: List[Property]) -> Type[Thing]:
+        properties: List[Union[Property, Dict]],
+        baseclass=Thing) -> Type[Thing]:
     """Build a ThingModel class
 
     Parameters
@@ -563,21 +564,28 @@ def build(
     Thing
         A Thing
     """
-    annotations = {prop.name: prop.property_type for prop in properties}
-    default_values = {prop.name: prop.default for prop in properties}
+    _properties = []
+    for prop in properties:
+        if isinstance(prop, dict):
+            _properties.append(Property(**prop))
+        else:
+            _properties.append(prop)
+
+    annotations = {prop.name: prop.property_type for prop in _properties}
+    default_values = {prop.name: prop.default for prop in _properties}
+
     new_cls = type(
         class_name,
-        (Thing,),
+        (baseclass,),
         {
             "__annotations__": annotations,  # Define field type
-            **default_values
-            # "new_field": 0,  # Set a default value
+            **default_values,
         }
     )
     from ontolutils.classes.decorator import _decorate_urirefs, _add_namesapces
     _urirefs = {class_name: f"{namespace_prefix}:{class_name}"}
     _namespaces = {namespace_prefix: namespace}
-    for prop in properties:
+    for prop in _properties:
         _ns = prop.namespace
         _nsp = prop.namespace_prefix
         if _ns is None:

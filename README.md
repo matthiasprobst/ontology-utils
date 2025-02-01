@@ -78,6 +78,26 @@ Now, you can instantiate the class and use the `model_dump_jsonld()` method to g
 }
 ```
 
+### Ontolutils does not implement your Ontology class? Well, build your own:
+
+```python
+from typing import List, Union
+
+from ontolutils import build, Property, Thing
+
+Event = build(
+    namespace="https://schema.org/",
+    namespace_prefix="schema",
+    class_name="Event",
+    properties=[Property(
+        name="about",
+        default=None,
+        property_type=Union[Thing, List[Thing]]
+    )]
+)
+conference = Event(label="my conference", about=[Thing(label='The thing it is about')])
+```
+
 ## Documentation
 
 Please visit the [documentation](https://ontology-utils.readthedocs.io/en/latest/) for more information.

@@ -528,8 +528,8 @@ def get_namespaces(cls: Thing) -> Dict:
 @dataclass
 class Property:
     name: str
-    default: Optional[Any]
     property_type: Any
+    default: Optional[Any]=None
     namespace: Optional[HttpUrl] = None
     namespace_prefix: Optional[str] = None
 

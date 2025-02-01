@@ -3,7 +3,7 @@ import logging
 
 from ._cfg import set_config, get_config
 from ._version import __version__
-from .classes import Thing, get_urirefs, get_namespaces, as_id
+from .classes import Thing, get_urirefs, get_namespaces, as_id, build
 from .classes import namespaces, urirefs
 from .classes import query, dquery
 from .classes.utils import merge_jsonld
@@ -41,5 +41,6 @@ __all__ = ['Thing',
            'get_urirefs',
            'get_namespaces',
            'parse_unit',
-           'as_id'
+           'as_id',
+           'build'
            ]

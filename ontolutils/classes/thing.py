@@ -3,8 +3,9 @@ import json
 import logging
 import pathlib
 import warnings
+from dataclasses import dataclass
 from datetime import datetime
-from typing import Dict, Union, Optional
+from typing import Dict, Union, Optional, Any, List, Type
 
 import rdflib
 from pydantic import HttpUrl, FileUrl, BaseModel, ConfigDict, field_validator, Field
@@ -521,3 +522,71 @@ def get_urirefs(cls: Thing) -> Dict:
 def get_namespaces(cls: Thing) -> Dict:
     """Return the namespaces of the class"""
     return NamespaceManager[cls]
+
+
+@dataclass
+class Property:
+    name: str
+    alias: str
+    default: Optional[Any]
+    property_type: Any
+    namespace: Optional[HttpUrl] = None
+    namespace_prefix: Optional[str] = None
+
+    def __post_init__(self):
+        if self.namespace is None and self.namespace_prefix is not None:
+            raise ValueError("If namespace_prefix is given, then namespace must be given as well.")
+        if self.namespace_prefix is None and self.namespace is not None:
+            raise ValueError("If namespace is given, then namespace_prefix must be given as well.")
+
+
+def build(
+        namespace: HttpUrl,
+        namespace_prefix: str,
+        class_name: str,
+        properties: List[Property]) -> Type[Thing]:
+    """Build a ThingModel class
+
+    Parameters
+    ----------
+    namespace: str
+        The namespace of the class
+    namespace_prefix: str
+        The namespace prefix of the class
+    class_name: str
+        The name of the class
+    properties: Dict[str, Union[str, int, float, bool, datetime, BlankNodeType, None]]
+        The properties of the class
+
+    Returns
+    -------
+    Thing
+        A Thing
+    """
+    annotations = {prop.name: prop.property_type for prop in properties}
+    default_values = {prop.name: prop.default for prop in properties}
+    new_cls = type(
+        class_name,
+        (Thing,),
+        {
+            "__annotations__": annotations,  # Define field type
+            **default_values
+            # "new_field": 0,  # Set a default value
+        }
+    )
+    from ontolutils.classes.decorator import _decorate_urirefs, _add_namesapces
+    _urirefs = {class_name: f"{namespace_prefix}:{class_name}"}
+    _namespaces = {namespace_prefix: namespace}
+    for prop in properties:
+        _ns = prop.namespace
+        _nsp = prop.namespace_prefix
+        if _ns is None:
+            _ns = namespace
+            _nsp = namespace_prefix
+        _urirefs[prop.name] = f"{_nsp}:{prop.name}"
+        if _nsp not in _namespaces:
+            _namespaces[_nsp] = _ns
+
+    _decorate_urirefs(new_cls, **_urirefs)
+    _add_namesapces(new_cls, _namespaces)
+    return new_cls

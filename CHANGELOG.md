@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.13.0
+- own ontology classes can be built using the `build()` function. See Readme for more information.
+
+
 ## v0.12.5
 - fix type hint
 - add `serialize()` to allow serialization to more than just JSON-LD

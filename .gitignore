@@ -31,3 +31,5 @@ docs/class_structure_pub.svg
 .pylint
 not/existing/dir
 tutorials/person.json
+
+scripts/*.ttl

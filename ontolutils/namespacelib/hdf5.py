@@ -3,38 +3,141 @@ from rdflib.term import URIRef
 
 
 class HDF5(DefinedNamespace):
-    # uri = "http://purl.allotrope.org/ontologies/hdf5/1.8#"
-    # Manually created, therefore is incomplete!!! Only basic definitions were taken.
-    # Date: 2024-03-18
+    # Generated with ontolutils version 0.13.1
     _fail = True
+    AllSelection: URIRef
+    AndSelection: URIRef
     ArrayDatatype: URIRef
     ArrayDimension: URIRef
     ArrayValue: URIRef
     AtomicDatatype: URIRef
-    attribute: URIRef
     Attribute: URIRef
-    chunk: URIRef
+    BitfieldDatatype: URIRef
+    CharacterSet: URIRef
     Chunk: URIRef
+    ChunkDimension: URIRef
+    ChunkMode: URIRef
+    CompositeDatatype: URIRef
+    CompositeValue: URIRef
+    CompoundDatatype: URIRef
+    CompoundDatatypeMember: URIRef
+    CompoundValue: URIRef
     Coordinate: URIRef
-    coordinate: URIRef
-    coordinateIndex: URIRef
-    count: URIRef
-    data: URIRef
-    dataSource: URIRef
+    DataStream: URIRef
     Dataset: URIRef
-    datatype: URIRef
+    Dataspace: URIRef
+    DataspaceDimension: URIRef
     Datatype: URIRef
-    dimension: URIRef
     Dimension: URIRef
-    dimensionIndex: URIRef
-    DimensionIndexType: URIRef
-    File: URIRef  # synonyms HDF5 file. A container for storing grouped collections of multi-dimensional arrays containing scientific data following the HDF 5 specification.
+    DimensionSelection: URIRef
+    EnumerationDatatype: URIRef
+    EnumerationDatatypeMember: URIRef
+    ErrorDetectionCheck: URIRef
+    ExponentField: URIRef
+    ExternalFile: URIRef
+    FieldSpecification: URIRef
+    File: URIRef
+    FileAccessMode: URIRef
+    FillTime: URIRef
+    FillValueStatus: URIRef
+    Filter: URIRef
+    FilterDefault: URIRef
+    FilterDeflate: URIRef
+    FilterFletcher: URIRef
+    FilterNBit: URIRef
+    FilterSZip: URIRef
+    FilterScaleOffset: URIRef
+    FilterShuffle: URIRef
+    FloatAttribute: URIRef
+    FloatDatatype: URIRef
+    FloatingPointNormalization: URIRef
     Group: URIRef
-    member: URIRef
-    name: URIRef
+    HardLink: URIRef
+    HyperSlab: URIRef
+    IntegerAttribute: URIRef
+    IntegerDatatype: URIRef
+    Link: URIRef
+    MantissaField: URIRef
+    MessageTypeFlag: URIRef
+    NameValuePair: URIRef
+    NamedDatatype: URIRef
     NamedObject: URIRef
-    rootGroup: URIRef  # Relation between the HDF file and its root group.
-    size: URIRef  # synonyms: size of datatype, size of dimension
-    value: URIRef
+    NoneSelection: URIRef
+    NotASelection: URIRef
+    NotBSelection: URIRef
+    OpaqueAttribute: URIRef
+    OpaqueDatatype: URIRef
+    OrSelection: URIRef
+    Order: URIRef
+    Padding: URIRef
+    Point: URIRef
+    PointSelection: URIRef
+    PointValuePair: URIRef
+    ReferenceDatatype: URIRef
+    SZipCoding: URIRef
+    ScalarDataspace: URIRef
+    ScaleType: URIRef
+    Selection: URIRef
+    Sign: URIRef
+    SignField: URIRef
+    SimpleDataspace: URIRef
+    SoftLink: URIRef
+    StorageAllocation: URIRef
+    StorageLayout: URIRef
+    StringAttribute: URIRef
+    StringDatatype: URIRef
+    StringPadding: URIRef
+    TimeDatatype: URIRef
+    TransferMode: URIRef
+    TypeClass: URIRef
+    VariableLengthDatatype: URIRef
+    XOrSelection: URIRef
+    allocationTime: URIRef
+    attribute: URIRef
+    characterSet: URIRef
+    chunk: URIRef
+    chunkMode: URIRef
+    compositeFillValue: URIRef
+    compositeValue: URIRef
+    coordinate: URIRef
+    dataSource: URIRef
+    dataTarget: URIRef
+    dataspace: URIRef
+    datatype: URIRef
+    dimension: URIRef
+    dimensionSelection: URIRef
+    errorDetectionCheck: URIRef
+    exponentField: URIRef
+    externalLinkAccess: URIRef
+    field: URIRef
+    fillTime: URIRef
+    fillValueStatus: URIRef
+    filter: URIRef
+    internalPadding: URIRef
+    layout: URIRef
+    link: URIRef
+    linkedTo: URIRef
+    lsbPadding: URIRef
+    mantissaField: URIRef
+    member: URIRef
+    msbPadding: URIRef
+    multiDimensionalIndex: URIRef
+    normalization: URIRef
+    notA: URIRef
+    notB: URIRef
+    order: URIRef
+    point: URIRef
+    previous: URIRef
+    rootGroup: URIRef
+    scaleType: URIRef
+    selectionOn: URIRef
+    sign: URIRef
+    signField: URIRef
+    stringPadding: URIRef
+    szipEncoding: URIRef
+    transferMode: URIRef
+    typeClass: URIRef
+    writtenRegion: URIRef
+    xor: URIRef
 
     _NS = Namespace("http://purl.allotrope.org/ontologies/hdf5/1.8#")

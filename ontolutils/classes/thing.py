@@ -21,6 +21,21 @@ from ..config import PYDANTIC_EXTRA
 logger = logging.getLogger('ontolutils')
 
 
+@dataclass
+class Property:
+    name: str
+    property_type: Any
+    default: Optional[Any] = None
+    namespace: Optional[HttpUrl] = None
+    namespace_prefix: Optional[str] = None
+
+    def __post_init__(self):
+        if self.namespace is None and self.namespace_prefix is not None:
+            raise ValueError("If namespace_prefix is given, then namespace must be given as well.")
+        if self.namespace_prefix is None and self.namespace is not None:
+            raise ValueError("If namespace is given, then namespace_prefix must be given as well.")
+
+
 class ThingModel(BaseModel, abc.ABC, validate_assignment=True):
     """Abstract base model class to be used by model classes used within ontolutils"""
 
@@ -119,6 +134,20 @@ class Thing(ThingModel):
         if id is None:
             return build_blank_n3()
         return str(id)
+
+    @classmethod
+    def build(cls, namespace: HttpUrl,
+              namespace_prefix: str,
+              class_name: str,
+              properties: List[Union[Property, Dict]]) -> type:
+        """Build a Thing object"""
+        return build(
+            namespace,
+            namespace_prefix,
+            class_name,
+            properties,
+            cls
+        )
 
     def __lt__(self, other: ThingModel) -> bool:
         """Less than comparison. Useful to sort Thing objects.
@@ -525,21 +554,6 @@ def get_namespaces(cls: Thing) -> Dict:
     return NamespaceManager[cls]
 
 
-@dataclass
-class Property:
-    name: str
-    property_type: Any
-    default: Optional[Any]=None
-    namespace: Optional[HttpUrl] = None
-    namespace_prefix: Optional[str] = None
-
-    def __post_init__(self):
-        if self.namespace is None and self.namespace_prefix is not None:
-            raise ValueError("If namespace_prefix is given, then namespace must be given as well.")
-        if self.namespace_prefix is None and self.namespace is not None:
-            raise ValueError("If namespace is given, then namespace_prefix must be given as well.")
-
-
 def build(
         namespace: HttpUrl,
         namespace_prefix: str,
@@ -558,6 +572,9 @@ def build(
         The name of the class
     properties: Dict[str, Union[str, int, float, bool, datetime, BlankNodeType, None]]
         The properties of the class
+    baseclass: Type[Thing]
+        The base class to inherit from, default is Thing
+
 
     Returns
     -------

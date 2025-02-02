@@ -9,10 +9,12 @@ update the namespace files.
 import datetime
 import json
 import pathlib
-import requests
 import warnings
-from rdflib import Graph
 from typing import Iterable, Dict, Union, Optional
+
+import requests
+from rdflib import Graph, BNode
+from rdflib import OWL, RDF, RDFS
 
 from ontolutils import __version__
 
@@ -21,17 +23,21 @@ __package_dir__ = __this_dir__.parent / 'namespacelib'
 
 FORCE_DOWNLOAD = True
 
-
+FORBIDDEN_PROPERTIES = ["and", "or", "type"]
 def generate_namespace_file_from_ttl(namespace: str,
                                      source: str,
                                      ns: str,
+                                     is_owl: bool = False,
                                      target_dir: Optional[Union[str, pathlib.Path]] = None,
                                      fail=True):
     """Generate M4I_NAMESPACE.py file from m4i_context.jsonld
     """
+    cls_type = RDFS.Class if not is_owl else OWL.Class
+    prop_type = RDF.Property if not is_owl else OWL.ObjectProperty
+
     g = Graph()
     g.parse(source)
-
+    g.namespace_manager.bind(namespace, ns)
     if target_dir is None:
         target_dir = __this_dir__
     else:
@@ -43,23 +49,34 @@ def generate_namespace_file_from_ttl(namespace: str,
         f.write('from rdflib.namespace import DefinedNamespace, Namespace\n')
         f.write('from rdflib.term import URIRef\n\n\n')
         f.write(f'class {namespace.upper()}(DefinedNamespace):')
-        f.write(f'\n    # Generated with {__package__} version {__version__}')
+        f.write(f'\n    # Generated with ontolutils version {__version__}')
         f.write(f'\n    _fail = {fail}')
 
-        for s in g.subjects():
-            u = str(s).rsplit('/', 1)[-1].replace('-', '_')
-            if u not in fields:
-                fields.append(u)
-                if '#' in u:
-                    warnings.warn(f'Skipping {u} ({s}) because it has a "#" in it.')
-                elif u[0].isdigit():
-                    warnings.warn(f'Skipping {u} ({s}) because it starts with a digit.')
-                elif u in ('True', 'False', 'yield'):
-                    warnings.warn(f'Skipping {u} ({s}) because it starts with "yield".')
-                else:
-                    uri = str(s)
-                    f.write(f'\n    {u} = URIRef("{uri}")')
-                    # f.write(f'\n    {u}: URIRef')
+        for cls in g.subjects(RDF.type, cls_type):
+            # u = str(s).rsplit('/', 1)[-1].replace('-', '_')
+            if not isinstance(cls, BNode):
+                class_split = str(cls).split(ns)
+                if len(class_split) == 2:
+                    f.write(f'\n    {class_split[-1]}: URIRef')
+        for prop in g.subjects(RDF.type, prop_type):
+            if not isinstance(prop, BNode):
+                prop_split =str(prop).split(ns)
+                if len(prop_split) == 2:
+                    if prop_split[-1] not in FORBIDDEN_PROPERTIES:
+                        f.write(f'\n    {prop_split[-1]}: URIRef')
+                # f.write(f'\n    {u}: URIRef')
+                # if u not in fields:
+                #     fields.append(u)
+                #     if '#' in u:
+                #         warnings.warn(f'Skipping {u} ({s}) because it has a "#" in it.')
+                #     elif u[0].isdigit():
+                #         warnings.warn(f'Skipping {u} ({s}) because it starts with a digit.')
+                #     elif u in ('True', 'False', 'yield'):
+                #         warnings.warn(f'Skipping {u} ({s}) because it starts with "yield".')
+                #     else:
+                #         uri = str(s)
+                #         f.write(f'\n    {u} = URIRef("{uri}")')
+                #         # f.write(f'\n    {u}: URIRef')
 
         f.write(f'\n\n    _NS = Namespace("{ns}")')
 
@@ -124,7 +141,7 @@ def generate_namespace_file_from_context(namespace: str,
         f.write('\n\nclass LanguageExtension:\n    pass')
         f.write(f'\n\nclass {namespace.upper()}(DefinedNamespace):')
         f.write(f'\n    # uri = "{url}"')
-        f.write(f'\n    # Generated with {__package__} version {__version__}')
+        f.write(f'\n    # Generated with ontolutils version {__version__}')
         f.write(f'\n    # Date: {datetime.datetime.now()}')
         f.write(f'\n    _fail = {fail}')
         for k, v in iris.items():
@@ -275,6 +292,15 @@ def qudt_unit():
     )
 
 
+def hdf5():
+    generate_namespace_file_from_ttl(
+        namespace='hdf5',
+        source='https://purl.allotrope.org/voc/adf/REC/2024/12/hdf.ttl',
+        ns='http://purl.allotrope.org/ontologies/hdf5/1.8#',
+        is_owl=True
+    )
+
+
 def qudt_quantitykind():
     generate_namespace_file_from_ttl(
         namespace='qudt_kind',
@@ -315,6 +341,8 @@ def build_namespace_files():
     codemeta()
 
     schema()
+
+    hdf5()
 
     # with open(__package_dir__ / '__init__.py', 'a') as f:
     # f.write('from .m4i import M4I\n')

@@ -2,7 +2,7 @@ import datetime
 import json
 import logging
 import unittest
-from typing import Optional
+from typing import Optional, List
 
 import pydantic
 import rdflib
@@ -719,3 +719,70 @@ class TestNamespaces(unittest.TestCase):
         self.assertEqual(mst.value, 3)
         mst = MySpecialThing(val=4)
         self.assertEqual(mst.value, 4)
+
+        MySpecialThing2 = Thing.build(
+            namespace="https://schema.org/",
+            namespace_prefix="schema",
+            class_name="MyThing",
+            properties=[Property(
+                name="value",
+                default=Field(default=None, alias="val"),
+                property_type=PositiveInt
+            )]
+        )
+        with self.assertRaises(ValidationError):
+            MySpecialThing2(value=-1)
+        mst = MySpecialThing2(value=3)
+        self.assertEqual(mst.value, 3)
+        mst = MySpecialThing2(val=4)
+        self.assertEqual(mst.value, 4)
+
+        NegativeInt = Annotated[int, Field(lt=0)]
+        MySubSpecialThing = MySpecialThing.build(
+            namespace="https://schema.org/",
+            namespace_prefix="schema",
+            class_name="MySubSpecialThing",
+            properties=[Property(
+                name="negValue",
+                default=Field(default=None, alias="nval"),
+                property_type=NegativeInt
+            )]
+        )
+        with self.assertRaises(ValidationError):
+            MySubSpecialThing(negValue=1)
+        self.assertIsInstance(MySubSpecialThing(negValue=-1), MySubSpecialThing)
+        mst = MySubSpecialThing(negValue=-3)
+        self.assertEqual(mst.negValue, -3)
+        self.assertEqual(mst.value, None)
+        mst = MySubSpecialThing(nval=-4)
+        self.assertEqual(mst.negValue, -4)
+
+    def test_dynamic_forward_references(self):
+        Person = Thing.build(
+            namespace="https://example.org/",
+            namespace_prefix="ex",
+            class_name="Person",
+            properties=[
+                Property(
+                    name="name",
+                    default=None,
+                    property_type=str
+                ),
+                Property(
+                    name="friends",
+                    default=None,
+                    property_type=List["Person"]
+                )
+            ]
+        )
+        person1 = Person(name="John")
+        person2 = Person(name="Jane", friends=[person1])
+        expected_serialization = """@prefix ex: <https://example.org/> .
+
+[] a ex:Person ;
+    ex:friends [ a ex:Person ;
+            ex:name "John" ] ;
+    ex:name "Jane" .
+
+"""
+        self.assertEqual(expected_serialization, person2.serialize("ttl"))

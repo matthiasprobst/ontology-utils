@@ -1,10 +1,18 @@
 # Changelog
 
+## v0.13.1
+
+- build() is now also available as classmethod
+- updated HDF5 namespace class
+- add experimental generation of python Thing classes from an ontology
+
+
 ## v0.13.0
+
 - own ontology classes can be built using the `build()` function. See Readme for more information.
 
-
 ## v0.12.5
+
 - fix type hint
 - add `serialize()` to allow serialization to more than just JSON-LD
 

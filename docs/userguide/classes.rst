@@ -47,6 +47,44 @@ The like this created class can be used to create an instance of a person:
 The advantage of creating such classes are twofold: 1. The properties (predicates of the ontology) are (type-)validated.
 2. The class can be serialized to JSON-LD and back. The latter is shown next:
 
+
+Define an ontology class dynamically:
+.....................................
+
+If you cannot define the class statically as above, you can also define it dynamically:
+
+.. code-block:: python
+    from typing import List, Union
+
+    from ontolutils import build, Property, Thing
+
+    Event = build(
+        namespace="https://schema.org/",
+        namespace_prefix="schema",
+        class_name="Event",
+        properties=[Property(
+            name="about",
+            default=None,
+            property_type=Union[Thing, List[Thing]]
+        )]
+    )
+    conference = Event(label="my conference", about=[Thing(label='The thing it is about')])
+    ttl = conference.serialize(format="ttl")
+
+The serialization in turtle format looks like this:
+
+.. code-block:: turtle
+    @prefix owl: <http://www.w3.org/2002/07/owl#> .
+    @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+    @prefix schema: <https://schema.org/> .
+
+    [] a schema:Event ;
+        rdfs:label "my conference" ;
+        schema:about [ a owl:Thing ;
+                rdfs:label "The thing it is about" ] .
+
+
+
 Dump/Serialize
 ..............
 
@@ -54,6 +92,7 @@ Dump/Serialize
 
     person = Person(id='_:123uf4', label='test_person', firstName="John", mbox="john@email.com")
     person.model_dump_jsonld()
+
 
 The return value is a JSON-LD string:
 
@@ -91,7 +130,7 @@ Load from file
 
 Let's load a person from a file:
 
-.. code-block:: python3
+.. code-block:: python
 
     loaded_person = Person.from_jsonld(source="person.json", limit=1)
     print(loaded_person)

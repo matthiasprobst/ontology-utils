@@ -34,6 +34,11 @@ def generate_namespace_file_from_ttl(namespace: str,
     """
     cls_type = RDFS.Class if not is_owl else OWL.Class
     prop_type = RDF.Property if not is_owl else OWL.ObjectProperty
+    if is_owl:
+        data_prop = OWL.DatatypeProperty
+    else:
+        data_prop = None
+
 
     g = Graph()
     g.parse(source)
@@ -43,7 +48,6 @@ def generate_namespace_file_from_ttl(namespace: str,
     else:
         target_dir = pathlib.Path(target_dir)
 
-    fields = []
     with open(target_dir / f'{namespace}.py', 'w',
               encoding='UTF8') as f:
         f.write('from rdflib.namespace import DefinedNamespace, Namespace\n')
@@ -64,24 +68,16 @@ def generate_namespace_file_from_ttl(namespace: str,
                 if len(prop_split) == 2:
                     if prop_split[-1] not in FORBIDDEN_PROPERTIES:
                         f.write(f'\n    {prop_split[-1]}: URIRef')
-                # f.write(f'\n    {u}: URIRef')
-                # if u not in fields:
-                #     fields.append(u)
-                #     if '#' in u:
-                #         warnings.warn(f'Skipping {u} ({s}) because it has a "#" in it.')
-                #     elif u[0].isdigit():
-                #         warnings.warn(f'Skipping {u} ({s}) because it starts with a digit.')
-                #     elif u in ('True', 'False', 'yield'):
-                #         warnings.warn(f'Skipping {u} ({s}) because it starts with "yield".')
-                #     else:
-                #         uri = str(s)
-                #         f.write(f'\n    {u} = URIRef("{uri}")')
-                #         # f.write(f'\n    {u}: URIRef')
+
+        if data_prop:
+            for prop in g.subjects(RDF.type, data_prop):
+                if not isinstance(prop, BNode):
+                    prop_split =str(prop).split(ns)
+                    if len(prop_split) == 2:
+                        if prop_split[-1] not in FORBIDDEN_PROPERTIES:
+                            f.write(f'\n    {prop_split[-1]}: URIRef')
 
         f.write(f'\n\n    _NS = Namespace("{ns}")')
-
-        # f.write('\n\n')
-        # f.write('\n\nQUDT_UNIT = _QUDT_UNIT()')
 
 
 def generate_namespace_file_from_context(namespace: str,

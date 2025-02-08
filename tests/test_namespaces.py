@@ -116,5 +116,12 @@ class TestNamespaces(unittest.TestCase):
 
     def test_hdf5(self):
         self.assertIsInstance(namespacelib.HDF5.File, rdflib.URIRef)
+        # owl:Class
         self.assertEqual(str(namespacelib.HDF5.File),
                          "http://purl.allotrope.org/ontologies/hdf5/1.8#File")
+        # Dataproperty
+        self.assertEqual(str(namespacelib.HDF5.name),
+                         "http://purl.allotrope.org/ontologies/hdf5/1.8#name")
+        # Objectproperty
+        self.assertEqual(str(namespacelib.HDF5.allocationTime),
+                         "http://purl.allotrope.org/ontologies/hdf5/1.8#allocationTime")

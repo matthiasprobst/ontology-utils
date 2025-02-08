@@ -35,7 +35,7 @@ from ontolutils import Thing, urirefs, namespaces, as_id
             m4i='http://w3id.org/nfdi4ing/metadata4ing#')
 @urirefs(Person='prov:Person',
          firstName='foaf:firstName',
-         last_name='foaf:lastName',
+         lastName='foaf:lastName',
          mbox='foaf:mbox',
          orcidId='m4i:orcidId')
 class Person(Thing):
@@ -56,20 +56,21 @@ p = Person(id="https://orcid.org/0000-0001-8729-0482",
 p = Person(id="https://orcid.org/0000-0001-8729-0482",
            firstName='Matthias', lastName='Probst')
 # The jsonld representation of the object will be the same in both cases:
-p.model_dump_jsonld()
+json_ld_serialization = p.model_dump_jsonld()
 # Alternatively use
-serialized_str = p.serialize(format="ttl") # or "json-ld", "n3", "nt", "xml"
+serialized_str = p.serialize(format="json-ld") # or "ttl", "n3", "nt", "xml"
 ```
 
-Now, you can instantiate the class and use the `model_dump_jsonld()` method to get a JSON-LD string:
+The result of the serialization is shown below:
 
 ```json
 {
   "@context": {
-    "owl": "https://www.w3.org/2002/07/owl#",
+    "owl": "http://www.w3.org/2002/07/owl#",
     "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
     "prov": "https://www.w3.org/ns/prov#",
-    "foaf": "https://xmlns.com/foaf/0.1/"
+    "foaf": "https://xmlns.com/foaf/0.1/",
+    "m4i": "http://w3id.org/nfdi4ing/metadata4ing#"
   },
   "@id": "https://orcid.org/0000-0001-8729-0482",
   "@type": "prov:Person",
@@ -78,7 +79,9 @@ Now, you can instantiate the class and use the `model_dump_jsonld()` method to g
 }
 ```
 
-### Ontolutils does not implement your Ontology class? Well, build your own:
+### Define an ontology class dynamically:
+
+If you cannot define the class statically as above, you can also define it dynamically:
 
 ```python
 from typing import List, Union
@@ -96,8 +99,20 @@ Event = build(
     )]
 )
 conference = Event(label="my conference", about=[Thing(label='The thing it is about')])
+ttl = conference.serialize(format="ttl")
 ```
 
+The serialization in turtle format looks like this:
+```turtle
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <https://schema.org/> .
+
+[] a schema:Event ;
+    rdfs:label "my conference" ;
+    schema:about [ a owl:Thing ;
+            rdfs:label "The thing it is about" ] .
+```
 ## Documentation
 
 Please visit the [documentation](https://ontology-utils.readthedocs.io/en/latest/) for more information.

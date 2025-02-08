@@ -13,7 +13,7 @@ Available namespaces:
 - `QUDT_UNIT`: The `QUDT <https://qudt.org/>`_ ontology for units of measure.
 - `QUDT_QUANTITY`: The `QUDT <https://qudt.org/>`_ ontology for quantities.
 - `M4I`: `The M4I ontology <https://nfdi4ing.pages.rwth-aachen.de/metadata4ing/metadata4ing/>`_
-- `PIVMETA`: The PIVMeta `ontology for particle image velocimetry <https://matthiasprobst.github.io/pivmeta/>`_.
+- `HDF5`: `The HDF5 ontology <http://purl.allotrope.org/ontologies/hdf5/1.8#>`_
 - `SCHEMA`: The `schema.org ontology <https://schema.org/>`_.
 - `CODEMETA`: The `codemeta ontology <https://codemeta.github.io/>`_.
 - `OBO`: The `Open Biological and Biomedical Ontologies <http://www.obofoundry.org/>`_.

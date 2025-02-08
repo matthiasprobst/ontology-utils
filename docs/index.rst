@@ -23,39 +23,56 @@ serialize them to RDF is shown below. More information can be found in the :doc:
 
 .. code-block:: python
 
-    from ontolutils import Thing, urirefs, namespaces
-    from pydantic import EmailStr
-    from rdflib import FOAF
+    from pydantic import EmailStr, Field
+    from pydantic import HttpUrl, model_validator
 
-    @namespaces(prov="http://www.w3.org/ns/prov#",
-               foaf="http://xmlns.com/foaf/0.1/")
+    from ontolutils import Thing, urirefs, namespaces, as_id
+
+
+    @namespaces(prov="https://www.w3.org/ns/prov#",
+                foaf="https://xmlns.com/foaf/0.1/",
+                m4i='http://w3id.org/nfdi4ing/metadata4ing#')
     @urirefs(Person='prov:Person',
              firstName='foaf:firstName',
-             lastName=FOAF.lastName,
-             mbox='foaf:mbox')
+             lastName='foaf:lastName',
+             mbox='foaf:mbox',
+             orcidId='m4i:orcidId')
     class Person(Thing):
         firstName: str
-        lastName: str = None
-        mbox: EmailStr = None
+        lastName: str = Field(default=None, alias="last_name")  # you may provide an alias
+        mbox: EmailStr = Field(default=None, alias="email")
+        orcidId: HttpUrl = Field(default=None, alias="orcid_id")
 
-    p = Person(id="cde4c79c-21f2-4ab7-b01d-28de6e4aade4",
-               firstName='John', lastName='Doe')
-    p.model_dump_jsonld()
+        # the following will ensure, that if orcidId is set, it will be used as the id
+        @model_validator(mode="before")
+        def _change_id(self):
+            return as_id(self, "orcidId")
+
+
+    p = Person(id="https://orcid.org/0000-0001-8729-0482",
+               firstName='Matthias', last_name='Probst')
+    # as we have set an alias, we can also use "lastName":
+    p = Person(id="https://orcid.org/0000-0001-8729-0482",
+               firstName='Matthias', lastName='Probst')
+    # The jsonld representation of the object will be the same in both cases:
+    json_ld_serialization = p.model_dump_jsonld()
+    # Alternatively use
+    serialized_str = p.serialize(format="json-ld")
 
 .. code-block:: json
 
     {
-        "@context": {
-            "owl": "http://www.w3.org/2002/07/owl#",
-            "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
-            "lastName": "http://xmlns.com/foaf/0.1/",
-            "prov": "http://www.w3.org/ns/prov#",
-            "foaf": "http://xmlns.com/foaf/0.1/"
-        },
-        "@id": "cde4c79c-21f2-4ab7-b01d-28de6e4aade4",
-        "@type": "prov:Person",
-        "foaf:firstName": "John",
-        "lastName": "Doe"
+      "@context": {
+        "owl": "http://www.w3.org/2002/07/owl#",
+        "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+        "prov": "https://www.w3.org/ns/prov#",
+        "foaf": "https://xmlns.com/foaf/0.1/",
+        "m4i": "http://w3id.org/nfdi4ing/metadata4ing#"
+      },
+      "@id": "https://orcid.org/0000-0001-8729-0482",
+      "@type": "prov:Person",
+      "foaf:firstName": "Matthias",
+      "foaf:lastName": "Probst"
     }
 
 

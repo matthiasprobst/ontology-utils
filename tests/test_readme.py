@@ -1,55 +1,84 @@
 """Testing code used in the README.md file"""
-import pathlib
+import json
+import unittest
+from typing import List, Union
 
 from pydantic import EmailStr, Field
-from rdflib import FOAF
+from pydantic import HttpUrl, model_validator
 
-from ontolutils import Thing, namespaces, urirefs
-
-
-@namespaces(prov="http://www.w3.org/ns/prov#",
-            foaf="http://xmlns.com/foaf/0.1/")
-@urirefs(Person='prov:Person',
-         firstName='foaf:firstName',
-         last_name='foaf:lastName',
-         mbox='foaf:mbox')
-class Person(Thing):
-    firstName: str
-    last_name: str = Field(default=None, alias="lastName")
-    mbox: EmailStr = None
+from ontolutils import build, Property, Thing
+from ontolutils import urirefs, namespaces, as_id
 
 
-agent = Person(mbox='e@mail.com', firstName='John', lastName='Doe')
-print(agent.model_dump_jsonld())
-agent = Person(mbox='e@mail.com', firstName='John', last_name='Doe')
+class TestReadmeCode(unittest.TestCase):
 
-print(agent.model_dump_jsonld())
+    def test_code1_on_readme(self):
+        """Just has to run without errors"""
 
-# print(agent)
-#
-# with open("agent.json", "w") as f:
-#     f.write(agent.model_dump_jsonld())
-#
-# # with open("agent.json", "r") as f:
-# #     found_agents = Person.from_jsonld(data=f.read())
-#
-# found_agents = Person.from_jsonld(source="agent.json")
-# found_agent = found_agents[0]
-# print(found_agent.mbox)
-#
-# pathlib.Path("agent.json").unlink(missing_ok=True)
-#
-#
-# @namespaces(prov='http://www.w3.org/ns/prov#',
-#
-#             foaf='http://xmlns.com/foaf/0.1/')
-# @urirefs(Person='prov:Person', first_name='foaf:firstName')
-# class Person(Thing):
-#     first_name: str = None
-#     last_name: str = None
-#
-#
-# p = Person(first_name='John', last_name='Doe', age=30)
-# print(p.model_dump_jsonld())
-#
-# # Person(first_name=1)
+        @namespaces(prov="https://www.w3.org/ns/prov#",
+                    foaf="https://xmlns.com/foaf/0.1/",
+                    m4i='http://w3id.org/nfdi4ing/metadata4ing#')
+        @urirefs(Person='prov:Person',
+                 firstName='foaf:firstName',
+                 lastName='foaf:lastName',
+                 mbox='foaf:mbox',
+                 orcidId='m4i:orcidId')
+        class Person(Thing):
+            firstName: str
+            lastName: str = Field(default=None, alias="last_name")  # you may provide an alias
+            mbox: EmailStr = Field(default=None, alias="email")
+            orcidId: HttpUrl = Field(default=None, alias="orcid_id")
+
+            # the following will ensure, that if orcidId is set, it will be used as the id
+            @model_validator(mode="before")
+            def _change_id(self):
+                return as_id(self, "orcidId")
+
+        p = Person(id="https://orcid.org/0000-0001-8729-0482",
+                   firstName='Matthias', last_name='Probst')
+        # as we have set an alias, we can also use "lastName":
+        p = Person(id="https://orcid.org/0000-0001-8729-0482",
+                   firstName='Matthias', lastName='Probst')
+
+        json_ld_serialization = p.model_dump_jsonld()
+        serialized_str = p.serialize(format="json-ld")
+        expected = """{
+  "@context": {
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "prov": "https://www.w3.org/ns/prov#",
+    "foaf": "https://xmlns.com/foaf/0.1/",
+    "m4i": "http://w3id.org/nfdi4ing/metadata4ing#"
+  },
+  "@id": "https://orcid.org/0000-0001-8729-0482",
+  "@type": "prov:Person",
+  "foaf:firstName": "Matthias",
+  "foaf:lastName": "Probst"
+}"""
+        self.assertDictEqual(json.loads(json_ld_serialization), json.loads(expected))
+        self.assertDictEqual(json.loads(serialized_str), json.loads(expected))
+
+    def test_code2_on_readme(self):
+        Event = build(
+            namespace="https://schema.org/",
+            namespace_prefix="schema",
+            class_name="Event",
+            properties=[Property(
+                name="about",
+                default=None,
+                property_type=Union[Thing, List[Thing]]
+            )]
+        )
+        conference = Event(label="my conference", about=[Thing(label='The thing it is about')])
+        ttl = conference.serialize(format="ttl")
+        expected = """@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <https://schema.org/> .
+
+[] a schema:Event ;
+    rdfs:label "my conference" ;
+    schema:about [ a owl:Thing ;
+            rdfs:label "The thing it is about" ] .
+
+"""
+        self.assertEqual(ttl, expected)

@@ -1,11 +1,14 @@
 # Changelog
 
+## v0.13.2
+
+- bugfix HDF5 ontology. Data properties were missing
+
 ## v0.13.1
 
 - build() is now also available as classmethod
 - updated HDF5 namespace class
 - add experimental generation of python Thing classes from an ontology
-
 
 ## v0.13.0
 

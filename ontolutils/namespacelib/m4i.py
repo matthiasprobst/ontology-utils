@@ -7,8 +7,8 @@ class LanguageExtension:
 
 class M4I(DefinedNamespace):
     # uri = "http://w3id.org/nfdi4ing/metadata4ing#"
-    # Generated with None version 0.8.0
-    # Date: 2024-11-08 14:00:56.947782
+    # Generated with ontolutils version 0.13.2
+    # Date: 2025-02-09 11:55:40.917403
     _fail = True
     Method: URIRef  # ['Methode', 'method']
     NumericalAssignment: URIRef  # ['numerical assignment', 'numerische Zuweisung']

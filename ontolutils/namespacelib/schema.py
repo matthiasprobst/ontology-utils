@@ -3,2885 +3,2396 @@ from rdflib.term import URIRef
 
 
 class SCHEMA(DefinedNamespace):
-    # Generated with None version 0.8.0
+    # Generated with ontolutils version 0.13.2
     _fail = True
-    ineligibleRegion = URIRef("https://schema.org/ineligibleRegion")
-    interactivityType = URIRef("https://schema.org/interactivityType")
-    hasMerchantReturnPolicy = URIRef("https://schema.org/hasMerchantReturnPolicy")
-    WPHeader = URIRef("https://schema.org/WPHeader")
-    translationOfWork = URIRef("https://schema.org/translationOfWork")
-    City = URIRef("https://schema.org/City")
-    legislationTransposes = URIRef("https://schema.org/legislationTransposes")
-    BowlingAlley = URIRef("https://schema.org/BowlingAlley")
-    ShippingDeliveryTime = URIRef("https://schema.org/ShippingDeliveryTime")
-    HealthInsurancePlan = URIRef("https://schema.org/HealthInsurancePlan")
-    SpecialAnnouncement = URIRef("https://schema.org/SpecialAnnouncement")
-    maximumPhysicalAttendeeCapacity = URIRef("https://schema.org/maximumPhysicalAttendeeCapacity")
-    BrokerageAccount = URIRef("https://schema.org/BrokerageAccount")
-    Osteopathic = URIRef("https://schema.org/Osteopathic")
-    epidemiology = URIRef("https://schema.org/epidemiology")
-    homeLocation = URIRef("https://schema.org/homeLocation")
-    FullRefund = URIRef("https://schema.org/FullRefund")
-    SportsTeam = URIRef("https://schema.org/SportsTeam")
-    EUEnergyEfficiencyCategoryE = URIRef("https://schema.org/EUEnergyEfficiencyCategoryE")
-    Project = URIRef("https://schema.org/Project")
-    performer = URIRef("https://schema.org/performer")
-    DrugLegalStatus = URIRef("https://schema.org/DrugLegalStatus")
-    HealthClub = URIRef("https://schema.org/HealthClub")
-    jobTitle = URIRef("https://schema.org/jobTitle")
-    TireShop = URIRef("https://schema.org/TireShop")
-    FMRadioChannel = URIRef("https://schema.org/FMRadioChannel")
-    ComputerStore = URIRef("https://schema.org/ComputerStore")
-    WearableSizeSystemEnumeration = URIRef("https://schema.org/WearableSizeSystemEnumeration")
-    musicalKey = URIRef("https://schema.org/musicalKey")
-    cvdNumVent = URIRef("https://schema.org/cvdNumVent")
-    DeliveryEvent = URIRef("https://schema.org/DeliveryEvent")
-    servicePostalAddress = URIRef("https://schema.org/servicePostalAddress")
-    WearableSizeGroupWomens = URIRef("https://schema.org/WearableSizeGroupWomens")
-    steps = URIRef("https://schema.org/steps")
-    volumeNumber = URIRef("https://schema.org/volumeNumber")
-    ItemListUnordered = URIRef("https://schema.org/ItemListUnordered")
-    accountOverdraftLimit = URIRef("https://schema.org/accountOverdraftLimit")
-    Suite = URIRef("https://schema.org/Suite")
-    numAdults = URIRef("https://schema.org/numAdults")
-    datePosted = URIRef("https://schema.org/datePosted")
-    colleagues = URIRef("https://schema.org/colleagues")
-    employmentUnit = URIRef("https://schema.org/employmentUnit")
-    availabilityStarts = URIRef("https://schema.org/availabilityStarts")
-    ArtGallery = URIRef("https://schema.org/ArtGallery")
-    coach = URIRef("https://schema.org/coach")
-    educationalAlignment = URIRef("https://schema.org/educationalAlignment")
-    antagonist = URIRef("https://schema.org/antagonist")
-    titleEIDR = URIRef("https://schema.org/titleEIDR")
-    language = URIRef("https://schema.org/language")
-    EventSeries = URIRef("https://schema.org/EventSeries")
-    teaches = URIRef("https://schema.org/teaches")
-    characterName = URIRef("https://schema.org/characterName")
-    MedicalCause = URIRef("https://schema.org/MedicalCause")
-    InvestmentFund = URIRef("https://schema.org/InvestmentFund")
-    relevantSpecialty = URIRef("https://schema.org/relevantSpecialty")
-    paymentMethodType = URIRef("https://schema.org/paymentMethodType")
-    geoOverlaps = URIRef("https://schema.org/geoOverlaps")
-    diet = URIRef("https://schema.org/diet")
-    arrivalAirport = URIRef("https://schema.org/arrivalAirport")
-    issueNumber = URIRef("https://schema.org/issueNumber")
-    CafeOrCoffeeShop = URIRef("https://schema.org/CafeOrCoffeeShop")
-    children = URIRef("https://schema.org/children")
-    albumProductionType = URIRef("https://schema.org/albumProductionType")
-    MoveAction = URIRef("https://schema.org/MoveAction")
-    dayOfWeek = URIRef("https://schema.org/dayOfWeek")
-    Canal = URIRef("https://schema.org/Canal")
-    SpeechPathology = URIRef("https://schema.org/SpeechPathology")
-    Series = URIRef("https://schema.org/Series")
-    isicV4 = URIRef("https://schema.org/isicV4")
-    doesNotShip = URIRef("https://schema.org/doesNotShip")
-    BarOrPub = URIRef("https://schema.org/BarOrPub")
-    reviewBody = URIRef("https://schema.org/reviewBody")
-    artEdition = URIRef("https://schema.org/artEdition")
-    material = URIRef("https://schema.org/material")
-    Nonprofit501c22 = URIRef("https://schema.org/Nonprofit501c22")
-    Ticket = URIRef("https://schema.org/Ticket")
-    area = URIRef("https://schema.org/area")
-    Nonprofit501c28 = URIRef("https://schema.org/Nonprofit501c28")
-    greaterOrEqual = URIRef("https://schema.org/greaterOrEqual")
-    exchangeRateSpread = URIRef("https://schema.org/exchangeRateSpread")
-    isPartOfBioChemEntity = URIRef("https://schema.org/isPartOfBioChemEntity")
-    dataset = URIRef("https://schema.org/dataset")
-    utterances = URIRef("https://schema.org/utterances")
-    PublicToilet = URIRef("https://schema.org/PublicToilet")
-    fromLocation = URIRef("https://schema.org/fromLocation")
-    FilmAction = URIRef("https://schema.org/FilmAction")
-    providesService = URIRef("https://schema.org/providesService")
-    Nonprofit501c27 = URIRef("https://schema.org/Nonprofit501c27")
-    SeaBodyOfWater = URIRef("https://schema.org/SeaBodyOfWater")
-    itinerary = URIRef("https://schema.org/itinerary")
-    amenityFeature = URIRef("https://schema.org/amenityFeature")
-    printSection = URIRef("https://schema.org/printSection")
-    nerve = URIRef("https://schema.org/nerve")
-    addOn = URIRef("https://schema.org/addOn")
-    naturalProgression = URIRef("https://schema.org/naturalProgression")
-    cheatCode = URIRef("https://schema.org/cheatCode")
-    EventScheduled = URIRef("https://schema.org/EventScheduled")
-    dropoffLocation = URIRef("https://schema.org/dropoffLocation")
-    vehicleConfiguration = URIRef("https://schema.org/vehicleConfiguration")
-    founder = URIRef("https://schema.org/founder")
-    birthDate = URIRef("https://schema.org/birthDate")
-    LiteraryEvent = URIRef("https://schema.org/LiteraryEvent")
-    productionCompany = URIRef("https://schema.org/productionCompany")
-    ScreeningHealthAspect = URIRef("https://schema.org/ScreeningHealthAspect")
-    siblings = URIRef("https://schema.org/siblings")
-    associatedMediaReview = URIRef("https://schema.org/associatedMediaReview")
-    UserLikes = URIRef("https://schema.org/UserLikes")
-    Nonprofit501c1 = URIRef("https://schema.org/Nonprofit501c1")
-    returnPolicyCategory = URIRef("https://schema.org/returnPolicyCategory")
-    interestRate = URIRef("https://schema.org/interestRate")
-    SocialEvent = URIRef("https://schema.org/SocialEvent")
-    HVACBusiness = URIRef("https://schema.org/HVACBusiness")
-    deliveryTime = URIRef("https://schema.org/deliveryTime")
-    postalCodeBegin = URIRef("https://schema.org/postalCodeBegin")
-    BusinessSupport = URIRef("https://schema.org/BusinessSupport")
-    endTime = URIRef("https://schema.org/endTime")
-    CassetteFormat = URIRef("https://schema.org/CassetteFormat")
-    durationOfWarranty = URIRef("https://schema.org/durationOfWarranty")
-    recourseLoan = URIRef("https://schema.org/recourseLoan")
-    numberOfBedrooms = URIRef("https://schema.org/numberOfBedrooms")
-    URL = URIRef("https://schema.org/URL")
-    numChildren = URIRef("https://schema.org/numChildren")
-    payload = URIRef("https://schema.org/payload")
-    occupancy = URIRef("https://schema.org/occupancy")
-    AutoBodyShop = URIRef("https://schema.org/AutoBodyShop")
-    recordedAt = URIRef("https://schema.org/recordedAt")
-    Male = URIRef("https://schema.org/Male")
-    Anesthesia = URIRef("https://schema.org/Anesthesia")
-    paymentDueDate = URIRef("https://schema.org/paymentDueDate")
-    subTrip = URIRef("https://schema.org/subTrip")
-    width = URIRef("https://schema.org/width")
-    Vessel = URIRef("https://schema.org/Vessel")
-    screenshot = URIRef("https://schema.org/screenshot")
-    Brand = URIRef("https://schema.org/Brand")
-    color = URIRef("https://schema.org/color")
-    shippingSettingsLink = URIRef("https://schema.org/shippingSettingsLink")
-    geoRadius = URIRef("https://schema.org/geoRadius")
-    PrescriptionOnly = URIRef("https://schema.org/PrescriptionOnly")
-    SuperficialAnatomy = URIRef("https://schema.org/SuperficialAnatomy")
-    diseasePreventionInfo = URIRef("https://schema.org/diseasePreventionInfo")
-    MedicalConditionStage = URIRef("https://schema.org/MedicalConditionStage")
-    DigitalCaptureDigitalSource = URIRef("https://schema.org/DigitalCaptureDigitalSource")
-    DrawAction = URIRef("https://schema.org/DrawAction")
-    hasCategoryCode = URIRef("https://schema.org/hasCategoryCode")
-    legislationConsolidates = URIRef("https://schema.org/legislationConsolidates")
-    contentUrl = URIRef("https://schema.org/contentUrl")
-    latitude = URIRef("https://schema.org/latitude")
-    Float = URIRef("https://schema.org/Float")
-    Rheumatologic = URIRef("https://schema.org/Rheumatologic")
-    MedicalEntity = URIRef("https://schema.org/MedicalEntity")
-    originalMediaLink = URIRef("https://schema.org/originalMediaLink")
-    asin = URIRef("https://schema.org/asin")
-    recipe = URIRef("https://schema.org/recipe")
-    validFrom = URIRef("https://schema.org/validFrom")
-    Nonprofit501c23 = URIRef("https://schema.org/Nonprofit501c23")
-    occupationalCredentialAwarded = URIRef("https://schema.org/occupationalCredentialAwarded")
-    MSRP = URIRef("https://schema.org/MSRP")
-    energyEfficiencyScaleMin = URIRef("https://schema.org/energyEfficiencyScaleMin")
-    ActionStatusType = URIRef("https://schema.org/ActionStatusType")
-    course = URIRef("https://schema.org/course")
-    Patient = URIRef("https://schema.org/Patient")
-    AskAction = URIRef("https://schema.org/AskAction")
-    HyperToc = URIRef("https://schema.org/HyperToc")
-    MusicAlbumReleaseType = URIRef("https://schema.org/MusicAlbumReleaseType")
-    superEvent = URIRef("https://schema.org/superEvent")
-    partOfOrder = URIRef("https://schema.org/partOfOrder")
-    RemixAlbum = URIRef("https://schema.org/RemixAlbum")
-    CommunityHealth = URIRef("https://schema.org/CommunityHealth")
-    BusTrip = URIRef("https://schema.org/BusTrip")
-    TrainTrip = URIRef("https://schema.org/TrainTrip")
-    passengerPriorityStatus = URIRef("https://schema.org/passengerPriorityStatus")
-    MaximumDoseSchedule = URIRef("https://schema.org/MaximumDoseSchedule")
-    parentTaxon = URIRef("https://schema.org/parentTaxon")
-    departureTime = URIRef("https://schema.org/departureTime")
-    mainEntityOfPage = URIRef("https://schema.org/mainEntityOfPage")
-    relatedCondition = URIRef("https://schema.org/relatedCondition")
-    alcoholWarning = URIRef("https://schema.org/alcoholWarning")
-    speed = URIRef("https://schema.org/speed")
-    accommodationFloorPlan = URIRef("https://schema.org/accommodationFloorPlan")
-    duration = URIRef("https://schema.org/duration")
-    experienceInPlaceOfEducation = URIRef("https://schema.org/experienceInPlaceOfEducation")
-    PostalCodeRangeSpecification = URIRef("https://schema.org/PostalCodeRangeSpecification")
-    BikeStore = URIRef("https://schema.org/BikeStore")
-    Claim = URIRef("https://schema.org/Claim")
-    ItemAvailability = URIRef("https://schema.org/ItemAvailability")
-    handlingTime = URIRef("https://schema.org/handlingTime")
-    PaidLeave = URIRef("https://schema.org/PaidLeave")
-    CheckOutAction = URIRef("https://schema.org/CheckOutAction")
-    proteinContent = URIRef("https://schema.org/proteinContent")
-    makesOffer = URIRef("https://schema.org/makesOffer")
-    MonetaryGrant = URIRef("https://schema.org/MonetaryGrant")
-    healthPlanNetworkId = URIRef("https://schema.org/healthPlanNetworkId")
-    serviceType = URIRef("https://schema.org/serviceType")
-    ReturnFeesCustomerResponsibility = URIRef("https://schema.org/ReturnFeesCustomerResponsibility")
-    NLNonprofitType = URIRef("https://schema.org/NLNonprofitType")
-    Neuro = URIRef("https://schema.org/Neuro")
-    recipeYield = URIRef("https://schema.org/recipeYield")
-    arrivalStation = URIRef("https://schema.org/arrivalStation")
-    ReservationPending = URIRef("https://schema.org/ReservationPending")
-    artform = URIRef("https://schema.org/artform")
-    MemberProgram = URIRef("https://schema.org/MemberProgram")
-    genre = URIRef("https://schema.org/genre")
-    Energy = URIRef("https://schema.org/Energy")
-    RightHandDriving = URIRef("https://schema.org/RightHandDriving")
-    roleName = URIRef("https://schema.org/roleName")
-    aggregateRating = URIRef("https://schema.org/aggregateRating")
-    AutoDealer = URIRef("https://schema.org/AutoDealer")
-    eligibilityToWorkRequirement = URIRef("https://schema.org/eligibilityToWorkRequirement")
-    Vein = URIRef("https://schema.org/Vein")
-    Beach = URIRef("https://schema.org/Beach")
-    AskPublicNewsArticle = URIRef("https://schema.org/AskPublicNewsArticle")
-    WearableSizeSystemDE = URIRef("https://schema.org/WearableSizeSystemDE")
-    AllergiesHealthAspect = URIRef("https://schema.org/AllergiesHealthAspect")
-    browserRequirements = URIRef("https://schema.org/browserRequirements")
-    valueAddedTaxIncluded = URIRef("https://schema.org/valueAddedTaxIncluded")
-    aspect = URIRef("https://schema.org/aspect")
-    orderQuantity = URIRef("https://schema.org/orderQuantity")
-    drug = URIRef("https://schema.org/drug")
-    recipeInstructions = URIRef("https://schema.org/recipeInstructions")
-    VirtualLocation = URIRef("https://schema.org/VirtualLocation")
-    FoodEvent = URIRef("https://schema.org/FoodEvent")
-    SomeProducts = URIRef("https://schema.org/SomeProducts")
-    AlcoholConsideration = URIRef("https://schema.org/AlcoholConsideration")
-    domiciledMortgage = URIRef("https://schema.org/domiciledMortgage")
-    conditionsOfAccess = URIRef("https://schema.org/conditionsOfAccess")
-    freeShippingThreshold = URIRef("https://schema.org/freeShippingThreshold")
-    areaServed = URIRef("https://schema.org/areaServed")
-    Nonprofit501a = URIRef("https://schema.org/Nonprofit501a")
-    naics = URIRef("https://schema.org/naics")
-    EvidenceLevelC = URIRef("https://schema.org/EvidenceLevelC")
-    isBasedOn = URIRef("https://schema.org/isBasedOn")
-    videoQuality = URIRef("https://schema.org/videoQuality")
-    AppendAction = URIRef("https://schema.org/AppendAction")
-    seller = URIRef("https://schema.org/seller")
-    Nonprofit527 = URIRef("https://schema.org/Nonprofit527")
-    ApplyAction = URIRef("https://schema.org/ApplyAction")
-    regionDrained = URIRef("https://schema.org/regionDrained")
-    ReturnLabelSourceEnumeration = URIRef("https://schema.org/ReturnLabelSourceEnumeration")
-    IgnoreAction = URIRef("https://schema.org/IgnoreAction")
-    downPayment = URIRef("https://schema.org/downPayment")
-    applicationStartDate = URIRef("https://schema.org/applicationStartDate")
-    funding = URIRef("https://schema.org/funding")
-    verificationFactCheckingPolicy = URIRef("https://schema.org/verificationFactCheckingPolicy")
-    departureBusStop = URIRef("https://schema.org/departureBusStop")
-    legislationLegalForce = URIRef("https://schema.org/legislationLegalForce")
-    merchantReturnDays = URIRef("https://schema.org/merchantReturnDays")
-    MedicalGuidelineContraindication = URIRef("https://schema.org/MedicalGuidelineContraindication")
-    TierBenefitEnumeration = URIRef("https://schema.org/TierBenefitEnumeration")
-    Gastroenterologic = URIRef("https://schema.org/Gastroenterologic")
-    endOffset = URIRef("https://schema.org/endOffset")
-    merchantReturnLink = URIRef("https://schema.org/merchantReturnLink")
-    tourBookingPage = URIRef("https://schema.org/tourBookingPage")
-    legislationResponsible = URIRef("https://schema.org/legislationResponsible")
-    layoutImage = URIRef("https://schema.org/layoutImage")
-    tongueWeight = URIRef("https://schema.org/tongueWeight")
-    monthsOfExperience = URIRef("https://schema.org/monthsOfExperience")
-    BoatTrip = URIRef("https://schema.org/BoatTrip")
-    healthPlanDrugOption = URIRef("https://schema.org/healthPlanDrugOption")
-    HowTo = URIRef("https://schema.org/HowTo")
-    CheckInAdvance = URIRef("https://schema.org/CheckInAdvance")
-    MinorHumanEditsDigitalSource = URIRef("https://schema.org/MinorHumanEditsDigitalSource")
-    Periodical = URIRef("https://schema.org/Periodical")
-    CompositeSyntheticDigitalSource = URIRef("https://schema.org/CompositeSyntheticDigitalSource")
-    ScreeningEvent = URIRef("https://schema.org/ScreeningEvent")
-    WearableMeasurementWidth = URIRef("https://schema.org/WearableMeasurementWidth")
-    educationalRole = URIRef("https://schema.org/educationalRole")
-    landlord = URIRef("https://schema.org/landlord")
-    measurementQualifier = URIRef("https://schema.org/measurementQualifier")
-    WearableSizeGroupInfants = URIRef("https://schema.org/WearableSizeGroupInfants")
-    archivedAt = URIRef("https://schema.org/archivedAt")
-    ContactPointOption = URIRef("https://schema.org/ContactPointOption")
-    UnincorporatedAssociationCharity = URIRef("https://schema.org/UnincorporatedAssociationCharity")
-    musicReleaseFormat = URIRef("https://schema.org/musicReleaseFormat")
-    carrier = URIRef("https://schema.org/carrier")
-    MedicalObservationalStudy = URIRef("https://schema.org/MedicalObservationalStudy")
-    ReservationPackage = URIRef("https://schema.org/ReservationPackage")
-    estimatedCost = URIRef("https://schema.org/estimatedCost")
-    nerveMotor = URIRef("https://schema.org/nerveMotor")
-    recipient = URIRef("https://schema.org/recipient")
-    sku = URIRef("https://schema.org/sku")
-    StoreCreditRefund = URIRef("https://schema.org/StoreCreditRefund")
-    typeOfBed = URIRef("https://schema.org/typeOfBed")
-    vatID = URIRef("https://schema.org/vatID")
-    QAPage = URIRef("https://schema.org/QAPage")
-    MotorcycleRepair = URIRef("https://schema.org/MotorcycleRepair")
-    repeatCount = URIRef("https://schema.org/repeatCount")
-    Otolaryngologic = URIRef("https://schema.org/Otolaryngologic")
-    inChIKey = URIRef("https://schema.org/inChIKey")
-    distinguishingSign = URIRef("https://schema.org/distinguishingSign")
-    EUEnergyEfficiencyCategoryD = URIRef("https://schema.org/EUEnergyEfficiencyCategoryD")
-    MedicalIndication = URIRef("https://schema.org/MedicalIndication")
-    identifyingTest = URIRef("https://schema.org/identifyingTest")
-    MediaEnumeration = URIRef("https://schema.org/MediaEnumeration")
-    blogPost = URIRef("https://schema.org/blogPost")
-    ApprovedIndication = URIRef("https://schema.org/ApprovedIndication")
-    HinduTemple = URIRef("https://schema.org/HinduTemple")
-    BodyMeasurementInsideLeg = URIRef("https://schema.org/BodyMeasurementInsideLeg")
-    supersededBy = URIRef("https://schema.org/supersededBy")
-    fatContent = URIRef("https://schema.org/fatContent")
-    termCode = URIRef("https://schema.org/termCode")
-    cholesterolContent = URIRef("https://schema.org/cholesterolContent")
-    RegularPrice = URIRef("https://schema.org/RegularPrice")
-    PoliceStation = URIRef("https://schema.org/PoliceStation")
-    gamePlatform = URIRef("https://schema.org/gamePlatform")
-    mileageFromOdometer = URIRef("https://schema.org/mileageFromOdometer")
-    Newspaper = URIRef("https://schema.org/Newspaper")
-    webFeed = URIRef("https://schema.org/webFeed")
-    LakeBodyOfWater = URIRef("https://schema.org/LakeBodyOfWater")
-    prepTime = URIRef("https://schema.org/prepTime")
-    maximumIntake = URIRef("https://schema.org/maximumIntake")
-    programName = URIRef("https://schema.org/programName")
-    countryOfOrigin = URIRef("https://schema.org/countryOfOrigin")
-    hasCertification = URIRef("https://schema.org/hasCertification")
-    dissolutionDate = URIRef("https://schema.org/dissolutionDate")
-    StadiumOrArena = URIRef("https://schema.org/StadiumOrArena")
-    softwareVersion = URIRef("https://schema.org/softwareVersion")
-    Nonprofit501c11 = URIRef("https://schema.org/Nonprofit501c11")
-    alternativeHeadline = URIRef("https://schema.org/alternativeHeadline")
-    childMaxAge = URIRef("https://schema.org/childMaxAge")
-    MenuItem = URIRef("https://schema.org/MenuItem")
-    wheelbase = URIRef("https://schema.org/wheelbase")
-    sourcedFrom = URIRef("https://schema.org/sourcedFrom")
-    hasGS1DigitalLink = URIRef("https://schema.org/hasGS1DigitalLink")
-    deliveryLeadTime = URIRef("https://schema.org/deliveryLeadTime")
-    Paperback = URIRef("https://schema.org/Paperback")
-    geoCoveredBy = URIRef("https://schema.org/geoCoveredBy")
-    encodingType = URIRef("https://schema.org/encodingType")
-    actionAccessibilityRequirement = URIRef("https://schema.org/actionAccessibilityRequirement")
-    colorSwatch = URIRef("https://schema.org/colorSwatch")
-    addressCountry = URIRef("https://schema.org/addressCountry")
-    servesCuisine = URIRef("https://schema.org/servesCuisine")
-    EffectivenessHealthAspect = URIRef("https://schema.org/EffectivenessHealthAspect")
-    checkinTime = URIRef("https://schema.org/checkinTime")
-    assesses = URIRef("https://schema.org/assesses")
-    ResearchOrganization = URIRef("https://schema.org/ResearchOrganization")
-    coverageStartTime = URIRef("https://schema.org/coverageStartTime")
-    CompletedActionStatus = URIRef("https://schema.org/CompletedActionStatus")
-    JobPosting = URIRef("https://schema.org/JobPosting")
-    Nonprofit501c25 = URIRef("https://schema.org/Nonprofit501c25")
-    provider = URIRef("https://schema.org/provider")
-    Grant = URIRef("https://schema.org/Grant")
-    AutomotiveBusiness = URIRef("https://schema.org/AutomotiveBusiness")
-    itemLocation = URIRef("https://schema.org/itemLocation")
-    validForMemberTier = URIRef("https://schema.org/validForMemberTier")
-    petsAllowed = URIRef("https://schema.org/petsAllowed")
-    AmpStory = URIRef("https://schema.org/AmpStory")
-    MusculoskeletalExam = URIRef("https://schema.org/MusculoskeletalExam")
-    WritePermission = URIRef("https://schema.org/WritePermission")
-    reviews = URIRef("https://schema.org/reviews")
-    vehicleModelDate = URIRef("https://schema.org/vehicleModelDate")
-    sdDatePublished = URIRef("https://schema.org/sdDatePublished")
-    DigitalDocumentPermissionType = URIRef("https://schema.org/DigitalDocumentPermissionType")
-    EPRelease = URIRef("https://schema.org/EPRelease")
-    PotentialActionStatus = URIRef("https://schema.org/PotentialActionStatus")
-    offers = URIRef("https://schema.org/offers")
-    GovernmentBuilding = URIRef("https://schema.org/GovernmentBuilding")
-    AcceptAction = URIRef("https://schema.org/AcceptAction")
-    athlete = URIRef("https://schema.org/athlete")
-    numberOfAxles = URIRef("https://schema.org/numberOfAxles")
-    LegalForceStatus = URIRef("https://schema.org/LegalForceStatus")
-    countriesNotSupported = URIRef("https://schema.org/countriesNotSupported")
-    editEIDR = URIRef("https://schema.org/editEIDR")
-    BodyMeasurementHips = URIRef("https://schema.org/BodyMeasurementHips")
-    Winery = URIRef("https://schema.org/Winery")
-    SuspendAction = URIRef("https://schema.org/SuspendAction")
-    Campground = URIRef("https://schema.org/Campground")
-    employees = URIRef("https://schema.org/employees")
-    ChemicalSubstance = URIRef("https://schema.org/ChemicalSubstance")
-    exceptDate = URIRef("https://schema.org/exceptDate")
-    Bacteria = URIRef("https://schema.org/Bacteria")
-    LeaveAction = URIRef("https://schema.org/LeaveAction")
-    CertificationActive = URIRef("https://schema.org/CertificationActive")
-    DefenceEstablishment = URIRef("https://schema.org/DefenceEstablishment")
-    byArtist = URIRef("https://schema.org/byArtist")
-    LegalValueLevel = URIRef("https://schema.org/LegalValueLevel")
-    cashBack = URIRef("https://schema.org/cashBack")
-    healthPlanId = URIRef("https://schema.org/healthPlanId")
-    upvoteCount = URIRef("https://schema.org/upvoteCount")
-    Trip = URIRef("https://schema.org/Trip")
-    educationalLevel = URIRef("https://schema.org/educationalLevel")
-    founders = URIRef("https://schema.org/founders")
-    downloadUrl = URIRef("https://schema.org/downloadUrl")
-    targetName = URIRef("https://schema.org/targetName")
-    memberOf = URIRef("https://schema.org/memberOf")
-    eligibleTransactionVolume = URIRef("https://schema.org/eligibleTransactionVolume")
-    Nonprofit501c9 = URIRef("https://schema.org/Nonprofit501c9")
-    discusses = URIRef("https://schema.org/discusses")
-    FastFoodRestaurant = URIRef("https://schema.org/FastFoodRestaurant")
-    nutrition = URIRef("https://schema.org/nutrition")
-    lesserOrEqual = URIRef("https://schema.org/lesserOrEqual")
-    CurrencyConversionService = URIRef("https://schema.org/CurrencyConversionService")
-    legislationJurisdiction = URIRef("https://schema.org/legislationJurisdiction")
-    relatedAnatomy = URIRef("https://schema.org/relatedAnatomy")
-    Store = URIRef("https://schema.org/Store")
-    itemListElement = URIRef("https://schema.org/itemListElement")
-    fileFormat = URIRef("https://schema.org/fileFormat")
-    postOfficeBoxNumber = URIRef("https://schema.org/postOfficeBoxNumber")
-    parent = URIRef("https://schema.org/parent")
-    OwnershipInfo = URIRef("https://schema.org/OwnershipInfo")
-    MedicalTest = URIRef("https://schema.org/MedicalTest")
-    WearableMeasurementCollar = URIRef("https://schema.org/WearableMeasurementCollar")
-    exercisePlan = URIRef("https://schema.org/exercisePlan")
-    isAvailableGenerically = URIRef("https://schema.org/isAvailableGenerically")
-    InvestmentOrDeposit = URIRef("https://schema.org/InvestmentOrDeposit")
-    DataDownload = URIRef("https://schema.org/DataDownload")
-    MapCategoryType = URIRef("https://schema.org/MapCategoryType")
-    inLanguage = URIRef("https://schema.org/inLanguage")
-    loanMortgageMandateAmount = URIRef("https://schema.org/loanMortgageMandateAmount")
-    candidate = URIRef("https://schema.org/candidate")
-    associatedPathophysiology = URIRef("https://schema.org/associatedPathophysiology")
-    InStock = URIRef("https://schema.org/InStock")
-    CertificationStatusEnumeration = URIRef("https://schema.org/CertificationStatusEnumeration")
-    employee = URIRef("https://schema.org/employee")
-    tocEntry = URIRef("https://schema.org/tocEntry")
-    TierBenefitLoyaltyReturns = URIRef("https://schema.org/TierBenefitLoyaltyReturns")
-    LimitedByGuaranteeCharity = URIRef("https://schema.org/LimitedByGuaranteeCharity")
-    Skin = URIRef("https://schema.org/Skin")
-    quest = URIRef("https://schema.org/quest")
-    LowCalorieDiet = URIRef("https://schema.org/LowCalorieDiet")
-    taxonRank = URIRef("https://schema.org/taxonRank")
-    Intangible = URIRef("https://schema.org/Intangible")
-    shippingDestination = URIRef("https://schema.org/shippingDestination")
-    geoIntersects = URIRef("https://schema.org/geoIntersects")
-    size = URIRef("https://schema.org/size")
-    PaymentDeclined = URIRef("https://schema.org/PaymentDeclined")
-    GovernmentPermit = URIRef("https://schema.org/GovernmentPermit")
-    suitableForDiet = URIRef("https://schema.org/suitableForDiet")
-    CaseSeries = URIRef("https://schema.org/CaseSeries")
-    childTaxon = URIRef("https://schema.org/childTaxon")
-    height = URIRef("https://schema.org/height")
-    storageRequirements = URIRef("https://schema.org/storageRequirements")
-    author = URIRef("https://schema.org/author")
-    DiscussionForumPosting = URIRef("https://schema.org/DiscussionForumPosting")
-    Nonprofit501e = URIRef("https://schema.org/Nonprofit501e")
-    prescriptionStatus = URIRef("https://schema.org/prescriptionStatus")
-    positiveNotes = URIRef("https://schema.org/positiveNotes")
-    estimatedSalary = URIRef("https://schema.org/estimatedSalary")
-    EducationalOccupationalProgram = URIRef("https://schema.org/EducationalOccupationalProgram")
-    postalCodeRange = URIRef("https://schema.org/postalCodeRange")
-    duns = URIRef("https://schema.org/duns")
-    auditDate = URIRef("https://schema.org/auditDate")
-    WearableSizeGroupPlus = URIRef("https://schema.org/WearableSizeGroupPlus")
-    warranty = URIRef("https://schema.org/warranty")
-    medicalAudience = URIRef("https://schema.org/medicalAudience")
-    Psychiatric = URIRef("https://schema.org/Psychiatric")
-    foundingLocation = URIRef("https://schema.org/foundingLocation")
-    dateDeleted = URIRef("https://schema.org/dateDeleted")
-    toLocation = URIRef("https://schema.org/toLocation")
-    gracePeriod = URIRef("https://schema.org/gracePeriod")
-    byMonth = URIRef("https://schema.org/byMonth")
-    ImageObject = URIRef("https://schema.org/ImageObject")
-    certificationStatus = URIRef("https://schema.org/certificationStatus")
-    CourseInstance = URIRef("https://schema.org/CourseInstance")
-    geoMidpoint = URIRef("https://schema.org/geoMidpoint")
-    totalPaymentDue = URIRef("https://schema.org/totalPaymentDue")
-    noBylinesPolicy = URIRef("https://schema.org/noBylinesPolicy")
-    mechanismOfAction = URIRef("https://schema.org/mechanismOfAction")
-    ViolenceConsideration = URIRef("https://schema.org/ViolenceConsideration")
-    DrugPrescriptionStatus = URIRef("https://schema.org/DrugPrescriptionStatus")
-    openingHours = URIRef("https://schema.org/openingHours")
-    TransferAction = URIRef("https://schema.org/TransferAction")
-    releaseDate = URIRef("https://schema.org/releaseDate")
-    floorLevel = URIRef("https://schema.org/floorLevel")
-    addressRegion = URIRef("https://schema.org/addressRegion")
-    isBasedOnUrl = URIRef("https://schema.org/isBasedOnUrl")
-    MeetingRoom = URIRef("https://schema.org/MeetingRoom")
-    enginePower = URIRef("https://schema.org/enginePower")
-    orderItemNumber = URIRef("https://schema.org/orderItemNumber")
-    byMonthDay = URIRef("https://schema.org/byMonthDay")
-    sizeSystem = URIRef("https://schema.org/sizeSystem")
-    interactingDrug = URIRef("https://schema.org/interactingDrug")
-    RealEstateListing = URIRef("https://schema.org/RealEstateListing")
-    foodEvent = URIRef("https://schema.org/foodEvent")
-    productionDate = URIRef("https://schema.org/productionDate")
-    CategoryCode = URIRef("https://schema.org/CategoryCode")
-    runtimePlatform = URIRef("https://schema.org/runtimePlatform")
-    appliesToDeliveryMethod = URIRef("https://schema.org/appliesToDeliveryMethod")
-    DefinitiveLegalValue = URIRef("https://schema.org/DefinitiveLegalValue")
-    MusicEvent = URIRef("https://schema.org/MusicEvent")
-    PreOrder = URIRef("https://schema.org/PreOrder")
-    letterer = URIRef("https://schema.org/letterer")
-    Joint = URIRef("https://schema.org/Joint")
-    TVEpisode = URIRef("https://schema.org/TVEpisode")
-    interpretedAsClaim = URIRef("https://schema.org/interpretedAsClaim")
-    workPresented = URIRef("https://schema.org/workPresented")
-    nsn = URIRef("https://schema.org/nsn")
-    episodeNumber = URIRef("https://schema.org/episodeNumber")
-    FurnitureStore = URIRef("https://schema.org/FurnitureStore")
-    WearableSizeSystemEurope = URIRef("https://schema.org/WearableSizeSystemEurope")
-    sdLicense = URIRef("https://schema.org/sdLicense")
-    offerCount = URIRef("https://schema.org/offerCount")
-    SRP = URIRef("https://schema.org/SRP")
-    Female = URIRef("https://schema.org/Female")
-    hasMolecularFunction = URIRef("https://schema.org/hasMolecularFunction")
-    merchant = URIRef("https://schema.org/merchant")
-    interactionType = URIRef("https://schema.org/interactionType")
-    nonProprietaryName = URIRef("https://schema.org/nonProprietaryName")
-    comprisedOf = URIRef("https://schema.org/comprisedOf")
-    defaultValue = URIRef("https://schema.org/defaultValue")
-    RespiratoryTherapy = URIRef("https://schema.org/RespiratoryTherapy")
-    Order = URIRef("https://schema.org/Order")
-    WearableSizeSystemMX = URIRef("https://schema.org/WearableSizeSystemMX")
-    Hackathon = URIRef("https://schema.org/Hackathon")
-    trialDesign = URIRef("https://schema.org/trialDesign")
-    associatedArticle = URIRef("https://schema.org/associatedArticle")
-    Surgical = URIRef("https://schema.org/Surgical")
-    populationType = URIRef("https://schema.org/populationType")
-    mobileUrl = URIRef("https://schema.org/mobileUrl")
-    Optician = URIRef("https://schema.org/Optician")
-    DietNutrition = URIRef("https://schema.org/DietNutrition")
-    doseValue = URIRef("https://schema.org/doseValue")
-    iataCode = URIRef("https://schema.org/iataCode")
-    DislikeAction = URIRef("https://schema.org/DislikeAction")
-    linkRelationship = URIRef("https://schema.org/linkRelationship")
-    amount = URIRef("https://schema.org/amount")
-    Locksmith = URIRef("https://schema.org/Locksmith")
-    procedure = URIRef("https://schema.org/procedure")
-    SideEffectsHealthAspect = URIRef("https://schema.org/SideEffectsHealthAspect")
-    legislationChanges = URIRef("https://schema.org/legislationChanges")
-    connectedTo = URIRef("https://schema.org/connectedTo")
-    Observation = URIRef("https://schema.org/Observation")
-    JewelryStore = URIRef("https://schema.org/JewelryStore")
-    WearableSizeGroupMisses = URIRef("https://schema.org/WearableSizeGroupMisses")
-    StagedContent = URIRef("https://schema.org/StagedContent")
-    Hotel = URIRef("https://schema.org/Hotel")
-    claimInterpreter = URIRef("https://schema.org/claimInterpreter")
-    Manuscript = URIRef("https://schema.org/Manuscript")
-    MusicGroup = URIRef("https://schema.org/MusicGroup")
-    LimitedAvailability = URIRef("https://schema.org/LimitedAvailability")
-    NewsArticle = URIRef("https://schema.org/NewsArticle")
-    Syllabus = URIRef("https://schema.org/Syllabus")
-    EnrollingByInvitation = URIRef("https://schema.org/EnrollingByInvitation")
-    emissionsCO2 = URIRef("https://schema.org/emissionsCO2")
-    Nonprofit501q = URIRef("https://schema.org/Nonprofit501q")
-    mainEntity = URIRef("https://schema.org/mainEntity")
-    arrivalPlatform = URIRef("https://schema.org/arrivalPlatform")
-    workTranslation = URIRef("https://schema.org/workTranslation")
-    cvdNumTotBeds = URIRef("https://schema.org/cvdNumTotBeds")
-    AutoRepair = URIRef("https://schema.org/AutoRepair")
-    disambiguatingDescription = URIRef("https://schema.org/disambiguatingDescription")
-    StatisticalVariable = URIRef("https://schema.org/StatisticalVariable")
-    startDate = URIRef("https://schema.org/startDate")
-    reviewRating = URIRef("https://schema.org/reviewRating")
-    VirtualRecordingDigitalSource = URIRef("https://schema.org/VirtualRecordingDigitalSource")
-    Virus = URIRef("https://schema.org/Virus")
-    customerRemorseReturnLabelSource = URIRef("https://schema.org/customerRemorseReturnLabelSource")
-    checkoutPageURLTemplate = URIRef("https://schema.org/checkoutPageURLTemplate")
-    ConfirmAction = URIRef("https://schema.org/ConfirmAction")
-    GeoCircle = URIRef("https://schema.org/GeoCircle")
-    SheetMusic = URIRef("https://schema.org/SheetMusic")
-    measurementTechnique = URIRef("https://schema.org/measurementTechnique")
-    legislationPassedBy = URIRef("https://schema.org/legislationPassedBy")
-    customer = URIRef("https://schema.org/customer")
-    Schedule = URIRef("https://schema.org/Schedule")
-    EnergyEfficiencyEnumeration = URIRef("https://schema.org/EnergyEfficiencyEnumeration")
-    embedUrl = URIRef("https://schema.org/embedUrl")
-    suggestedAge = URIRef("https://schema.org/suggestedAge")
-    legislationDate = URIRef("https://schema.org/legislationDate")
-    awards = URIRef("https://schema.org/awards")
-    referencesOrder = URIRef("https://schema.org/referencesOrder")
-    icaoCode = URIRef("https://schema.org/icaoCode")
-    certificationIdentification = URIRef("https://schema.org/certificationIdentification")
-    sensoryRequirement = URIRef("https://schema.org/sensoryRequirement")
-    liveBlogUpdate = URIRef("https://schema.org/liveBlogUpdate")
-    schemaVersion = URIRef("https://schema.org/schemaVersion")
-    FoodService = URIRef("https://schema.org/FoodService")
-    maximumEnrollment = URIRef("https://schema.org/maximumEnrollment")
-    floorLimit = URIRef("https://schema.org/floorLimit")
-    MixtapeAlbum = URIRef("https://schema.org/MixtapeAlbum")
-    paymentDue = URIRef("https://schema.org/paymentDue")
-    MusicAlbumProductionType = URIRef("https://schema.org/MusicAlbumProductionType")
-    MedicalCode = URIRef("https://schema.org/MedicalCode")
-    alumni = URIRef("https://schema.org/alumni")
-    EndorseAction = URIRef("https://schema.org/EndorseAction")
-    legislationApplies = URIRef("https://schema.org/legislationApplies")
-    purchaseDate = URIRef("https://schema.org/purchaseDate")
-    box = URIRef("https://schema.org/box")
-    OpeningHoursSpecification = URIRef("https://schema.org/OpeningHoursSpecification")
-    reportNumber = URIRef("https://schema.org/reportNumber")
-    articleSection = URIRef("https://schema.org/articleSection")
-    GeneralContractor = URIRef("https://schema.org/GeneralContractor")
-    isSimilarTo = URIRef("https://schema.org/isSimilarTo")
-    gtin12 = URIRef("https://schema.org/gtin12")
-    EducationalOccupationalCredential = URIRef("https://schema.org/EducationalOccupationalCredential")
-    EUEnergyEfficiencyEnumeration = URIRef("https://schema.org/EUEnergyEfficiencyEnumeration")
-    broker = URIRef("https://schema.org/broker")
-    organizer = URIRef("https://schema.org/organizer")
-    SkiResort = URIRef("https://schema.org/SkiResort")
-    availableDeliveryMethod = URIRef("https://schema.org/availableDeliveryMethod")
-    Action = URIRef("https://schema.org/Action")
-    WearableMeasurementSleeve = URIRef("https://schema.org/WearableMeasurementSleeve")
-    study = URIRef("https://schema.org/study")
-    EventReservation = URIRef("https://schema.org/EventReservation")
-    step = URIRef("https://schema.org/step")
-    scheduledPaymentDate = URIRef("https://schema.org/scheduledPaymentDate")
-    numberedPosition = URIRef("https://schema.org/numberedPosition")
-    about = URIRef("https://schema.org/about")
-    boardingGroup = URIRef("https://schema.org/boardingGroup")
-    CT = URIRef("https://schema.org/CT")
-    colleague = URIRef("https://schema.org/colleague")
-    PriceComponentTypeEnumeration = URIRef("https://schema.org/PriceComponentTypeEnumeration")
-    occupationLocation = URIRef("https://schema.org/occupationLocation")
-    Attorney = URIRef("https://schema.org/Attorney")
-    Appearance = URIRef("https://schema.org/Appearance")
-    permissions = URIRef("https://schema.org/permissions")
-    MedicalEvidenceLevel = URIRef("https://schema.org/MedicalEvidenceLevel")
-    intensity = URIRef("https://schema.org/intensity")
-    PawnShop = URIRef("https://schema.org/PawnShop")
-    artworkSurface = URIRef("https://schema.org/artworkSurface")
-    customerRemorseReturnFees = URIRef("https://schema.org/customerRemorseReturnFees")
-    abridged = URIRef("https://schema.org/abridged")
-    Nonprofit501c13 = URIRef("https://schema.org/Nonprofit501c13")
-    parentService = URIRef("https://schema.org/parentService")
-    WearableMeasurementHips = URIRef("https://schema.org/WearableMeasurementHips")
-    HomeAndConstructionBusiness = URIRef("https://schema.org/HomeAndConstructionBusiness")
-    loanTerm = URIRef("https://schema.org/loanTerm")
-    HowOrWhereHealthAspect = URIRef("https://schema.org/HowOrWhereHealthAspect")
-    Dentistry = URIRef("https://schema.org/Dentistry")
-    accessModeSufficient = URIRef("https://schema.org/accessModeSufficient")
-    aircraft = URIRef("https://schema.org/aircraft")
-    Recommendation = URIRef("https://schema.org/Recommendation")
-    gameLocation = URIRef("https://schema.org/gameLocation")
-    AllocateAction = URIRef("https://schema.org/AllocateAction")
-    LiveAlbum = URIRef("https://schema.org/LiveAlbum")
-    mediaAuthenticityCategory = URIRef("https://schema.org/mediaAuthenticityCategory")
-    jobLocation = URIRef("https://schema.org/jobLocation")
-    productGroupID = URIRef("https://schema.org/productGroupID")
-    LivingWithHealthAspect = URIRef("https://schema.org/LivingWithHealthAspect")
-    arrivalGate = URIRef("https://schema.org/arrivalGate")
-    telephone = URIRef("https://schema.org/telephone")
-    postOp = URIRef("https://schema.org/postOp")
-    agentInteractionStatistic = URIRef("https://schema.org/agentInteractionStatistic")
-    serviceUrl = URIRef("https://schema.org/serviceUrl")
-    DDxElement = URIRef("https://schema.org/DDxElement")
-    signDetected = URIRef("https://schema.org/signDetected")
-    game = URIRef("https://schema.org/game")
-    broadcastSubChannel = URIRef("https://schema.org/broadcastSubChannel")
-    statType = URIRef("https://schema.org/statType")
-    PaymentAutomaticallyApplied = URIRef("https://schema.org/PaymentAutomaticallyApplied")
-    inChI = URIRef("https://schema.org/inChI")
-    SearchResultsPage = URIRef("https://schema.org/SearchResultsPage")
-    affiliation = URIRef("https://schema.org/affiliation")
-    infectiousAgent = URIRef("https://schema.org/infectiousAgent")
-    RiverBodyOfWater = URIRef("https://schema.org/RiverBodyOfWater")
-    CharitableIncorporatedOrganization = URIRef("https://schema.org/CharitableIncorporatedOrganization")
-    dateSent = URIRef("https://schema.org/dateSent")
-    NonprofitANBI = URIRef("https://schema.org/NonprofitANBI")
-    pathophysiology = URIRef("https://schema.org/pathophysiology")
-    ingredients = URIRef("https://schema.org/ingredients")
-    ContactPage = URIRef("https://schema.org/ContactPage")
-    foodWarning = URIRef("https://schema.org/foodWarning")
-    colorist = URIRef("https://schema.org/colorist")
-    benefits = URIRef("https://schema.org/benefits")
-    ActionAccessSpecification = URIRef("https://schema.org/ActionAccessSpecification")
-    geoTouches = URIRef("https://schema.org/geoTouches")
-    discountCode = URIRef("https://schema.org/discountCode")
-    unitCode = URIRef("https://schema.org/unitCode")
-    callSign = URIRef("https://schema.org/callSign")
-    totalHistoricalEnrollment = URIRef("https://schema.org/totalHistoricalEnrollment")
-    cargoVolume = URIRef("https://schema.org/cargoVolume")
-    alumniOf = URIRef("https://schema.org/alumniOf")
-    VideoObject = URIRef("https://schema.org/VideoObject")
-    LowLactoseDiet = URIRef("https://schema.org/LowLactoseDiet")
-    recordedIn = URIRef("https://schema.org/recordedIn")
-    minPrice = URIRef("https://schema.org/minPrice")
-    includesObject = URIRef("https://schema.org/includesObject")
-    EditedOrCroppedContent = URIRef("https://schema.org/EditedOrCroppedContent")
-    ReducedRelevanceForChildrenConsideration = URIRef("https://schema.org/ReducedRelevanceForChildrenConsideration")
-    WearableSizeGroupHusky = URIRef("https://schema.org/WearableSizeGroupHusky")
-    ReturnMethodEnumeration = URIRef("https://schema.org/ReturnMethodEnumeration")
-    documentation = URIRef("https://schema.org/documentation")
-    albumReleaseType = URIRef("https://schema.org/albumReleaseType")
-    sensoryUnit = URIRef("https://schema.org/sensoryUnit")
-    DigitalPlatformEnumeration = URIRef("https://schema.org/DigitalPlatformEnumeration")
-    SingleFamilyResidence = URIRef("https://schema.org/SingleFamilyResidence")
-    BodyMeasurementWaist = URIRef("https://schema.org/BodyMeasurementWaist")
-    DietarySupplement = URIRef("https://schema.org/DietarySupplement")
-    WearableMeasurementWaist = URIRef("https://schema.org/WearableMeasurementWaist")
-    feesAndCommissionsSpecification = URIRef("https://schema.org/feesAndCommissionsSpecification")
-    DecontextualizedContent = URIRef("https://schema.org/DecontextualizedContent")
-    encodingFormat = URIRef("https://schema.org/encodingFormat")
-    significantLinks = URIRef("https://schema.org/significantLinks")
-    penciler = URIRef("https://schema.org/penciler")
-    phoneticText = URIRef("https://schema.org/phoneticText")
-    trainName = URIRef("https://schema.org/trainName")
-    status = URIRef("https://schema.org/status")
-    MedicalProcedureType = URIRef("https://schema.org/MedicalProcedureType")
-    ClothingStore = URIRef("https://schema.org/ClothingStore")
-    manufacturer = URIRef("https://schema.org/manufacturer")
-    ExerciseGym = URIRef("https://schema.org/ExerciseGym")
-    abstract = URIRef("https://schema.org/abstract")
-    offeredBy = URIRef("https://schema.org/offeredBy")
-    messageAttachment = URIRef("https://schema.org/messageAttachment")
-    startOffset = URIRef("https://schema.org/startOffset")
-    InteractionCounter = URIRef("https://schema.org/InteractionCounter")
-    LegislationObject = URIRef("https://schema.org/LegislationObject")
-    strengthValue = URIRef("https://schema.org/strengthValue")
-    MeasurementMethodEnum = URIRef("https://schema.org/MeasurementMethodEnum")
-    Integer = URIRef("https://schema.org/Integer")
-    educationRequirements = URIRef("https://schema.org/educationRequirements")
-    itemShipped = URIRef("https://schema.org/itemShipped")
-    PathologyTest = URIRef("https://schema.org/PathologyTest")
-    usageInfo = URIRef("https://schema.org/usageInfo")
-    InfectiousAgentClass = URIRef("https://schema.org/InfectiousAgentClass")
-    CoOp = URIRef("https://schema.org/CoOp")
-    WearableMeasurementTypeEnumeration = URIRef("https://schema.org/WearableMeasurementTypeEnumeration")
-    guidelineDate = URIRef("https://schema.org/guidelineDate")
-    requiredCollateral = URIRef("https://schema.org/requiredCollateral")
-    orderItemStatus = URIRef("https://schema.org/orderItemStatus")
-    inProductGroupWithID = URIRef("https://schema.org/inProductGroupWithID")
-    inBroadcastLineup = URIRef("https://schema.org/inBroadcastLineup")
-    ReturnInStore = URIRef("https://schema.org/ReturnInStore")
-    realEstateAgent = URIRef("https://schema.org/realEstateAgent")
-    beneficiaryBank = URIRef("https://schema.org/beneficiaryBank")
-    deliveryAddress = URIRef("https://schema.org/deliveryAddress")
-    Ultrasound = URIRef("https://schema.org/Ultrasound")
-    underName = URIRef("https://schema.org/underName")
-    expectedPrognosis = URIRef("https://schema.org/expectedPrognosis")
-    numTracks = URIRef("https://schema.org/numTracks")
-    hasMap = URIRef("https://schema.org/hasMap")
-    actionStatus = URIRef("https://schema.org/actionStatus")
-    LoseAction = URIRef("https://schema.org/LoseAction")
-    url = URIRef("https://schema.org/url")
-    smiles = URIRef("https://schema.org/smiles")
-    ReadPermission = URIRef("https://schema.org/ReadPermission")
-    numberOfBathroomsTotal = URIRef("https://schema.org/numberOfBathroomsTotal")
-    cvdFacilityId = URIRef("https://schema.org/cvdFacilityId")
-    legislationLegalValue = URIRef("https://schema.org/legislationLegalValue")
-    BoatTerminal = URIRef("https://schema.org/BoatTerminal")
-    accommodationCategory = URIRef("https://schema.org/accommodationCategory")
-    programmingModel = URIRef("https://schema.org/programmingModel")
-    countryOfLastProcessing = URIRef("https://schema.org/countryOfLastProcessing")
-    OnDemandEvent = URIRef("https://schema.org/OnDemandEvent")
-    cssSelector = URIRef("https://schema.org/cssSelector")
-    Recipe = URIRef("https://schema.org/Recipe")
-    SchoolDistrict = URIRef("https://schema.org/SchoolDistrict")
-    EvidenceLevelA = URIRef("https://schema.org/EvidenceLevelA")
-    caption = URIRef("https://schema.org/caption")
-    OriginalMediaContent = URIRef("https://schema.org/OriginalMediaContent")
-    sameAs = URIRef("https://schema.org/sameAs")
-    actors = URIRef("https://schema.org/actors")
-    Aquarium = URIRef("https://schema.org/Aquarium")
-    lodgingUnitType = URIRef("https://schema.org/lodgingUnitType")
-    acceptedOffer = URIRef("https://schema.org/acceptedOffer")
-    accelerationTime = URIRef("https://schema.org/accelerationTime")
-    TVSeries = URIRef("https://schema.org/TVSeries")
-    isGift = URIRef("https://schema.org/isGift")
-    members = URIRef("https://schema.org/members")
-    tributary = URIRef("https://schema.org/tributary")
-    advanceBookingRequirement = URIRef("https://schema.org/advanceBookingRequirement")
-    equal = URIRef("https://schema.org/equal")
-    TouristTrip = URIRef("https://schema.org/TouristTrip")
-    providerMobility = URIRef("https://schema.org/providerMobility")
-    HowToDirection = URIRef("https://schema.org/HowToDirection")
-    biomechnicalClass = URIRef("https://schema.org/biomechnicalClass")
-    catalogNumber = URIRef("https://schema.org/catalogNumber")
-    Place = URIRef("https://schema.org/Place")
-    Geriatric = URIRef("https://schema.org/Geriatric")
-    qualifications = URIRef("https://schema.org/qualifications")
-    departureAirport = URIRef("https://schema.org/departureAirport")
-    ResearchProject = URIRef("https://schema.org/ResearchProject")
-    applicantLocationRequirements = URIRef("https://schema.org/applicantLocationRequirements")
-    ProfessionalService = URIRef("https://schema.org/ProfessionalService")
-    engineType = URIRef("https://schema.org/engineType")
-    printColumn = URIRef("https://schema.org/printColumn")
-    associatedAnatomy = URIRef("https://schema.org/associatedAnatomy")
-    mpn = URIRef("https://schema.org/mpn")
-    review = URIRef("https://schema.org/review")
-    expectedArrivalFrom = URIRef("https://schema.org/expectedArrivalFrom")
-    specialCommitments = URIRef("https://schema.org/specialCommitments")
-    bookFormat = URIRef("https://schema.org/bookFormat")
-    bed = URIRef("https://schema.org/bed")
-    PhysiciansOffice = URIRef("https://schema.org/PhysiciansOffice")
-    evidenceOrigin = URIRef("https://schema.org/evidenceOrigin")
-    medicalSpecialty = URIRef("https://schema.org/medicalSpecialty")
-    PeopleAudience = URIRef("https://schema.org/PeopleAudience")
-    constraintProperty = URIRef("https://schema.org/constraintProperty")
-    DangerousGoodConsideration = URIRef("https://schema.org/DangerousGoodConsideration")
-    trackingNumber = URIRef("https://schema.org/trackingNumber")
-    MedicalOrganization = URIRef("https://schema.org/MedicalOrganization")
-    recognizedBy = URIRef("https://schema.org/recognizedBy")
-    VideoGallery = URIRef("https://schema.org/VideoGallery")
-    PartiallyInForce = URIRef("https://schema.org/PartiallyInForce")
-    TouristAttraction = URIRef("https://schema.org/TouristAttraction")
-    overdosage = URIRef("https://schema.org/overdosage")
-    variableMeasured = URIRef("https://schema.org/variableMeasured")
-    dateReceived = URIRef("https://schema.org/dateReceived")
-    breastfeedingWarning = URIRef("https://schema.org/breastfeedingWarning")
-    courseSchedule = URIRef("https://schema.org/courseSchedule")
-    percentile90 = URIRef("https://schema.org/percentile90")
-    regionsAllowed = URIRef("https://schema.org/regionsAllowed")
-    MonetaryAmountDistribution = URIRef("https://schema.org/MonetaryAmountDistribution")
-    discussionUrl = URIRef("https://schema.org/discussionUrl")
-    sizeGroup = URIRef("https://schema.org/sizeGroup")
-    NotYetRecruiting = URIRef("https://schema.org/NotYetRecruiting")
-    InteractAction = URIRef("https://schema.org/InteractAction")
-    parentOrganization = URIRef("https://schema.org/parentOrganization")
-    hasBioPolymerSequence = URIRef("https://schema.org/hasBioPolymerSequence")
-    WesternConventional = URIRef("https://schema.org/WesternConventional")
-    episodes = URIRef("https://schema.org/episodes")
-    sport = URIRef("https://schema.org/sport")
-    imagingTechnique = URIRef("https://schema.org/imagingTechnique")
-    accessibilitySummary = URIRef("https://schema.org/accessibilitySummary")
-    bookEdition = URIRef("https://schema.org/bookEdition")
-    taxonomicRange = URIRef("https://schema.org/taxonomicRange")
-    suggestedAnswer = URIRef("https://schema.org/suggestedAnswer")
-    BusStation = URIRef("https://schema.org/BusStation")
-    HairSalon = URIRef("https://schema.org/HairSalon")
-    isbn = URIRef("https://schema.org/isbn")
-    includesHealthPlanNetwork = URIRef("https://schema.org/includesHealthPlanNetwork")
-    Airport = URIRef("https://schema.org/Airport")
-    Cemetery = URIRef("https://schema.org/Cemetery")
-    EmergencyService = URIRef("https://schema.org/EmergencyService")
-    ownedThrough = URIRef("https://schema.org/ownedThrough")
-    MedicalTestPanel = URIRef("https://schema.org/MedicalTestPanel")
-    knowsAbout = URIRef("https://schema.org/knowsAbout")
-    MedicalStudy = URIRef("https://schema.org/MedicalStudy")
-    returnLabelSource = URIRef("https://schema.org/returnLabelSource")
-    HardwareStore = URIRef("https://schema.org/HardwareStore")
-    firstPerformance = URIRef("https://schema.org/firstPerformance")
-    typicalTest = URIRef("https://schema.org/typicalTest")
-    SexualContentConsideration = URIRef("https://schema.org/SexualContentConsideration")
-    energyEfficiencyScaleMax = URIRef("https://schema.org/energyEfficiencyScaleMax")
-    suggestedGender = URIRef("https://schema.org/suggestedGender")
-    WebAPI = URIRef("https://schema.org/WebAPI")
-    healthPlanDrugTier = URIRef("https://schema.org/healthPlanDrugTier")
-    numberOfRooms = URIRef("https://schema.org/numberOfRooms")
-    diversityPolicy = URIRef("https://schema.org/diversityPolicy")
-    flightNumber = URIRef("https://schema.org/flightNumber")
-    eventAttendanceMode = URIRef("https://schema.org/eventAttendanceMode")
-    FDAcategoryD = URIRef("https://schema.org/FDAcategoryD")
-    produces = URIRef("https://schema.org/produces")
-    borrower = URIRef("https://schema.org/borrower")
-    clipNumber = URIRef("https://schema.org/clipNumber")
-    legalStatus = URIRef("https://schema.org/legalStatus")
-    PlayGameAction = URIRef("https://schema.org/PlayGameAction")
-    shippingDetails = URIRef("https://schema.org/shippingDetails")
-    Mountain = URIRef("https://schema.org/Mountain")
-    transcript = URIRef("https://schema.org/transcript")
-    scheduledTime = URIRef("https://schema.org/scheduledTime")
-    WearableSizeSystemCN = URIRef("https://schema.org/WearableSizeSystemCN")
-    ReservationCancelled = URIRef("https://schema.org/ReservationCancelled")
-    availableTest = URIRef("https://schema.org/availableTest")
-    Service = URIRef("https://schema.org/Service")
-    SinglePlayer = URIRef("https://schema.org/SinglePlayer")
-    modelDate = URIRef("https://schema.org/modelDate")
-    associatedMedia = URIRef("https://schema.org/associatedMedia")
-    ComicCoverArt = URIRef("https://schema.org/ComicCoverArt")
-    CommunicateAction = URIRef("https://schema.org/CommunicateAction")
-    TouristDestination = URIRef("https://schema.org/TouristDestination")
-    requirements = URIRef("https://schema.org/requirements")
-    EmployerAggregateRating = URIRef("https://schema.org/EmployerAggregateRating")
-    endDate = URIRef("https://schema.org/endDate")
-    position = URIRef("https://schema.org/position")
-    NGO = URIRef("https://schema.org/NGO")
-    dateCreated = URIRef("https://schema.org/dateCreated")
-    expectedArrivalUntil = URIRef("https://schema.org/expectedArrivalUntil")
-    Wholesale = URIRef("https://schema.org/Wholesale")
-    operatingSystem = URIRef("https://schema.org/operatingSystem")
-    specialOpeningHoursSpecification = URIRef("https://schema.org/specialOpeningHoursSpecification")
-    funder = URIRef("https://schema.org/funder")
-    holdingArchive = URIRef("https://schema.org/holdingArchive")
-    ReplaceAction = URIRef("https://schema.org/ReplaceAction")
-    BloodTest = URIRef("https://schema.org/BloodTest")
-    GovernmentBenefitsType = URIRef("https://schema.org/GovernmentBenefitsType")
-    bccRecipient = URIRef("https://schema.org/bccRecipient")
-    broadcastSignalModulation = URIRef("https://schema.org/broadcastSignalModulation")
-    HighSchool = URIRef("https://schema.org/HighSchool")
-    circle = URIRef("https://schema.org/circle")
-    event = URIRef("https://schema.org/event")
-    processingTime = URIRef("https://schema.org/processingTime")
-    TravelAgency = URIRef("https://schema.org/TravelAgency")
-    RadioClip = URIRef("https://schema.org/RadioClip")
-    MovingCompany = URIRef("https://schema.org/MovingCompany")
-    UsageOrScheduleHealthAspect = URIRef("https://schema.org/UsageOrScheduleHealthAspect")
-    targetPopulation = URIRef("https://schema.org/targetPopulation")
-    GettingAccessHealthAspect = URIRef("https://schema.org/GettingAccessHealthAspect")
-    knowsLanguage = URIRef("https://schema.org/knowsLanguage")
-    TieAction = URIRef("https://schema.org/TieAction")
-    trainNumber = URIRef("https://schema.org/trainNumber")
-    valueReference = URIRef("https://schema.org/valueReference")
-    Drawing = URIRef("https://schema.org/Drawing")
-    confirmationNumber = URIRef("https://schema.org/confirmationNumber")
-    transmissionMethod = URIRef("https://schema.org/transmissionMethod")
-    HotelRoom = URIRef("https://schema.org/HotelRoom")
-    lyrics = URIRef("https://schema.org/lyrics")
-    returnPolicySeasonalOverride = URIRef("https://schema.org/returnPolicySeasonalOverride")
-    MemberProgramTier = URIRef("https://schema.org/MemberProgramTier")
-    fuelType = URIRef("https://schema.org/fuelType")
-    opens = URIRef("https://schema.org/opens")
-    estimatedFlightDuration = URIRef("https://schema.org/estimatedFlightDuration")
-    citation = URIRef("https://schema.org/citation")
-    exerciseCourse = URIRef("https://schema.org/exerciseCourse")
-    Preschool = URIRef("https://schema.org/Preschool")
-    Dermatology = URIRef("https://schema.org/Dermatology")
-    PrintDigitalSource = URIRef("https://schema.org/PrintDigitalSource")
-    measurementDenominator = URIRef("https://schema.org/measurementDenominator")
-    TransformedContent = URIRef("https://schema.org/TransformedContent")
-    healthcareReportingData = URIRef("https://schema.org/healthcareReportingData")
-    RentalVehicleUsage = URIRef("https://schema.org/RentalVehicleUsage")
-    containsSeason = URIRef("https://schema.org/containsSeason")
-    boardingPolicy = URIRef("https://schema.org/boardingPolicy")
-    ElectronicsStore = URIRef("https://schema.org/ElectronicsStore")
-    Emergency = URIRef("https://schema.org/Emergency")
-    TrainedAlgorithmicMediaDigitalSource = URIRef("https://schema.org/TrainedAlgorithmicMediaDigitalSource")
-    WPAdBlock = URIRef("https://schema.org/WPAdBlock")
-    bitrate = URIRef("https://schema.org/bitrate")
-    numberOfPages = URIRef("https://schema.org/numberOfPages")
-    LiveBlogPosting = URIRef("https://schema.org/LiveBlogPosting")
-    vehicleSpecialUsage = URIRef("https://schema.org/vehicleSpecialUsage")
-    SeeDoctorHealthAspect = URIRef("https://schema.org/SeeDoctorHealthAspect")
-    Dataset = URIRef("https://schema.org/Dataset")
-    hasTierRequirement = URIRef("https://schema.org/hasTierRequirement")
-    cvdNumBedsOcc = URIRef("https://schema.org/cvdNumBedsOcc")
-    hasOfferCatalog = URIRef("https://schema.org/hasOfferCatalog")
-    workload = URIRef("https://schema.org/workload")
-    address = URIRef("https://schema.org/address")
-    TelevisionStation = URIRef("https://schema.org/TelevisionStation")
-    httpMethod = URIRef("https://schema.org/httpMethod")
-    ChildCare = URIRef("https://schema.org/ChildCare")
-    bestRating = URIRef("https://schema.org/bestRating")
-    CampingPitch = URIRef("https://schema.org/CampingPitch")
-    WPSideBar = URIRef("https://schema.org/WPSideBar")
-    expressedIn = URIRef("https://schema.org/expressedIn")
-    MusicRelease = URIRef("https://schema.org/MusicRelease")
-    WebContent = URIRef("https://schema.org/WebContent")
-    isVariantOf = URIRef("https://schema.org/isVariantOf")
-    AlgorithmicallyEnhancedDigitalSource = URIRef("https://schema.org/AlgorithmicallyEnhancedDigitalSource")
-    applicableCountry = URIRef("https://schema.org/applicableCountry")
-    CrossSectional = URIRef("https://schema.org/CrossSectional")
-    observationAbout = URIRef("https://schema.org/observationAbout")
-    EventCancelled = URIRef("https://schema.org/EventCancelled")
-    Church = URIRef("https://schema.org/Church")
-    tocContinuation = URIRef("https://schema.org/tocContinuation")
-    Person = URIRef("https://schema.org/Person")
-    EmploymentAgency = URIRef("https://schema.org/EmploymentAgency")
-    repetitions = URIRef("https://schema.org/repetitions")
-    partOfTrip = URIRef("https://schema.org/partOfTrip")
-    attendees = URIRef("https://schema.org/attendees")
-    PaymentService = URIRef("https://schema.org/PaymentService")
-    EBook = URIRef("https://schema.org/EBook")
-    additionalProperty = URIRef("https://schema.org/additionalProperty")
-    suggestedMaxAge = URIRef("https://schema.org/suggestedMaxAge")
-    AutoRental = URIRef("https://schema.org/AutoRental")
-    DoubleBlindedTrial = URIRef("https://schema.org/DoubleBlindedTrial")
-    TrainStation = URIRef("https://schema.org/TrainStation")
-    LikeAction = URIRef("https://schema.org/LikeAction")
-    SportsOrganization = URIRef("https://schema.org/SportsOrganization")
-    Nonprofit501d = URIRef("https://schema.org/Nonprofit501d")
-    contactlessPayment = URIRef("https://schema.org/contactlessPayment")
-    award = URIRef("https://schema.org/award")
-    practicesAt = URIRef("https://schema.org/practicesAt")
-    application = URIRef("https://schema.org/application")
-    TVSeason = URIRef("https://schema.org/TVSeason")
-    CheckAction = URIRef("https://schema.org/CheckAction")
-    subEvent = URIRef("https://schema.org/subEvent")
-    Lung = URIRef("https://schema.org/Lung")
-    mathExpression = URIRef("https://schema.org/mathExpression")
-    isPlanForApartment = URIRef("https://schema.org/isPlanForApartment")
-    map = URIRef("https://schema.org/map")
-    recipeCategory = URIRef("https://schema.org/recipeCategory")
-    printEdition = URIRef("https://schema.org/printEdition")
-    depth = URIRef("https://schema.org/depth")
-    hasDriveThroughService = URIRef("https://schema.org/hasDriveThroughService")
-    thumbnail = URIRef("https://schema.org/thumbnail")
-    variantCover = URIRef("https://schema.org/variantCover")
-    agent = URIRef("https://schema.org/agent")
-    relatedTo = URIRef("https://schema.org/relatedTo")
-    numberOfAirbags = URIRef("https://schema.org/numberOfAirbags")
-    specialty = URIRef("https://schema.org/specialty")
-    foundingDate = URIRef("https://schema.org/foundingDate")
-    illustrator = URIRef("https://schema.org/illustrator")
-    cvdNumICUBeds = URIRef("https://schema.org/cvdNumICUBeds")
-    cvdNumC19Died = URIRef("https://schema.org/cvdNumC19Died")
-    loanType = URIRef("https://schema.org/loanType")
-    Chiropractic = URIRef("https://schema.org/Chiropractic")
-    Class = URIRef("https://schema.org/Class")
-    runtime = URIRef("https://schema.org/runtime")
-    supplyTo = URIRef("https://schema.org/supplyTo")
-    minimumPaymentDue = URIRef("https://schema.org/minimumPaymentDue")
-    Midwifery = URIRef("https://schema.org/Midwifery")
-    SpreadsheetDigitalDocument = URIRef("https://schema.org/SpreadsheetDigitalDocument")
-    HealthPlanFormulary = URIRef("https://schema.org/HealthPlanFormulary")
-    HyperTocEntry = URIRef("https://schema.org/HyperTocEntry")
-    relatedStructure = URIRef("https://schema.org/relatedStructure")
-    directApply = URIRef("https://schema.org/directApply")
-    HealthTopicContent = URIRef("https://schema.org/HealthTopicContent")
-    Gene = URIRef("https://schema.org/Gene")
-    SatireOrParodyContent = URIRef("https://schema.org/SatireOrParodyContent")
-    TaxiStand = URIRef("https://schema.org/TaxiStand")
-    accountablePerson = URIRef("https://schema.org/accountablePerson")
-    MoneyTransfer = URIRef("https://schema.org/MoneyTransfer")
-    programType = URIRef("https://schema.org/programType")
-    billingPeriod = URIRef("https://schema.org/billingPeriod")
-    numberOfEpisodes = URIRef("https://schema.org/numberOfEpisodes")
-    toRecipient = URIRef("https://schema.org/toRecipient")
-    multipleValues = URIRef("https://schema.org/multipleValues")
-    WearableSizeSystemBR = URIRef("https://schema.org/WearableSizeSystemBR")
-    BodyMeasurementTypeEnumeration = URIRef("https://schema.org/BodyMeasurementTypeEnumeration")
-    sdPublisher = URIRef("https://schema.org/sdPublisher")
-    MedicalTherapy = URIRef("https://schema.org/MedicalTherapy")
-    typicalCreditsPerTerm = URIRef("https://schema.org/typicalCreditsPerTerm")
-    RepaymentSpecification = URIRef("https://schema.org/RepaymentSpecification")
-    WearableMeasurementInseam = URIRef("https://schema.org/WearableMeasurementInseam")
-    starRating = URIRef("https://schema.org/starRating")
-    bodyType = URIRef("https://schema.org/bodyType")
-    orderedItem = URIRef("https://schema.org/orderedItem")
-    AdvertiserContentArticle = URIRef("https://schema.org/AdvertiserContentArticle")
-    activityFrequency = URIRef("https://schema.org/activityFrequency")
-    MedicalStudyStatus = URIRef("https://schema.org/MedicalStudyStatus")
-    warning = URIRef("https://schema.org/warning")
-    competencyRequired = URIRef("https://schema.org/competencyRequired")
-    availableAtOrFrom = URIRef("https://schema.org/availableAtOrFrom")
-    mealService = URIRef("https://schema.org/mealService")
-    paymentStatus = URIRef("https://schema.org/paymentStatus")
-    Nonprofit501c26 = URIRef("https://schema.org/Nonprofit501c26")
-    fundedItem = URIRef("https://schema.org/fundedItem")
-    ActiveNotRecruiting = URIRef("https://schema.org/ActiveNotRecruiting")
-    BodyMeasurementHead = URIRef("https://schema.org/BodyMeasurementHead")
-    Residence = URIRef("https://schema.org/Residence")
-    ParcelService = URIRef("https://schema.org/ParcelService")
-    OrganizationRole = URIRef("https://schema.org/OrganizationRole")
-    lender = URIRef("https://schema.org/lender")
-    HousePainter = URIRef("https://schema.org/HousePainter")
-    DiagnosticLab = URIRef("https://schema.org/DiagnosticLab")
-    device = URIRef("https://schema.org/device")
-    currentExchangeRate = URIRef("https://schema.org/currentExchangeRate")
-    relevantOccupation = URIRef("https://schema.org/relevantOccupation")
-    validFor = URIRef("https://schema.org/validFor")
-    HealthAndBeautyBusiness = URIRef("https://schema.org/HealthAndBeautyBusiness")
-    seasonNumber = URIRef("https://schema.org/seasonNumber")
-    seriousAdverseOutcome = URIRef("https://schema.org/seriousAdverseOutcome")
-    characterAttribute = URIRef("https://schema.org/characterAttribute")
-    availableStrength = URIRef("https://schema.org/availableStrength")
-    nationality = URIRef("https://schema.org/nationality")
-    UnclassifiedAdultConsideration = URIRef("https://schema.org/UnclassifiedAdultConsideration")
-    PronounceableText = URIRef("https://schema.org/PronounceableText")
-    cvdNumC19MechVentPats = URIRef("https://schema.org/cvdNumC19MechVentPats")
-    isAcceptingNewPatients = URIRef("https://schema.org/isAcceptingNewPatients")
-    Nonprofit501k = URIRef("https://schema.org/Nonprofit501k")
-    GovernmentOrganization = URIRef("https://schema.org/GovernmentOrganization")
-    iso6523Code = URIRef("https://schema.org/iso6523Code")
-    NonprofitSBBI = URIRef("https://schema.org/NonprofitSBBI")
-    transitTimeLabel = URIRef("https://schema.org/transitTimeLabel")
-    Role = URIRef("https://schema.org/Role")
-    datasetTimeInterval = URIRef("https://schema.org/datasetTimeInterval")
-    SubscribeAction = URIRef("https://schema.org/SubscribeAction")
-    readBy = URIRef("https://schema.org/readBy")
-    isConsumableFor = URIRef("https://schema.org/isConsumableFor")
-    AnalysisNewsArticle = URIRef("https://schema.org/AnalysisNewsArticle")
-    foodEstablishment = URIRef("https://schema.org/foodEstablishment")
-    hasBroadcastChannel = URIRef("https://schema.org/hasBroadcastChannel")
-    interactionStatistic = URIRef("https://schema.org/interactionStatistic")
-    RecyclingCenter = URIRef("https://schema.org/RecyclingCenter")
-    WearAction = URIRef("https://schema.org/WearAction")
-    name = URIRef("https://schema.org/name")
-    sampleType = URIRef("https://schema.org/sampleType")
-    cvdNumC19OFMechVentPats = URIRef("https://schema.org/cvdNumC19OFMechVentPats")
-    category = URIRef("https://schema.org/category")
-    BoardingPolicyType = URIRef("https://schema.org/BoardingPolicyType")
-    GardenStore = URIRef("https://schema.org/GardenStore")
-    EnergyConsumptionDetails = URIRef("https://schema.org/EnergyConsumptionDetails")
-    reservedTicket = URIRef("https://schema.org/reservedTicket")
-    SoundtrackAlbum = URIRef("https://schema.org/SoundtrackAlbum")
-    softwareRequirements = URIRef("https://schema.org/softwareRequirements")
-    pickupLocation = URIRef("https://schema.org/pickupLocation")
-    MedicalSpecialty = URIRef("https://schema.org/MedicalSpecialty")
-    appearance = URIRef("https://schema.org/appearance")
-    biologicalRole = URIRef("https://schema.org/biologicalRole")
-    RsvpResponseMaybe = URIRef("https://schema.org/RsvpResponseMaybe")
-    stepValue = URIRef("https://schema.org/stepValue")
-    hasOccupation = URIRef("https://schema.org/hasOccupation")
-    Protein = URIRef("https://schema.org/Protein")
-    AnatomicalSystem = URIRef("https://schema.org/AnatomicalSystem")
-    weight = URIRef("https://schema.org/weight")
-    contentReferenceTime = URIRef("https://schema.org/contentReferenceTime")
-    CookAction = URIRef("https://schema.org/CookAction")
-    EducationEvent = URIRef("https://schema.org/EducationEvent")
-    Message = URIRef("https://schema.org/Message")
-    isAccessoryOrSparePartFor = URIRef("https://schema.org/isAccessoryOrSparePartFor")
-    performers = URIRef("https://schema.org/performers")
-    attendee = URIRef("https://schema.org/attendee")
-    TreatmentsHealthAspect = URIRef("https://schema.org/TreatmentsHealthAspect")
-    inDefinedTermSet = URIRef("https://schema.org/inDefinedTermSet")
-    physiologicalBenefits = URIRef("https://schema.org/physiologicalBenefits")
-    acquireLicensePage = URIRef("https://schema.org/acquireLicensePage")
-    departureTerminal = URIRef("https://schema.org/departureTerminal")
-    serviceOperator = URIRef("https://schema.org/serviceOperator")
-    bankAccountType = URIRef("https://schema.org/bankAccountType")
-    query = URIRef("https://schema.org/query")
-    isInvolvedInBiologicalProcess = URIRef("https://schema.org/isInvolvedInBiologicalProcess")
-    readonlyValue = URIRef("https://schema.org/readonlyValue")
-    CancelAction = URIRef("https://schema.org/CancelAction")
-    SingleRelease = URIRef("https://schema.org/SingleRelease")
-    PalliativeProcedure = URIRef("https://schema.org/PalliativeProcedure")
-    membershipPointsEarned = URIRef("https://schema.org/membershipPointsEarned")
-    OTC = URIRef("https://schema.org/OTC")
-    ownershipFundingInfo = URIRef("https://schema.org/ownershipFundingInfo")
-    HowItWorksHealthAspect = URIRef("https://schema.org/HowItWorksHealthAspect")
-    urlTemplate = URIRef("https://schema.org/urlTemplate")
-    AggregateOffer = URIRef("https://schema.org/AggregateOffer")
-    DrinkAction = URIRef("https://schema.org/DrinkAction")
-    thumbnailUrl = URIRef("https://schema.org/thumbnailUrl")
-    increasesRiskOf = URIRef("https://schema.org/increasesRiskOf")
-    PetStore = URIRef("https://schema.org/PetStore")
-    GraphicNovel = URIRef("https://schema.org/GraphicNovel")
-    DateTime = URIRef("https://schema.org/DateTime")
-    RVPark = URIRef("https://schema.org/RVPark")
-    GlutenFreeDiet = URIRef("https://schema.org/GlutenFreeDiet")
-    email = URIRef("https://schema.org/email")
-    FailedActionStatus = URIRef("https://schema.org/FailedActionStatus")
-    Drug = URIRef("https://schema.org/Drug")
-    AssignAction = URIRef("https://schema.org/AssignAction")
-    Hospital = URIRef("https://schema.org/Hospital")
-    lodgingUnitDescription = URIRef("https://schema.org/lodgingUnitDescription")
-    BroadcastEvent = URIRef("https://schema.org/BroadcastEvent")
-    contactPoints = URIRef("https://schema.org/contactPoints")
-    BusOrCoach = URIRef("https://schema.org/BusOrCoach")
-    healthPlanCoinsuranceRate = URIRef("https://schema.org/healthPlanCoinsuranceRate")
-    vehicleSeatingCapacity = URIRef("https://schema.org/vehicleSeatingCapacity")
-    Endocrine = URIRef("https://schema.org/Endocrine")
-    Oncologic = URIRef("https://schema.org/Oncologic")
-    departurePlatform = URIRef("https://schema.org/departurePlatform")
-    hiringOrganization = URIRef("https://schema.org/hiringOrganization")
-    touristType = URIRef("https://schema.org/touristType")
-    BodyMeasurementWeight = URIRef("https://schema.org/BodyMeasurementWeight")
-    Renal = URIRef("https://schema.org/Renal")
-    branchCode = URIRef("https://schema.org/branchCode")
-    OfferCatalog = URIRef("https://schema.org/OfferCatalog")
-    BusinessEntityType = URIRef("https://schema.org/BusinessEntityType")
-    CommentAction = URIRef("https://schema.org/CommentAction")
-    dietFeatures = URIRef("https://schema.org/dietFeatures")
-    leiCode = URIRef("https://schema.org/leiCode")
-    artist = URIRef("https://schema.org/artist")
-    PropertyValue = URIRef("https://schema.org/PropertyValue")
-    gtin = URIRef("https://schema.org/gtin")
-    AllWheelDriveConfiguration = URIRef("https://schema.org/AllWheelDriveConfiguration")
-    album = URIRef("https://schema.org/album")
-    shippingLabel = URIRef("https://schema.org/shippingLabel")
-    earlyPrepaymentPenalty = URIRef("https://schema.org/earlyPrepaymentPenalty")
-    MedicalTrialDesign = URIRef("https://schema.org/MedicalTrialDesign")
-    musicGroupMember = URIRef("https://schema.org/musicGroupMember")
-    InsuranceAgency = URIRef("https://schema.org/InsuranceAgency")
-    termsPerYear = URIRef("https://schema.org/termsPerYear")
-    sharedContent = URIRef("https://schema.org/sharedContent")
-    priceCurrency = URIRef("https://schema.org/priceCurrency")
-    risks = URIRef("https://schema.org/risks")
-    associatedDisease = URIRef("https://schema.org/associatedDisease")
-    closes = URIRef("https://schema.org/closes")
-    contentType = URIRef("https://schema.org/contentType")
-    UserPlusOnes = URIRef("https://schema.org/UserPlusOnes")
-    DepartmentStore = URIRef("https://schema.org/DepartmentStore")
-    diversityStaffingReport = URIRef("https://schema.org/diversityStaffingReport")
-    meetsEmissionStandard = URIRef("https://schema.org/meetsEmissionStandard")
-    priceRange = URIRef("https://schema.org/priceRange")
-    muscleAction = URIRef("https://schema.org/muscleAction")
-    AlbumRelease = URIRef("https://schema.org/AlbumRelease")
-    artMedium = URIRef("https://schema.org/artMedium")
-    CollegeOrUniversity = URIRef("https://schema.org/CollegeOrUniversity")
-    price = URIRef("https://schema.org/price")
-    WearableSizeGroupMaternity = URIRef("https://schema.org/WearableSizeGroupMaternity")
-    hasCourseInstance = URIRef("https://schema.org/hasCourseInstance")
-    requiredMaxAge = URIRef("https://schema.org/requiredMaxAge")
-    Nonprofit501c24 = URIRef("https://schema.org/Nonprofit501c24")
-    workPerformed = URIRef("https://schema.org/workPerformed")
-    FundingScheme = URIRef("https://schema.org/FundingScheme")
-    DeliveryChargeSpecification = URIRef("https://schema.org/DeliveryChargeSpecification")
-    DataType = URIRef("https://schema.org/DataType")
-    acceptedAnswer = URIRef("https://schema.org/acceptedAnswer")
-    Book = URIRef("https://schema.org/Book")
-    broadcastFrequencyValue = URIRef("https://schema.org/broadcastFrequencyValue")
-    InternetCafe = URIRef("https://schema.org/InternetCafe")
-    targetProduct = URIRef("https://schema.org/targetProduct")
-    Nonprofit501c18 = URIRef("https://schema.org/Nonprofit501c18")
-    Play = URIRef("https://schema.org/Play")
-    WearableSizeGroupEnumeration = URIRef("https://schema.org/WearableSizeGroupEnumeration")
-    pagination = URIRef("https://schema.org/pagination")
-    AnatomicalStructure = URIRef("https://schema.org/AnatomicalStructure")
-    Friday = URIRef("https://schema.org/Friday")
-    LandmarksOrHistoricalBuildings = URIRef("https://schema.org/LandmarksOrHistoricalBuildings")
-    WearableMeasurementBack = URIRef("https://schema.org/WearableMeasurementBack")
-    contactPoint = URIRef("https://schema.org/contactPoint")
-    WebPageElement = URIRef("https://schema.org/WebPageElement")
-    VeterinaryCare = URIRef("https://schema.org/VeterinaryCare")
-    itemDefectReturnFees = URIRef("https://schema.org/itemDefectReturnFees")
-    Game = URIRef("https://schema.org/Game")
-    preparation = URIRef("https://schema.org/preparation")
-    Taxon = URIRef("https://schema.org/Taxon")
-    MarryAction = URIRef("https://schema.org/MarryAction")
-    LiquorStore = URIRef("https://schema.org/LiquorStore")
-    TipAction = URIRef("https://schema.org/TipAction")
-    PsychologicalTreatment = URIRef("https://schema.org/PsychologicalTreatment")
-    monthlyMinimumRepaymentAmount = URIRef("https://schema.org/monthlyMinimumRepaymentAmount")
-    accountId = URIRef("https://schema.org/accountId")
-    arrivalBusStop = URIRef("https://schema.org/arrivalBusStop")
-    distribution = URIRef("https://schema.org/distribution")
-    HowToStep = URIRef("https://schema.org/HowToStep")
-    accountMinimumInflow = URIRef("https://schema.org/accountMinimumInflow")
-    trainingSalary = URIRef("https://schema.org/trainingSalary")
-    distance = URIRef("https://schema.org/distance")
-    LowFatDiet = URIRef("https://schema.org/LowFatDiet")
-    GolfCourse = URIRef("https://schema.org/GolfCourse")
-    menuAddOn = URIRef("https://schema.org/menuAddOn")
-    sender = URIRef("https://schema.org/sender")
-    Flight = URIRef("https://schema.org/Flight")
-    trailer = URIRef("https://schema.org/trailer")
-    measurementMethod = URIRef("https://schema.org/measurementMethod")
-    Clinician = URIRef("https://schema.org/Clinician")
-    character = URIRef("https://schema.org/character")
-    priceValidUntil = URIRef("https://schema.org/priceValidUntil")
-    discount = URIRef("https://schema.org/discount")
-    geoContains = URIRef("https://schema.org/geoContains")
-    masthead = URIRef("https://schema.org/masthead")
-    securityClearanceRequirement = URIRef("https://schema.org/securityClearanceRequirement")
-    algorithm = URIRef("https://schema.org/algorithm")
-    xpath = URIRef("https://schema.org/xpath")
-    significantLink = URIRef("https://schema.org/significantLink")
-    applicationDeadline = URIRef("https://schema.org/applicationDeadline")
-    digitalSourceType = URIRef("https://schema.org/digitalSourceType")
-    directors = URIRef("https://schema.org/directors")
-    permissionType = URIRef("https://schema.org/permissionType")
-    isTierOf = URIRef("https://schema.org/isTierOf")
-    owns = URIRef("https://schema.org/owns")
-    tissueSample = URIRef("https://schema.org/tissueSample")
-    loanPaymentAmount = URIRef("https://schema.org/loanPaymentAmount")
-    Dermatologic = URIRef("https://schema.org/Dermatologic")
-    ReactAction = URIRef("https://schema.org/ReactAction")
-    MRI = URIRef("https://schema.org/MRI")
-    LearningResource = URIRef("https://schema.org/LearningResource")
-    cvdNumVentUse = URIRef("https://schema.org/cvdNumVentUse")
-    availableIn = URIRef("https://schema.org/availableIn")
-    MensClothingStore = URIRef("https://schema.org/MensClothingStore")
-    IngredientsHealthAspect = URIRef("https://schema.org/IngredientsHealthAspect")
-    geoDisjoint = URIRef("https://schema.org/geoDisjoint")
-    albums = URIRef("https://schema.org/albums")
-    releaseOf = URIRef("https://schema.org/releaseOf")
-    MedicalObservationalStudyDesign = URIRef("https://schema.org/MedicalObservationalStudyDesign")
-    StructuredValue = URIRef("https://schema.org/StructuredValue")
-    CarUsageType = URIRef("https://schema.org/CarUsageType")
-    runsTo = URIRef("https://schema.org/runsTo")
-    OverviewHealthAspect = URIRef("https://schema.org/OverviewHealthAspect")
-    relatedTherapy = URIRef("https://schema.org/relatedTherapy")
-    doseSchedule = URIRef("https://schema.org/doseSchedule")
-    archiveHeld = URIRef("https://schema.org/archiveHeld")
-    hasVariant = URIRef("https://schema.org/hasVariant")
-    Hematologic = URIRef("https://schema.org/Hematologic")
-    measuredProperty = URIRef("https://schema.org/measuredProperty")
-    diseaseSpreadStatistics = URIRef("https://schema.org/diseaseSpreadStatistics")
-    PublicHealth = URIRef("https://schema.org/PublicHealth")
-    includesHealthPlanFormulary = URIRef("https://schema.org/includesHealthPlanFormulary")
-    correctionsPolicy = URIRef("https://schema.org/correctionsPolicy")
-    DemoGameAvailability = URIRef("https://schema.org/DemoGameAvailability")
-    dataFeedElement = URIRef("https://schema.org/dataFeedElement")
-    totalPrice = URIRef("https://schema.org/totalPrice")
-    musicCompositionForm = URIRef("https://schema.org/musicCompositionForm")
-    ChooseAction = URIRef("https://schema.org/ChooseAction")
-    RsvpResponseYes = URIRef("https://schema.org/RsvpResponseYes")
-    includedDataCatalog = URIRef("https://schema.org/includedDataCatalog")
-    occupationalCategory = URIRef("https://schema.org/occupationalCategory")
-    stage = URIRef("https://schema.org/stage")
-    answerCount = URIRef("https://schema.org/answerCount")
-    offersPrescriptionByMail = URIRef("https://schema.org/offersPrescriptionByMail")
-    PatientExperienceHealthAspect = URIRef("https://schema.org/PatientExperienceHealthAspect")
-    RadioBroadcastService = URIRef("https://schema.org/RadioBroadcastService")
-    inSupportOf = URIRef("https://schema.org/inSupportOf")
-    WearableMeasurementCup = URIRef("https://schema.org/WearableMeasurementCup")
-    FinancialService = URIRef("https://schema.org/FinancialService")
-    editor = URIRef("https://schema.org/editor")
-    program = URIRef("https://schema.org/program")
-    cvdNumBeds = URIRef("https://schema.org/cvdNumBeds")
-    usesDevice = URIRef("https://schema.org/usesDevice")
-    hostingOrganization = URIRef("https://schema.org/hostingOrganization")
-    SafetyHealthAspect = URIRef("https://schema.org/SafetyHealthAspect")
-    Seat = URIRef("https://schema.org/Seat")
-    broadcastOfEvent = URIRef("https://schema.org/broadcastOfEvent")
-    reviewedBy = URIRef("https://schema.org/reviewedBy")
-    Specialty = URIRef("https://schema.org/Specialty")
-    Hostel = URIRef("https://schema.org/Hostel")
-    flightDistance = URIRef("https://schema.org/flightDistance")
-    NoteDigitalDocument = URIRef("https://schema.org/NoteDigitalDocument")
-    SendAction = URIRef("https://schema.org/SendAction")
-    Homeopathic = URIRef("https://schema.org/Homeopathic")
-    PaymentCard = URIRef("https://schema.org/PaymentCard")
-    releaseNotes = URIRef("https://schema.org/releaseNotes")
-    tickerSymbol = URIRef("https://schema.org/tickerSymbol")
-    arrivalBoatTerminal = URIRef("https://schema.org/arrivalBoatTerminal")
-    Invoice = URIRef("https://schema.org/Invoice")
-    KosherDiet = URIRef("https://schema.org/KosherDiet")
-    DigitalDocument = URIRef("https://schema.org/DigitalDocument")
-    studyDesign = URIRef("https://schema.org/studyDesign")
-    doseUnit = URIRef("https://schema.org/doseUnit")
-    quarantineGuidelines = URIRef("https://schema.org/quarantineGuidelines")
-    SizeGroupEnumeration = URIRef("https://schema.org/SizeGroupEnumeration")
-    partySize = URIRef("https://schema.org/partySize")
-    carbohydrateContent = URIRef("https://schema.org/carbohydrateContent")
-    MedicalScholarlyArticle = URIRef("https://schema.org/MedicalScholarlyArticle")
-    TextDigitalDocument = URIRef("https://schema.org/TextDigitalDocument")
-    maxValue = URIRef("https://schema.org/maxValue")
-    healthPlanCopayOption = URIRef("https://schema.org/healthPlanCopayOption")
-    containedInPlace = URIRef("https://schema.org/containedInPlace")
-    StudioAlbum = URIRef("https://schema.org/StudioAlbum")
-    percentile10 = URIRef("https://schema.org/percentile10")
-    termsOfService = URIRef("https://schema.org/termsOfService")
-    DefinedRegion = URIRef("https://schema.org/DefinedRegion")
-    broadcastTimezone = URIRef("https://schema.org/broadcastTimezone")
-    composer = URIRef("https://schema.org/composer")
-    hasAdultConsideration = URIRef("https://schema.org/hasAdultConsideration")
-    Neurologic = URIRef("https://schema.org/Neurologic")
-    RadioSeries = URIRef("https://schema.org/RadioSeries")
-    CDCPMDRecord = URIRef("https://schema.org/CDCPMDRecord")
-    SteeringPositionValue = URIRef("https://schema.org/SteeringPositionValue")
-    Legislation = URIRef("https://schema.org/Legislation")
-    knows = URIRef("https://schema.org/knows")
-    deliveryStatus = URIRef("https://schema.org/deliveryStatus")
-    exerciseType = URIRef("https://schema.org/exerciseType")
-    partOfTVSeries = URIRef("https://schema.org/partOfTVSeries")
-    nextItem = URIRef("https://schema.org/nextItem")
-    awayTeam = URIRef("https://schema.org/awayTeam")
-    MusicComposition = URIRef("https://schema.org/MusicComposition")
-    itemCondition = URIRef("https://schema.org/itemCondition")
-    CausesHealthAspect = URIRef("https://schema.org/CausesHealthAspect")
-    CorrectionComment = URIRef("https://schema.org/CorrectionComment")
-    SalePrice = URIRef("https://schema.org/SalePrice")
-    SurgicalProcedure = URIRef("https://schema.org/SurgicalProcedure")
-    WorkBasedProgram = URIRef("https://schema.org/WorkBasedProgram")
-    PublicSwimmingPool = URIRef("https://schema.org/PublicSwimmingPool")
-    WriteAction = URIRef("https://schema.org/WriteAction")
-    Apartment = URIRef("https://schema.org/Apartment")
-    requiredQuantity = URIRef("https://schema.org/requiredQuantity")
-    infectiousAgentClass = URIRef("https://schema.org/infectiousAgentClass")
-    legislationDateVersion = URIRef("https://schema.org/legislationDateVersion")
-    Bakery = URIRef("https://schema.org/Bakery")
-    iupacName = URIRef("https://schema.org/iupacName")
-    publisher = URIRef("https://schema.org/publisher")
-    PerformanceRole = URIRef("https://schema.org/PerformanceRole")
-    InfectiousDisease = URIRef("https://schema.org/InfectiousDisease")
-    WarrantyScope = URIRef("https://schema.org/WarrantyScope")
-    bioChemInteraction = URIRef("https://schema.org/bioChemInteraction")
-    FindAction = URIRef("https://schema.org/FindAction")
-    Genitourinary = URIRef("https://schema.org/Genitourinary")
-    MedicalSymptom = URIRef("https://schema.org/MedicalSymptom")
-    MovieSeries = URIRef("https://schema.org/MovieSeries")
-    availabilityEnds = URIRef("https://schema.org/availabilityEnds")
-    PublicHolidays = URIRef("https://schema.org/PublicHolidays")
-    expectsAcceptanceOf = URIRef("https://schema.org/expectsAcceptanceOf")
-    potentialUse = URIRef("https://schema.org/potentialUse")
-    businessFunction = URIRef("https://schema.org/businessFunction")
-    EventMovedOnline = URIRef("https://schema.org/EventMovedOnline")
-    Volcano = URIRef("https://schema.org/Volcano")
-    ToyStore = URIRef("https://schema.org/ToyStore")
-    missionCoveragePrioritiesPolicy = URIRef("https://schema.org/missionCoveragePrioritiesPolicy")
-    spokenByCharacter = URIRef("https://schema.org/spokenByCharacter")
-    actor = URIRef("https://schema.org/actor")
-    healthCondition = URIRef("https://schema.org/healthCondition")
-    locationCreated = URIRef("https://schema.org/locationCreated")
-    OccupationalActivity = URIRef("https://schema.org/OccupationalActivity")
-    validIn = URIRef("https://schema.org/validIn")
-    hasMenuSection = URIRef("https://schema.org/hasMenuSection")
-    RadiationTherapy = URIRef("https://schema.org/RadiationTherapy")
-    menu = URIRef("https://schema.org/menu")
-    lyricist = URIRef("https://schema.org/lyricist")
-    logo = URIRef("https://schema.org/logo")
-    addressLocality = URIRef("https://schema.org/addressLocality")
-    certificationRating = URIRef("https://schema.org/certificationRating")
-    OrderPickupAvailable = URIRef("https://schema.org/OrderPickupAvailable")
-    Recruiting = URIRef("https://schema.org/Recruiting")
-    postalCodePrefix = URIRef("https://schema.org/postalCodePrefix")
-    Nonprofit501c17 = URIRef("https://schema.org/Nonprofit501c17")
-    molecularFormula = URIRef("https://schema.org/molecularFormula")
-    exerciseRelatedDiet = URIRef("https://schema.org/exerciseRelatedDiet")
-    EntertainmentBusiness = URIRef("https://schema.org/EntertainmentBusiness")
-    MenuSection = URIRef("https://schema.org/MenuSection")
-    ScheduleAction = URIRef("https://schema.org/ScheduleAction")
-    error = URIRef("https://schema.org/error")
-    domainIncludes = URIRef("https://schema.org/domainIncludes")
-    numberOfDoors = URIRef("https://schema.org/numberOfDoors")
-    originalMediaContextDescription = URIRef("https://schema.org/originalMediaContextDescription")
-    exampleOfWork = URIRef("https://schema.org/exampleOfWork")
-    ReturnByMail = URIRef("https://schema.org/ReturnByMail")
-    Pediatric = URIRef("https://schema.org/Pediatric")
-    TouristInformationCenter = URIRef("https://schema.org/TouristInformationCenter")
-    description = URIRef("https://schema.org/description")
-    instrument = URIRef("https://schema.org/instrument")
-    supply = URIRef("https://schema.org/supply")
-    Nonprofit501c7 = URIRef("https://schema.org/Nonprofit501c7")
-    OccupationalTherapy = URIRef("https://schema.org/OccupationalTherapy")
-    programPrerequisites = URIRef("https://schema.org/programPrerequisites")
-    license = URIRef("https://schema.org/license")
-    webCheckinTime = URIRef("https://schema.org/webCheckinTime")
-    NailSalon = URIRef("https://schema.org/NailSalon")
-    Poster = URIRef("https://schema.org/Poster")
-    UserBlocks = URIRef("https://schema.org/UserBlocks")
-    studySubject = URIRef("https://schema.org/studySubject")
-    branchOf = URIRef("https://schema.org/branchOf")
-    MedicalGuidelineRecommendation = URIRef("https://schema.org/MedicalGuidelineRecommendation")
-    DonateAction = URIRef("https://schema.org/DonateAction")
-    speechToTextMarkup = URIRef("https://schema.org/speechToTextMarkup")
-    ServiceChannel = URIRef("https://schema.org/ServiceChannel")
-    healthPlanCopay = URIRef("https://schema.org/healthPlanCopay")
-    TelevisionChannel = URIRef("https://schema.org/TelevisionChannel")
-    duplicateTherapy = URIRef("https://schema.org/duplicateTherapy")
-    partOfSeason = URIRef("https://schema.org/partOfSeason")
-    Organization = URIRef("https://schema.org/Organization")
-    servingSize = URIRef("https://schema.org/servingSize")
-    CriticReview = URIRef("https://schema.org/CriticReview")
-    Infectious = URIRef("https://schema.org/Infectious")
-    publishedOn = URIRef("https://schema.org/publishedOn")
-    timeOfDay = URIRef("https://schema.org/timeOfDay")
-    Registry = URIRef("https://schema.org/Registry")
-    valueMaxLength = URIRef("https://schema.org/valueMaxLength")
-    CertificationInactive = URIRef("https://schema.org/CertificationInactive")
-    publicTransportClosuresInfo = URIRef("https://schema.org/publicTransportClosuresInfo")
-    serviceLocation = URIRef("https://schema.org/serviceLocation")
-    parentItem = URIRef("https://schema.org/parentItem")
-    Researcher = URIRef("https://schema.org/Researcher")
-    Conversation = URIRef("https://schema.org/Conversation")
-    WatchAction = URIRef("https://schema.org/WatchAction")
-    AmusementPark = URIRef("https://schema.org/AmusementPark")
-    PaintAction = URIRef("https://schema.org/PaintAction")
-    FourWheelDriveConfiguration = URIRef("https://schema.org/FourWheelDriveConfiguration")
-    DefinedTerm = URIRef("https://schema.org/DefinedTerm")
-    termDuration = URIRef("https://schema.org/termDuration")
-    availableChannel = URIRef("https://schema.org/availableChannel")
-    NotInForce = URIRef("https://schema.org/NotInForce")
-    numberOfBeds = URIRef("https://schema.org/numberOfBeds")
-    shippingOrigin = URIRef("https://schema.org/shippingOrigin")
-    buyer = URIRef("https://schema.org/buyer")
-    ExampleMeasurementMethodEnum = URIRef("https://schema.org/ExampleMeasurementMethodEnum")
-    PriceSpecification = URIRef("https://schema.org/PriceSpecification")
-    MediaReview = URIRef("https://schema.org/MediaReview")
-    firstAppearance = URIRef("https://schema.org/firstAppearance")
-    MovieTheater = URIRef("https://schema.org/MovieTheater")
-    creativeWorkStatus = URIRef("https://schema.org/creativeWorkStatus")
-    scheduleTimezone = URIRef("https://schema.org/scheduleTimezone")
-    eligibleRegion = URIRef("https://schema.org/eligibleRegion")
-    Atlas = URIRef("https://schema.org/Atlas")
-    WearableSizeSystemIT = URIRef("https://schema.org/WearableSizeSystemIT")
-    Downpayment = URIRef("https://schema.org/Downpayment")
-    stageAsNumber = URIRef("https://schema.org/stageAsNumber")
-    countryOfAssembly = URIRef("https://schema.org/countryOfAssembly")
-    financialAidEligible = URIRef("https://schema.org/financialAidEligible")
-    deliveryMethod = URIRef("https://schema.org/deliveryMethod")
-    DrugCostCategory = URIRef("https://schema.org/DrugCostCategory")
-    subEvents = URIRef("https://schema.org/subEvents")
-    DesktopWebPlatform = URIRef("https://schema.org/DesktopWebPlatform")
-    EmployeeRole = URIRef("https://schema.org/EmployeeRole")
-    mapType = URIRef("https://schema.org/mapType")
-    headline = URIRef("https://schema.org/headline")
-    ComputerLanguage = URIRef("https://schema.org/ComputerLanguage")
-    WeaponConsideration = URIRef("https://schema.org/WeaponConsideration")
-    serviceOutput = URIRef("https://schema.org/serviceOutput")
-    serviceAudience = URIRef("https://schema.org/serviceAudience")
-    UserComments = URIRef("https://schema.org/UserComments")
-    healthPlanCostSharing = URIRef("https://schema.org/healthPlanCostSharing")
-    Installment = URIRef("https://schema.org/Installment")
-    vehicleEngine = URIRef("https://schema.org/vehicleEngine")
-    startTime = URIRef("https://schema.org/startTime")
-    NarcoticConsideration = URIRef("https://schema.org/NarcoticConsideration")
-    SpokenWordAlbum = URIRef("https://schema.org/SpokenWordAlbum")
-    EUEnergyEfficiencyCategoryA1Plus = URIRef("https://schema.org/EUEnergyEfficiencyCategoryA1Plus")
-    GasStation = URIRef("https://schema.org/GasStation")
-    Rating = URIRef("https://schema.org/Rating")
-    duringMedia = URIRef("https://schema.org/duringMedia")
-    AddAction = URIRef("https://schema.org/AddAction")
-    cvdNumICUBedsOcc = URIRef("https://schema.org/cvdNumICUBedsOcc")
-    Guide = URIRef("https://schema.org/Guide")
-    yearBuilt = URIRef("https://schema.org/yearBuilt")
-    educationalFramework = URIRef("https://schema.org/educationalFramework")
-    recommendedIntake = URIRef("https://schema.org/recommendedIntake")
-    PodcastEpisode = URIRef("https://schema.org/PodcastEpisode")
-    LeftHandDriving = URIRef("https://schema.org/LeftHandDriving")
-    director = URIRef("https://schema.org/director")
-    observationPeriod = URIRef("https://schema.org/observationPeriod")
-    seatingCapacity = URIRef("https://schema.org/seatingCapacity")
-    userInteractionCount = URIRef("https://schema.org/userInteractionCount")
-    acrissCode = URIRef("https://schema.org/acrissCode")
-    afterMedia = URIRef("https://schema.org/afterMedia")
-    TravelAction = URIRef("https://schema.org/TravelAction")
-    mediaItemAppearance = URIRef("https://schema.org/mediaItemAppearance")
-    UserReview = URIRef("https://schema.org/UserReview")
-    priceType = URIRef("https://schema.org/priceType")
-    reservationId = URIRef("https://schema.org/reservationId")
-    cookTime = URIRef("https://schema.org/cookTime")
-    LegalService = URIRef("https://schema.org/LegalService")
-    Tuesday = URIRef("https://schema.org/Tuesday")
-    variesBy = URIRef("https://schema.org/variesBy")
-    actionOption = URIRef("https://schema.org/actionOption")
-    usedToDiagnose = URIRef("https://schema.org/usedToDiagnose")
-    BodyMeasurementArm = URIRef("https://schema.org/BodyMeasurementArm")
-    Nonprofit501c10 = URIRef("https://schema.org/Nonprofit501c10")
-    numberOfAvailableAccommodationUnits = URIRef("https://schema.org/numberOfAvailableAccommodationUnits")
-    ethicsPolicy = URIRef("https://schema.org/ethicsPolicy")
-    guidelineSubject = URIRef("https://schema.org/guidelineSubject")
-    speakable = URIRef("https://schema.org/speakable")
-    maximumVirtualAttendeeCapacity = URIRef("https://schema.org/maximumVirtualAttendeeCapacity")
-    itemDefectReturnLabelSource = URIRef("https://schema.org/itemDefectReturnLabelSource")
-    commentTime = URIRef("https://schema.org/commentTime")
-    Country = URIRef("https://schema.org/Country")
-    CssSelectorType = URIRef("https://schema.org/CssSelectorType")
-    codeRepository = URIRef("https://schema.org/codeRepository")
-    chemicalComposition = URIRef("https://schema.org/chemicalComposition")
-    StrengthTraining = URIRef("https://schema.org/StrengthTraining")
-    isProprietary = URIRef("https://schema.org/isProprietary")
-    Boolean = URIRef("https://schema.org/Boolean")
-    AboutPage = URIRef("https://schema.org/AboutPage")
-    hoursAvailable = URIRef("https://schema.org/hoursAvailable")
-    adverseOutcome = URIRef("https://schema.org/adverseOutcome")
-    MedicineSystem = URIRef("https://schema.org/MedicineSystem")
-    LinkRole = URIRef("https://schema.org/LinkRole")
-    dateModified = URIRef("https://schema.org/dateModified")
-    AchieveAction = URIRef("https://schema.org/AchieveAction")
-    predecessorOf = URIRef("https://schema.org/predecessorOf")
-    floorSize = URIRef("https://schema.org/floorSize")
-    marginOfError = URIRef("https://schema.org/marginOfError")
-    contentLocation = URIRef("https://schema.org/contentLocation")
-    courseWorkload = URIRef("https://schema.org/courseWorkload")
-    codeValue = URIRef("https://schema.org/codeValue")
-    incentives = URIRef("https://schema.org/incentives")
-    costCategory = URIRef("https://schema.org/costCategory")
-    prescribingInfo = URIRef("https://schema.org/prescribingInfo")
-    AdultOrientedEnumeration = URIRef("https://schema.org/AdultOrientedEnumeration")
-    TierBenefitLoyaltyShipping = URIRef("https://schema.org/TierBenefitLoyaltyShipping")
-    PreventionHealthAspect = URIRef("https://schema.org/PreventionHealthAspect")
-    engineDisplacement = URIRef("https://schema.org/engineDisplacement")
-    UserPlays = URIRef("https://schema.org/UserPlays")
-    ActivationFee = URIRef("https://schema.org/ActivationFee")
-    hasEnergyConsumptionDetails = URIRef("https://schema.org/hasEnergyConsumptionDetails")
-    inPlaylist = URIRef("https://schema.org/inPlaylist")
-    monoisotopicMolecularWeight = URIRef("https://schema.org/monoisotopicMolecularWeight")
-    free = URIRef("https://schema.org/free")
-    ComicStory = URIRef("https://schema.org/ComicStory")
-    cookingMethod = URIRef("https://schema.org/cookingMethod")
-    PaymentMethodType = URIRef("https://schema.org/PaymentMethodType")
-    cutoffTime = URIRef("https://schema.org/cutoffTime")
-    partOfSystem = URIRef("https://schema.org/partOfSystem")
-    givenName = URIRef("https://schema.org/givenName")
-    negativeNotes = URIRef("https://schema.org/negativeNotes")
-    collectionSize = URIRef("https://schema.org/collectionSize")
-    Eye = URIRef("https://schema.org/Eye")
-    includedComposition = URIRef("https://schema.org/includedComposition")
-    bloodSupply = URIRef("https://schema.org/bloodSupply")
-    NightClub = URIRef("https://schema.org/NightClub")
-    textValue = URIRef("https://schema.org/textValue")
-    SizeSystemEnumeration = URIRef("https://schema.org/SizeSystemEnumeration")
-    suggestedMeasurement = URIRef("https://schema.org/suggestedMeasurement")
-    governmentBenefitsInfo = URIRef("https://schema.org/governmentBenefitsInfo")
-    credentialCategory = URIRef("https://schema.org/credentialCategory")
-    IndividualPhysician = URIRef("https://schema.org/IndividualPhysician")
-    Toxicologic = URIRef("https://schema.org/Toxicologic")
-    sourceOrganization = URIRef("https://schema.org/sourceOrganization")
-    Resort = URIRef("https://schema.org/Resort")
-    isFamilyFriendly = URIRef("https://schema.org/isFamilyFriendly")
-    OrderItem = URIRef("https://schema.org/OrderItem")
-    memoryRequirements = URIRef("https://schema.org/memoryRequirements")
-    weightTotal = URIRef("https://schema.org/weightTotal")
-    eligibleQuantity = URIRef("https://schema.org/eligibleQuantity")
-    numberOfForwardGears = URIRef("https://schema.org/numberOfForwardGears")
-    jurisdiction = URIRef("https://schema.org/jurisdiction")
-    DrugStrength = URIRef("https://schema.org/DrugStrength")
-    labelDetails = URIRef("https://schema.org/labelDetails")
-    LodgingBusiness = URIRef("https://schema.org/LodgingBusiness")
-    FundingAgency = URIRef("https://schema.org/FundingAgency")
-    keywords = URIRef("https://schema.org/keywords")
-    ReportageNewsArticle = URIRef("https://schema.org/ReportageNewsArticle")
-    DJMixAlbum = URIRef("https://schema.org/DJMixAlbum")
-    claimReviewed = URIRef("https://schema.org/claimReviewed")
-    Monday = URIRef("https://schema.org/Monday")
-    learningResourceType = URIRef("https://schema.org/learningResourceType")
-    EducationalOrganization = URIRef("https://schema.org/EducationalOrganization")
-    EmailMessage = URIRef("https://schema.org/EmailMessage")
-    translator = URIRef("https://schema.org/translator")
-    DiagnosticProcedure = URIRef("https://schema.org/DiagnosticProcedure")
-    Motel = URIRef("https://schema.org/Motel")
-    returnMethod = URIRef("https://schema.org/returnMethod")
-    EnergyStarCertified = URIRef("https://schema.org/EnergyStarCertified")
-    validUntil = URIRef("https://schema.org/validUntil")
-    temporalCoverage = URIRef("https://schema.org/temporalCoverage")
-    StatisticalPopulation = URIRef("https://schema.org/StatisticalPopulation")
-    expires = URIRef("https://schema.org/expires")
-    costPerUnit = URIRef("https://schema.org/costPerUnit")
-    jobBenefits = URIRef("https://schema.org/jobBenefits")
-    SportsActivityLocation = URIRef("https://schema.org/SportsActivityLocation")
-    namedPosition = URIRef("https://schema.org/namedPosition")
-    wordCount = URIRef("https://schema.org/wordCount")
-    ItemListOrderType = URIRef("https://schema.org/ItemListOrderType")
-    tracks = URIRef("https://schema.org/tracks")
-    ZoneBoardingPolicy = URIRef("https://schema.org/ZoneBoardingPolicy")
-    BeautySalon = URIRef("https://schema.org/BeautySalon")
-    ProgramMembership = URIRef("https://schema.org/ProgramMembership")
-    hasMeasurement = URIRef("https://schema.org/hasMeasurement")
-    lowPrice = URIRef("https://schema.org/lowPrice")
-    functionalClass = URIRef("https://schema.org/functionalClass")
-    comment = URIRef("https://schema.org/comment")
-    DefinedTermSet = URIRef("https://schema.org/DefinedTermSet")
-    PercutaneousProcedure = URIRef("https://schema.org/PercutaneousProcedure")
-    ClaimReview = URIRef("https://schema.org/ClaimReview")
-    ReturnLabelCustomerResponsibility = URIRef("https://schema.org/ReturnLabelCustomerResponsibility")
-    requiredGender = URIRef("https://schema.org/requiredGender")
-    ReviewNewsArticle = URIRef("https://schema.org/ReviewNewsArticle")
-    version = URIRef("https://schema.org/version")
-    HearingImpairedSupported = URIRef("https://schema.org/HearingImpairedSupported")
-    Nonprofit501c4 = URIRef("https://schema.org/Nonprofit501c4")
-    includedInHealthInsurancePlan = URIRef("https://schema.org/includedInHealthInsurancePlan")
-    gameAvailabilityType = URIRef("https://schema.org/gameAvailabilityType")
-    gtin8 = URIRef("https://schema.org/gtin8")
-    applicableLocation = URIRef("https://schema.org/applicableLocation")
-    IPTCDigitalSourceEnumeration = URIRef("https://schema.org/IPTCDigitalSourceEnumeration")
-    contributor = URIRef("https://schema.org/contributor")
-    syllabusSections = URIRef("https://schema.org/syllabusSections")
-    physicalRequirement = URIRef("https://schema.org/physicalRequirement")
-    RentAction = URIRef("https://schema.org/RentAction")
-    repeatFrequency = URIRef("https://schema.org/repeatFrequency")
-    relatedDrug = URIRef("https://schema.org/relatedDrug")
-    reviewAspect = URIRef("https://schema.org/reviewAspect")
-    result = URIRef("https://schema.org/result")
-    ReservationConfirmed = URIRef("https://schema.org/ReservationConfirmed")
-    partOfEpisode = URIRef("https://schema.org/partOfEpisode")
-    Nonprofit501c20 = URIRef("https://schema.org/Nonprofit501c20")
-    lesser = URIRef("https://schema.org/lesser")
-    guideline = URIRef("https://schema.org/guideline")
-    Demand = URIRef("https://schema.org/Demand")
-    AudiobookFormat = URIRef("https://schema.org/AudiobookFormat")
-    encodesBioChemEntity = URIRef("https://schema.org/encodesBioChemEntity")
-    Time = URIRef("https://schema.org/Time")
-    numberOfLoanPayments = URIRef("https://schema.org/numberOfLoanPayments")
-    SolveMathAction = URIRef("https://schema.org/SolveMathAction")
-    announcementLocation = URIRef("https://schema.org/announcementLocation")
-    departureStation = URIRef("https://schema.org/departureStation")
-    QuantitativeValue = URIRef("https://schema.org/QuantitativeValue")
-    itemOffered = URIRef("https://schema.org/itemOffered")
-    maintainer = URIRef("https://schema.org/maintainer")
-    TennisComplex = URIRef("https://schema.org/TennisComplex")
-    PlaceOfWorship = URIRef("https://schema.org/PlaceOfWorship")
-    ReplyAction = URIRef("https://schema.org/ReplyAction")
-    CompositeWithTrainedAlgorithmicMediaDigitalSource = URIRef("https://schema.org/CompositeWithTrainedAlgorithmicMediaDigitalSource")
-    Musculoskeletal = URIRef("https://schema.org/Musculoskeletal")
-    vehicleTransmission = URIRef("https://schema.org/vehicleTransmission")
-    value = URIRef("https://schema.org/value")
-    embeddedTextCaption = URIRef("https://schema.org/embeddedTextCaption")
-    MedicalRiskCalculator = URIRef("https://schema.org/MedicalRiskCalculator")
-    workLocation = URIRef("https://schema.org/workLocation")
-    OrderAction = URIRef("https://schema.org/OrderAction")
-    copyrightNotice = URIRef("https://schema.org/copyrightNotice")
-    Season = URIRef("https://schema.org/Season")
-    MotorcycleDealer = URIRef("https://schema.org/MotorcycleDealer")
-    ReturnFeesEnumeration = URIRef("https://schema.org/ReturnFeesEnumeration")
-    EUEnergyEfficiencyCategoryA3Plus = URIRef("https://schema.org/EUEnergyEfficiencyCategoryA3Plus")
-    median = URIRef("https://schema.org/median")
-    educationalProgramMode = URIRef("https://schema.org/educationalProgramMode")
-    billingAddress = URIRef("https://schema.org/billingAddress")
-    materialExtent = URIRef("https://schema.org/materialExtent")
-    BoatReservation = URIRef("https://schema.org/BoatReservation")
-    numberOfItems = URIRef("https://schema.org/numberOfItems")
-    AudioObject = URIRef("https://schema.org/AudioObject")
-    expertConsiderations = URIRef("https://schema.org/expertConsiderations")
-    itemDefectReturnShippingFeesAmount = URIRef("https://schema.org/itemDefectReturnShippingFeesAmount")
-    followee = URIRef("https://schema.org/followee")
-    deathDate = URIRef("https://schema.org/deathDate")
-    shippingRate = URIRef("https://schema.org/shippingRate")
-    sugarContent = URIRef("https://schema.org/sugarContent")
-    AuthoritativeLegalValue = URIRef("https://schema.org/AuthoritativeLegalValue")
-    QualitativeValue = URIRef("https://schema.org/QualitativeValue")
-    BodyMeasurementHand = URIRef("https://schema.org/BodyMeasurementHand")
-    paymentUrl = URIRef("https://schema.org/paymentUrl")
-    cvdFacilityCounty = URIRef("https://schema.org/cvdFacilityCounty")
-    restockingFee = URIRef("https://schema.org/restockingFee")
-    PhysicalTherapy = URIRef("https://schema.org/PhysicalTherapy")
-    Longitudinal = URIRef("https://schema.org/Longitudinal")
-    AndroidPlatform = URIRef("https://schema.org/AndroidPlatform")
-    isRelatedTo = URIRef("https://schema.org/isRelatedTo")
-    SeekToAction = URIRef("https://schema.org/SeekToAction")
-    ticketedSeat = URIRef("https://schema.org/ticketedSeat")
-    refundType = URIRef("https://schema.org/refundType")
-    GameServerStatus = URIRef("https://schema.org/GameServerStatus")
-    WearableMeasurementLength = URIRef("https://schema.org/WearableMeasurementLength")
-    IOSPlatform = URIRef("https://schema.org/IOSPlatform")
-    ReturnAction = URIRef("https://schema.org/ReturnAction")
-    hospitalAffiliation = URIRef("https://schema.org/hospitalAffiliation")
-    ParentalSupport = URIRef("https://schema.org/ParentalSupport")
-    hasMenu = URIRef("https://schema.org/hasMenu")
-    answerExplanation = URIRef("https://schema.org/answerExplanation")
-    drugClass = URIRef("https://schema.org/drugClass")
-    follows = URIRef("https://schema.org/follows")
-    department = URIRef("https://schema.org/department")
-    sodiumContent = URIRef("https://schema.org/sodiumContent")
-    MedicalDevice = URIRef("https://schema.org/MedicalDevice")
-    audienceType = URIRef("https://schema.org/audienceType")
-    percentile25 = URIRef("https://schema.org/percentile25")
-    GroupBoardingPolicy = URIRef("https://schema.org/GroupBoardingPolicy")
-    hasCourse = URIRef("https://schema.org/hasCourse")
-    ownedFrom = URIRef("https://schema.org/ownedFrom")
-    Podiatric = URIRef("https://schema.org/Podiatric")
-    diagnosis = URIRef("https://schema.org/diagnosis")
-    arrivalTime = URIRef("https://schema.org/arrivalTime")
-    GamePlayMode = URIRef("https://schema.org/GamePlayMode")
-    bodyLocation = URIRef("https://schema.org/bodyLocation")
-    EUEnergyEfficiencyCategoryF = URIRef("https://schema.org/EUEnergyEfficiencyCategoryF")
-    rsvpResponse = URIRef("https://schema.org/rsvpResponse")
-    subTest = URIRef("https://schema.org/subTest")
-    Thing = URIRef("https://schema.org/Thing")
-    birthPlace = URIRef("https://schema.org/birthPlace")
-    ComicIssue = URIRef("https://schema.org/ComicIssue")
-    safetyConsideration = URIRef("https://schema.org/safetyConsideration")
-    hasDigitalDocumentPermission = URIRef("https://schema.org/hasDigitalDocumentPermission")
-    HealthAspectEnumeration = URIRef("https://schema.org/HealthAspectEnumeration")
-    VacationRental = URIRef("https://schema.org/VacationRental")
-    partOfSeries = URIRef("https://schema.org/partOfSeries")
-    line = URIRef("https://schema.org/line")
-    fuelConsumption = URIRef("https://schema.org/fuelConsumption")
-    representativeOfPage = URIRef("https://schema.org/representativeOfPage")
-    PhysicalActivityCategory = URIRef("https://schema.org/PhysicalActivityCategory")
-    valuePattern = URIRef("https://schema.org/valuePattern")
-    BroadcastRelease = URIRef("https://schema.org/BroadcastRelease")
-    printPage = URIRef("https://schema.org/printPage")
-    carrierRequirements = URIRef("https://schema.org/carrierRequirements")
-    exifData = URIRef("https://schema.org/exifData")
-    containedIn = URIRef("https://schema.org/containedIn")
-    Nerve = URIRef("https://schema.org/Nerve")
-    postalCodeEnd = URIRef("https://schema.org/postalCodeEnd")
-    WantAction = URIRef("https://schema.org/WantAction")
-    BodyOfWater = URIRef("https://schema.org/BodyOfWater")
-    GeoCoordinates = URIRef("https://schema.org/GeoCoordinates")
-    serialNumber = URIRef("https://schema.org/serialNumber")
-    permitAudience = URIRef("https://schema.org/permitAudience")
-    GovernmentService = URIRef("https://schema.org/GovernmentService")
-    PlasticSurgery = URIRef("https://schema.org/PlasticSurgery")
-    broadcastFrequency = URIRef("https://schema.org/broadcastFrequency")
-    BroadcastChannel = URIRef("https://schema.org/BroadcastChannel")
-    priceSpecification = URIRef("https://schema.org/priceSpecification")
-    partOfInvoice = URIRef("https://schema.org/partOfInvoice")
-    productID = URIRef("https://schema.org/productID")
-    SocialMediaPosting = URIRef("https://schema.org/SocialMediaPosting")
-    minValue = URIRef("https://schema.org/minValue")
-    WearableSizeGroupBig = URIRef("https://schema.org/WearableSizeGroupBig")
-    postalCode = URIRef("https://schema.org/postalCode")
-    costOrigin = URIRef("https://schema.org/costOrigin")
-    SizeSpecification = URIRef("https://schema.org/SizeSpecification")
-    ratingValue = URIRef("https://schema.org/ratingValue")
-    PublicationIssue = URIRef("https://schema.org/PublicationIssue")
-    replacee = URIRef("https://schema.org/replacee")
-    availableThrough = URIRef("https://schema.org/availableThrough")
-    recordingOf = URIRef("https://schema.org/recordingOf")
-    Nonprofit501c14 = URIRef("https://schema.org/Nonprofit501c14")
-    AgreeAction = URIRef("https://schema.org/AgreeAction")
-    restPeriods = URIRef("https://schema.org/restPeriods")
-    Nonprofit501c5 = URIRef("https://schema.org/Nonprofit501c5")
-    validThrough = URIRef("https://schema.org/validThrough")
-    RecommendedDoseSchedule = URIRef("https://schema.org/RecommendedDoseSchedule")
-    recipeIngredient = URIRef("https://schema.org/recipeIngredient")
-    studyLocation = URIRef("https://schema.org/studyLocation")
-    AerobicActivity = URIRef("https://schema.org/AerobicActivity")
-    Article = URIRef("https://schema.org/Article")
-    acceptedPaymentMethod = URIRef("https://schema.org/acceptedPaymentMethod")
-    homeTeam = URIRef("https://schema.org/homeTeam")
-    ItemPage = URIRef("https://schema.org/ItemPage")
-    AuthorizeAction = URIRef("https://schema.org/AuthorizeAction")
-    BodyMeasurementNeck = URIRef("https://schema.org/BodyMeasurementNeck")
-    isUnlabelledFallback = URIRef("https://schema.org/isUnlabelledFallback")
-    softwareAddOn = URIRef("https://schema.org/softwareAddOn")
-    bookingAgent = URIRef("https://schema.org/bookingAgent")
-    healthPlanMarketingUrl = URIRef("https://schema.org/healthPlanMarketingUrl")
-    School = URIRef("https://schema.org/School")
-    Subscription = URIRef("https://schema.org/Subscription")
-    isPartOf = URIRef("https://schema.org/isPartOf")
-    Quiz = URIRef("https://schema.org/Quiz")
-    Substance = URIRef("https://schema.org/Substance")
-    additionalName = URIRef("https://schema.org/additionalName")
-    structuralClass = URIRef("https://schema.org/structuralClass")
-    dateIssued = URIRef("https://schema.org/dateIssued")
-    MayTreatHealthAspect = URIRef("https://schema.org/MayTreatHealthAspect")
-    MerchantReturnEnumeration = URIRef("https://schema.org/MerchantReturnEnumeration")
-    riskFactor = URIRef("https://schema.org/riskFactor")
-    TextObject = URIRef("https://schema.org/TextObject")
-    mainContentOfPage = URIRef("https://schema.org/mainContentOfPage")
-    screenCount = URIRef("https://schema.org/screenCount")
-    gtin13 = URIRef("https://schema.org/gtin13")
-    InviteAction = URIRef("https://schema.org/InviteAction")
-    Pharmacy = URIRef("https://schema.org/Pharmacy")
-    educationalCredentialAwarded = URIRef("https://schema.org/educationalCredentialAwarded")
-    geoEquals = URIRef("https://schema.org/geoEquals")
-    hasPOS = URIRef("https://schema.org/hasPOS")
-    applicationSuite = URIRef("https://schema.org/applicationSuite")
-    TaxiService = URIRef("https://schema.org/TaxiService")
-    TraditionalChinese = URIRef("https://schema.org/TraditionalChinese")
-    musicBy = URIRef("https://schema.org/musicBy")
-    eduQuestionType = URIRef("https://schema.org/eduQuestionType")
-    sportsTeam = URIRef("https://schema.org/sportsTeam")
-    dependencies = URIRef("https://schema.org/dependencies")
-    Quantity = URIRef("https://schema.org/Quantity")
-    hasTiers = URIRef("https://schema.org/hasTiers")
-    issuedBy = URIRef("https://schema.org/issuedBy")
-    VeganDiet = URIRef("https://schema.org/VeganDiet")
-    performTime = URIRef("https://schema.org/performTime")
-    byDay = URIRef("https://schema.org/byDay")
-    beforeMedia = URIRef("https://schema.org/beforeMedia")
-    eligibleDuration = URIRef("https://schema.org/eligibleDuration")
-    UserDownloads = URIRef("https://schema.org/UserDownloads")
-    actionPlatform = URIRef("https://schema.org/actionPlatform")
-    hasMenuItem = URIRef("https://schema.org/hasMenuItem")
-    MedicalAudienceType = URIRef("https://schema.org/MedicalAudienceType")
-    driveWheelConfiguration = URIRef("https://schema.org/driveWheelConfiguration")
-    tripOrigin = URIRef("https://schema.org/tripOrigin")
-    alternateName = URIRef("https://schema.org/alternateName")
-    programmingLanguage = URIRef("https://schema.org/programmingLanguage")
-    additionalNumberOfGuests = URIRef("https://schema.org/additionalNumberOfGuests")
-    TheaterEvent = URIRef("https://schema.org/TheaterEvent")
-    bioChemSimilarity = URIRef("https://schema.org/bioChemSimilarity")
-    transitTime = URIRef("https://schema.org/transitTime")
-    UnemploymentSupport = URIRef("https://schema.org/UnemploymentSupport")
-    significance = URIRef("https://schema.org/significance")
-    includesAttraction = URIRef("https://schema.org/includesAttraction")
-    workExample = URIRef("https://schema.org/workExample")
-    LodgingReservation = URIRef("https://schema.org/LodgingReservation")
-    EvidenceLevelB = URIRef("https://schema.org/EvidenceLevelB")
-    PrimaryCare = URIRef("https://schema.org/PrimaryCare")
-    broadcaster = URIRef("https://schema.org/broadcaster")
-    WearableSizeGroupJuniors = URIRef("https://schema.org/WearableSizeGroupJuniors")
-    numberOfEmployees = URIRef("https://schema.org/numberOfEmployees")
-    WearableMeasurementOutsideLeg = URIRef("https://schema.org/WearableMeasurementOutsideLeg")
-    PaymentComplete = URIRef("https://schema.org/PaymentComplete")
-    associatedClaimReview = URIRef("https://schema.org/associatedClaimReview")
-    successorOf = URIRef("https://schema.org/successorOf")
-    gender = URIRef("https://schema.org/gender")
-    CivicStructure = URIRef("https://schema.org/CivicStructure")
-    releasedEvent = URIRef("https://schema.org/releasedEvent")
-    highPrice = URIRef("https://schema.org/highPrice")
-    Park = URIRef("https://schema.org/Park")
-    maxPrice = URIRef("https://schema.org/maxPrice")
-    gameTip = URIRef("https://schema.org/gameTip")
-    HealthCare = URIRef("https://schema.org/HealthCare")
-    hasTierBenefit = URIRef("https://schema.org/hasTierBenefit")
-    slogan = URIRef("https://schema.org/slogan")
-    gettingTestedInfo = URIRef("https://schema.org/gettingTestedInfo")
-    BusStop = URIRef("https://schema.org/BusStop")
-    Reservation = URIRef("https://schema.org/Reservation")
-    copyrightHolder = URIRef("https://schema.org/copyrightHolder")
-    publishedBy = URIRef("https://schema.org/publishedBy")
-    targetDescription = URIRef("https://schema.org/targetDescription")
-    unitText = URIRef("https://schema.org/unitText")
-    DeliveryTimeSettings = URIRef("https://schema.org/DeliveryTimeSettings")
-    Nonprofit501c21 = URIRef("https://schema.org/Nonprofit501c21")
-    StatusEnumeration = URIRef("https://schema.org/StatusEnumeration")
-    byMonthWeek = URIRef("https://schema.org/byMonthWeek")
-    InvoicePrice = URIRef("https://schema.org/InvoicePrice")
-    applicationContact = URIRef("https://schema.org/applicationContact")
-    Head = URIRef("https://schema.org/Head")
-    AnaerobicActivity = URIRef("https://schema.org/AnaerobicActivity")
-    ShippingRateSettings = URIRef("https://schema.org/ShippingRateSettings")
-    Observational = URIRef("https://schema.org/Observational")
-    USNonprofitType = URIRef("https://schema.org/USNonprofitType")
-    netWorth = URIRef("https://schema.org/netWorth")
-    cvdNumC19OverflowPats = URIRef("https://schema.org/cvdNumC19OverflowPats")
-    orderNumber = URIRef("https://schema.org/orderNumber")
-    SatiricalArticle = URIRef("https://schema.org/SatiricalArticle")
-    differentialDiagnosis = URIRef("https://schema.org/differentialDiagnosis")
-    schoolClosuresInfo = URIRef("https://schema.org/schoolClosuresInfo")
-    timeToComplete = URIRef("https://schema.org/timeToComplete")
-    OrganizeAction = URIRef("https://schema.org/OrganizeAction")
-    RealEstateAgent = URIRef("https://schema.org/RealEstateAgent")
-    ProductCollection = URIRef("https://schema.org/ProductCollection")
-    coverageEndTime = URIRef("https://schema.org/coverageEndTime")
-    VegetarianDiet = URIRef("https://schema.org/VegetarianDiet")
-    ReservationStatusType = URIRef("https://schema.org/ReservationStatusType")
-    MerchantReturnPolicySeasonalOverride = URIRef("https://schema.org/MerchantReturnPolicySeasonalOverride")
-    IndividualProduct = URIRef("https://schema.org/IndividualProduct")
-    WebPage = URIRef("https://schema.org/WebPage")
-    legalName = URIRef("https://schema.org/legalName")
-    mentions = URIRef("https://schema.org/mentions")
-    availableOnDevice = URIRef("https://schema.org/availableOnDevice")
-    events = URIRef("https://schema.org/events")
-    producer = URIRef("https://schema.org/producer")
-    Nonprofit501c8 = URIRef("https://schema.org/Nonprofit501c8")
-    publicAccess = URIRef("https://schema.org/publicAccess")
-    COD = URIRef("https://schema.org/COD")
-    modifiedTime = URIRef("https://schema.org/modifiedTime")
-    ResumeAction = URIRef("https://schema.org/ResumeAction")
-    Playground = URIRef("https://schema.org/Playground")
-    remainingAttendeeCapacity = URIRef("https://schema.org/remainingAttendeeCapacity")
-    RegisterAction = URIRef("https://schema.org/RegisterAction")
-    MerchantReturnFiniteReturnWindow = URIRef("https://schema.org/MerchantReturnFiniteReturnWindow")
-    medicineSystem = URIRef("https://schema.org/medicineSystem")
-    ConsumeAction = URIRef("https://schema.org/ConsumeAction")
-    WearableSizeSystemFR = URIRef("https://schema.org/WearableSizeSystemFR")
-    rxcui = URIRef("https://schema.org/rxcui")
-    fuelCapacity = URIRef("https://schema.org/fuelCapacity")
-    usesHealthPlanIdStandard = URIRef("https://schema.org/usesHealthPlanIdStandard")
-    itemReviewed = URIRef("https://schema.org/itemReviewed")
-    EventVenue = URIRef("https://schema.org/EventVenue")
-    TaxiVehicleUsage = URIRef("https://schema.org/TaxiVehicleUsage")
-    Report = URIRef("https://schema.org/Report")
-    FDAnotEvaluated = URIRef("https://schema.org/FDAnotEvaluated")
-    faxNumber = URIRef("https://schema.org/faxNumber")
-    Embassy = URIRef("https://schema.org/Embassy")
-    Statement = URIRef("https://schema.org/Statement")
-    Pathology = URIRef("https://schema.org/Pathology")
-    referenceQuantity = URIRef("https://schema.org/referenceQuantity")
-    MortgageLoan = URIRef("https://schema.org/MortgageLoan")
-    DigitalAudioTapeFormat = URIRef("https://schema.org/DigitalAudioTapeFormat")
-    Casino = URIRef("https://schema.org/Casino")
-    howPerformed = URIRef("https://schema.org/howPerformed")
-    OnlineBusiness = URIRef("https://schema.org/OnlineBusiness")
-    HalalDiet = URIRef("https://schema.org/HalalDiet")
-    BroadcastService = URIRef("https://schema.org/BroadcastService")
-    OrderProblem = URIRef("https://schema.org/OrderProblem")
-    catalog = URIRef("https://schema.org/catalog")
-    Throat = URIRef("https://schema.org/Throat")
-    ExercisePlan = URIRef("https://schema.org/ExercisePlan")
-    MultiCenterTrial = URIRef("https://schema.org/MultiCenterTrial")
-    PET = URIRef("https://schema.org/PET")
-    Sunday = URIRef("https://schema.org/Sunday")
-    Brewery = URIRef("https://schema.org/Brewery")
-    ReturnLabelDownloadAndPrint = URIRef("https://schema.org/ReturnLabelDownloadAndPrint")
-    PlanAction = URIRef("https://schema.org/PlanAction")
-    SpeakableSpecification = URIRef("https://schema.org/SpeakableSpecification")
-    FoodEstablishment = URIRef("https://schema.org/FoodEstablishment")
-    valueName = URIRef("https://schema.org/valueName")
-    causeOf = URIRef("https://schema.org/causeOf")
-    employmentType = URIRef("https://schema.org/employmentType")
-    ReimbursementCap = URIRef("https://schema.org/ReimbursementCap")
-    ReturnLabelInBox = URIRef("https://schema.org/ReturnLabelInBox")
-    CreativeWork = URIRef("https://schema.org/CreativeWork")
-    EUEnergyEfficiencyCategoryA2Plus = URIRef("https://schema.org/EUEnergyEfficiencyCategoryA2Plus")
-    ratingExplanation = URIRef("https://schema.org/ratingExplanation")
-    DanceGroup = URIRef("https://schema.org/DanceGroup")
-    TheaterGroup = URIRef("https://schema.org/TheaterGroup")
-    UserTweets = URIRef("https://schema.org/UserTweets")
-    isrcCode = URIRef("https://schema.org/isrcCode")
-    WarrantyPromise = URIRef("https://schema.org/WarrantyPromise")
-    currency = URIRef("https://schema.org/currency")
-    countriesSupported = URIRef("https://schema.org/countriesSupported")
-    TypesHealthAspect = URIRef("https://schema.org/TypesHealthAspect")
-    BedDetails = URIRef("https://schema.org/BedDetails")
-    publisherImprint = URIRef("https://schema.org/publisherImprint")
-    OceanBodyOfWater = URIRef("https://schema.org/OceanBodyOfWater")
-    replyToUrl = URIRef("https://schema.org/replyToUrl")
-    broadcastDisplayName = URIRef("https://schema.org/broadcastDisplayName")
-    Nonprofit501f = URIRef("https://schema.org/Nonprofit501f")
-    billingIncrement = URIRef("https://schema.org/billingIncrement")
-    OfflineTemporarily = URIRef("https://schema.org/OfflineTemporarily")
-    contactOption = URIRef("https://schema.org/contactOption")
-    TollFree = URIRef("https://schema.org/TollFree")
-    photo = URIRef("https://schema.org/photo")
-    nonprofitStatus = URIRef("https://schema.org/nonprofitStatus")
-    recipeCuisine = URIRef("https://schema.org/recipeCuisine")
-    creditText = URIRef("https://schema.org/creditText")
-    Museum = URIRef("https://schema.org/Museum")
-    coursePrerequisites = URIRef("https://schema.org/coursePrerequisites")
-    geoWithin = URIRef("https://schema.org/geoWithin")
-    identifyingExam = URIRef("https://schema.org/identifyingExam")
-    OnlineStore = URIRef("https://schema.org/OnlineStore")
-    CompositeCaptureDigitalSource = URIRef("https://schema.org/CompositeCaptureDigitalSource")
-    costCurrency = URIRef("https://schema.org/costCurrency")
-    GenderType = URIRef("https://schema.org/GenderType")
-    hasDefinedTerm = URIRef("https://schema.org/hasDefinedTerm")
-    ExhibitionEvent = URIRef("https://schema.org/ExhibitionEvent")
-    downvoteCount = URIRef("https://schema.org/downvoteCount")
-    amountOfThisGood = URIRef("https://schema.org/amountOfThisGood")
-    cvdNumC19HospPats = URIRef("https://schema.org/cvdNumC19HospPats")
-    pattern = URIRef("https://schema.org/pattern")
-    Obstetric = URIRef("https://schema.org/Obstetric")
-    diagram = URIRef("https://schema.org/diagram")
-    availableFrom = URIRef("https://schema.org/availableFrom")
-    ArriveAction = URIRef("https://schema.org/ArriveAction")
-    EUEnergyEfficiencyCategoryC = URIRef("https://schema.org/EUEnergyEfficiencyCategoryC")
-    PerformingArtsTheater = URIRef("https://schema.org/PerformingArtsTheater")
-    OrderReturned = URIRef("https://schema.org/OrderReturned")
-    evidenceLevel = URIRef("https://schema.org/evidenceLevel")
-    streetAddress = URIRef("https://schema.org/streetAddress")
-    PaymentPastDue = URIRef("https://schema.org/PaymentPastDue")
-    salaryCurrency = URIRef("https://schema.org/salaryCurrency")
-    CoverArt = URIRef("https://schema.org/CoverArt")
-    PhysicalExam = URIRef("https://schema.org/PhysicalExam")
-    OrderCancelled = URIRef("https://schema.org/OrderCancelled")
-    isAccessibleForFree = URIRef("https://schema.org/isAccessibleForFree")
-    PregnancyHealthAspect = URIRef("https://schema.org/PregnancyHealthAspect")
-    OnSitePickup = URIRef("https://schema.org/OnSitePickup")
-    Photograph = URIRef("https://schema.org/Photograph")
-    eventSchedule = URIRef("https://schema.org/eventSchedule")
-    BedType = URIRef("https://schema.org/BedType")
-    CreditCard = URIRef("https://schema.org/CreditCard")
-    DemoAlbum = URIRef("https://schema.org/DemoAlbum")
-    WearableMeasurementHeight = URIRef("https://schema.org/WearableMeasurementHeight")
-    additionalVariable = URIRef("https://schema.org/additionalVariable")
-    maximumAttendeeCapacity = URIRef("https://schema.org/maximumAttendeeCapacity")
-    OfferShippingDetails = URIRef("https://schema.org/OfferShippingDetails")
-    RestockingFees = URIRef("https://schema.org/RestockingFees")
-    competitor = URIRef("https://schema.org/competitor")
-    commentCount = URIRef("https://schema.org/commentCount")
-    AccountingService = URIRef("https://schema.org/AccountingService")
-    Barcode = URIRef("https://schema.org/Barcode")
-    RadioChannel = URIRef("https://schema.org/RadioChannel")
-    returnFees = URIRef("https://schema.org/returnFees")
-    geographicArea = URIRef("https://schema.org/geographicArea")
-    yearsInOperation = URIRef("https://schema.org/yearsInOperation")
-    primaryPrevention = URIRef("https://schema.org/primaryPrevention")
-    Nonprofit501c12 = URIRef("https://schema.org/Nonprofit501c12")
-    MusicReleaseFormatType = URIRef("https://schema.org/MusicReleaseFormatType")
-    paymentMethodId = URIRef("https://schema.org/paymentMethodId")
-    LockerDelivery = URIRef("https://schema.org/LockerDelivery")
-    BusinessFunction = URIRef("https://schema.org/BusinessFunction")
-    RestrictedDiet = URIRef("https://schema.org/RestrictedDiet")
-    clincalPharmacology = URIRef("https://schema.org/clincalPharmacology")
-    DeliveryMethod = URIRef("https://schema.org/DeliveryMethod")
-    MedicalSignOrSymptom = URIRef("https://schema.org/MedicalSignOrSymptom")
-    UKTrust = URIRef("https://schema.org/UKTrust")
-    Collection = URIRef("https://schema.org/Collection")
-    nonEqual = URIRef("https://schema.org/nonEqual")
-    contraindication = URIRef("https://schema.org/contraindication")
-    ActiveActionStatus = URIRef("https://schema.org/ActiveActionStatus")
-    replacer = URIRef("https://schema.org/replacer")
-    includedInDataCatalog = URIRef("https://schema.org/includedInDataCatalog")
-    AdultEntertainment = URIRef("https://schema.org/AdultEntertainment")
-    priceComponentType = URIRef("https://schema.org/priceComponentType")
-    performerIn = URIRef("https://schema.org/performerIn")
-    EngineSpecification = URIRef("https://schema.org/EngineSpecification")
-    cvdNumC19HOPats = URIRef("https://schema.org/cvdNumC19HOPats")
-    annualPercentageRate = URIRef("https://schema.org/annualPercentageRate")
-    isEncodedByBioChemEntity = URIRef("https://schema.org/isEncodedByBioChemEntity")
-    VideoGameSeries = URIRef("https://schema.org/VideoGameSeries")
-    Sculpture = URIRef("https://schema.org/Sculpture")
-    Completed = URIRef("https://schema.org/Completed")
-    Taxi = URIRef("https://schema.org/Taxi")
-    Event = URIRef("https://schema.org/Event")
-    season = URIRef("https://schema.org/season")
-    blogPosts = URIRef("https://schema.org/blogPosts")
-    encoding = URIRef("https://schema.org/encoding")
-    CreativeWorkSeries = URIRef("https://schema.org/CreativeWorkSeries")
-    sponsor = URIRef("https://schema.org/sponsor")
-    FDAcategoryA = URIRef("https://schema.org/FDAcategoryA")
-    sportsActivityLocation = URIRef("https://schema.org/sportsActivityLocation")
-    resultReview = URIRef("https://schema.org/resultReview")
-    location = URIRef("https://schema.org/location")
-    Painting = URIRef("https://schema.org/Painting")
-    geoCovers = URIRef("https://schema.org/geoCovers")
-    inStoreReturnsOffered = URIRef("https://schema.org/inStoreReturnsOffered")
-    DaySpa = URIRef("https://schema.org/DaySpa")
-    alternativeOf = URIRef("https://schema.org/alternativeOf")
-    XRay = URIRef("https://schema.org/XRay")
-    Nonprofit501c16 = URIRef("https://schema.org/Nonprofit501c16")
-    ProfilePage = URIRef("https://schema.org/ProfilePage")
-    NewCondition = URIRef("https://schema.org/NewCondition")
-    numberOfFullBathrooms = URIRef("https://schema.org/numberOfFullBathrooms")
-    MediaSubscription = URIRef("https://schema.org/MediaSubscription")
-    MedicalRiskEstimator = URIRef("https://schema.org/MedicalRiskEstimator")
-    recordedAs = URIRef("https://schema.org/recordedAs")
-    lastReviewed = URIRef("https://schema.org/lastReviewed")
-    LowSaltDiet = URIRef("https://schema.org/LowSaltDiet")
-    requiresSubscription = URIRef("https://schema.org/requiresSubscription")
-    MeasurementTypeEnumeration = URIRef("https://schema.org/MeasurementTypeEnumeration")
-    correction = URIRef("https://schema.org/correction")
-    seatingType = URIRef("https://schema.org/seatingType")
-    Fungus = URIRef("https://schema.org/Fungus")
-    returnPolicyCountry = URIRef("https://schema.org/returnPolicyCountry")
-    BioChemEntity = URIRef("https://schema.org/BioChemEntity")
-    PlaceboControlledTrial = URIRef("https://schema.org/PlaceboControlledTrial")
-    MerchantReturnPolicy = URIRef("https://schema.org/MerchantReturnPolicy")
-    TVClip = URIRef("https://schema.org/TVClip")
-    frequency = URIRef("https://schema.org/frequency")
-    ShortStory = URIRef("https://schema.org/ShortStory")
-    playersOnline = URIRef("https://schema.org/playersOnline")
-    InForce = URIRef("https://schema.org/InForce")
-    roofLoad = URIRef("https://schema.org/roofLoad")
-    MusicRecording = URIRef("https://schema.org/MusicRecording")
-    usNPI = URIRef("https://schema.org/usNPI")
-    ProductModel = URIRef("https://schema.org/ProductModel")
-    TierBenefitLoyaltyPrice = URIRef("https://schema.org/TierBenefitLoyaltyPrice")
-    Episode = URIRef("https://schema.org/Episode")
-    businessDays = URIRef("https://schema.org/businessDays")
-    VenueMap = URIRef("https://schema.org/VenueMap")
-    Movie = URIRef("https://schema.org/Movie")
-    percentile75 = URIRef("https://schema.org/percentile75")
-    subjectOf = URIRef("https://schema.org/subjectOf")
-    text = URIRef("https://schema.org/text")
-    OutletStore = URIRef("https://schema.org/OutletStore")
-    globalLocationNumber = URIRef("https://schema.org/globalLocationNumber")
-    ShoeStore = URIRef("https://schema.org/ShoeStore")
-    Pulmonary = URIRef("https://schema.org/Pulmonary")
-    ListPrice = URIRef("https://schema.org/ListPrice")
-    isLocatedInSubcellularLocation = URIRef("https://schema.org/isLocatedInSubcellularLocation")
-    EventStatusType = URIRef("https://schema.org/EventStatusType")
-    subtitleLanguage = URIRef("https://schema.org/subtitleLanguage")
-    ReviewAction = URIRef("https://schema.org/ReviewAction")
-    OfferForLease = URIRef("https://schema.org/OfferForLease")
-    ImageGallery = URIRef("https://schema.org/ImageGallery")
-    ByInvoice = URIRef("https://schema.org/ByInvoice")
-    reviewCount = URIRef("https://schema.org/reviewCount")
-    actionableFeedbackPolicy = URIRef("https://schema.org/actionableFeedbackPolicy")
-    MadeToOrder = URIRef("https://schema.org/MadeToOrder")
-    DataDrivenMediaDigitalSource = URIRef("https://schema.org/DataDrivenMediaDigitalSource")
-    seeks = URIRef("https://schema.org/seeks")
-    taxID = URIRef("https://schema.org/taxID")
-    member = URIRef("https://schema.org/member")
-    VitalSign = URIRef("https://schema.org/VitalSign")
-    HowToTip = URIRef("https://schema.org/HowToTip")
-    StagesHealthAspect = URIRef("https://schema.org/StagesHealthAspect")
-    MulticellularParasite = URIRef("https://schema.org/MulticellularParasite")
-    DatedMoneySpecification = URIRef("https://schema.org/DatedMoneySpecification")
-    Consortium = URIRef("https://schema.org/Consortium")
-    transFatContent = URIRef("https://schema.org/transFatContent")
-    gameServer = URIRef("https://schema.org/gameServer")
-    loanPaymentFrequency = URIRef("https://schema.org/loanPaymentFrequency")
-    legislationIdentifier = URIRef("https://schema.org/legislationIdentifier")
-    hasBioChemEntityPart = URIRef("https://schema.org/hasBioChemEntityPart")
-    albumRelease = URIRef("https://schema.org/albumRelease")
-    containsPlace = URIRef("https://schema.org/containsPlace")
-    WearableSizeGroupRegular = URIRef("https://schema.org/WearableSizeGroupRegular")
-    observationDate = URIRef("https://schema.org/observationDate")
-    ContactPoint = URIRef("https://schema.org/ContactPoint")
-    hasPart = URIRef("https://schema.org/hasPart")
-    procedureType = URIRef("https://schema.org/procedureType")
-    propertyID = URIRef("https://schema.org/propertyID")
-    MedicalWebPage = URIRef("https://schema.org/MedicalWebPage")
-    loanRepaymentForm = URIRef("https://schema.org/loanRepaymentForm")
-    TobaccoNicotineConsideration = URIRef("https://schema.org/TobaccoNicotineConsideration")
-    maps = URIRef("https://schema.org/maps")
-    programMembershipUsed = URIRef("https://schema.org/programMembershipUsed")
-    worstRating = URIRef("https://schema.org/worstRating")
-    jobLocationType = URIRef("https://schema.org/jobLocationType")
-    ListItem = URIRef("https://schema.org/ListItem")
-    ControlAction = URIRef("https://schema.org/ControlAction")
-    pageEnd = URIRef("https://schema.org/pageEnd")
-    departureBoatTerminal = URIRef("https://schema.org/departureBoatTerminal")
-    accessibilityFeature = URIRef("https://schema.org/accessibilityFeature")
-    ViewAction = URIRef("https://schema.org/ViewAction")
-    activeIngredient = URIRef("https://schema.org/activeIngredient")
-    OfflineEventAttendanceMode = URIRef("https://schema.org/OfflineEventAttendanceMode")
-    TherapeuticProcedure = URIRef("https://schema.org/TherapeuticProcedure")
-    ratingCount = URIRef("https://schema.org/ratingCount")
-    CompilationAlbum = URIRef("https://schema.org/CompilationAlbum")
-    availableService = URIRef("https://schema.org/availableService")
-    FullGameAvailability = URIRef("https://schema.org/FullGameAvailability")
-    numberOfPlayers = URIRef("https://schema.org/numberOfPlayers")
-    BasicIncome = URIRef("https://schema.org/BasicIncome")
-    MediaGallery = URIRef("https://schema.org/MediaGallery")
-    Protozoa = URIRef("https://schema.org/Protozoa")
-    seasons = URIRef("https://schema.org/seasons")
-    WPFooter = URIRef("https://schema.org/WPFooter")
-    DiscoverAction = URIRef("https://schema.org/DiscoverAction")
-    publicationType = URIRef("https://schema.org/publicationType")
-    proficiencyLevel = URIRef("https://schema.org/proficiencyLevel")
-    Table = URIRef("https://schema.org/Table")
-    numConstraints = URIRef("https://schema.org/numConstraints")
-    collection = URIRef("https://schema.org/collection")
-    VisualArtsEvent = URIRef("https://schema.org/VisualArtsEvent")
-    geo = URIRef("https://schema.org/geo")
-    ccRecipient = URIRef("https://schema.org/ccRecipient")
-    CableOrSatelliteService = URIRef("https://schema.org/CableOrSatelliteService")
-    RelatedTopicsHealthAspect = URIRef("https://schema.org/RelatedTopicsHealthAspect")
-    numberOfPreviousOwners = URIRef("https://schema.org/numberOfPreviousOwners")
-    pickupTime = URIRef("https://schema.org/pickupTime")
-    possibleComplication = URIRef("https://schema.org/possibleComplication")
-    WearableSizeGroupPetite = URIRef("https://schema.org/WearableSizeGroupPetite")
-    BodyMeasurementUnderbust = URIRef("https://schema.org/BodyMeasurementUnderbust")
-    PhysicalActivity = URIRef("https://schema.org/PhysicalActivity")
-    CDFormat = URIRef("https://schema.org/CDFormat")
-    MolecularEntity = URIRef("https://schema.org/MolecularEntity")
-    experienceRequirements = URIRef("https://schema.org/experienceRequirements")
-    GameServer = URIRef("https://schema.org/GameServer")
-    priceComponent = URIRef("https://schema.org/priceComponent")
-    recommendationStrength = URIRef("https://schema.org/recommendationStrength")
-    TypeAndQuantityNode = URIRef("https://schema.org/TypeAndQuantityNode")
-    PrognosisHealthAspect = URIRef("https://schema.org/PrognosisHealthAspect")
-    normalRange = URIRef("https://schema.org/normalRange")
-    includedRiskFactor = URIRef("https://schema.org/includedRiskFactor")
-    featureList = URIRef("https://schema.org/featureList")
-    inventoryLevel = URIRef("https://schema.org/inventoryLevel")
-    paymentAccepted = URIRef("https://schema.org/paymentAccepted")
-    KeepProduct = URIRef("https://schema.org/KeepProduct")
-    issuedThrough = URIRef("https://schema.org/issuedThrough")
-    GeospatialGeometry = URIRef("https://schema.org/GeospatialGeometry")
-    Mass = URIRef("https://schema.org/Mass")
-    ticketNumber = URIRef("https://schema.org/ticketNumber")
-    bookingTime = URIRef("https://schema.org/bookingTime")
-    DigitalFormat = URIRef("https://schema.org/DigitalFormat")
-    target = URIRef("https://schema.org/target")
-    model = URIRef("https://schema.org/model")
-    productSupported = URIRef("https://schema.org/productSupported")
-    PharmacySpecialty = URIRef("https://schema.org/PharmacySpecialty")
-    inverseOf = URIRef("https://schema.org/inverseOf")
-    Nursing = URIRef("https://schema.org/Nursing")
-    Distillery = URIRef("https://schema.org/Distillery")
-    previousStartDate = URIRef("https://schema.org/previousStartDate")
-    OpenTrial = URIRef("https://schema.org/OpenTrial")
-    AssessAction = URIRef("https://schema.org/AssessAction")
-    opponent = URIRef("https://schema.org/opponent")
-    surface = URIRef("https://schema.org/surface")
-    valueRequired = URIRef("https://schema.org/valueRequired")
-    LibrarySystem = URIRef("https://schema.org/LibrarySystem")
-    serviceArea = URIRef("https://schema.org/serviceArea")
-    ParentAudience = URIRef("https://schema.org/ParentAudience")
-    vehicleIdentificationNumber = URIRef("https://schema.org/vehicleIdentificationNumber")
-    rangeIncludes = URIRef("https://schema.org/rangeIncludes")
-    jobStartDate = URIRef("https://schema.org/jobStartDate")
-    winner = URIRef("https://schema.org/winner")
-    dateRead = URIRef("https://schema.org/dateRead")
-    Diagnostic = URIRef("https://schema.org/Diagnostic")
-    DirectDebit = URIRef("https://schema.org/DirectDebit")
-    DryCleaningOrLaundry = URIRef("https://schema.org/DryCleaningOrLaundry")
-    supportingData = URIRef("https://schema.org/supportingData")
-    BefriendAction = URIRef("https://schema.org/BefriendAction")
-    backstory = URIRef("https://schema.org/backstory")
-    Reserved = URIRef("https://schema.org/Reserved")
-    TakeAction = URIRef("https://schema.org/TakeAction")
-    SellAction = URIRef("https://schema.org/SellAction")
-    ReturnAtKiosk = URIRef("https://schema.org/ReturnAtKiosk")
-    subStageSuffix = URIRef("https://schema.org/subStageSuffix")
-    AggregateRating = URIRef("https://schema.org/AggregateRating")
-    PodcastSeries = URIRef("https://schema.org/PodcastSeries")
-    videoFormat = URIRef("https://schema.org/videoFormat")
-    estimatesRiskOf = URIRef("https://schema.org/estimatesRiskOf")
-    JoinAction = URIRef("https://schema.org/JoinAction")
-    HowToTool = URIRef("https://schema.org/HowToTool")
-    FDAcategoryB = URIRef("https://schema.org/FDAcategoryB")
-    Ligament = URIRef("https://schema.org/Ligament")
-    photos = URIRef("https://schema.org/photos")
-    Nonprofit501c2 = URIRef("https://schema.org/Nonprofit501c2")
-    creditedTo = URIRef("https://schema.org/creditedTo")
-    FDAcategoryC = URIRef("https://schema.org/FDAcategoryC")
-    MerchantReturnNotPermitted = URIRef("https://schema.org/MerchantReturnNotPermitted")
-    MotorizedBicycle = URIRef("https://schema.org/MotorizedBicycle")
-    longitude = URIRef("https://schema.org/longitude")
-    creator = URIRef("https://schema.org/creator")
-    Answer = URIRef("https://schema.org/Answer")
-    steeringPosition = URIRef("https://schema.org/steeringPosition")
-    PostOffice = URIRef("https://schema.org/PostOffice")
-    strengthUnit = URIRef("https://schema.org/strengthUnit")
-    Library = URIRef("https://schema.org/Library")
-    MedicalResearcher = URIRef("https://schema.org/MedicalResearcher")
-    molecularWeight = URIRef("https://schema.org/molecularWeight")
-    seatSection = URIRef("https://schema.org/seatSection")
-    RsvpAction = URIRef("https://schema.org/RsvpAction")
-    UnofficialLegalValue = URIRef("https://schema.org/UnofficialLegalValue")
-    ExerciseAction = URIRef("https://schema.org/ExerciseAction")
-    HealthPlanNetwork = URIRef("https://schema.org/HealthPlanNetwork")
-    Diet = URIRef("https://schema.org/Diet")
-    numberOfCredits = URIRef("https://schema.org/numberOfCredits")
-    OpinionNewsArticle = URIRef("https://schema.org/OpinionNewsArticle")
-    ResultsAvailable = URIRef("https://schema.org/ResultsAvailable")
-    ReturnShippingFees = URIRef("https://schema.org/ReturnShippingFees")
-    participant = URIRef("https://schema.org/participant")
-    image = URIRef("https://schema.org/image")
-    executableLibraryName = URIRef("https://schema.org/executableLibraryName")
-    acceptsReservations = URIRef("https://schema.org/acceptsReservations")
-    additionalType = URIRef("https://schema.org/additionalType")
-    MusicVideoObject = URIRef("https://schema.org/MusicVideoObject")
-    discountCurrency = URIRef("https://schema.org/discountCurrency")
-    honorificPrefix = URIRef("https://schema.org/honorificPrefix")
-    HowToItem = URIRef("https://schema.org/HowToItem")
-    numberOfPartialBathrooms = URIRef("https://schema.org/numberOfPartialBathrooms")
-    MerchantReturnUnlimitedWindow = URIRef("https://schema.org/MerchantReturnUnlimitedWindow")
-    healthPlanPharmacyCategory = URIRef("https://schema.org/healthPlanPharmacyCategory")
-    targetCollection = URIRef("https://schema.org/targetCollection")
-    healthPlanCoinsuranceOption = URIRef("https://schema.org/healthPlanCoinsuranceOption")
-    Clip = URIRef("https://schema.org/Clip")
-    PodcastSeason = URIRef("https://schema.org/PodcastSeason")
-    numberOfAccommodationUnits = URIRef("https://schema.org/numberOfAccommodationUnits")
-    vendor = URIRef("https://schema.org/vendor")
-    OnlineOnly = URIRef("https://schema.org/OnlineOnly")
-    valueMinLength = URIRef("https://schema.org/valueMinLength")
-    GiveAction = URIRef("https://schema.org/GiveAction")
-    reservationStatus = URIRef("https://schema.org/reservationStatus")
-    WearableSizeGroupBoys = URIRef("https://schema.org/WearableSizeGroupBoys")
-    Distance = URIRef("https://schema.org/Distance")
-    hasCredential = URIRef("https://schema.org/hasCredential")
-    jobImmediateStart = URIRef("https://schema.org/jobImmediateStart")
-    AlgorithmicMediaDigitalSource = URIRef("https://schema.org/AlgorithmicMediaDigitalSource")
-    PhotographAction = URIRef("https://schema.org/PhotographAction")
-    TattooParlor = URIRef("https://schema.org/TattooParlor")
-    State = URIRef("https://schema.org/State")
-    broadcastServiceTier = URIRef("https://schema.org/broadcastServiceTier")
-    SoftwareSourceCode = URIRef("https://schema.org/SoftwareSourceCode")
-    chemicalRole = URIRef("https://schema.org/chemicalRole")
-    Pond = URIRef("https://schema.org/Pond")
-    ItemList = URIRef("https://schema.org/ItemList")
-    Saturday = URIRef("https://schema.org/Saturday")
-    previousItem = URIRef("https://schema.org/previousItem")
-    leaseLength = URIRef("https://schema.org/leaseLength")
-    drainsTo = URIRef("https://schema.org/drainsTo")
-    Bone = URIRef("https://schema.org/Bone")
-    hasHealthAspect = URIRef("https://schema.org/hasHealthAspect")
-    PositiveFilmDigitalSource = URIRef("https://schema.org/PositiveFilmDigitalSource")
-    PublicationVolume = URIRef("https://schema.org/PublicationVolume")
-    PaymentStatusType = URIRef("https://schema.org/PaymentStatusType")
-    Balance = URIRef("https://schema.org/Balance")
-    childMinAge = URIRef("https://schema.org/childMinAge")
-    InformAction = URIRef("https://schema.org/InformAction")
-    DataFeedItem = URIRef("https://schema.org/DataFeedItem")
-    Online = URIRef("https://schema.org/Online")
-    Plumber = URIRef("https://schema.org/Plumber")
-    honorificSuffix = URIRef("https://schema.org/honorificSuffix")
-    assemblyVersion = URIRef("https://schema.org/assemblyVersion")
-    busNumber = URIRef("https://schema.org/busNumber")
-    TripleBlindedTrial = URIRef("https://schema.org/TripleBlindedTrial")
-    affectedBy = URIRef("https://schema.org/affectedBy")
-    signOrSymptom = URIRef("https://schema.org/signOrSymptom")
-    InternationalTrial = URIRef("https://schema.org/InternationalTrial")
-    followup = URIRef("https://schema.org/followup")
-    MobileApplication = URIRef("https://schema.org/MobileApplication")
-    gtin14 = URIRef("https://schema.org/gtin14")
-    availability = URIRef("https://schema.org/availability")
-    unsaturatedFatContent = URIRef("https://schema.org/unsaturatedFatContent")
-    BusinessEvent = URIRef("https://schema.org/BusinessEvent")
-    proprietaryName = URIRef("https://schema.org/proprietaryName")
-    VideoObjectSnapshot = URIRef("https://schema.org/VideoObjectSnapshot")
-    PresentationDigitalDocument = URIRef("https://schema.org/PresentationDigitalDocument")
-    Car = URIRef("https://schema.org/Car")
-    LendAction = URIRef("https://schema.org/LendAction")
-    ProductGroup = URIRef("https://schema.org/ProductGroup")
-    itemListOrder = URIRef("https://schema.org/itemListOrder")
-    InstallAction = URIRef("https://schema.org/InstallAction")
-    CardiovascularExam = URIRef("https://schema.org/CardiovascularExam")
-    Chapter = URIRef("https://schema.org/Chapter")
-    Permit = URIRef("https://schema.org/Permit")
-    MixedEventAttendanceMode = URIRef("https://schema.org/MixedEventAttendanceMode")
-    courseCode = URIRef("https://schema.org/courseCode")
-    BedAndBreakfast = URIRef("https://schema.org/BedAndBreakfast")
-    DepositAccount = URIRef("https://schema.org/DepositAccount")
-    FreeReturn = URIRef("https://schema.org/FreeReturn")
-    PreventionIndication = URIRef("https://schema.org/PreventionIndication")
-    Language = URIRef("https://schema.org/Language")
-    torque = URIRef("https://schema.org/torque")
-    item = URIRef("https://schema.org/item")
-    orderDelivery = URIRef("https://schema.org/orderDelivery")
-    MiddleSchool = URIRef("https://schema.org/MiddleSchool")
-    orderStatus = URIRef("https://schema.org/orderStatus")
-    ReserveAction = URIRef("https://schema.org/ReserveAction")
-    CityHall = URIRef("https://schema.org/CityHall")
-    UseAction = URIRef("https://schema.org/UseAction")
-    travelBans = URIRef("https://schema.org/travelBans")
-    spatialCoverage = URIRef("https://schema.org/spatialCoverage")
-    Zoo = URIRef("https://schema.org/Zoo")
-    option = URIRef("https://schema.org/option")
-    Comment = URIRef("https://schema.org/Comment")
-    OutOfStock = URIRef("https://schema.org/OutOfStock")
-    instructor = URIRef("https://schema.org/instructor")
-    smokingAllowed = URIRef("https://schema.org/smokingAllowed")
-    drugUnit = URIRef("https://schema.org/drugUnit")
-    CheckInAction = URIRef("https://schema.org/CheckInAction")
-    hasEnergyEfficiencyCategory = URIRef("https://schema.org/hasEnergyEfficiencyCategory")
-    uploadDate = URIRef("https://schema.org/uploadDate")
-    DigitalArtDigitalSource = URIRef("https://schema.org/DigitalArtDigitalSource")
-    OfferItemCondition = URIRef("https://schema.org/OfferItemCondition")
-    providesBroadcastService = URIRef("https://schema.org/providesBroadcastService")
-    CovidTestingFacility = URIRef("https://schema.org/CovidTestingFacility")
-    object = URIRef("https://schema.org/object")
-    Gynecologic = URIRef("https://schema.org/Gynecologic")
-    grantee = URIRef("https://schema.org/grantee")
-    GameAvailabilityEnumeration = URIRef("https://schema.org/GameAvailabilityEnumeration")
-    installUrl = URIRef("https://schema.org/installUrl")
-    Courthouse = URIRef("https://schema.org/Courthouse")
-    AutomatedTeller = URIRef("https://schema.org/AutomatedTeller")
-    GeoShape = URIRef("https://schema.org/GeoShape")
-    appliesToPaymentMethod = URIRef("https://schema.org/appliesToPaymentMethod")
-    accessCode = URIRef("https://schema.org/accessCode")
-    GenericWebPlatform = URIRef("https://schema.org/GenericWebPlatform")
-    Physician = URIRef("https://schema.org/Physician")
-    Continent = URIRef("https://schema.org/Continent")
-    VideoGame = URIRef("https://schema.org/VideoGame")
-    currenciesAccepted = URIRef("https://schema.org/currenciesAccepted")
-    Corporation = URIRef("https://schema.org/Corporation")
-    baseSalary = URIRef("https://schema.org/baseSalary")
-    knownVehicleDamages = URIRef("https://schema.org/knownVehicleDamages")
-    returnShippingFeesAmount = URIRef("https://schema.org/returnShippingFeesAmount")
-    administrationRoute = URIRef("https://schema.org/administrationRoute")
-    broadcastAffiliateOf = URIRef("https://schema.org/broadcastAffiliateOf")
-    EndorsementRating = URIRef("https://schema.org/EndorsementRating")
-    AnimalShelter = URIRef("https://schema.org/AnimalShelter")
-    FollowAction = URIRef("https://schema.org/FollowAction")
-    WorkersUnion = URIRef("https://schema.org/WorkersUnion")
-    OfflinePermanently = URIRef("https://schema.org/OfflinePermanently")
-    SoftwareApplication = URIRef("https://schema.org/SoftwareApplication")
-    DisabilitySupport = URIRef("https://schema.org/DisabilitySupport")
-    encodesCreativeWork = URIRef("https://schema.org/encodesCreativeWork")
-    MonetaryAmount = URIRef("https://schema.org/MonetaryAmount")
-    Motorcycle = URIRef("https://schema.org/Motorcycle")
-    WearableSizeSystemEN13402 = URIRef("https://schema.org/WearableSizeSystemEN13402")
-    customerRemorseReturnShippingFeesAmount = URIRef("https://schema.org/customerRemorseReturnShippingFeesAmount")
-    Room = URIRef("https://schema.org/Room")
-    PreOrderAction = URIRef("https://schema.org/PreOrderAction")
-    Wednesday = URIRef("https://schema.org/Wednesday")
-    BodyMeasurementFoot = URIRef("https://schema.org/BodyMeasurementFoot")
-    PaymentChargeSpecification = URIRef("https://schema.org/PaymentChargeSpecification")
-    BookStore = URIRef("https://schema.org/BookStore")
-    interactionCount = URIRef("https://schema.org/interactionCount")
-    softwareHelp = URIRef("https://schema.org/softwareHelp")
-    OrderProcessing = URIRef("https://schema.org/OrderProcessing")
-    MedicalClinic = URIRef("https://schema.org/MedicalClinic")
-    SingleBlindedTrial = URIRef("https://schema.org/SingleBlindedTrial")
-    DrugPregnancyCategory = URIRef("https://schema.org/DrugPregnancyCategory")
-    EventAttendanceModeEnumeration = URIRef("https://schema.org/EventAttendanceModeEnumeration")
-    Text = URIRef("https://schema.org/Text")
-    HealthPlanCostSharingSpecification = URIRef("https://schema.org/HealthPlanCostSharingSpecification")
-    BreadcrumbList = URIRef("https://schema.org/BreadcrumbList")
-    NegativeFilmDigitalSource = URIRef("https://schema.org/NegativeFilmDigitalSource")
-    BankAccount = URIRef("https://schema.org/BankAccount")
-    deathPlace = URIRef("https://schema.org/deathPlace")
-    identifier = URIRef("https://schema.org/identifier")
-    AudioObjectSnapshot = URIRef("https://schema.org/AudioObjectSnapshot")
-    hasRepresentation = URIRef("https://schema.org/hasRepresentation")
-    arterialBranch = URIRef("https://schema.org/arterialBranch")
-    DepartAction = URIRef("https://schema.org/DepartAction")
-    skills = URIRef("https://schema.org/skills")
-    OccupationalExperienceRequirements = URIRef("https://schema.org/OccupationalExperienceRequirements")
-    processorRequirements = URIRef("https://schema.org/processorRequirements")
-    AutoPartsStore = URIRef("https://schema.org/AutoPartsStore")
-    MusicStore = URIRef("https://schema.org/MusicStore")
-    Course = URIRef("https://schema.org/Course")
-    serviceSmsNumber = URIRef("https://schema.org/serviceSmsNumber")
-    DrugCost = URIRef("https://schema.org/DrugCost")
-    vehicleInteriorType = URIRef("https://schema.org/vehicleInteriorType")
-    inker = URIRef("https://schema.org/inker")
-    ticketToken = URIRef("https://schema.org/ticketToken")
-    codingSystem = URIRef("https://schema.org/codingSystem")
-    seatRow = URIRef("https://schema.org/seatRow")
-    loser = URIRef("https://schema.org/loser")
-    educationalUse = URIRef("https://schema.org/educationalUse")
-    endorsee = URIRef("https://schema.org/endorsee")
-    IceCreamShop = URIRef("https://schema.org/IceCreamShop")
-    SaleEvent = URIRef("https://schema.org/SaleEvent")
-    brand = URIRef("https://schema.org/brand")
-    MovieClip = URIRef("https://schema.org/MovieClip")
-    vehicleInteriorColor = URIRef("https://schema.org/vehicleInteriorColor")
-    ResultsNotAvailable = URIRef("https://schema.org/ResultsNotAvailable")
-    Flexibility = URIRef("https://schema.org/Flexibility")
-    OfferForPurchase = URIRef("https://schema.org/OfferForPurchase")
-    renegotiableLoan = URIRef("https://schema.org/renegotiableLoan")
-    ExchangeRefund = URIRef("https://schema.org/ExchangeRefund")
-    paymentMethod = URIRef("https://schema.org/paymentMethod")
-    Nonprofit501c3 = URIRef("https://schema.org/Nonprofit501c3")
-    CleaningFee = URIRef("https://schema.org/CleaningFee")
-    subStructure = URIRef("https://schema.org/subStructure")
-    acquiredFrom = URIRef("https://schema.org/acquiredFrom")
-    seatNumber = URIRef("https://schema.org/seatNumber")
-    actionApplication = URIRef("https://schema.org/actionApplication")
-    RentalCarReservation = URIRef("https://schema.org/RentalCarReservation")
-    MobileWebPlatform = URIRef("https://schema.org/MobileWebPlatform")
-    serverStatus = URIRef("https://schema.org/serverStatus")
-    Therapeutic = URIRef("https://schema.org/Therapeutic")
-    Vehicle = URIRef("https://schema.org/Vehicle")
-    recordLabel = URIRef("https://schema.org/recordLabel")
-    Hardcover = URIRef("https://schema.org/Hardcover")
-    worksFor = URIRef("https://schema.org/worksFor")
-    workFeatured = URIRef("https://schema.org/workFeatured")
-    warrantyPromise = URIRef("https://schema.org/warrantyPromise")
-    FlightReservation = URIRef("https://schema.org/FlightReservation")
-    OfficeEquipmentStore = URIRef("https://schema.org/OfficeEquipmentStore")
-    ComedyClub = URIRef("https://schema.org/ComedyClub")
-    orderDate = URIRef("https://schema.org/orderDate")
-    UserInteraction = URIRef("https://schema.org/UserInteraction")
-    originAddress = URIRef("https://schema.org/originAddress")
-    targetPlatform = URIRef("https://schema.org/targetPlatform")
-    LocalBusiness = URIRef("https://schema.org/LocalBusiness")
-    MediaManipulationRatingEnumeration = URIRef("https://schema.org/MediaManipulationRatingEnumeration")
-    CatholicChurch = URIRef("https://schema.org/CatholicChurch")
-    RefundTypeEnumeration = URIRef("https://schema.org/RefundTypeEnumeration")
-    EUEnergyEfficiencyCategoryG = URIRef("https://schema.org/EUEnergyEfficiencyCategoryG")
-    MisconceptionsHealthAspect = URIRef("https://schema.org/MisconceptionsHealthAspect")
-    accessibilityAPI = URIRef("https://schema.org/accessibilityAPI")
-    audience = URIRef("https://schema.org/audience")
-    salaryUponCompletion = URIRef("https://schema.org/salaryUponCompletion")
-    eventStatus = URIRef("https://schema.org/eventStatus")
-    NoninvasiveProcedure = URIRef("https://schema.org/NoninvasiveProcedure")
-    geoCrosses = URIRef("https://schema.org/geoCrosses")
-    MedicalDevicePurpose = URIRef("https://schema.org/MedicalDevicePurpose")
-    contentRating = URIRef("https://schema.org/contentRating")
-    SelfCareHealthAspect = URIRef("https://schema.org/SelfCareHealthAspect")
-    PoliticalParty = URIRef("https://schema.org/PoliticalParty")
-    healthPlanNetworkTier = URIRef("https://schema.org/healthPlanNetworkTier")
-    UpdateAction = URIRef("https://schema.org/UpdateAction")
-    DrivingSchoolVehicleUsage = URIRef("https://schema.org/DrivingSchoolVehicleUsage")
-    FrontWheelDriveConfiguration = URIRef("https://schema.org/FrontWheelDriveConfiguration")
-    codeSampleType = URIRef("https://schema.org/codeSampleType")
-    resultComment = URIRef("https://schema.org/resultComment")
-    Nonprofit501n = URIRef("https://schema.org/Nonprofit501n")
-    PaymentDue = URIRef("https://schema.org/PaymentDue")
-    OrderPaymentDue = URIRef("https://schema.org/OrderPaymentDue")
-    Bridge = URIRef("https://schema.org/Bridge")
-    ImagingTest = URIRef("https://schema.org/ImagingTest")
-    inCodeSet = URIRef("https://schema.org/inCodeSet")
-    TrackAction = URIRef("https://schema.org/TrackAction")
-    MedicalImagingTechnique = URIRef("https://schema.org/MedicalImagingTechnique")
-    BodyMeasurementHeight = URIRef("https://schema.org/BodyMeasurementHeight")
-    Audiobook = URIRef("https://schema.org/Audiobook")
-    ContagiousnessHealthAspect = URIRef("https://schema.org/ContagiousnessHealthAspect")
-    EducationalAudience = URIRef("https://schema.org/EducationalAudience")
-    MusicPlaylist = URIRef("https://schema.org/MusicPlaylist")
-    EntryPoint = URIRef("https://schema.org/EntryPoint")
-    RadioStation = URIRef("https://schema.org/RadioStation")
-    OneTimePayments = URIRef("https://schema.org/OneTimePayments")
-    branch = URIRef("https://schema.org/branch")
-    courseMode = URIRef("https://schema.org/courseMode")
-    inAlbum = URIRef("https://schema.org/inAlbum")
-    Florist = URIRef("https://schema.org/Florist")
-    WearableSizeGroupTall = URIRef("https://schema.org/WearableSizeGroupTall")
-    broadcastChannelId = URIRef("https://schema.org/broadcastChannelId")
-    Withdrawn = URIRef("https://schema.org/Withdrawn")
-    hasMemberProgram = URIRef("https://schema.org/hasMemberProgram")
-    entertainmentBusiness = URIRef("https://schema.org/entertainmentBusiness")
-    FloorPlan = URIRef("https://schema.org/FloorPlan")
-    employerOverview = URIRef("https://schema.org/employerOverview")
-    ComicSeries = URIRef("https://schema.org/ComicSeries")
-    UserCheckins = URIRef("https://schema.org/UserCheckins")
-    ApartmentComplex = URIRef("https://schema.org/ApartmentComplex")
-    MedicalSign = URIRef("https://schema.org/MedicalSign")
-    SingleCenterTrial = URIRef("https://schema.org/SingleCenterTrial")
-    LaboratoryScience = URIRef("https://schema.org/LaboratoryScience")
-    newsUpdatesAndGuidelines = URIRef("https://schema.org/newsUpdatesAndGuidelines")
-    contentSize = URIRef("https://schema.org/contentSize")
-    EUEnergyEfficiencyCategoryB = URIRef("https://schema.org/EUEnergyEfficiencyCategoryB")
-    GovernmentOffice = URIRef("https://schema.org/GovernmentOffice")
-    relatedLink = URIRef("https://schema.org/relatedLink")
-    Property = URIRef("https://schema.org/Property")
-    fiberContent = URIRef("https://schema.org/fiberContent")
-    issn = URIRef("https://schema.org/issn")
-    CheckoutPage = URIRef("https://schema.org/CheckoutPage")
-    trailerWeight = URIRef("https://schema.org/trailerWeight")
-    pregnancyCategory = URIRef("https://schema.org/pregnancyCategory")
-    Accommodation = URIRef("https://schema.org/Accommodation")
-    EnergyStarEnergyEfficiencyEnumeration = URIRef("https://schema.org/EnergyStarEnergyEfficiencyEnumeration")
-    WearableSizeGroupExtraShort = URIRef("https://schema.org/WearableSizeGroupExtraShort")
-    UKNonprofitType = URIRef("https://schema.org/UKNonprofitType")
-    DeleteAction = URIRef("https://schema.org/DeleteAction")
-    associatedReview = URIRef("https://schema.org/associatedReview")
-    BuyAction = URIRef("https://schema.org/BuyAction")
-    fuelEfficiency = URIRef("https://schema.org/fuelEfficiency")
-    BankOrCreditUnion = URIRef("https://schema.org/BankOrCreditUnion")
-    Nonprofit501c15 = URIRef("https://schema.org/Nonprofit501c15")
-    sibling = URIRef("https://schema.org/sibling")
-    MedicalTrial = URIRef("https://schema.org/MedicalTrial")
-    WebSite = URIRef("https://schema.org/WebSite")
-    alignmentType = URIRef("https://schema.org/alignmentType")
-    SizeSystemMetric = URIRef("https://schema.org/SizeSystemMetric")
-    MedicalCondition = URIRef("https://schema.org/MedicalCondition")
-    WearableMeasurementChestOrBust = URIRef("https://schema.org/WearableMeasurementChestOrBust")
-    sha256 = URIRef("https://schema.org/sha256")
-    dateline = URIRef("https://schema.org/dateline")
-    sportsEvent = URIRef("https://schema.org/sportsEvent")
-    contactType = URIRef("https://schema.org/contactType")
-    BorrowAction = URIRef("https://schema.org/BorrowAction")
-    RejectAction = URIRef("https://schema.org/RejectAction")
-    Physiotherapy = URIRef("https://schema.org/Physiotherapy")
-    incentiveCompensation = URIRef("https://schema.org/incentiveCompensation")
-    TierBenefitLoyaltyPoints = URIRef("https://schema.org/TierBenefitLoyaltyPoints")
-    BlogPosting = URIRef("https://schema.org/BlogPosting")
-    DiabeticDiet = URIRef("https://schema.org/DiabeticDiet")
-    RadioEpisode = URIRef("https://schema.org/RadioEpisode")
-    Retail = URIRef("https://schema.org/Retail")
-    DayOfWeek = URIRef("https://schema.org/DayOfWeek")
-    publishingPrinciples = URIRef("https://schema.org/publishingPrinciples")
-    FoodEstablishmentReservation = URIRef("https://schema.org/FoodEstablishmentReservation")
-    Discontinued = URIRef("https://schema.org/Discontinued")
-    RadioSeason = URIRef("https://schema.org/RadioSeason")
-    servicePhone = URIRef("https://schema.org/servicePhone")
-    suggestedMinAge = URIRef("https://schema.org/suggestedMinAge")
-    passengerSequenceNumber = URIRef("https://schema.org/passengerSequenceNumber")
-    dropoffTime = URIRef("https://schema.org/dropoffTime")
-    RearWheelDriveConfiguration = URIRef("https://schema.org/RearWheelDriveConfiguration")
-    video = URIRef("https://schema.org/video")
-    SymptomsHealthAspect = URIRef("https://schema.org/SymptomsHealthAspect")
-    calories = URIRef("https://schema.org/calories")
-    ShareAction = URIRef("https://schema.org/ShareAction")
-    benefitsSummaryUrl = URIRef("https://schema.org/benefitsSummaryUrl")
-    availableLanguage = URIRef("https://schema.org/availableLanguage")
-    TaxiReservation = URIRef("https://schema.org/TaxiReservation")
-    trackingUrl = URIRef("https://schema.org/trackingUrl")
-    AdministrativeArea = URIRef("https://schema.org/AdministrativeArea")
-    XPathType = URIRef("https://schema.org/XPathType")
-    Duration = URIRef("https://schema.org/Duration")
-    audio = URIRef("https://schema.org/audio")
-    legislationType = URIRef("https://schema.org/legislationType")
-    House = URIRef("https://schema.org/House")
-    ShoppingCenter = URIRef("https://schema.org/ShoppingCenter")
-    pageStart = URIRef("https://schema.org/pageStart")
-    ArchiveComponent = URIRef("https://schema.org/ArchiveComponent")
-    ConvenienceStore = URIRef("https://schema.org/ConvenienceStore")
-    BookFormatType = URIRef("https://schema.org/BookFormatType")
-    Nonprofit501c19 = URIRef("https://schema.org/Nonprofit501c19")
-    SportingGoodsStore = URIRef("https://schema.org/SportingGoodsStore")
-    Restaurant = URIRef("https://schema.org/Restaurant")
-    SelfStorage = URIRef("https://schema.org/SelfStorage")
-    hasDeliveryMethod = URIRef("https://schema.org/hasDeliveryMethod")
-    departureGate = URIRef("https://schema.org/departureGate")
-    DisagreeAction = URIRef("https://schema.org/DisagreeAction")
-    ParcelDelivery = URIRef("https://schema.org/ParcelDelivery")
-    originatesFrom = URIRef("https://schema.org/originatesFrom")
-    publication = URIRef("https://schema.org/publication")
-    eligibleCustomerType = URIRef("https://schema.org/eligibleCustomerType")
-    permittedUsage = URIRef("https://schema.org/permittedUsage")
-    WholesaleStore = URIRef("https://schema.org/WholesaleStore")
-    ScholarlyArticle = URIRef("https://schema.org/ScholarlyArticle")
-    CategoryCodeSet = URIRef("https://schema.org/CategoryCodeSet")
-    MedicalBusiness = URIRef("https://schema.org/MedicalBusiness")
-    datePublished = URIRef("https://schema.org/datePublished")
-    numberOfSeasons = URIRef("https://schema.org/numberOfSeasons")
-    Number = URIRef("https://schema.org/Number")
-    CompleteDataFeed = URIRef("https://schema.org/CompleteDataFeed")
-    gameEdition = URIRef("https://schema.org/gameEdition")
-    openingHoursSpecification = URIRef("https://schema.org/openingHoursSpecification")
-    RoofingContractor = URIRef("https://schema.org/RoofingContractor")
-    subOrganization = URIRef("https://schema.org/subOrganization")
-    MedicalAudience = URIRef("https://schema.org/MedicalAudience")
-    breadcrumb = URIRef("https://schema.org/breadcrumb")
-    spatial = URIRef("https://schema.org/spatial")
-    billingDuration = URIRef("https://schema.org/billingDuration")
-    totalJobOpenings = URIRef("https://schema.org/totalJobOpenings")
-    NutritionInformation = URIRef("https://schema.org/NutritionInformation")
-    clinicalPharmacology = URIRef("https://schema.org/clinicalPharmacology")
-    endorsers = URIRef("https://schema.org/endorsers")
-    FDAcategoryX = URIRef("https://schema.org/FDAcategoryX")
-    WearableSizeGroupGirls = URIRef("https://schema.org/WearableSizeGroupGirls")
-    ArchiveOrganization = URIRef("https://schema.org/ArchiveOrganization")
-    musicArrangement = URIRef("https://schema.org/musicArrangement")
-    warrantyScope = URIRef("https://schema.org/warrantyScope")
-    MediaObject = URIRef("https://schema.org/MediaObject")
-    WebApplication = URIRef("https://schema.org/WebApplication")
-    tool = URIRef("https://schema.org/tool")
-    ItemListOrderAscending = URIRef("https://schema.org/ItemListOrderAscending")
-    recognizingAuthority = URIRef("https://schema.org/recognizingAuthority")
-    InStoreOnly = URIRef("https://schema.org/InStoreOnly")
-    OfficialLegalValue = URIRef("https://schema.org/OfficialLegalValue")
-    OrderDelivered = URIRef("https://schema.org/OrderDelivered")
-    Notary = URIRef("https://schema.org/Notary")
-    MobilePhoneStore = URIRef("https://schema.org/MobilePhoneStore")
-    DrugClass = URIRef("https://schema.org/DrugClass")
-    TransitMap = URIRef("https://schema.org/TransitMap")
-    unnamedSourcesPolicy = URIRef("https://schema.org/unnamedSourcesPolicy")
-    DataFeed = URIRef("https://schema.org/DataFeed")
-    GatedResidenceCommunity = URIRef("https://schema.org/GatedResidenceCommunity")
-    typeOfGood = URIRef("https://schema.org/typeOfGood")
-    Enumeration = URIRef("https://schema.org/Enumeration")
-    checkoutTime = URIRef("https://schema.org/checkoutTime")
-    EatAction = URIRef("https://schema.org/EatAction")
-    billingStart = URIRef("https://schema.org/billingStart")
-    WearableSizeSystemAU = URIRef("https://schema.org/WearableSizeSystemAU")
-    subReservation = URIRef("https://schema.org/subReservation")
-    MerchantReturnUnspecified = URIRef("https://schema.org/MerchantReturnUnspecified")
-    CohortStudy = URIRef("https://schema.org/CohortStudy")
-    SearchAction = URIRef("https://schema.org/SearchAction")
-    requiredMinAge = URIRef("https://schema.org/requiredMinAge")
-    HowToSupply = URIRef("https://schema.org/HowToSupply")
-    DanceEvent = URIRef("https://schema.org/DanceEvent")
-    ReservationHold = URIRef("https://schema.org/ReservationHold")
-    AlignmentObject = URIRef("https://schema.org/AlignmentObject")
-    Waterfall = URIRef("https://schema.org/Waterfall")
-    Quotation = URIRef("https://schema.org/Quotation")
-    elevation = URIRef("https://schema.org/elevation")
-    TrainReservation = URIRef("https://schema.org/TrainReservation")
-    TechArticle = URIRef("https://schema.org/TechArticle")
-    busName = URIRef("https://schema.org/busName")
-    InStorePrepay = URIRef("https://schema.org/InStorePrepay")
-    MediaReviewItem = URIRef("https://schema.org/MediaReviewItem")
-    title = URIRef("https://schema.org/title")
-    MinimumAdvertisedPrice = URIRef("https://schema.org/MinimumAdvertisedPrice")
-    Thursday = URIRef("https://schema.org/Thursday")
-    MathSolver = URIRef("https://schema.org/MathSolver")
-    DownloadAction = URIRef("https://schema.org/DownloadAction")
-    Nonprofit501c6 = URIRef("https://schema.org/Nonprofit501c6")
-    industry = URIRef("https://schema.org/industry")
-    activityDuration = URIRef("https://schema.org/activityDuration")
-    LaserDiscFormat = URIRef("https://schema.org/LaserDiscFormat")
-    applicationSubCategory = URIRef("https://schema.org/applicationSubCategory")
-    EmployerReview = URIRef("https://schema.org/EmployerReview")
-    fileSize = URIRef("https://schema.org/fileSize")
-    Urologic = URIRef("https://schema.org/Urologic")
-    applicationCategory = URIRef("https://schema.org/applicationCategory")
-    TreatmentIndication = URIRef("https://schema.org/TreatmentIndication")
-    Thesis = URIRef("https://schema.org/Thesis")
-    EUEnergyEfficiencyCategoryA = URIRef("https://schema.org/EUEnergyEfficiencyCategoryA")
-    RisksOrComplicationsHealthAspect = URIRef("https://schema.org/RisksOrComplicationsHealthAspect")
-    Date = URIRef("https://schema.org/Date")
-    PayAction = URIRef("https://schema.org/PayAction")
-    Menu = URIRef("https://schema.org/Menu")
-    SubwayStation = URIRef("https://schema.org/SubwayStation")
-    BodyMeasurementBust = URIRef("https://schema.org/BodyMeasurementBust")
-    targetUrl = URIRef("https://schema.org/targetUrl")
-    BuddhistTemple = URIRef("https://schema.org/BuddhistTemple")
-    CreativeWorkSeason = URIRef("https://schema.org/CreativeWorkSeason")
-    possibleTreatment = URIRef("https://schema.org/possibleTreatment")
-    FinancialProduct = URIRef("https://schema.org/FinancialProduct")
-    PostalAddress = URIRef("https://schema.org/PostalAddress")
-    parents = URIRef("https://schema.org/parents")
-    copyrightYear = URIRef("https://schema.org/copyrightYear")
-    BookSeries = URIRef("https://schema.org/BookSeries")
-    SiteNavigationElement = URIRef("https://schema.org/SiteNavigationElement")
-    ItemListOrderDescending = URIRef("https://schema.org/ItemListOrderDescending")
-    LegislativeBuilding = URIRef("https://schema.org/LegislativeBuilding")
-    securityScreening = URIRef("https://schema.org/securityScreening")
-    HealthcareConsideration = URIRef("https://schema.org/HealthcareConsideration")
-    ReceiveAction = URIRef("https://schema.org/ReceiveAction")
-    workHours = URIRef("https://schema.org/workHours")
-    Synagogue = URIRef("https://schema.org/Synagogue")
-    RandomizedTrial = URIRef("https://schema.org/RandomizedTrial")
-    code = URIRef("https://schema.org/code")
-    HinduDiet = URIRef("https://schema.org/HinduDiet")
-    familyName = URIRef("https://schema.org/familyName")
-    UnRegisterAction = URIRef("https://schema.org/UnRegisterAction")
-    spouse = URIRef("https://schema.org/spouse")
-    OriginalShippingFees = URIRef("https://schema.org/OriginalShippingFees")
-    Product = URIRef("https://schema.org/Product")
-    WearableSizeSystemJP = URIRef("https://schema.org/WearableSizeSystemJP")
-    episode = URIRef("https://schema.org/episode")
-    NewsMediaOrganization = URIRef("https://schema.org/NewsMediaOrganization")
-    SeatingMap = URIRef("https://schema.org/SeatingMap")
-    ParkingFacility = URIRef("https://schema.org/ParkingFacility")
-    BusinessAudience = URIRef("https://schema.org/BusinessAudience")
-    CommentPermission = URIRef("https://schema.org/CommentPermission")
-    InsertAction = URIRef("https://schema.org/InsertAction")
-    OnlineEventAttendanceMode = URIRef("https://schema.org/OnlineEventAttendanceMode")
-    MusicAlbum = URIRef("https://schema.org/MusicAlbum")
-    MedicalProcedure = URIRef("https://schema.org/MedicalProcedure")
-    doorTime = URIRef("https://schema.org/doorTime")
-    authenticator = URIRef("https://schema.org/authenticator")
-    PropertyValueSpecification = URIRef("https://schema.org/PropertyValueSpecification")
-    PerformAction = URIRef("https://schema.org/PerformAction")
-    ElementarySchool = URIRef("https://schema.org/ElementarySchool")
-    ReadAction = URIRef("https://schema.org/ReadAction")
-    WearableSizeSystemContinental = URIRef("https://schema.org/WearableSizeSystemContinental")
-    APIReference = URIRef("https://schema.org/APIReference")
-    AMRadioChannel = URIRef("https://schema.org/AMRadioChannel")
-    EventRescheduled = URIRef("https://schema.org/EventRescheduled")
-    ConstraintNode = URIRef("https://schema.org/ConstraintNode")
-    PhoneCarrierPayment = URIRef("https://schema.org/PhoneCarrierPayment")
-    reservationFor = URIRef("https://schema.org/reservationFor")
-    yearlyRevenue = URIRef("https://schema.org/yearlyRevenue")
-    ImageObjectSnapshot = URIRef("https://schema.org/ImageObjectSnapshot")
-    BroadcastFrequencySpecification = URIRef("https://schema.org/BroadcastFrequencySpecification")
-    iswcCode = URIRef("https://schema.org/iswcCode")
-    VinylFormat = URIRef("https://schema.org/VinylFormat")
-    Artery = URIRef("https://schema.org/Artery")
-    FAQPage = URIRef("https://schema.org/FAQPage")
-    SoldOut = URIRef("https://schema.org/SoldOut")
-    VideoGameClip = URIRef("https://schema.org/VideoGameClip")
-    MultiPlayer = URIRef("https://schema.org/MultiPlayer")
-    Prion = URIRef("https://schema.org/Prion")
-    MedicalRiskFactor = URIRef("https://schema.org/MedicalRiskFactor")
-    dateVehicleFirstRegistered = URIRef("https://schema.org/dateVehicleFirstRegistered")
-    HomeGoodsStore = URIRef("https://schema.org/HomeGoodsStore")
-    FireStation = URIRef("https://schema.org/FireStation")
-    Mosque = URIRef("https://schema.org/Mosque")
-    ByBankTransferInAdvance = URIRef("https://schema.org/ByBankTransferInAdvance")
-    membershipNumber = URIRef("https://schema.org/membershipNumber")
-    playMode = URIRef("https://schema.org/playMode")
-    TradeAction = URIRef("https://schema.org/TradeAction")
-    accessibilityHazard = URIRef("https://schema.org/accessibilityHazard")
-    NonprofitType = URIRef("https://schema.org/NonprofitType")
-    polygon = URIRef("https://schema.org/polygon")
-    Radiography = URIRef("https://schema.org/Radiography")
-    Optometric = URIRef("https://schema.org/Optometric")
-    WearableSizeSystemUK = URIRef("https://schema.org/WearableSizeSystemUK")
-    articleBody = URIRef("https://schema.org/articleBody")
-    PrependAction = URIRef("https://schema.org/PrependAction")
-    preOp = URIRef("https://schema.org/preOp")
-    MedicalGuideline = URIRef("https://schema.org/MedicalGuideline")
-    track = URIRef("https://schema.org/track")
-    arrivalTerminal = URIRef("https://schema.org/arrivalTerminal")
-    primaryImageOfPage = URIRef("https://schema.org/primaryImageOfPage")
-    HowToSection = URIRef("https://schema.org/HowToSection")
-    Occupation = URIRef("https://schema.org/Occupation")
-    DoseSchedule = URIRef("https://schema.org/DoseSchedule")
-    PriceTypeEnumeration = URIRef("https://schema.org/PriceTypeEnumeration")
-    VisualArtwork = URIRef("https://schema.org/VisualArtwork")
-    Neck = URIRef("https://schema.org/Neck")
-    Dentist = URIRef("https://schema.org/Dentist")
-    DigitalDocumentPermission = URIRef("https://schema.org/DigitalDocumentPermission")
-    ListenAction = URIRef("https://schema.org/ListenAction")
-    Electrician = URIRef("https://schema.org/Electrician")
-    PreSale = URIRef("https://schema.org/PreSale")
-    ReportedDoseSchedule = URIRef("https://schema.org/ReportedDoseSchedule")
-    DistanceFee = URIRef("https://schema.org/DistanceFee")
-    Question = URIRef("https://schema.org/Question")
-    WinAction = URIRef("https://schema.org/WinAction")
-    WearableSizeGroupMens = URIRef("https://schema.org/WearableSizeGroupMens")
-    EventPostponed = URIRef("https://schema.org/EventPostponed")
-    LymphaticVessel = URIRef("https://schema.org/LymphaticVessel")
-    question = URIRef("https://schema.org/question")
-    ActivateAction = URIRef("https://schema.org/ActivateAction")
-    ExchangeRateSpecification = URIRef("https://schema.org/ExchangeRateSpecification")
-    Review = URIRef("https://schema.org/Review")
-    interactionService = URIRef("https://schema.org/interactionService")
-    QuoteAction = URIRef("https://schema.org/QuoteAction")
-    HobbyShop = URIRef("https://schema.org/HobbyShop")
-    cvdCollectionDate = URIRef("https://schema.org/cvdCollectionDate")
-    LeisureTimeActivity = URIRef("https://schema.org/LeisureTimeActivity")
-    accessMode = URIRef("https://schema.org/accessMode")
-    pregnancyWarning = URIRef("https://schema.org/pregnancyWarning")
-    UnitPriceSpecification = URIRef("https://schema.org/UnitPriceSpecification")
-    SportsClub = URIRef("https://schema.org/SportsClub")
-    QuantitativeValueDistribution = URIRef("https://schema.org/QuantitativeValueDistribution")
-    accessibilityControl = URIRef("https://schema.org/accessibilityControl")
-    PlayAction = URIRef("https://schema.org/PlayAction")
-    Landform = URIRef("https://schema.org/Landform")
-    potentialAction = URIRef("https://schema.org/potentialAction")
-    RefurbishedCondition = URIRef("https://schema.org/RefurbishedCondition")
-    Suspended = URIRef("https://schema.org/Suspended")
-    Terminated = URIRef("https://schema.org/Terminated")
-    insertion = URIRef("https://schema.org/insertion")
-    UsedCondition = URIRef("https://schema.org/UsedCondition")
-    commentText = URIRef("https://schema.org/commentText")
-    Reservoir = URIRef("https://schema.org/Reservoir")
-    MovieRentalStore = URIRef("https://schema.org/MovieRentalStore")
-    totalTime = URIRef("https://schema.org/totalTime")
-    DriveWheelConfigurationValue = URIRef("https://schema.org/DriveWheelConfigurationValue")
-    Airline = URIRef("https://schema.org/Airline")
-    SearchRescueOrganization = URIRef("https://schema.org/SearchRescueOrganization")
-    MusicVenue = URIRef("https://schema.org/MusicVenue")
-    Map = URIRef("https://schema.org/Map")
-    Cardiovascular = URIRef("https://schema.org/Cardiovascular")
-    OrderInTransit = URIRef("https://schema.org/OrderInTransit")
-    videoFrameSize = URIRef("https://schema.org/videoFrameSize")
-    RsvpResponseNo = URIRef("https://schema.org/RsvpResponseNo")
-    secondaryPrevention = URIRef("https://schema.org/secondaryPrevention")
-    CollectionPage = URIRef("https://schema.org/CollectionPage")
-    MedicalContraindication = URIRef("https://schema.org/MedicalContraindication")
-    Ayurvedic = URIRef("https://schema.org/Ayurvedic")
-    Ear = URIRef("https://schema.org/Ear")
-    CreateAction = URIRef("https://schema.org/CreateAction")
-    DVDFormat = URIRef("https://schema.org/DVDFormat")
-    BackgroundNewsArticle = URIRef("https://schema.org/BackgroundNewsArticle")
-    WearableSizeSystemUS = URIRef("https://schema.org/WearableSizeSystemUS")
-    isResizable = URIRef("https://schema.org/isResizable")
-    LifestyleModification = URIRef("https://schema.org/LifestyleModification")
-    Blog = URIRef("https://schema.org/Blog")
-    WearableSizeSystemGS1 = URIRef("https://schema.org/WearableSizeSystemGS1")
-    BodyMeasurementChest = URIRef("https://schema.org/BodyMeasurementChest")
-    BenefitsHealthAspect = URIRef("https://schema.org/BenefitsHealthAspect")
-    isLiveBroadcast = URIRef("https://schema.org/isLiveBroadcast")
-    ParkingMap = URIRef("https://schema.org/ParkingMap")
-    typicalAgeRange = URIRef("https://schema.org/typicalAgeRange")
-    BrainStructure = URIRef("https://schema.org/BrainStructure")
-    Abdomen = URIRef("https://schema.org/Abdomen")
-    Muscle = URIRef("https://schema.org/Muscle")
-    Nose = URIRef("https://schema.org/Nose")
-    RsvpResponseType = URIRef("https://schema.org/RsvpResponseType")
-    SizeSystemImperial = URIRef("https://schema.org/SizeSystemImperial")
-    PublicationEvent = URIRef("https://schema.org/PublicationEvent")
-    assembly = URIRef("https://schema.org/assembly")
-    Audience = URIRef("https://schema.org/Audience")
-    encodings = URIRef("https://schema.org/encodings")
-    Crematorium = URIRef("https://schema.org/Crematorium")
-    DataCatalog = URIRef("https://schema.org/DataCatalog")
-    WearableSizeGroupExtraTall = URIRef("https://schema.org/WearableSizeGroupExtraTall")
-    PerformingGroup = URIRef("https://schema.org/PerformingGroup")
-    Festival = URIRef("https://schema.org/Festival")
-    OrderStatus = URIRef("https://schema.org/OrderStatus")
-    LoanOrCredit = URIRef("https://schema.org/LoanOrCredit")
-    saturatedFatContent = URIRef("https://schema.org/saturatedFatContent")
-    VoteAction = URIRef("https://schema.org/VoteAction")
-    UserPageVisits = URIRef("https://schema.org/UserPageVisits")
-    gameItem = URIRef("https://schema.org/gameItem")
-    responsibilities = URIRef("https://schema.org/responsibilities")
-    BusReservation = URIRef("https://schema.org/BusReservation")
-    BookmarkAction = URIRef("https://schema.org/BookmarkAction")
-    WearableSizeGroupShort = URIRef("https://schema.org/WearableSizeGroupShort")
-    MedicalEnumeration = URIRef("https://schema.org/MedicalEnumeration")
-    timeRequired = URIRef("https://schema.org/timeRequired")
-    MedicalIntangible = URIRef("https://schema.org/MedicalIntangible")
-    Offer = URIRef("https://schema.org/Offer")
-    ComedyEvent = URIRef("https://schema.org/ComedyEvent")
-    LocationFeatureSpecification = URIRef("https://schema.org/LocationFeatureSpecification")
-    DeactivateAction = URIRef("https://schema.org/DeactivateAction")
-    temporal = URIRef("https://schema.org/temporal")
-    Certification = URIRef("https://schema.org/Certification")
-    OnlineFull = URIRef("https://schema.org/OnlineFull")
-    DamagedCondition = URIRef("https://schema.org/DamagedCondition")
-    Code = URIRef("https://schema.org/Code")
-    dosageForm = URIRef("https://schema.org/dosageForm")
-    BackOrder = URIRef("https://schema.org/BackOrder")
-    GroceryStore = URIRef("https://schema.org/GroceryStore")
-    CompoundPriceSpecification = URIRef("https://schema.org/CompoundPriceSpecification")
-    MedicalRiskScore = URIRef("https://schema.org/MedicalRiskScore")
-    greater = URIRef("https://schema.org/greater")
-    PaymentMethod = URIRef("https://schema.org/PaymentMethod")
-    ChildrensEvent = URIRef("https://schema.org/ChildrensEvent")
-    Cash = URIRef("https://schema.org/Cash")
-    playerType = URIRef("https://schema.org/playerType")
-    SportsEvent = URIRef("https://schema.org/SportsEvent")
-    AutoWash = URIRef("https://schema.org/AutoWash")
-    Genetic = URIRef("https://schema.org/Genetic")
+    Article: URIRef
+    MovieSeries: URIRef
+    PhotographAction: URIRef
+    MusicEvent: URIRef
+    ScholarlyArticle: URIRef
+    ScheduleAction: URIRef
+    WholesaleStore: URIRef
+    ConvenienceStore: URIRef
+    PoliticalParty: URIRef
+    PropertyValueSpecification: URIRef
+    AMRadioChannel: URIRef
+    Trip: URIRef
+    MedicalGuidelineContraindication: URIRef
+    DrugPrescriptionStatus: URIRef
+    TextDigitalDocument: URIRef
+    TradeAction: URIRef
+    TelevisionStation: URIRef
+    DeliveryEvent: URIRef
+    SomeProducts: URIRef
+    AutomotiveBusiness: URIRef
+    QuantitativeValueDistribution: URIRef
+    Aquarium: URIRef
+    MedicalConditionStage: URIRef
+    AuthorizeAction: URIRef
+    ReviewAction: URIRef
+    MediaReview: URIRef
+    CourseInstance: URIRef
+    Taxon: URIRef
+    LocalBusiness: URIRef
+    TennisComplex: URIRef
+    Consortium: URIRef
+    Enumeration: URIRef
+    Preschool: URIRef
+    CheckOutAction: URIRef
+    RadioSeries: URIRef
+    Order: URIRef
+    PronounceableText: URIRef
+    DigitalPlatformEnumeration: URIRef
+    PaymentStatusType: URIRef
+    StatusEnumeration: URIRef
+    Beach: URIRef
+    Mosque: URIRef
+    MedicalGuideline: URIRef
+    ResearchOrganization: URIRef
+    SearchResultsPage: URIRef
+    BloodTest: URIRef
+    MedicalSign: URIRef
+    CatholicChurch: URIRef
+    MedicalObservationalStudyDesign: URIRef
+    City: URIRef
+    VideoObject: URIRef
+    PrependAction: URIRef
+    Hotel: URIRef
+    AcceptAction: URIRef
+    Text: URIRef
+    Motorcycle: URIRef
+    ReplaceAction: URIRef
+    EducationalOccupationalCredential: URIRef
+    LiquorStore: URIRef
+    ToyStore: URIRef
+    LodgingBusiness: URIRef
+    ChildrensEvent: URIRef
+    AutomatedTeller: URIRef
+    SportsClub: URIRef
+    BusOrCoach: URIRef
+    PriceSpecification: URIRef
+    AutoRental: URIRef
+    MerchantReturnPolicy: URIRef
+    EmployeeRole: URIRef
+    PresentationDigitalDocument: URIRef
+    Date: URIRef
+    PostalAddress: URIRef
+    AdultOrientedEnumeration: URIRef
+    PerformAction: URIRef
+    Guide: URIRef
+    StructuredValue: URIRef
+    TattooParlor: URIRef
+    WearableSizeGroupEnumeration: URIRef
+    EducationalAudience: URIRef
+    Vessel: URIRef
+    TechArticle: URIRef
+    BroadcastChannel: URIRef
+    Sculpture: URIRef
+    MedicalIndication: URIRef
+    PublicSwimmingPool: URIRef
+    MusicAlbumReleaseType: URIRef
+    Thesis: URIRef
+    NGO: URIRef
+    ComicIssue: URIRef
+    TaxiService: URIRef
+    ConsumeAction: URIRef
+    StatisticalVariable: URIRef
+    Audiobook: URIRef
+    BreadcrumbList: URIRef
+    EducationEvent: URIRef
+    UserComments: URIRef
+    Diet: URIRef
+    OfficeEquipmentStore: URIRef
+    WantAction: URIRef
+    HowTo: URIRef
+    GovernmentBenefitsType: URIRef
+    State: URIRef
+    AccountingService: URIRef
+    CheckAction: URIRef
+    BookmarkAction: URIRef
+    MemberProgramTier: URIRef
+    AddAction: URIRef
+    DayOfWeek: URIRef
+    DrugCost: URIRef
+    Landform: URIRef
+    CorrectionComment: URIRef
+    Poster: URIRef
+    Boolean: URIRef
+    MedicalAudience: URIRef
+    PaymentChargeSpecification: URIRef
+    LakeBodyOfWater: URIRef
+    SocialMediaPosting: URIRef
+    OccupationalTherapy: URIRef
+    ReservationPackage: URIRef
+    Embassy: URIRef
+    AskPublicNewsArticle: URIRef
+    DaySpa: URIRef
+    CssSelectorType: URIRef
+    UserDownloads: URIRef
+    LibrarySystem: URIRef
+    ConstraintNode: URIRef
+    ParcelDelivery: URIRef
+    ProfilePage: URIRef
+    PostOffice: URIRef
+    MedicalContraindication: URIRef
+    OfferForLease: URIRef
+    LegalValueLevel: URIRef
+    Pharmacy: URIRef
+    TheaterEvent: URIRef
+    HealthTopicContent: URIRef
+    ResumeAction: URIRef
+    Property: URIRef
+    OpinionNewsArticle: URIRef
+    FinancialService: URIRef
+    Menu: URIRef
+    PlayAction: URIRef
+    CoverArt: URIRef
+    ReturnFeesEnumeration: URIRef
+    CafeOrCoffeeShop: URIRef
+    AdultEntertainment: URIRef
+    Newspaper: URIRef
+    TypeAndQuantityNode: URIRef
+    MapCategoryType: URIRef
+    BedAndBreakfast: URIRef
+    SizeSystemEnumeration: URIRef
+    MenuItem: URIRef
+    CriticReview: URIRef
+    HairSalon: URIRef
+    AdministrativeArea: URIRef
+    NailSalon: URIRef
+    Painting: URIRef
+    CollegeOrUniversity: URIRef
+    RadioBroadcastService: URIRef
+    Researcher: URIRef
+    SiteNavigationElement: URIRef
+    PublicationEvent: URIRef
+    GovernmentBuilding: URIRef
+    ComputerLanguage: URIRef
+    DrugCostCategory: URIRef
+    SeaBodyOfWater: URIRef
+    TheaterGroup: URIRef
+    ActionStatusType: URIRef
+    Certification: URIRef
+    DryCleaningOrLaundry: URIRef
+    ImageObjectSnapshot: URIRef
+    Game: URIRef
+    TouristTrip: URIRef
+    CompoundPriceSpecification: URIRef
+    MovieClip: URIRef
+    Action: URIRef
+    WPHeader: URIRef
+    DiscoverAction: URIRef
+    MedicalRiskEstimator: URIRef
+    CommunicateAction: URIRef
+    RadioEpisode: URIRef
+    HowToStep: URIRef
+    TravelAction: URIRef
+    CityHall: URIRef
+    MediaGallery: URIRef
+    WinAction: URIRef
+    Winery: URIRef
+    PerformingArtsTheater: URIRef
+    VideoGallery: URIRef
+    Crematorium: URIRef
+    MedicalDevicePurpose: URIRef
+    ConfirmAction: URIRef
+    PhysicalExam: URIRef
+    LendAction: URIRef
+    MedicalBusiness: URIRef
+    MolecularEntity: URIRef
+    NoteDigitalDocument: URIRef
+    MotorcycleDealer: URIRef
+    Table: URIRef
+    MediaSubscription: URIRef
+    WearableMeasurementTypeEnumeration: URIRef
+    CategoryCodeSet: URIRef
+    MeasurementMethodEnum: URIRef
+    ChemicalSubstance: URIRef
+    LoanOrCredit: URIRef
+    QualitativeValue: URIRef
+    BrokerageAccount: URIRef
+    DepositAccount: URIRef
+    DefinedRegion: URIRef
+    Integer: URIRef
+    Residence: URIRef
+    FAQPage: URIRef
+    LiveBlogPosting: URIRef
+    RiverBodyOfWater: URIRef
+    MemberProgram: URIRef
+    MusicVideoObject: URIRef
+    VirtualLocation: URIRef
+    BoatTrip: URIRef
+    Clip: URIRef
+    Taxi: URIRef
+    Distillery: URIRef
+    DepartAction: URIRef
+    Organization: URIRef
+    ReactAction: URIRef
+    ReplyAction: URIRef
+    FinancialProduct: URIRef
+    Nerve: URIRef
+    CarUsageType: URIRef
+    NLNonprofitType: URIRef
+    Intangible: URIRef
+    TrainReservation: URIRef
+    Language: URIRef
+    MovieTheater: URIRef
+    WebAPI: URIRef
+    VideoGameSeries: URIRef
+    Chapter: URIRef
+    XPathType: URIRef
+    DepartmentStore: URIRef
+    Playground: URIRef
+    BusinessFunction: URIRef
+    Blog: URIRef
+    BoatReservation: URIRef
+    FireStation: URIRef
+    Photograph: URIRef
+    PerformingGroup: URIRef
+    InvestmentOrDeposit: URIRef
+    Campground: URIRef
+    ChooseAction: URIRef
+    ActivateAction: URIRef
+    TierBenefitEnumeration: URIRef
+    TreatmentIndication: URIRef
+    ItemList: URIRef
+    DanceGroup: URIRef
+    OrderStatus: URIRef
+    BusStop: URIRef
+    OwnershipInfo: URIRef
+    HVACBusiness: URIRef
+    HowToItem: URIRef
+    PayAction: URIRef
+    Notary: URIRef
+    LoseAction: URIRef
+    Continent: URIRef
+    DrugStrength: URIRef
+    Physician: URIRef
+    RoofingContractor: URIRef
+    HinduTemple: URIRef
+    DietarySupplement: URIRef
+    VoteAction: URIRef
+    DownloadAction: URIRef
+    QAPage: URIRef
+    MediaManipulationRatingEnumeration: URIRef
+    HealthInsurancePlan: URIRef
+    Airport: URIRef
+    MortgageLoan: URIRef
+    CDCPMDRecord: URIRef
+    DDxElement: URIRef
+    DataType: URIRef
+    Joint: URIRef
+    Bakery: URIRef
+    TVSeries: URIRef
+    LegalForceStatus: URIRef
+    Offer: URIRef
+    ImageObject: URIRef
+    HowToSection: URIRef
+    RecyclingCenter: URIRef
+    SoftwareSourceCode: URIRef
+    ShareAction: URIRef
+    ApprovedIndication: URIRef
+    DonateAction: URIRef
+    CreativeWork: URIRef
+    RVPark: URIRef
+    MerchantReturnPolicySeasonalOverride: URIRef
+    PlanAction: URIRef
+    Course: URIRef
+    BusStation: URIRef
+    WorkBasedProgram: URIRef
+    MovieRentalStore: URIRef
+    UnRegisterAction: URIRef
+    Canal: URIRef
+    PhysicalActivity: URIRef
+    MedicalGuidelineRecommendation: URIRef
+    JobPosting: URIRef
+    EmployerAggregateRating: URIRef
+    Play: URIRef
+    PlaceOfWorship: URIRef
+    QuoteAction: URIRef
+    GovernmentOffice: URIRef
+    EmailMessage: URIRef
+    MedicalWebPage: URIRef
+    VisualArtwork: URIRef
+    CommentAction: URIRef
+    WriteAction: URIRef
+    OfferForPurchase: URIRef
+    PaymentService: URIRef
+    GeospatialGeometry: URIRef
+    Synagogue: URIRef
+    ComedyEvent: URIRef
+    DataCatalog: URIRef
+    HealthAspectEnumeration: URIRef
+    MusicReleaseFormatType: URIRef
+    ExerciseAction: URIRef
+    EventSeries: URIRef
+    AdvertiserContentArticle: URIRef
+    TVSeason: URIRef
+    ShippingDeliveryTime: URIRef
+    Claim: URIRef
+    Episode: URIRef
+    OfferCatalog: URIRef
+    SportsActivityLocation: URIRef
+    CurrencyConversionService: URIRef
+    AmpStory: URIRef
+    MedicalRiskScore: URIRef
+    LinkRole: URIRef
+    RadiationTherapy: URIRef
+    HowToTool: URIRef
+    TakeAction: URIRef
+    BorrowAction: URIRef
+    ReturnAction: URIRef
+    EmploymentAgency: URIRef
+    EducationalOccupationalProgram: URIRef
+    GolfCourse: URIRef
+    Barcode: URIRef
+    Attorney: URIRef
+    Bridge: URIRef
+    TextObject: URIRef
+    Recipe: URIRef
+    Map: URIRef
+    GamePlayMode: URIRef
+    ComicSeries: URIRef
+    Distance: URIRef
+    PublicToilet: URIRef
+    GasStation: URIRef
+    TrackAction: URIRef
+    MediaEnumeration: URIRef
+    VeterinaryCare: URIRef
+    AnatomicalStructure: URIRef
+    ReserveAction: URIRef
+    ShippingRateSettings: URIRef
+    PodcastSeason: URIRef
+    GardenStore: URIRef
+    IgnoreAction: URIRef
+    SingleFamilyResidence: URIRef
+    Event: URIRef
+    Church: URIRef
+    ExercisePlan: URIRef
+    Schedule: URIRef
+    Quiz: URIRef
+    InsuranceAgency: URIRef
+    RadioSeason: URIRef
+    Plumber: URIRef
+    Suite: URIRef
+    AlignmentObject: URIRef
+    MerchantReturnEnumeration: URIRef
+    Store: URIRef
+    DisagreeAction: URIRef
+    PreOrderAction: URIRef
+    Brand: URIRef
+    Resort: URIRef
+    InformAction: URIRef
+    TVEpisode: URIRef
+    ComputerStore: URIRef
+    MedicalTest: URIRef
+    ArriveAction: URIRef
+    DiscussionForumPosting: URIRef
+    UserPageVisits: URIRef
+    NutritionInformation: URIRef
+    Product: URIRef
+    AssignAction: URIRef
+    LifestyleModification: URIRef
+    SolveMathAction: URIRef
+    MusicComposition: URIRef
+    MoveAction: URIRef
+    ListenAction: URIRef
+    MedicalTrial: URIRef
+    BookFormatType: URIRef
+    AgreeAction: URIRef
+    DrugLegalStatus: URIRef
+    PhysicalTherapy: URIRef
+    Energy: URIRef
+    MedicalProcedure: URIRef
+    TVClip: URIRef
+    ArchiveComponent: URIRef
+    EmployerReview: URIRef
+    SatiricalArticle: URIRef
+    WebSite: URIRef
+    PriceTypeEnumeration: URIRef
+    RecommendedDoseSchedule: URIRef
+    EntertainmentBusiness: URIRef
+    AmusementPark: URIRef
+    TireShop: URIRef
+    EventVenue: URIRef
+    OrganizationRole: URIRef
+    OnlineStore: URIRef
+    ReturnMethodEnumeration: URIRef
+    Person: URIRef
+    TouristInformationCenter: URIRef
+    SaleEvent: URIRef
+    Country: URIRef
+    ComedyClub: URIRef
+    MobileApplication: URIRef
+    MonetaryAmount: URIRef
+    SocialEvent: URIRef
+    UKNonprofitType: URIRef
+    DriveWheelConfigurationValue: URIRef
+    MeetingRoom: URIRef
+    ProgramMembership: URIRef
+    ProductModel: URIRef
+    HobbyShop: URIRef
+    Role: URIRef
+    IndividualProduct: URIRef
+    MedicalScholarlyArticle: URIRef
+    EndorseAction: URIRef
+    StatisticalPopulation: URIRef
+    Accommodation: URIRef
+    Apartment: URIRef
+    DatedMoneySpecification: URIRef
+    OrganizeAction: URIRef
+    DigitalDocumentPermission: URIRef
+    MarryAction: URIRef
+    QuantitativeValue: URIRef
+    UserCheckins: URIRef
+    PostalCodeRangeSpecification: URIRef
+    Hostel: URIRef
+    USNonprofitType: URIRef
+    CovidTestingFacility: URIRef
+    FlightReservation: URIRef
+    ImageGallery: URIRef
+    Recommendation: URIRef
+    FoodEstablishment: URIRef
+    Question: URIRef
+    PriceComponentTypeEnumeration: URIRef
+    BookSeries: URIRef
+    Car: URIRef
+    ReadAction: URIRef
+    RadioClip: URIRef
+    LikeAction: URIRef
+    GiveAction: URIRef
+    ProductGroup: URIRef
+    EUEnergyEfficiencyEnumeration: URIRef
+    Locksmith: URIRef
+    LegislationObject: URIRef
+    DrugPregnancyCategory: URIRef
+    DigitalDocument: URIRef
+    MedicalProcedureType: URIRef
+    Float: URIRef
+    HomeGoodsStore: URIRef
+    BusinessEvent: URIRef
+    MedicineSystem: URIRef
+    FoodService: URIRef
+    VideoGameClip: URIRef
+    DataFeed: URIRef
+    Room: URIRef
+    SportsOrganization: URIRef
+    SpecialAnnouncement: URIRef
+    VitalSign: URIRef
+    Time: URIRef
+    BroadcastService: URIRef
+    Legislation: URIRef
+    BoatTerminal: URIRef
+    Brewery: URIRef
+    GovernmentOrganization: URIRef
+    EnergyEfficiencyEnumeration: URIRef
+    GeoCircle: URIRef
+    HousePainter: URIRef
+    SheetMusic: URIRef
+    WorkersUnion: URIRef
+    Book: URIRef
+    EndorsementRating: URIRef
+    RadioStation: URIRef
+    MathSolver: URIRef
+    ElectronicsStore: URIRef
+    MedicalSpecialty: URIRef
+    WebContent: URIRef
+    ComicStory: URIRef
+    DataFeedItem: URIRef
+    MensClothingStore: URIRef
+    MotorcycleRepair: URIRef
+    PhysiciansOffice: URIRef
+    BowlingAlley: URIRef
+    FundingAgency: URIRef
+    MedicalImagingTechnique: URIRef
+    LegalService: URIRef
+    OceanBodyOfWater: URIRef
+    AutoPartsStore: URIRef
+    CompleteDataFeed: URIRef
+    BedDetails: URIRef
+    CookAction: URIRef
+    AggregateRating: URIRef
+    Festival: URIRef
+    Vehicle: URIRef
+    _3DModel: URIRef
+    InviteAction: URIRef
+    DeliveryMethod: URIRef
+    LeaveAction: URIRef
+    SportsTeam: URIRef
+    DiagnosticProcedure: URIRef
+    Hackathon: URIRef
+    DislikeAction: URIRef
+    WearAction: URIRef
+    PodcastEpisode: URIRef
+    MedicalCode: URIRef
+    TieAction: URIRef
+    ReturnLabelSourceEnumeration: URIRef
+    PhysicalActivityCategory: URIRef
+    IPTCDigitalSourceEnumeration: URIRef
+    InfectiousDisease: URIRef
+    RentalCarReservation: URIRef
+    ReportedDoseSchedule: URIRef
+    UnitPriceSpecification: URIRef
+    FilmAction: URIRef
+    MeasurementTypeEnumeration: URIRef
+    BlogPosting: URIRef
+    UpdateAction: URIRef
+    BikeStore: URIRef
+    Ligament: URIRef
+    OfferShippingDetails: URIRef
+    Season: URIRef
+    MusicGroup: URIRef
+    Grant: URIRef
+    EventReservation: URIRef
+    RepaymentSpecification: URIRef
+    TouristAttraction: URIRef
+    Thing: URIRef
+    WarrantyScope: URIRef
+    Vein: URIRef
+    MedicalObservationalStudy: URIRef
+    FloorPlan: URIRef
+    PodcastSeries: URIRef
+    GenderType: URIRef
+    EatAction: URIRef
+    EntryPoint: URIRef
+    MedicalDevice: URIRef
+    VacationRental: URIRef
+    Manuscript: URIRef
+    MedicalEvidenceLevel: URIRef
+    HardwareStore: URIRef
+    ClaimReview: URIRef
+    TouristDestination: URIRef
+    WebPageElement: URIRef
+    Rating: URIRef
+    CreateAction: URIRef
+    Report: URIRef
+    MedicalOrganization: URIRef
+    LodgingReservation: URIRef
+    AssessAction: URIRef
+    RsvpAction: URIRef
+    EnergyStarEnergyEfficiencyEnumeration: URIRef
+    EmergencyService: URIRef
+    BioChemEntity: URIRef
+    AutoRepair: URIRef
+    MonetaryGrant: URIRef
+    EducationalOrganization: URIRef
+    PathologyTest: URIRef
+    SoftwareApplication: URIRef
+    MedicalStudy: URIRef
+    BusTrip: URIRef
+    ApplyAction: URIRef
+    GeoShape: URIRef
+    ServiceChannel: URIRef
+    WebApplication: URIRef
+    MonetaryAmountDistribution: URIRef
+    PaymentCard: URIRef
+    TrainTrip: URIRef
+    IceCreamShop: URIRef
+    MaximumDoseSchedule: URIRef
+    Syllabus: URIRef
+    Review: URIRef
+    MusicAlbum: URIRef
+    HealthClub: URIRef
+    GovernmentService: URIRef
+    Dentist: URIRef
+    CreativeWorkSeries: URIRef
+    CollectionPage: URIRef
+    PoliceStation: URIRef
+    Ticket: URIRef
+    MedicalSymptom: URIRef
+    EventStatusType: URIRef
+    DataDownload: URIRef
+    SuspendAction: URIRef
+    WarrantyPromise: URIRef
+    GameAvailabilityEnumeration: URIRef
+    NewsArticle: URIRef
+    HealthAndBeautyBusiness: URIRef
+    ArchiveOrganization: URIRef
+    MusicAlbumProductionType: URIRef
+    SellAction: URIRef
+    PawnShop: URIRef
+    WPAdBlock: URIRef
+    MedicalClinic: URIRef
+    FindAction: URIRef
+    Seat: URIRef
+    Artery: URIRef
+    NewsMediaOrganization: URIRef
+    UseAction: URIRef
+    ShoppingCenter: URIRef
+    Optician: URIRef
+    DoseSchedule: URIRef
+    AboutPage: URIRef
+    AutoBodyShop: URIRef
+    AutoWash: URIRef
+    OrderAction: URIRef
+    MedicalTestPanel: URIRef
+    DiagnosticLab: URIRef
+    InteractionCounter: URIRef
+    SuperficialAnatomy: URIRef
+    MiddleSchool: URIRef
+    BackgroundNewsArticle: URIRef
+    ComicCoverArt: URIRef
+    SurgicalProcedure: URIRef
+    CampingPitch: URIRef
+    HighSchool: URIRef
+    Waterfall: URIRef
+    WPFooter: URIRef
+    PublicationIssue: URIRef
+    MedicalEnumeration: URIRef
+    MedicalRiskFactor: URIRef
+    ClothingStore: URIRef
+    DefenceEstablishment: URIRef
+    BedType: URIRef
+    APIReference: URIRef
+    Florist: URIRef
+    CreditCard: URIRef
+    JewelryStore: URIRef
+    WPSideBar: URIRef
+    MovingCompany: URIRef
+    Dataset: URIRef
+    UserLikes: URIRef
+    TravelAgency: URIRef
+    DeactivateAction: URIRef
+    DateTime: URIRef
+    VideoObjectSnapshot: URIRef
+    Atlas: URIRef
+    AudioObjectSnapshot: URIRef
+    MotorizedBicycle: URIRef
+    PaintAction: URIRef
+    PsychologicalTreatment: URIRef
+    Periodical: URIRef
+    MedicalTrialDesign: URIRef
+    MediaObject: URIRef
+    CheckInAction: URIRef
+    WearableSizeSystemEnumeration: URIRef
+    Motel: URIRef
+    Conversation: URIRef
+    AnalysisNewsArticle: URIRef
+    BarOrPub: URIRef
+    ItemListOrderType: URIRef
+    ContactPoint: URIRef
+    Pond: URIRef
+    Answer: URIRef
+    RestrictedDiet: URIRef
+    Code: URIRef
+    ScreeningEvent: URIRef
+    CableOrSatelliteService: URIRef
+    SchoolDistrict: URIRef
+    CheckoutPage: URIRef
+    MedicalCause: URIRef
+    Substance: URIRef
+    MenuSection: URIRef
+    BroadcastEvent: URIRef
+    InsertAction: URIRef
+    EventAttendanceModeEnumeration: URIRef
+    ShortStory: URIRef
+    UserPlays: URIRef
+    GatedResidenceCommunity: URIRef
+    SizeGroupEnumeration: URIRef
+    OutletStore: URIRef
+    MediaReviewItem: URIRef
+    Restaurant: URIRef
+    Electrician: URIRef
+    RsvpResponseType: URIRef
+    AllocateAction: URIRef
+    WatchAction: URIRef
+    DeleteAction: URIRef
+    URL: URIRef
+    PetStore: URIRef
+    ProductCollection: URIRef
+    ActionAccessSpecification: URIRef
+    Reservation: URIRef
+    FundingScheme: URIRef
+    RentAction: URIRef
+    FurnitureStore: URIRef
+    BookStore: URIRef
+    HowToSupply: URIRef
+    BuddhistTemple: URIRef
+    OrderItem: URIRef
+    AnatomicalSystem: URIRef
+    TransferAction: URIRef
+    AudioObject: URIRef
+    JoinAction: URIRef
+    SpreadsheetDigitalDocument: URIRef
+    FastFoodRestaurant: URIRef
+    Protein: URIRef
+    SkiResort: URIRef
+    MedicalEntity: URIRef
+    ReceiveAction: URIRef
+    Volcano: URIRef
+    DanceEvent: URIRef
+    MedicalIntangible: URIRef
+    UserReview: URIRef
+    BusReservation: URIRef
+    GeneralContractor: URIRef
+    Patient: URIRef
+    HyperToc: URIRef
+    RealEstateAgent: URIRef
+    Bone: URIRef
+    HomeAndConstructionBusiness: URIRef
+    RealEstateListing: URIRef
+    Drug: URIRef
+    Quantity: URIRef
+    Library: URIRef
+    School: URIRef
+    MedicalRiskCalculator: URIRef
+    DrawAction: URIRef
+    GeoCoordinates: URIRef
+    StadiumOrArena: URIRef
+    InstallAction: URIRef
+    ResearchProject: URIRef
+    SportingGoodsStore: URIRef
+    FollowAction: URIRef
+    ImagingTest: URIRef
+    Mountain: URIRef
+    Service: URIRef
+    ControlAction: URIRef
+    BoardingPolicyType: URIRef
+    PlayGameAction: URIRef
+    Collection: URIRef
+    ParkingFacility: URIRef
+    ApartmentComplex: URIRef
+    CivicStructure: URIRef
+    Courthouse: URIRef
+    SearchAction: URIRef
+    SendAction: URIRef
+    DefinedTerm: URIRef
+    BusinessAudience: URIRef
+    EngineSpecification: URIRef
+    FMRadioChannel: URIRef
+    AggregateOffer: URIRef
+    Audience: URIRef
+    DrugClass: URIRef
+    Reservoir: URIRef
+    AnimalShelter: URIRef
+    HealthPlanFormulary: URIRef
+    HowToDirection: URIRef
+    ReservationStatusType: URIRef
+    Specialty: URIRef
+    LearningResource: URIRef
+    TrainStation: URIRef
+    LymphaticVessel: URIRef
+    Corporation: URIRef
+    ChildCare: URIRef
+    ArtGallery: URIRef
+    MedicalTherapy: URIRef
+    Duration: URIRef
+    Airline: URIRef
+    BodyMeasurementTypeEnumeration: URIRef
+    SubwayStation: URIRef
+    MusicRecording: URIRef
+    Drawing: URIRef
+    WebPage: URIRef
+    OnlineBusiness: URIRef
+    ReviewNewsArticle: URIRef
+    FoodEvent: URIRef
+    LandmarksOrHistoricalBuildings: URIRef
+    CategoryCode: URIRef
+    SportsEvent: URIRef
+    UserPlusOnes: URIRef
+    Number: URIRef
+    NightClub: URIRef
+    TelevisionChannel: URIRef
+    PreventionIndication: URIRef
+    HealthPlanNetwork: URIRef
+    BankAccount: URIRef
+    ShoeStore: URIRef
+    SpeakableSpecification: URIRef
+    LiteraryEvent: URIRef
+    GameServer: URIRef
+    RefundTypeEnumeration: URIRef
+    SeekToAction: URIRef
+    Hospital: URIRef
+    HowToTip: URIRef
+    BeautySalon: URIRef
+    OfferItemCondition: URIRef
+    BrainStructure: URIRef
+    AppendAction: URIRef
+    AchieveAction: URIRef
+    MusicVenue: URIRef
+    Series: URIRef
+    Statement: URIRef
+    Permit: URIRef
+    AskAction: URIRef
+    HealthPlanCostSharingSpecification: URIRef
+    Observation: URIRef
+    OnDemandEvent: URIRef
+    GovernmentPermit: URIRef
+    NonprofitType: URIRef
+    Casino: URIRef
+    MoneyTransfer: URIRef
+    ListItem: URIRef
+    Mass: URIRef
+    MusicRelease: URIRef
+    Invoice: URIRef
+    ProfessionalService: URIRef
+    Cemetery: URIRef
+    DrinkAction: URIRef
+    BefriendAction: URIRef
+    PaymentMethod: URIRef
+    DefinedTermSet: URIRef
+    ViewAction: URIRef
+    Museum: URIRef
+    Park: URIRef
+    GameServerStatus: URIRef
+    UserInteraction: URIRef
+    ItemPage: URIRef
+    SizeSpecification: URIRef
+    Flight: URIRef
+    Quotation: URIRef
+    SubscribeAction: URIRef
+    Comment: URIRef
+    House: URIRef
+    MobilePhoneStore: URIRef
+    LegislativeBuilding: URIRef
+    MedicalSignOrSymptom: URIRef
+    Muscle: URIRef
+    ParentAudience: URIRef
+    RegisterAction: URIRef
+    BusinessEntityType: URIRef
+    LocationFeatureSpecification: URIRef
+    OccupationalExperienceRequirements: URIRef
+    RejectAction: URIRef
+    CreativeWorkSeason: URIRef
+    InvestmentFund: URIRef
+    ItemAvailability: URIRef
+    ReportageNewsArticle: URIRef
+    TipAction: URIRef
+    BuyAction: URIRef
+    VisualArtsEvent: URIRef
+    BodyOfWater: URIRef
+    Message: URIRef
+    TaxiReservation: URIRef
+    HyperTocEntry: URIRef
+    Class: URIRef
+    ContactPage: URIRef
+    Demand: URIRef
+    FoodEstablishmentReservation: URIRef
+    IndividualPhysician: URIRef
+    CertificationStatusEnumeration: URIRef
+    PerformanceRole: URIRef
+    MedicalStudyStatus: URIRef
+    SteeringPositionValue: URIRef
+    ContactPointOption: URIRef
+    DeliveryChargeSpecification: URIRef
+    ExerciseGym: URIRef
+    BankOrCreditUnion: URIRef
+    OpeningHoursSpecification: URIRef
+    Place: URIRef
+    PaymentMethodType: URIRef
+    GroceryStore: URIRef
+    Movie: URIRef
+    CancelAction: URIRef
+    Zoo: URIRef
+    UserBlocks: URIRef
+    MedicalCondition: URIRef
+    PropertyValue: URIRef
+    TherapeuticProcedure: URIRef
+    Project: URIRef
+    InternetCafe: URIRef
+    AutoDealer: URIRef
+    SearchRescueOrganization: URIRef
+    Occupation: URIRef
+    TaxiStand: URIRef
+    UserTweets: URIRef
+    PalliativeProcedure: URIRef
+    MedicalAudienceType: URIRef
+    Gene: URIRef
+    ExhibitionEvent: URIRef
+    HotelRoom: URIRef
+    VideoGame: URIRef
+    RadioChannel: URIRef
+    PublicationVolume: URIRef
+    EnergyConsumptionDetails: URIRef
+    DeliveryTimeSettings: URIRef
+    MusicPlaylist: URIRef
+    InteractAction: URIRef
+    BroadcastFrequencySpecification: URIRef
+    ElementarySchool: URIRef
+    MusicStore: URIRef
+    InfectiousAgentClass: URIRef
+    PeopleAudience: URIRef
+    SelfStorage: URIRef
+    ExchangeRateSpecification: URIRef
+    DigitalDocumentPermissionType: URIRef
+    associatedArticle: URIRef
+    legislationChanges: URIRef
+    interactionStatistic: URIRef
+    dayOfWeek: URIRef
+    boardingPolicy: URIRef
+    printPage: URIRef
+    trainName: URIRef
+    serviceType: URIRef
+    targetPlatform: URIRef
+    doseSchedule: URIRef
+    tissueSample: URIRef
+    exercisePlan: URIRef
+    numberOfItems: URIRef
+    name: URIRef
+    usesHealthPlanIdStandard: URIRef
+    serviceLocation: URIRef
+    legalName: URIRef
+    hasCredential: URIRef
+    arrivalTerminal: URIRef
+    equal: URIRef
+    preparation: URIRef
+    photos: URIRef
+    releaseDate: URIRef
+    loanTerm: URIRef
+    hasTierRequirement: URIRef
+    disambiguatingDescription: URIRef
+    hasMemberProgram: URIRef
+    certificationStatus: URIRef
+    itemOffered: URIRef
+    physicalRequirement: URIRef
+    proteinContent: URIRef
+    query: URIRef
+    winner: URIRef
+    vehicleSeatingCapacity: URIRef
+    performers: URIRef
+    syllabusSections: URIRef
+    memoryRequirements: URIRef
+    sodiumContent: URIRef
+    availabilityStarts: URIRef
+    restPeriods: URIRef
+    organizer: URIRef
+    healthPlanCostSharing: URIRef
+    branch: URIRef
+    colleague: URIRef
+    termsOfService: URIRef
+    emissionsCO2: URIRef
+    contactPoints: URIRef
+    executableLibraryName: URIRef
+    numberOfPreviousOwners: URIRef
+    broadcastFrequency: URIRef
+    eligibleDuration: URIRef
+    percentile90: URIRef
+    spokenByCharacter: URIRef
+    contributor: URIRef
+    pathophysiology: URIRef
+    netWorth: URIRef
+    beneficiaryBank: URIRef
+    knowsAbout: URIRef
+    departureGate: URIRef
+    additionalProperty: URIRef
+    inSupportOf: URIRef
+    iupacName: URIRef
+    pregnancyWarning: URIRef
+    lesser: URIRef
+    workPerformed: URIRef
+    requiredMinAge: URIRef
+    diagnosis: URIRef
+    publishingPrinciples: URIRef
+    realEstateAgent: URIRef
+    price: URIRef
+    returnFees: URIRef
+    mobileUrl: URIRef
+    exampleOfWork: URIRef
+    foodEstablishment: URIRef
+    actor: URIRef
+    smiles: URIRef
+    payload: URIRef
+    coverageStartTime: URIRef
+    byDay: URIRef
+    meetsEmissionStandard: URIRef
+    availableThrough: URIRef
+    servicePhone: URIRef
+    qualifications: URIRef
+    percentile10: URIRef
+    includesAttraction: URIRef
+    departureTime: URIRef
+    relatedStructure: URIRef
+    competitor: URIRef
+    alumni: URIRef
+    webFeed: URIRef
+    contentReferenceTime: URIRef
+    isSimilarTo: URIRef
+    inPlaylist: URIRef
+    firstPerformance: URIRef
+    toLocation: URIRef
+    iataCode: URIRef
+    gamePlatform: URIRef
+    bloodSupply: URIRef
+    availability: URIRef
+    serialNumber: URIRef
+    model: URIRef
+    device: URIRef
+    isicV4: URIRef
+    hasCourse: URIRef
+    surface: URIRef
+    contactType: URIRef
+    fileFormat: URIRef
+    membershipPointsEarned: URIRef
+    employmentType: URIRef
+    priceRange: URIRef
+    pagination: URIRef
+    strengthUnit: URIRef
+    menu: URIRef
+    aspect: URIRef
+    broadcastTimezone: URIRef
+    contentSize: URIRef
+    departureAirport: URIRef
+    actionProcess: URIRef
+    applicationDeadline: URIRef
+    additionalVariable: URIRef
+    programName: URIRef
+    steeringPosition: URIRef
+    frequency: URIRef
+    relatedLink: URIRef
+    beforeMedia: URIRef
+    broadcaster: URIRef
+    prepTime: URIRef
+    buyer: URIRef
+    drugClass: URIRef
+    productionDate: URIRef
+    copyrightNotice: URIRef
+    partOfEpisode: URIRef
+    includedDataCatalog: URIRef
+    departureBoatTerminal: URIRef
+    valueMaxLength: URIRef
+    lesserOrEqual: URIRef
+    jobImmediateStart: URIRef
+    carrier: URIRef
+    resultReview: URIRef
+    letterer: URIRef
+    eligibilityToWorkRequirement: URIRef
+    seatSection: URIRef
+    originalMediaLink: URIRef
+    trailer: URIRef
+    incentiveCompensation: URIRef
+    acceptedOffer: URIRef
+    potentialAction: URIRef
+    benefitsSummaryUrl: URIRef
+    usedToDiagnose: URIRef
+    legalStatus: URIRef
+    procedure: URIRef
+    cvdNumICUBeds: URIRef
+    regionDrained: URIRef
+    founder: URIRef
+    vehicleIdentificationNumber: URIRef
+    containedInPlace: URIRef
+    exerciseCourse: URIRef
+    telephone: URIRef
+    appliesToPaymentMethod: URIRef
+    geoEquals: URIRef
+    customer: URIRef
+    hasEnergyConsumptionDetails: URIRef
+    interactionType: URIRef
+    cholesterolContent: URIRef
+    diversityPolicy: URIRef
+    additionalNumberOfGuests: URIRef
+    inBroadcastLineup: URIRef
+    instructor: URIRef
+    actionPlatform: URIRef
+    screenshot: URIRef
+    partOfSeason: URIRef
+    educationalAlignment: URIRef
+    inDefinedTermSet: URIRef
+    titleEIDR: URIRef
+    domainIncludes: URIRef
+    issuedBy: URIRef
+    homeLocation: URIRef
+    isLocatedInSubcellularLocation: URIRef
+    recognizingAuthority: URIRef
+    requiredMaxAge: URIRef
+    studyDesign: URIRef
+    mentions: URIRef
+    returnPolicySeasonalOverride: URIRef
+    isGift: URIRef
+    temporal: URIRef
+    subOrganization: URIRef
+    foundingDate: URIRef
+    clinicalPharmacology: URIRef
+    algorithm: URIRef
+    addOn: URIRef
+    vatID: URIRef
+    partOfTrip: URIRef
+    knowsLanguage: URIRef
+    educationalFramework: URIRef
+    language: URIRef
+    energyEfficiencyScaleMin: URIRef
+    orderItemStatus: URIRef
+    familyName: URIRef
+    cookingMethod: URIRef
+    material: URIRef
+    closes: URIRef
+    iso6523Code: URIRef
+    auditDate: URIRef
+    valueMinLength: URIRef
+    inStoreReturnsOffered: URIRef
+    paymentMethod: URIRef
+    associatedMedia: URIRef
+    hasMeasurement: URIRef
+    possibleComplication: URIRef
+    actors: URIRef
+    paymentUrl: URIRef
+    availableFrom: URIRef
+    breadcrumb: URIRef
+    merchant: URIRef
+    broadcastChannelId: URIRef
+    studySubject: URIRef
+    partOfInvoice: URIRef
+    cookTime: URIRef
+    multipleValues: URIRef
+    cssSelector: URIRef
+    contentType: URIRef
+    termCode: URIRef
+    courseMode: URIRef
+    honorificPrefix: URIRef
+    minValue: URIRef
+    enginePower: URIRef
+    scheduledTime: URIRef
+    floorSize: URIRef
+    tool: URIRef
+    version: URIRef
+    childMaxAge: URIRef
+    exchangeRateSpread: URIRef
+    award: URIRef
+    inverseOf: URIRef
+    containsSeason: URIRef
+    addressCountry: URIRef
+    publishedBy: URIRef
+    passengerPriorityStatus: URIRef
+    loser: URIRef
+    availableDeliveryMethod: URIRef
+    possibleTreatment: URIRef
+    dosageForm: URIRef
+    itemDefectReturnFees: URIRef
+    blogPost: URIRef
+    result: URIRef
+    preOp: URIRef
+    expressedIn: URIRef
+    recognizedBy: URIRef
+    printEdition: URIRef
+    isAvailableGenerically: URIRef
+    busNumber: URIRef
+    openingHours: URIRef
+    prescriptionStatus: URIRef
+    bookingTime: URIRef
+    productSupported: URIRef
+    validIn: URIRef
+    evidenceOrigin: URIRef
+    isPlanForApartment: URIRef
+    learningResourceType: URIRef
+    ineligibleRegion: URIRef
+    encoding: URIRef
+    accommodationCategory: URIRef
+    hiringOrganization: URIRef
+    deliveryMethod: URIRef
+    address: URIRef
+    inker: URIRef
+    issn: URIRef
+    petsAllowed: URIRef
+    contactlessPayment: URIRef
+    recordedAt: URIRef
+    dateline: URIRef
+    geoMidpoint: URIRef
+    recipient: URIRef
+    courseCode: URIRef
+    customerRemorseReturnLabelSource: URIRef
+    arrivalStation: URIRef
+    successorOf: URIRef
+    paymentDueDate: URIRef
+    itemListElement: URIRef
+    partySize: URIRef
+    underName: URIRef
+    encodingFormat: URIRef
+    inProductGroupWithID: URIRef
+    polygon: URIRef
+    distinguishingSign: URIRef
+    accessibilitySummary: URIRef
+    runsTo: URIRef
+    trainingSalary: URIRef
+    propertyID: URIRef
+    programType: URIRef
+    readonlyValue: URIRef
+    callSign: URIRef
+    membershipNumber: URIRef
+    yearlyRevenue: URIRef
+    legislationLegalForce: URIRef
+    editor: URIRef
+    pageStart: URIRef
+    numberOfSeasons: URIRef
+    passengerSequenceNumber: URIRef
+    priceValidUntil: URIRef
+    geographicArea: URIRef
+    seasonNumber: URIRef
+    quest: URIRef
+    eventAttendanceMode: URIRef
+    fuelConsumption: URIRef
+    tripOrigin: URIRef
+    birthPlace: URIRef
+    associatedReview: URIRef
+    copyrightHolder: URIRef
+    sampleType: URIRef
+    follows: URIRef
+    pickupTime: URIRef
+    reviewedBy: URIRef
+    releaseNotes: URIRef
+    funding: URIRef
+    returnMethod: URIRef
+    availableTest: URIRef
+    maxValue: URIRef
+    endTime: URIRef
+    refundType: URIRef
+    targetUrl: URIRef
+    uploadDate: URIRef
+    ticketNumber: URIRef
+    supportingData: URIRef
+    albumProductionType: URIRef
+    dateRead: URIRef
+    position: URIRef
+    seatNumber: URIRef
+    suitableForDiet: URIRef
+    workFeatured: URIRef
+    parentService: URIRef
+    aircraft: URIRef
+    courseSchedule: URIRef
+    transcript: URIRef
+    datePosted: URIRef
+    broker: URIRef
+    answerCount: URIRef
+    isLiveBroadcast: URIRef
+    freeShippingThreshold: URIRef
+    jobLocation: URIRef
+    hasOfferCatalog: URIRef
+    tickerSymbol: URIRef
+    hasCertification: URIRef
+    parentTaxon: URIRef
+    maximumVirtualAttendeeCapacity: URIRef
+    url: URIRef
+    subEvent: URIRef
+    numberOfDoors: URIRef
+    securityClearanceRequirement: URIRef
+    occupancy: URIRef
+    fatContent: URIRef
+    antagonist: URIRef
+    infectiousAgentClass: URIRef
+    shippingRate: URIRef
+    insertion: URIRef
+    manufacturer: URIRef
+    parentOrganization: URIRef
+    serviceSmsNumber: URIRef
+    recommendedIntake: URIRef
+    touristType: URIRef
+    mediaItemAppearance: URIRef
+    validForMemberTier: URIRef
+    branchCode: URIRef
+    namedPosition: URIRef
+    recordedAs: URIRef
+    about: URIRef
+    givenName: URIRef
+    recordedIn: URIRef
+    knownVehicleDamages: URIRef
+    cvdNumC19OverflowPats: URIRef
+    alternativeHeadline: URIRef
+    ethicsPolicy: URIRef
+    serviceAudience: URIRef
+    actionApplication: URIRef
+    assemblyVersion: URIRef
+    currency: URIRef
+    molecularFormula: URIRef
+    broadcastOfEvent: URIRef
+    totalPaymentDue: URIRef
+    hasMenu: URIRef
+    certificationIdentification: URIRef
+    commentCount: URIRef
+    dataset: URIRef
+    hasPOS: URIRef
+    deliveryAddress: URIRef
+    cashBack: URIRef
+    lyrics: URIRef
+    procedureType: URIRef
+    funder: URIRef
+    healthPlanMarketingUrl: URIRef
+    gameServer: URIRef
+    fromLocation: URIRef
+    lowPrice: URIRef
+    breastfeedingWarning: URIRef
+    certificationRating: URIRef
+    potentialUse: URIRef
+    alcoholWarning: URIRef
+    feesAndCommissionsSpecification: URIRef
+    healthPlanPharmacyCategory: URIRef
+    repeatCount: URIRef
+    itinerary: URIRef
+    broadcastAffiliateOf: URIRef
+    characterName: URIRef
+    albumRelease: URIRef
+    hasBioPolymerSequence: URIRef
+    priceComponentType: URIRef
+    experienceRequirements: URIRef
+    healthPlanNetworkId: URIRef
+    relatedDrug: URIRef
+    parents: URIRef
+    alignmentType: URIRef
+    postalCode: URIRef
+    datePublished: URIRef
+    significantLink: URIRef
+    reservedTicket: URIRef
+    numberOfBedrooms: URIRef
+    cvdNumVent: URIRef
+    isFamilyFriendly: URIRef
+    recipeYield: URIRef
+    fuelCapacity: URIRef
+    bankAccountType: URIRef
+    comment: URIRef
+    isPartOfBioChemEntity: URIRef
+    geoWithin: URIRef
+    encodingType: URIRef
+    leaseLength: URIRef
+    cargoVolume: URIRef
+    howPerformed: URIRef
+    discount: URIRef
+    estimatedSalary: URIRef
+    countryOfAssembly: URIRef
+    median: URIRef
+    expectedPrognosis: URIRef
+    warrantyScope: URIRef
+    priceType: URIRef
+    occupationalCredentialAwarded: URIRef
+    itemDefectReturnLabelSource: URIRef
+    costPerUnit: URIRef
+    broadcastServiceTier: URIRef
+    dropoffTime: URIRef
+    videoFormat: URIRef
+    suggestedAge: URIRef
+    cutoffTime: URIRef
+    secondaryPrevention: URIRef
+    loanMortgageMandateAmount: URIRef
+    isBasedOn: URIRef
+    orderDate: URIRef
+    signDetected: URIRef
+    scheduledPaymentDate: URIRef
+    salaryCurrency: URIRef
+    valueAddedTaxIncluded: URIRef
+    episode: URIRef
+    serviceOperator: URIRef
+    termsPerYear: URIRef
+    deliveryStatus: URIRef
+    printColumn: URIRef
+    jobBenefits: URIRef
+    biomechnicalClass: URIRef
+    parentItem: URIRef
+    isrcCode: URIRef
+    jobLocationType: URIRef
+    firstAppearance: URIRef
+    faxNumber: URIRef
+    xpath: URIRef
+    cvdCollectionDate: URIRef
+    artMedium: URIRef
+    agent: URIRef
+    paymentMethodId: URIRef
+    mechanismOfAction: URIRef
+    byArtist: URIRef
+    identifier: URIRef
+    bed: URIRef
+    returnPolicyCountry: URIRef
+    ratingCount: URIRef
+    resultComment: URIRef
+    stage: URIRef
+    expectsAcceptanceOf: URIRef
+    hasMenuItem: URIRef
+    deathPlace: URIRef
+    stepValue: URIRef
+    sourceOrganization: URIRef
+    releaseOf: URIRef
+    coursePrerequisites: URIRef
+    email: URIRef
+    representativeOfPage: URIRef
+    geoRadius: URIRef
+    gameTip: URIRef
+    hasCourseInstance: URIRef
+    isInvolvedInBiologicalProcess: URIRef
+    naics: URIRef
+    isBasedOnUrl: URIRef
+    printSection: URIRef
+    broadcastDisplayName: URIRef
+    event: URIRef
+    subEvents: URIRef
+    muscleAction: URIRef
+    mathExpression: URIRef
+    legislationJurisdiction: URIRef
+    itemListOrder: URIRef
+    events: URIRef
+    numConstraints: URIRef
+    program: URIRef
+    hasBioChemEntityPart: URIRef
+    thumbnail: URIRef
+    structuralClass: URIRef
+    dateSent: URIRef
+    relevantOccupation: URIRef
+    claimReviewed: URIRef
+    circle: URIRef
+    unitCode: URIRef
+    ownedFrom: URIRef
+    screenCount: URIRef
+    bioChemInteraction: URIRef
+    homeTeam: URIRef
+    album: URIRef
+    numberOfPlayers: URIRef
+    latitude: URIRef
+    bioChemSimilarity: URIRef
+    permittedUsage: URIRef
+    serviceUrl: URIRef
+    measuredProperty: URIRef
+    includedInDataCatalog: URIRef
+    suggestedGender: URIRef
+    video: URIRef
+    keywords: URIRef
+    creditText: URIRef
+    typicalTest: URIRef
+    hasRepresentation: URIRef
+    liveBlogUpdate: URIRef
+    orderedItem: URIRef
+    colorist: URIRef
+    courseWorkload: URIRef
+    size: URIRef
+    accountMinimumInflow: URIRef
+    children: URIRef
+    paymentDue: URIRef
+    legislationApplies: URIRef
+    memberOf: URIRef
+    error: URIRef
+    paymentAccepted: URIRef
+    license: URIRef
+    artEdition: URIRef
+    totalJobOpenings: URIRef
+    validFor: URIRef
+    vehicleConfiguration: URIRef
+    childMinAge: URIRef
+    floorLevel: URIRef
+    applicationCategory: URIRef
+    pickupLocation: URIRef
+    smokingAllowed: URIRef
+    numAdults: URIRef
+    isAccessibleForFree: URIRef
+    carrierRequirements: URIRef
+    vehicleInteriorColor: URIRef
+    shippingDestination: URIRef
+    jurisdiction: URIRef
+    amount: URIRef
+    acquireLicensePage: URIRef
+    healthPlanCopay: URIRef
+    priceComponent: URIRef
+    eligibleQuantity: URIRef
+    eligibleCustomerType: URIRef
+    masthead: URIRef
+    downvoteCount: URIRef
+    starRating: URIRef
+    musicReleaseFormat: URIRef
+    iswcCode: URIRef
+    numberOfBathroomsTotal: URIRef
+    salaryUponCompletion: URIRef
+    discussionUrl: URIRef
+    landlord: URIRef
+    engineDisplacement: URIRef
+    functionalClass: URIRef
+    lastReviewed: URIRef
+    awayTeam: URIRef
+    contactPoint: URIRef
+    artworkSurface: URIRef
+    previousStartDate: URIRef
+    expertConsiderations: URIRef
+    taxID: URIRef
+    vehicleModelDate: URIRef
+    guidelineDate: URIRef
+    earlyPrepaymentPenalty: URIRef
+    parent: URIRef
+    menuAddOn: URIRef
+    cvdNumICUBedsOcc: URIRef
+    backstory: URIRef
+    mileageFromOdometer: URIRef
+    lender: URIRef
+    editEIDR: URIRef
+    knows: URIRef
+    elevation: URIRef
+    spatialCoverage: URIRef
+    safetyConsideration: URIRef
+    diseasePreventionInfo: URIRef
+    logo: URIRef
+    option: URIRef
+    endorsers: URIRef
+    programmingLanguage: URIRef
+    inChIKey: URIRef
+    geoCovers: URIRef
+    holdingArchive: URIRef
+    sdPublisher: URIRef
+    warranty: URIRef
+    artist: URIRef
+    asin: URIRef
+    isProprietary: URIRef
+    timeToComplete: URIRef
+    statType: URIRef
+    tocEntry: URIRef
+    dateCreated: URIRef
+    checkoutPageURLTemplate: URIRef
+    gtin13: URIRef
+    significance: URIRef
+    medicalAudience: URIRef
+    drug: URIRef
+    skills: URIRef
+    seller: URIRef
+    proficiencyLevel: URIRef
+    totalTime: URIRef
+    yearsInOperation: URIRef
+    accommodationFloorPlan: URIRef
+    hasMenuSection: URIRef
+    programMembershipUsed: URIRef
+    supersededBy: URIRef
+    interactingDrug: URIRef
+    userInteractionCount: URIRef
+    encodings: URIRef
+    steps: URIRef
+    birthDate: URIRef
+    typeOfBed: URIRef
+    roofLoad: URIRef
+    issuedThrough: URIRef
+    arrivalTime: URIRef
+    interactionCount: URIRef
+    alumniOf: URIRef
+    clincalPharmacology: URIRef
+    applicantLocationRequirements: URIRef
+    hasAdultConsideration: URIRef
+    partOfOrder: URIRef
+    longitude: URIRef
+    ingredients: URIRef
+    affiliation: URIRef
+    constraintProperty: URIRef
+    countriesNotSupported: URIRef
+    foodEvent: URIRef
+    ownedThrough: URIRef
+    directApply: URIRef
+    areaServed: URIRef
+    positiveNotes: URIRef
+    gameAvailabilityType: URIRef
+    healthPlanCoinsuranceRate: URIRef
+    includedComposition: URIRef
+    discountCurrency: URIRef
+    loanPaymentAmount: URIRef
+    cvdNumBedsOcc: URIRef
+    relatedTo: URIRef
+    trackingNumber: URIRef
+    sportsActivityLocation: URIRef
+    itemDefectReturnShippingFeesAmount: URIRef
+    returnLabelSource: URIRef
+    healthPlanDrugTier: URIRef
+    affectedBy: URIRef
+    performer: URIRef
+    codingSystem: URIRef
+    jobTitle: URIRef
+    relatedTherapy: URIRef
+    isEncodedByBioChemEntity: URIRef
+    appearance: URIRef
+    codeSampleType: URIRef
+    contactOption: URIRef
+    byMonthWeek: URIRef
+    line: URIRef
+    hasDriveThroughService: URIRef
+    predecessorOf: URIRef
+    layoutImage: URIRef
+    returnShippingFeesAmount: URIRef
+    athlete: URIRef
+    originatesFrom: URIRef
+    bccRecipient: URIRef
+    directors: URIRef
+    merchantReturnLink: URIRef
+    employerOverview: URIRef
+    hasVariant: URIRef
+    ratingExplanation: URIRef
+    addressLocality: URIRef
+    fiberContent: URIRef
+    geoCrosses: URIRef
+    permissions: URIRef
+    imagingTechnique: URIRef
+    isUnlabelledFallback: URIRef
+    subjectOf: URIRef
+    urlTemplate: URIRef
+    totalHistoricalEnrollment: URIRef
+    cheatCode: URIRef
+    validThrough: URIRef
+    itemLocation: URIRef
+    mpn: URIRef
+    bestRating: URIRef
+    overdosage: URIRef
+    question: URIRef
+    department: URIRef
+    priceSpecification: URIRef
+    duringMedia: URIRef
+    numberOfPages: URIRef
+    occupationalCategory: URIRef
+    honorificSuffix: URIRef
+    roleName: URIRef
+    measurementMethod: URIRef
+    operatingSystem: URIRef
+    issueNumber: URIRef
+    guidelineSubject: URIRef
+    arrivalGate: URIRef
+    description: URIRef
+    availableOnDevice: URIRef
+    measurementQualifier: URIRef
+    dateDeleted: URIRef
+    sensoryRequirement: URIRef
+    maximumEnrollment: URIRef
+    runtime: URIRef
+    vendor: URIRef
+    code: URIRef
+    adverseOutcome: URIRef
+    estimatedCost: URIRef
+    geoOverlaps: URIRef
+    lodgingUnitType: URIRef
+    comprisedOf: URIRef
+    citation: URIRef
+    recipeInstructions: URIRef
+    geo: URIRef
+    offeredBy: URIRef
+    location: URIRef
+    coach: URIRef
+    cvdNumTotBeds: URIRef
+    timeRequired: URIRef
+    numTracks: URIRef
+    seasons: URIRef
+    serviceArea: URIRef
+    publicTransportClosuresInfo: URIRef
+    character: URIRef
+    softwareHelp: URIRef
+    actionStatus: URIRef
+    lyricist: URIRef
+    gameItem: URIRef
+    servingSize: URIRef
+    durationOfWarranty: URIRef
+    targetProduct: URIRef
+    educationalProgramMode: URIRef
+    nutrition: URIRef
+    seatingCapacity: URIRef
+    medicalSpecialty: URIRef
+    pattern: URIRef
+    shippingSettingsLink: URIRef
+    reviewCount: URIRef
+    associatedClaimReview: URIRef
+    coverageEndTime: URIRef
+    cvdNumC19HospPats: URIRef
+    availableService: URIRef
+    startDate: URIRef
+    branchOf: URIRef
+    distance: URIRef
+    variableMeasured: URIRef
+    serverStatus: URIRef
+    box: URIRef
+    loanPaymentFrequency: URIRef
+    typicalAgeRange: URIRef
+    differentialDiagnosis: URIRef
+    httpMethod: URIRef
+    verificationFactCheckingPolicy: URIRef
+    noBylinesPolicy: URIRef
+    orderDelivery: URIRef
+    recipeCategory: URIRef
+    translator: URIRef
+    acceptedAnswer: URIRef
+    riskFactor: URIRef
+    musicArrangement: URIRef
+    numberOfEmployees: URIRef
+    thumbnailUrl: URIRef
+    broadcastSubChannel: URIRef
+    albums: URIRef
+    transmissionMethod: URIRef
+    game: URIRef
+    workHours: URIRef
+    unnamedSourcesPolicy: URIRef
+    tocContinuation: URIRef
+    ticketedSeat: URIRef
+    webCheckinTime: URIRef
+    spouse: URIRef
+    billingAddress: URIRef
+    catalog: URIRef
+    targetPopulation: URIRef
+    articleBody: URIRef
+    foodWarning: URIRef
+    workLocation: URIRef
+    contentUrl: URIRef
+    digitalSourceType: URIRef
+    bookFormat: URIRef
+    brand: URIRef
+    employmentUnit: URIRef
+    hasMolecularFunction: URIRef
+    blogPosts: URIRef
+    pregnancyCategory: URIRef
+    colleagues: URIRef
+    collection: URIRef
+    producer: URIRef
+    ccRecipient: URIRef
+    partOfSystem: URIRef
+    recordLabel: URIRef
+    defaultValue: URIRef
+    departureStation: URIRef
+    healthcareReportingData: URIRef
+    availableStrength: URIRef
+    billingPeriod: URIRef
+    intensity: URIRef
+    providesBroadcastService: URIRef
+    replacer: URIRef
+    typicalCreditsPerTerm: URIRef
+    encodesBioChemEntity: URIRef
+    dietFeatures: URIRef
+    targetCollection: URIRef
+    dissolutionDate: URIRef
+    cvdNumBeds: URIRef
+    identifyingTest: URIRef
+    includesHealthPlanFormulary: URIRef
+    molecularWeight: URIRef
+    illustrator: URIRef
+    inChI: URIRef
+    originalMediaContextDescription: URIRef
+    numberOfAvailableAccommodationUnits: URIRef
+    eduQuestionType: URIRef
+    strengthValue: URIRef
+    nationality: URIRef
+    numberedPosition: URIRef
+    diet: URIRef
+    actionOption: URIRef
+    hasMerchantReturnPolicy: URIRef
+    broadcastSignalModulation: URIRef
+    marginOfError: URIRef
+    musicCompositionForm: URIRef
+    owns: URIRef
+    accessibilityControl: URIRef
+    interactionService: URIRef
+    author: URIRef
+    experienceInPlaceOfEducation: URIRef
+    reviewBody: URIRef
+    includesObject: URIRef
+    byMonthDay: URIRef
+    performerIn: URIRef
+    contraindication: URIRef
+    startTime: URIRef
+    itemReviewed: URIRef
+    byMonth: URIRef
+    numberOfAirbags: URIRef
+    commentTime: URIRef
+    inCodeSet: URIRef
+    subtitleLanguage: URIRef
+    publicAccess: URIRef
+    runtimePlatform: URIRef
+    leiCode: URIRef
+    modifiedTime: URIRef
+    checkoutTime: URIRef
+    applicationStartDate: URIRef
+    supplyTo: URIRef
+    deathDate: URIRef
+    correctionsPolicy: URIRef
+    floorLimit: URIRef
+    loanType: URIRef
+    isAcceptingNewPatients: URIRef
+    additionalType: URIRef
+    exerciseRelatedDiet: URIRef
+    performTime: URIRef
+    practicesAt: URIRef
+    borrower: URIRef
+    item: URIRef
+    publishedOn: URIRef
+    responsibilities: URIRef
+    sportsTeam: URIRef
+    acceptedPaymentMethod: URIRef
+    estimatesRiskOf: URIRef
+    toRecipient: URIRef
+    numberOfFullBathrooms: URIRef
+    confirmationNumber: URIRef
+    paymentStatus: URIRef
+    programmingModel: URIRef
+    browserRequirements: URIRef
+    supply: URIRef
+    observationDate: URIRef
+    replacee: URIRef
+    vehicleTransmission: URIRef
+    highPrice: URIRef
+    associatedAnatomy: URIRef
+    reviewAspect: URIRef
+    educationalLevel: URIRef
+    worksFor: URIRef
+    image: URIRef
+    cvdNumC19HOPats: URIRef
+    claimInterpreter: URIRef
+    genre: URIRef
+    originAddress: URIRef
+    volumeNumber: URIRef
+    accountOverdraftLimit: URIRef
+    modelDate: URIRef
+    busName: URIRef
+    codeValue: URIRef
+    trackingUrl: URIRef
+    validUntil: URIRef
+    numberOfForwardGears: URIRef
+    diagram: URIRef
+    estimatedFlightDuration: URIRef
+    stageAsNumber: URIRef
+    opens: URIRef
+    category: URIRef
+    map: URIRef
+    candidate: URIRef
+    followee: URIRef
+    usNPI: URIRef
+    hasTierBenefit: URIRef
+    nonprofitStatus: URIRef
+    warning: URIRef
+    hasEnergyEfficiencyCategory: URIRef
+    hasGS1DigitalLink: URIRef
+    vehicleSpecialUsage: URIRef
+    orderStatus: URIRef
+    repetitions: URIRef
+    gameLocation: URIRef
+    providerMobility: URIRef
+    transitTimeLabel: URIRef
+    variesBy: URIRef
+    codeRepository: URIRef
+    customerRemorseReturnShippingFeesAmount: URIRef
+    subStageSuffix: URIRef
+    isPartOf: URIRef
+    saturatedFatContent: URIRef
+    additionalName: URIRef
+    engineType: URIRef
+    archivedAt: URIRef
+    clipNumber: URIRef
+    relatedAnatomy: URIRef
+    seatRow: URIRef
+    costOrigin: URIRef
+    accelerationTime: URIRef
+    schoolClosuresInfo: URIRef
+    usesDevice: URIRef
+    streetAddress: URIRef
+    season: URIRef
+    hasCategoryCode: URIRef
+    includesHealthPlanNetwork: URIRef
+    previousItem: URIRef
+    unsaturatedFatContent: URIRef
+    seriousAdverseOutcome: URIRef
+    flightDistance: URIRef
+    relatedCondition: URIRef
+    copyrightYear: URIRef
+    headline: URIRef
+    evidenceLevel: URIRef
+    jobStartDate: URIRef
+    quarantineGuidelines: URIRef
+    fileSize: URIRef
+    sibling: URIRef
+    siblings: URIRef
+    target: URIRef
+    hasDigitalDocumentPermission: URIRef
+    cvdFacilityId: URIRef
+    itemShipped: URIRef
+    mapType: URIRef
+    sportsEvent: URIRef
+    endOffset: URIRef
+    chemicalRole: URIRef
+    discusses: URIRef
+    participant: URIRef
+    nerveMotor: URIRef
+    gameEdition: URIRef
+    vehicleEngine: URIRef
+    processingTime: URIRef
+    primaryImageOfPage: URIRef
+    expectedArrivalUntil: URIRef
+    healthPlanDrugOption: URIRef
+    gtin8: URIRef
+    reviews: URIRef
+    employees: URIRef
+    dateReceived: URIRef
+    weightTotal: URIRef
+    legislationConsolidates: URIRef
+    checkinTime: URIRef
+    globalLocationNumber: URIRef
+    videoQuality: URIRef
+    signOrSymptom: URIRef
+    suggestedAnswer: URIRef
+    interestRate: URIRef
+    gtin: URIRef
+    linkRelationship: URIRef
+    interpretedAsClaim: URIRef
+    publisher: URIRef
+    credentialCategory: URIRef
+    baseSalary: URIRef
+    significantLinks: URIRef
+    referencesOrder: URIRef
+    readBy: URIRef
+    amountOfThisGood: URIRef
+    value: URIRef
+    recourseLoan: URIRef
+    geoDisjoint: URIRef
+    opponent: URIRef
+    reportNumber: URIRef
+    videoFrameSize: URIRef
+    isRelatedTo: URIRef
+    musicalKey: URIRef
+    hoursAvailable: URIRef
+    dropoffLocation: URIRef
+    offersPrescriptionByMail: URIRef
+    nextItem: URIRef
+    incentives: URIRef
+    administrationRoute: URIRef
+    cvdNumVentUse: URIRef
+    review: URIRef
+    reservationFor: URIRef
+    requirements: URIRef
+    status: URIRef
+    valueName: URIRef
+    numberOfAccommodationUnits: URIRef
+    currentExchangeRate: URIRef
+    hasDeliveryMethod: URIRef
+    productionCompany: URIRef
+    healthCondition: URIRef
+    suggestedMeasurement: URIRef
+    instrument: URIRef
+    remainingAttendeeCapacity: URIRef
+    trailerWeight: URIRef
+    creativeWorkStatus: URIRef
+    storageRequirements: URIRef
+    duplicateTherapy: URIRef
+    legislationDate: URIRef
+    monoisotopicMolecularWeight: URIRef
+    color: URIRef
+    biologicalRole: URIRef
+    recipeIngredient: URIRef
+    occupationLocation: URIRef
+    childTaxon: URIRef
+    produces: URIRef
+    audio: URIRef
+    subReservation: URIRef
+    educationalUse: URIRef
+    increasesRiskOf: URIRef
+    processorRequirements: URIRef
+    renegotiableLoan: URIRef
+    downPayment: URIRef
+    wordCount: URIRef
+    priceCurrency: URIRef
+    nerve: URIRef
+    countriesSupported: URIRef
+    countryOfOrigin: URIRef
+    taxonRank: URIRef
+    servicePostalAddress: URIRef
+    broadcastFrequencyValue: URIRef
+    applicationContact: URIRef
+    numberOfCredits: URIRef
+    gtin14: URIRef
+    interactivityType: URIRef
+    softwareAddOn: URIRef
+    valuePattern: URIRef
+    postOfficeBoxNumber: URIRef
+    subStructure: URIRef
+    eventSchedule: URIRef
+    reviewRating: URIRef
+    typeOfGood: URIRef
+    proprietaryName: URIRef
+    offers: URIRef
+    deliveryTime: URIRef
+    height: URIRef
+    characterAttribute: URIRef
+    ownershipFundingInfo: URIRef
+    legislationPassedBy: URIRef
+    duration: URIRef
+    observationAbout: URIRef
+    accessCode: URIRef
+    temporalCoverage: URIRef
+    playMode: URIRef
+    governmentBenefitsInfo: URIRef
+    maps: URIRef
+    primaryPrevention: URIRef
+    sdLicense: URIRef
+    discountCode: URIRef
+    numberOfAxles: URIRef
+    followup: URIRef
+    offerCount: URIRef
+    customerRemorseReturnFees: URIRef
+    openingHoursSpecification: URIRef
+    accountId: URIRef
+    sizeGroup: URIRef
+    publisherImprint: URIRef
+    answerExplanation: URIRef
+    gender: URIRef
+    educationRequirements: URIRef
+    assembly: URIRef
+    isAccessoryOrSparePartFor: URIRef
+    sha256: URIRef
+    geoContains: URIRef
+    addressRegion: URIRef
+    afterMedia: URIRef
+    monthlyMinimumRepaymentAmount: URIRef
+    postalCodePrefix: URIRef
+    provider: URIRef
+    hasBroadcastChannel: URIRef
+    programPrerequisites: URIRef
+    accountablePerson: URIRef
+    shippingDetails: URIRef
+    softwareRequirements: URIRef
+    workTranslation: URIRef
+    carbohydrateContent: URIRef
+    artform: URIRef
+    sameAs: URIRef
+    inventoryLevel: URIRef
+    partOfSeries: URIRef
+    superEvent: URIRef
+    tracks: URIRef
+    startOffset: URIRef
+    phoneticText: URIRef
+    containsPlace: URIRef
+    numberOfRooms: URIRef
+    requiredGender: URIRef
+    contentRating: URIRef
+    legislationIdentifier: URIRef
+    studyLocation: URIRef
+    repeatFrequency: URIRef
+    orderQuantity: URIRef
+    businessFunction: URIRef
+    itemCondition: URIRef
+    awards: URIRef
+    spatial: URIRef
+    specialCommitments: URIRef
+    containedIn: URIRef
+    director: URIRef
+    trialDesign: URIRef
+    postalCodeRange: URIRef
+    mealService: URIRef
+    speed: URIRef
+    isbn: URIRef
+    applicationSuite: URIRef
+    activityDuration: URIRef
+    actionAccessibilityRequirement: URIRef
+    entertainmentBusiness: URIRef
+    availableIn: URIRef
+    pageEnd: URIRef
+    numberOfLoanPayments: URIRef
+    width: URIRef
+    totalPrice: URIRef
+    isVariantOf: URIRef
+    assesses: URIRef
+    subTrip: URIRef
+    playersOnline: URIRef
+    datasetTimeInterval: URIRef
+    translationOfWork: URIRef
+    travelBans: URIRef
+    foundingLocation: URIRef
+    costCategory: URIRef
+    schemaVersion: URIRef
+    deliveryLeadTime: URIRef
+    requiredQuantity: URIRef
+    bitrate: URIRef
+    distribution: URIRef
+    workPresented: URIRef
+    embedUrl: URIRef
+    downloadUrl: URIRef
+    isConsumableFor: URIRef
+    diversityStaffingReport: URIRef
+    locationCreated: URIRef
+    teaches: URIRef
+    healthPlanId: URIRef
+    prescribingInfo: URIRef
+    naturalProgression: URIRef
+    permissionType: URIRef
+    subTest: URIRef
+    chemicalComposition: URIRef
+    grantee: URIRef
+    dependencies: URIRef
+    mainEntity: URIRef
+    conditionsOfAccess: URIRef
+    publication: URIRef
+    doseUnit: URIRef
+    legislationTransposes: URIRef
+    currenciesAccepted: URIRef
+    geoTouches: URIRef
+    orderItemNumber: URIRef
+    suggestedMinAge: URIRef
+    medicineSystem: URIRef
+    numberOfEpisodes: URIRef
+    materialExtent: URIRef
+    industry: URIRef
+    usageInfo: URIRef
+    legislationLegalValue: URIRef
+    requiresSubscription: URIRef
+    connectedTo: URIRef
+    departureTerminal: URIRef
+    physiologicalBenefits: URIRef
+    merchantReturnDays: URIRef
+    sharedContent: URIRef
+    softwareVersion: URIRef
+    measurementDenominator: URIRef
+    step: URIRef
+    slogan: URIRef
+    trainNumber: URIRef
+    partOfTVSeries: URIRef
+    eligibleRegion: URIRef
+    accessModeSufficient: URIRef
+    gracePeriod: URIRef
+    maintainer: URIRef
+    countryOfLastProcessing: URIRef
+    causeOf: URIRef
+    publicationType: URIRef
+    lodgingUnitDescription: URIRef
+    providesService: URIRef
+    rangeIncludes: URIRef
+    playerType: URIRef
+    amenityFeature: URIRef
+    risks: URIRef
+    percentile75: URIRef
+    course: URIRef
+    referenceQuantity: URIRef
+    featureList: URIRef
+    benefits: URIRef
+    reservationId: URIRef
+    arterialBranch: URIRef
+    doorTime: URIRef
+    founders: URIRef
+    educationalCredentialAwarded: URIRef
+    employee: URIRef
+    torque: URIRef
+    member: URIRef
+    seatingType: URIRef
+    domiciledMortgage: URIRef
+    diseaseSpreadStatistics: URIRef
+    dateIssued: URIRef
+    mediaAuthenticityCategory: URIRef
+    maximumPhysicalAttendeeCapacity: URIRef
+    maximumIntake: URIRef
+    nonProprietaryName: URIRef
+    regionsAllowed: URIRef
+    caption: URIRef
+    attendee: URIRef
+    penciler: URIRef
+    workload: URIRef
+    weight: URIRef
+    availableLanguage: URIRef
+    geoIntersects: URIRef
+    accessibilityAPI: URIRef
+    title: URIRef
+    encodesCreativeWork: URIRef
+    departurePlatform: URIRef
+    arrivalBusStop: URIRef
+    study: URIRef
+    gtin12: URIRef
+    hasOccupation: URIRef
+    nsn: URIRef
+    tourBookingPage: URIRef
+    free: URIRef
+    duns: URIRef
+    gettingTestedInfo: URIRef
+    hasPart: URIRef
+    identifyingExam: URIRef
+    paymentMethodType: URIRef
+    object: URIRef
+    accessibilityFeature: URIRef
+    hospitalAffiliation: URIRef
+    vehicleInteriorType: URIRef
+    fundedItem: URIRef
+    annualPercentageRate: URIRef
+    maxPrice: URIRef
+    messageAttachment: URIRef
+    targetDescription: URIRef
+    text: URIRef
+    validFrom: URIRef
+    competencyRequired: URIRef
+    fuelEfficiency: URIRef
+    correction: URIRef
+    productGroupID: URIRef
+    hasHealthAspect: URIRef
+    sponsor: URIRef
+    archiveHeld: URIRef
+    worstRating: URIRef
+    termDuration: URIRef
+    dateVehicleFirstRegistered: URIRef
+    drugUnit: URIRef
+    legislationDateVersion: URIRef
+    makesOffer: URIRef
+    workExample: URIRef
+    utterances: URIRef
+    activeIngredient: URIRef
+    loanRepaymentForm: URIRef
+    cvdFacilityCounty: URIRef
+    educationalRole: URIRef
+    normalRange: URIRef
+    geoCoveredBy: URIRef
+    musicBy: URIRef
+    healthPlanNetworkTier: URIRef
+    abstract: URIRef
+    area: URIRef
+    appliesToDeliveryMethod: URIRef
+    infectiousAgent: URIRef
+    audienceType: URIRef
+    businessDays: URIRef
+    billingIncrement: URIRef
+    hasTiers: URIRef
+    fuelType: URIRef
+    photo: URIRef
+    documentation: URIRef
+    financialAidEligible: URIRef
+    dataFeedElement: URIRef
+    depth: URIRef
+    availabilityEnds: URIRef
+    includedRiskFactor: URIRef
+    alternativeOf: URIRef
+    actionableFeedbackPolicy: URIRef
+    sport: URIRef
+    bodyType: URIRef
+    valueRequired: URIRef
+    colorSwatch: URIRef
+    aggregateRating: URIRef
+    bookEdition: URIRef
+    track: URIRef
+    contentLocation: URIRef
+    arrivalBoatTerminal: URIRef
+    transFatContent: URIRef
+    scheduleTimezone: URIRef
+    suggestedMaxAge: URIRef
+    creator: URIRef
+    recipe: URIRef
+    announcementLocation: URIRef
+    healthPlanCoinsuranceOption: URIRef
+    measurementTechnique: URIRef
+    advanceBookingRequirement: URIRef
+    taxonomicRange: URIRef
+    serviceOutput: URIRef
+    icaoCode: URIRef
+    postalCodeEnd: URIRef
+    returnPolicyCategory: URIRef
+    hostingOrganization: URIRef
+    exifData: URIRef
+    sender: URIRef
+    alternateName: URIRef
+    billingDuration: URIRef
+    sizeSystem: URIRef
+    minimumPaymentDue: URIRef
+    greaterOrEqual: URIRef
+    calories: URIRef
+    numberOfPartialBathrooms: URIRef
+    seeks: URIRef
+    requiredCollateral: URIRef
+    specialty: URIRef
+    negativeNotes: URIRef
+    billingStart: URIRef
+    drainsTo: URIRef
+    rsvpResponse: URIRef
+    labelDetails: URIRef
+    applicationSubCategory: URIRef
+    applicableCountry: URIRef
+    expires: URIRef
+    legislationType: URIRef
+    orderNumber: URIRef
+    sensoryUnit: URIRef
+    textValue: URIRef
+    greater: URIRef
+    associatedDisease: URIRef
+    hasMap: URIRef
+    warrantyPromise: URIRef
+    expectedArrivalFrom: URIRef
+    boardingGroup: URIRef
+    doesNotShip: URIRef
+    agentInteractionStatistic: URIRef
+    cvdNumC19Died: URIRef
+    shippingLabel: URIRef
+    reservationStatus: URIRef
+    hasDefinedTerm: URIRef
+    authenticator: URIRef
+    transitTime: URIRef
+    commentText: URIRef
+    creditedTo: URIRef
+    driveWheelConfiguration: URIRef
+    postOp: URIRef
+    upvoteCount: URIRef
+    recordingOf: URIRef
+    servesCuisine: URIRef
+    embeddedTextCaption: URIRef
+    endorsee: URIRef
+    sdDatePublished: URIRef
+    availableAtOrFrom: URIRef
+    arrivalAirport: URIRef
+    inLanguage: URIRef
+    acceptsReservations: URIRef
+    associatedMediaReview: URIRef
+    endDate: URIRef
+    permitAudience: URIRef
+    mainContentOfPage: URIRef
+    costCurrency: URIRef
+    energyEfficiencyScaleMax: URIRef
+    musicGroupMember: URIRef
+    catalogNumber: URIRef
+    cvdNumC19OFMechVentPats: URIRef
+    releasedEvent: URIRef
+    applicableLocation: URIRef
+    inAlbum: URIRef
+    replyToUrl: URIRef
+    isTierOf: URIRef
+    cvdNumC19MechVentPats: URIRef
+    restockingFee: URIRef
+    dateModified: URIRef
+    sourcedFrom: URIRef
+    nonEqual: URIRef
+    availableChannel: URIRef
+    application: URIRef
+    timeOfDay: URIRef
+    episodeNumber: URIRef
+    numberOfBeds: URIRef
+    doseValue: URIRef
+    exerciseType: URIRef
+    accessibilityHazard: URIRef
+    sku: URIRef
+    numChildren: URIRef
+    acquiredFrom: URIRef
+    arrivalPlatform: URIRef
+    postalCodeBegin: URIRef
+    accessMode: URIRef
+    mainEntityOfPage: URIRef
+    attendees: URIRef
+    tongueWeight: URIRef
+    sugarContent: URIRef
+    isResizable: URIRef
+    newsUpdatesAndGuidelines: URIRef
+    rxcui: URIRef
+    minPrice: URIRef
+    bookingAgent: URIRef
+    epidemiology: URIRef
+    tributary: URIRef
+    shippingOrigin: URIRef
+    percentile25: URIRef
+    legislationResponsible: URIRef
+    valueReference: URIRef
+    yearBuilt: URIRef
+    securityScreening: URIRef
+    ratingValue: URIRef
+    abridged: URIRef
+    productID: URIRef
+    exceptDate: URIRef
+    collectionSize: URIRef
+    eventStatus: URIRef
+    bodyLocation: URIRef
+    acrissCode: URIRef
+    maximumAttendeeCapacity: URIRef
+    recommendationStrength: URIRef
+    recipeCuisine: URIRef
+    composer: URIRef
+    departureBusStop: URIRef
+    purchaseDate: URIRef
+    albumReleaseType: URIRef
+    guideline: URIRef
+    monthsOfExperience: URIRef
+    activityFrequency: URIRef
+    includedInHealthInsurancePlan: URIRef
+    relevantSpecialty: URIRef
+    variantCover: URIRef
+    wheelbase: URIRef
+    observationPeriod: URIRef
+    episodes: URIRef
+    unitText: URIRef
+    speakable: URIRef
+    healthPlanCopayOption: URIRef
+    targetName: URIRef
+    speechToTextMarkup: URIRef
+    members: URIRef
+    specialOpeningHoursSpecification: URIRef
+    associatedPathophysiology: URIRef
+    missionCoveragePrioritiesPolicy: URIRef
+    articleSection: URIRef
+    eligibleTransactionVolume: URIRef
+    audience: URIRef
+    ticketToken: URIRef
+    populationType: URIRef
+    handlingTime: URIRef
+    installUrl: URIRef
+    flightNumber: URIRef
 
     _NS = Namespace("https://schema.org/")

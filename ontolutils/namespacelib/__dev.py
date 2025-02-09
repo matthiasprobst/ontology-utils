@@ -23,7 +23,7 @@ __package_dir__ = __this_dir__.parent / 'namespacelib'
 
 FORCE_DOWNLOAD = True
 
-FORBIDDEN_PROPERTIES = ["and", "or", "type"]
+FORBIDDEN_PROPERTIES = ["and", "or", "type", "yield", "True", "False", "in", "not", "is", "as", "if", "else", "elif",]
 def generate_namespace_file_from_ttl(namespace: str,
                                      source: str,
                                      ns: str,
@@ -36,7 +36,9 @@ def generate_namespace_file_from_ttl(namespace: str,
     prop_type = RDF.Property if not is_owl else OWL.ObjectProperty
     if is_owl:
         data_prop = OWL.DatatypeProperty
+        named_individual = OWL.NamedIndividual
     else:
+        named_individual = None
         data_prop = None
 
 
@@ -61,13 +63,19 @@ def generate_namespace_file_from_ttl(namespace: str,
             if not isinstance(cls, BNode):
                 class_split = str(cls).split(ns)
                 if len(class_split) == 2:
-                    f.write(f'\n    {class_split[-1]}: URIRef')
+                    _key = class_split[-1]
+                    if _key[0].isdigit():
+                        _key = f'_{_key}'
+                    f.write(f'\n    {_key}: URIRef')
         for prop in g.subjects(RDF.type, prop_type):
             if not isinstance(prop, BNode):
                 prop_split =str(prop).split(ns)
                 if len(prop_split) == 2:
                     if prop_split[-1] not in FORBIDDEN_PROPERTIES:
-                        f.write(f'\n    {prop_split[-1]}: URIRef')
+                        _key = prop_split[-1]
+                        if _key[0].isdigit():
+                            _key = f'_{_key}'
+                        f.write(f'\n    {_key}: URIRef')
 
         if data_prop:
             for prop in g.subjects(RDF.type, data_prop):
@@ -76,6 +84,15 @@ def generate_namespace_file_from_ttl(namespace: str,
                     if len(prop_split) == 2:
                         if prop_split[-1] not in FORBIDDEN_PROPERTIES:
                             f.write(f'\n    {prop_split[-1]}: URIRef')
+
+        if named_individual:
+            for prop in g.subjects(RDF.type, named_individual):
+                if not isinstance(prop, BNode):
+                    prop_split =str(prop).split(ns)
+                    if len(prop_split) == 2:
+                        if prop_split[-1] not in FORBIDDEN_PROPERTIES:
+                            f.write(f'\n    {prop_split[-1]}: URIRef')
+
 
         f.write(f'\n\n    _NS = Namespace("{ns}")')
 
@@ -327,15 +344,15 @@ def build_namespace_files():
     # f.write('from ._version import __version__\n')
 
     m4i()
-
-    obo()
-
-    qudt_unit()
-
-    qudt_quantitykind()
-
-    codemeta()
-
+    #
+    # obo()
+    #
+    # qudt_unit()
+    #
+    # qudt_quantitykind()
+    #
+    # codemeta()
+    #
     schema()
 
     hdf5()

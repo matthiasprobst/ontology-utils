@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.13.3
+
+- fix ontology builds by considering the owl named individuals
+- fix hdf5 ontology build
+- fix illegal characters in class and property names in schema.org
+
 ## v0.13.2
 
 - bugfix HDF5 ontology. Data properties were missing

@@ -87,7 +87,7 @@ class Thing(ThingModel):
     Example for `prov:Person`:
 
     >>> @namespaces(prov='https://www.w3.org/ns/prov#',
-    >>>             foaf='https://xmlns.com/foaf/0.1/')
+    >>>             foaf='http://xmlns.com/foaf/0.1/')
     >>> @urirefs(Person='prov:Person', first_name='foaf:firstName')
     >>> class Person(Thing):
     >>>     first_name: str = None
@@ -101,7 +101,7 @@ class Thing(ThingModel):
     >>> {
     >>>     "@context": {
     >>>         "prov": "https://www.w3.org/ns/prov#",
-    >>>         "foaf": "https://xmlns.com/foaf/0.1/",
+    >>>         "foaf": "http://xmlns.com/foaf/0.1/",
     >>>         "first_name": "foaf:firstName"
     >>>     },
     >>>     "@id": "N23036f1a4eb149edb7db41b2f5f4268c",
@@ -184,7 +184,7 @@ class Thing(ThingModel):
 
                 In the following example, first_name refers to foaf:firstName:
 
-                >>> @namespaces(foaf='https://xmlns.com/foaf/0.1/')
+                >>> @namespaces(foaf='http://xmlns.com/foaf/0.1/')
                 >>> @urirefs(Person='foaf:Person', first_name='foaf:firstName')
                 >>> class Person(Thing):
                 >>>     first_name: str = None
@@ -196,7 +196,7 @@ class Thing(ThingModel):
 
                 >>> {
                 >>>     "@context": {
-                >>>         "foaf": "https://xmlns.com/foaf/0.1/",
+                >>>         "foaf": "http://xmlns.com/foaf/0.1/",
                 >>>         "first_name": "foaf:firstName"
                 >>>     },
                 >>>     "@type": "foaf:Person",
@@ -207,7 +207,7 @@ class Thing(ThingModel):
 
                 >>> {
                 >>>     "@context": {
-                >>>         "foaf": "https://xmlns.com/foaf/0.1/"
+                >>>         "foaf": "http://xmlns.com/foaf/0.1/"
                 >>>     },
                 >>>     "@type": "foaf:Person",
                 >>>     "foaf:firstName": "John"

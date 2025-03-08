@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.14.0
+- fix foaf namespace URL
+- fix parsing model from JSON-LD
+
 ## v0.13.3
 
 - fix ontology builds by considering the owl named individuals

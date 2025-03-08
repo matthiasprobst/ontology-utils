@@ -40,12 +40,12 @@ class TestNamespaces(unittest.TestCase):
         assert logging.getLogger('ontolutils').level == self.INITIAL_LOG_LEVEL
 
     def test_model_fields(self):
-        @namespaces(foaf="https://xmlns.com/foaf/0.1/")
+        @namespaces(foaf="http://xmlns.com/foaf/0.1/")
         @urirefs(Agent='foaf:Agent',
                  name='foaf:lastName',
                  age='foaf:age')
         class Agent(Thing):
-            """Pydantic Model for https://xmlns.com/foaf/0.1/Agent
+            """Pydantic Model for http://xmlns.com/foaf/0.1/Agent
             Parameters
             ----------
             mbox: EmailStr = None
@@ -87,16 +87,16 @@ class TestNamespaces(unittest.TestCase):
         self.assertEqual(agent.special_field, "special_string")
 
     def test_resolve_iri(self):
-        ret = resolve_iri('foaf:age', context=Context(source={'foaf': 'https://xmlns.com/foaf/0.1/'}))
-        self.assertEqual(ret, 'https://xmlns.com/foaf/0.1/age')
+        ret = resolve_iri('foaf:age', context=Context(source={'foaf': 'http://xmlns.com/foaf/0.1/'}))
+        self.assertEqual(ret, 'http://xmlns.com/foaf/0.1/age')
 
-        ret = resolve_iri('age', context=Context(source={'foaf': 'https://xmlns.com/foaf/0.1/'}))
+        ret = resolve_iri('age', context=Context(source={'foaf': 'http://xmlns.com/foaf/0.1/'}))
         self.assertEqual(ret, None)
 
-        ret = resolve_iri('age', context=Context(source={'age': 'https://xmlns.com/foaf/0.1/age'}))
-        self.assertEqual(ret, 'https://xmlns.com/foaf/0.1/age')
+        ret = resolve_iri('age', context=Context(source={'age': 'http://xmlns.com/foaf/0.1/age'}))
+        self.assertEqual(ret, 'http://xmlns.com/foaf/0.1/age')
 
-        ret = resolve_iri('label', context=Context(source={'age': 'https://xmlns.com/foaf/0.1/age'}))
+        ret = resolve_iri('label', context=Context(source={'age': 'http://xmlns.com/foaf/0.1/age'}))
         self.assertEqual(ret, 'http://www.w3.org/2000/01/rdf-schema#label')
 
         ret = resolve_iri('label',
@@ -122,14 +122,14 @@ class TestNamespaces(unittest.TestCase):
         """It is helpful to have the properties equal to the urirefs keys,
         however, this should not be required!"""
 
-        @namespaces(foaf='https://xmlns.com/foaf/0.1/',
+        @namespaces(foaf='http://xmlns.com/foaf/0.1/',
                     schema='https://www.schema.org/')
         @urirefs(Affiliation='prov:Affiliation',
                  name='schema:name')
         class Affiliation(Thing):
             name: str
 
-        @namespaces(foaf='https://xmlns.com/foaf/0.1/',
+        @namespaces(foaf='http://xmlns.com/foaf/0.1/',
                     prov='https://www.w3.org/ns/prov#')
         @urirefs(Person='prov:Person',
                  first_name='foaf:firstName',
@@ -254,12 +254,12 @@ class TestNamespaces(unittest.TestCase):
         self.assertFalse(decorator._is_http_url('http:invalid.123'))
 
     def test_model_dump_jsonld(self):
-        @namespaces(foaf="https://xmlns.com/foaf/0.1/")
+        @namespaces(foaf="http://xmlns.com/foaf/0.1/")
         @urirefs(Agent='foaf:Agent',
                  mbox='foaf:mbox',
                  age='foaf:age')
         class Agent(Thing):
-            """Pydantic Model for https://xmlns.com/foaf/0.1/Agent
+            """Pydantic Model for http://xmlns.com/foaf/0.1/Agent
             Parameters
             ----------
             mbox: EmailStr = None
@@ -319,11 +319,11 @@ class TestNamespaces(unittest.TestCase):
         )
 
     def test_model_dump_jsonld_and_load_with_import(self):
-        @namespaces(foaf="https://xmlns.com/foaf/0.1/")
+        @namespaces(foaf="http://xmlns.com/foaf/0.1/")
         @urirefs(Agent='foaf:Agent',
                  mbox='foaf:mbox')
         class Agent(Thing):
-            """Pydantic Model for https://xmlns.com/foaf/0.1/Agent
+            """Pydantic Model for http://xmlns.com/foaf/0.1/Agent
             Parameters
             ----------
             mbox: EmailStr = None
@@ -355,7 +355,7 @@ class TestNamespaces(unittest.TestCase):
         _id = thing.id
 
     def test_schema_http(self):
-        @namespaces(foaf="https://xmlns.com/foaf/0.1/",
+        @namespaces(foaf="http://xmlns.com/foaf/0.1/",
                     schema="https://schema.org/")
         @urirefs(Agent='foaf:Agent',
                  name='schema:name')
@@ -370,11 +370,11 @@ class TestNamespaces(unittest.TestCase):
                               limit=1)
 
     def test_model_dump_jsonld_nested(self):
-        @namespaces(foaf="https://xmlns.com/foaf/0.1/")
+        @namespaces(foaf="http://xmlns.com/foaf/0.1/")
         @urirefs(Agent='foaf:Agent',
                  mbox='foaf:mbox')
         class Agent(Thing):
-            """Pydantic Model for https://xmlns.com/foaf/0.1/Agent
+            """Pydantic Model for http://xmlns.com/foaf/0.1/Agent
             Parameters
             ----------
             mbox: EmailStr = None
@@ -410,7 +410,7 @@ class TestNamespaces(unittest.TestCase):
 
     def test_prov(self):
         @namespaces(prov="https://www.w3.org/ns/prov#",
-                    foaf="https://xmlns.com/foaf/0.1/")
+                    foaf="http://xmlns.com/foaf/0.1/")
         @urirefs(Agent='prov:Agent',
                  mbox='foaf:mbox')
         class Agent(Thing):
@@ -430,12 +430,12 @@ class TestNamespaces(unittest.TestCase):
         self.assertEqual(agent.mbox, agent.model_dump()['mbox'])
         self.assertEqual(Agent.iri(), 'https://www.w3.org/ns/prov#Agent')
         self.assertEqual(Agent.iri(compact=True), 'prov:Agent')
-        self.assertEqual(Agent.iri('mbox'), 'https://xmlns.com/foaf/0.1/mbox')
+        self.assertEqual(Agent.iri('mbox'), 'http://xmlns.com/foaf/0.1/mbox')
         self.assertEqual(Agent.iri('mbox', compact=True), 'foaf:mbox')
 
     def test_use_as_id(self):
         @namespaces(prov="https://www.w3.org/ns/prov#",
-                    foaf="https://xmlns.com/foaf/0.1/",
+                    foaf="http://xmlns.com/foaf/0.1/",
                     m4i="http://w3id.org/nfdi4ing/metadata4ing#"
                     )
         @urirefs(Person='prov:Person',
@@ -464,7 +464,7 @@ class TestNamespaces(unittest.TestCase):
                 "owl": "http://www.w3.org/2002/07/owl#",
                 "prov": "https://www.w3.org/ns/prov#",
                 "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
-                "foaf": "https://xmlns.com/foaf/0.1/",
+                "foaf": "http://xmlns.com/foaf/0.1/",
             },
             "@type": "prov:Person",
             "foaf:firstName": "John",
@@ -495,7 +495,7 @@ class TestNamespaces(unittest.TestCase):
                 "owl": "http://www.w3.org/2002/07/owl#",
                 "prov": "https://www.w3.org/ns/prov#",
                 "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
-                "foaf": "https://xmlns.com/foaf/0.1/",
+                "foaf": "http://xmlns.com/foaf/0.1/",
             },
             "@type": "prov:Person",
             "foaf:firstName": "John",
@@ -509,7 +509,7 @@ class TestNamespaces(unittest.TestCase):
 
     def test_use_as_id_V2(self):
         @namespaces(schema="https://schema.org/",
-                    foaf="https://xmlns.com/foaf/0.1/",
+                    foaf="http://xmlns.com/foaf/0.1/",
                     )
         @urirefs(Orga='prov:Organization',
                  name="schema:name",
@@ -525,7 +525,7 @@ class TestNamespaces(unittest.TestCase):
                 return as_id(self, "identifier")
 
         @namespaces(prov="https://www.w3.org/ns/prov#",
-                    foaf="https://xmlns.com/foaf/0.1/",
+                    foaf="http://xmlns.com/foaf/0.1/",
                     m4i="http://w3id.org/nfdi4ing/metadata4ing#"
                     )
         @urirefs(Person='prov:Person',
@@ -567,7 +567,7 @@ class TestNamespaces(unittest.TestCase):
 
     def test_use_as_id_V3(self):
         @namespaces(schema="https://schema.org/",
-                    foaf="https://xmlns.com/foaf/0.1/",
+                    foaf="http://xmlns.com/foaf/0.1/",
                     )
         @urirefs(Orga='prov:Organization',
                  name="schema:name",
@@ -583,7 +583,7 @@ class TestNamespaces(unittest.TestCase):
                 return as_id(self, "identifier")
 
         @namespaces(prov="https://www.w3.org/ns/prov#",
-                    foaf="https://xmlns.com/foaf/0.1/",
+                    foaf="http://xmlns.com/foaf/0.1/",
                     m4i="http://w3id.org/nfdi4ing/metadata4ing#"
                     )
         @urirefs(Person='prov:Person',
@@ -625,11 +625,11 @@ class TestNamespaces(unittest.TestCase):
 
         mt = CustomPerson(first_name='John', last_name='Doe')
         with self.assertRaises(AttributeError):
-            mt.namespaces = 'https://xmlns.com/foaf/0.1/'
+            mt.namespaces = 'http://xmlns.com/foaf/0.1/'
         with self.assertRaises(AttributeError):
             mt.urirefs = 'foaf:lastName'
 
-        mt.namespaces['foaf'] = 'https://xmlns.com/foaf/0.1/'
+        mt.namespaces['foaf'] = 'http://xmlns.com/foaf/0.1/'
         mt.urirefs['first_name'] = 'foaf:firstName'
         mt.urirefs['last_name'] = 'foaf:lastName'
         # print(mt.model_dump_json(indent=2, exclude_none=True))
@@ -637,7 +637,7 @@ class TestNamespaces(unittest.TestCase):
             "@context": {
                 "owl": "http://www.w3.org/2002/07/owl#",
                 "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
-                "foaf": "https://xmlns.com/foaf/0.1/"
+                "foaf": "http://xmlns.com/foaf/0.1/"
             },
             "@type": "CustomPerson",
             "foaf:firstName": "John",
@@ -654,7 +654,7 @@ class TestNamespaces(unittest.TestCase):
                              ref_jsonld)
 
     def test_blank_node_prefix(self):
-        @namespaces(foaf='https://xmlns.com/foaf/0.1/',
+        @namespaces(foaf='http://xmlns.com/foaf/0.1/',
                     prov='https://www.w3.org/ns/prov#')
         @urirefs(Person='prov:Person',
                  first_name='foaf:firstName')

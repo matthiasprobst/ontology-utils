@@ -16,7 +16,7 @@ class TestReadmeCode(unittest.TestCase):
         """Just has to run without errors"""
 
         @namespaces(prov="https://www.w3.org/ns/prov#",
-                    foaf="https://xmlns.com/foaf/0.1/",
+                    foaf="http://xmlns.com/foaf/0.1/",
                     m4i='http://w3id.org/nfdi4ing/metadata4ing#')
         @urirefs(Person='prov:Person',
                  firstName='foaf:firstName',
@@ -47,7 +47,7 @@ class TestReadmeCode(unittest.TestCase):
     "owl": "http://www.w3.org/2002/07/owl#",
     "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
     "prov": "https://www.w3.org/ns/prov#",
-    "foaf": "https://xmlns.com/foaf/0.1/",
+    "foaf": "http://xmlns.com/foaf/0.1/",
     "m4i": "http://w3id.org/nfdi4ing/metadata4ing#"
   },
   "@id": "https://orcid.org/0000-0001-8729-0482",

@@ -68,7 +68,7 @@ def namespaces(**kwargs):
 
 
 _prefix_dict = {
-    'https://xmlns.com/foaf/0.1/': 'foaf',
+    'http://xmlns.com/foaf/0.1/': 'foaf',
     'https://www.w3.org/ns/prov#': 'prov',
     'https://www.w3.org/1999/02/22-rdf-syntax-ns#': 'rdf',
     'https://schema.org/': 'schema',

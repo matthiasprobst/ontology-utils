@@ -1,8 +1,13 @@
 # Changelog
 
+## v0.14.1
+
+- add missing adjustments to really fix parsing model from JSON-LD
+
 ## v0.14.0
+
 - fix foaf namespace URL
-- fix parsing model from JSON-LD
+- ~~fix parsing model from JSON-LD~~
 
 ## v0.13.3
 

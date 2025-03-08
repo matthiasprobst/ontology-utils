@@ -129,7 +129,13 @@ def _query_by_id(graph, _id: Union[str, rdflib.URIRef], add_type: bool) -> Dict:
             # in this case, we return the object as a string
             out[key] = str(obj)
         else:
-            out[key] = process_object(_id, predicate, obj, graph, add_type)
+            if key in out:
+                if isinstance(out[key], list):
+                    out[key].append(process_object(_id, predicate, obj, graph, add_type))
+                else:
+                    out[key] = [out[key], process_object(_id, predicate, obj, graph, add_type)]
+            else:
+                out[key] = process_object(_id, predicate, obj, graph, add_type)
 
     return out
 

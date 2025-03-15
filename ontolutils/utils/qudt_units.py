@@ -133,6 +133,7 @@ qudt_lookup = {
     'Pa': QUDT_UNIT.PA,
     'pascal': QUDT_UNIT.PA,
     'Pascal': QUDT_UNIT.PA,
+    'kg/m/s**2': QUDT_UNIT.PA,
     # mass
     'kg': QUDT_UNIT.KiloGM,
     'kilogram': QUDT_UNIT.KiloGM,

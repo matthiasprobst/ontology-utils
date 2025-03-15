@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.14.2
+
+- add some more unit translations to dictionary `qudt_lookup`
+
 ## v0.14.1
 
 - add missing adjustments to really fix parsing model from JSON-LD

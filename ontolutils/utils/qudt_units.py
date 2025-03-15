@@ -153,6 +153,8 @@ qudt_lookup = {
     # torque
     'N m': QUDT_UNIT.N_M,
     'N*m': QUDT_UNIT.N_M,
+    'kg*m**2/s**2': QUDT_UNIT.N_M,
+    # radian
     'rad': QUDT_UNIT.RAD,
     # force
     'N': QUDT_UNIT.N,

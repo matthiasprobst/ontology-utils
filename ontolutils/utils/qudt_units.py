@@ -133,6 +133,7 @@ qudt_lookup = {
     'Pa': QUDT_UNIT.PA,
     'pascal': QUDT_UNIT.PA,
     'Pascal': QUDT_UNIT.PA,
+    'kg/m/s**2': QUDT_UNIT.PA,
     # mass
     'kg': QUDT_UNIT.KiloGM,
     'kilogram': QUDT_UNIT.KiloGM,
@@ -152,6 +153,8 @@ qudt_lookup = {
     # torque
     'N m': QUDT_UNIT.N_M,
     'N*m': QUDT_UNIT.N_M,
+    'kg*m**2/s**2': QUDT_UNIT.N_M,
+    # radian
     'rad': QUDT_UNIT.RAD,
     # force
     'N': QUDT_UNIT.N,

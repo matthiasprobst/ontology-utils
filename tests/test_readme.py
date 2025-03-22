@@ -12,6 +12,9 @@ from ontolutils import urirefs, namespaces, as_id
 
 class TestReadmeCode(unittest.TestCase):
 
+    def setUp(self):
+        self.maxDiff = None
+
     def test_code1_on_readme(self):
         """Just has to run without errors"""
 
@@ -34,7 +37,7 @@ class TestReadmeCode(unittest.TestCase):
             def _change_id(self):
                 return as_id(self, "orcidId")
 
-        p = Person(id="https://orcid.org/0000-0001-8729-0482",
+        Person(id="https://orcid.org/0000-0001-8729-0482",
                    firstName='Matthias', last_name='Probst')
         # as we have set an alias, we can also use "lastName":
         p = Person(id="https://orcid.org/0000-0001-8729-0482",
@@ -46,6 +49,8 @@ class TestReadmeCode(unittest.TestCase):
   "@context": {
     "owl": "http://www.w3.org/2002/07/owl#",
     "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "dcterms": "http://purl.org/dc/terms/",
+    "skos": "http://www.w3.org/2004/02/skos/core#",
     "prov": "https://www.w3.org/ns/prov#",
     "foaf": "http://xmlns.com/foaf/0.1/",
     "m4i": "http://w3id.org/nfdi4ing/metadata4ing#"

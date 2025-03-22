@@ -241,9 +241,15 @@ class TestNamespaces(unittest.TestCase):
 
         thing_dict = thing.get_jsonld_dict(resolve_keys=True)
         self.assertIsInstance(thing_dict, dict)
-        self.assertDictEqual(thing_dict['@context'],
-                             {'owl': 'http://www.w3.org/2002/07/owl#',
-                              'rdfs': 'http://www.w3.org/2000/01/rdf-schema#'})
+        self.assertDictEqual(
+            thing_dict['@context'],
+            {'owl': 'http://www.w3.org/2002/07/owl#',
+             'rdfs': 'http://www.w3.org/2000/01/rdf-schema#',
+             'skos': 'http://www.w3.org/2004/02/skos/core#',
+             'dcterms': 'http://purl.org/dc/terms/'
+             }
+        )
+
         self.assertEqual(thing_dict['@id'], 'https://example.org/TestThing')
         self.assertEqual(thing_dict['rdfs:label'], 'Test Thing')
         self.assertEqual(thing_dict['@type'], 'owl:Thing')
@@ -464,6 +470,8 @@ class TestNamespaces(unittest.TestCase):
                 "owl": "http://www.w3.org/2002/07/owl#",
                 "prov": "https://www.w3.org/ns/prov#",
                 "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+                "dcterms": "http://purl.org/dc/terms/",
+                "skos": "http://www.w3.org/2004/02/skos/core#",
                 "foaf": "http://xmlns.com/foaf/0.1/",
             },
             "@type": "prov:Person",
@@ -495,6 +503,8 @@ class TestNamespaces(unittest.TestCase):
                 "owl": "http://www.w3.org/2002/07/owl#",
                 "prov": "https://www.w3.org/ns/prov#",
                 "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+                "dcterms": "http://purl.org/dc/terms/",
+                "skos": "http://www.w3.org/2004/02/skos/core#",
                 "foaf": "http://xmlns.com/foaf/0.1/",
             },
             "@type": "prov:Person",
@@ -618,10 +628,14 @@ class TestNamespaces(unittest.TestCase):
         mt = CustomPerson()
         # custom person has no
         self.assertDictEqual(mt.urirefs, get_urirefs(Thing))
-        self.assertDictEqual(mt.urirefs, {'Thing': 'owl:Thing', 'label': 'rdfs:label'})
+        self.assertDictEqual(mt.urirefs,
+                             {'Thing': 'owl:Thing', 'closeMatch': 'skos:closeMatch', 'exactMatch': 'skos:exactMatch',
+                              'label': 'rdfs:label', 'relation': 'dcterms:relation'})
         self.assertDictEqual(mt.namespaces, get_namespaces(Thing))
         self.assertDictEqual(mt.namespaces, {'owl': 'http://www.w3.org/2002/07/owl#',
-                                             'rdfs': 'http://www.w3.org/2000/01/rdf-schema#'})
+                                             'rdfs': 'http://www.w3.org/2000/01/rdf-schema#',
+                                             'skos': 'http://www.w3.org/2004/02/skos/core#',
+                                             'dcterms': 'http://purl.org/dc/terms/'})
 
         mt = CustomPerson(first_name='John', last_name='Doe')
         with self.assertRaises(AttributeError):
@@ -637,6 +651,8 @@ class TestNamespaces(unittest.TestCase):
             "@context": {
                 "owl": "http://www.w3.org/2002/07/owl#",
                 "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+                "dcterms": "http://purl.org/dc/terms/",
+                "skos": "http://www.w3.org/2004/02/skos/core#",
                 "foaf": "http://xmlns.com/foaf/0.1/"
             },
             "@type": "CustomPerson",
@@ -786,3 +802,69 @@ class TestNamespaces(unittest.TestCase):
 
 """
         self.assertEqual(expected_serialization, person2.serialize("ttl"))
+
+    def test_skos_fields(self):
+        @namespaces(foaf="http://xmlns.com/foaf/0.1/")
+        @urirefs(Agent='foaf:Agent',
+                 name='foaf:lastName',
+                 age='foaf:age')
+        class Agent(Thing):
+            name: str = Field(default=None, alias="lastName")  # name is synonymous to lastName
+            age: int = None
+            special_field: Optional[str] = None
+
+        a = Agent(name='John Doe', age=23)
+        b = Agent(name='John Doe', age=23)
+        a.exactMatch = b
+        expected_ttl = """@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+[] a foaf:Agent ;
+    skos:exactMatch [ a foaf:Agent ;
+            foaf:age 23 ;
+            foaf:lastName "John Doe" ] ;
+    foaf:age 23 ;
+    foaf:lastName "John Doe" .
+
+"""
+        self.assertEqual(expected_ttl, a.serialize(format="ttl"))
+
+        a = Agent(id="https://example.org/jd", name='John Doe', age=23)
+        b = Agent(name='John Doe', age=23, closeMatch=a.id)
+
+        expected_ttl = """@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+[] a foaf:Agent ;
+    skos:closeMatch "https://example.org/jd" ;
+    foaf:age 23 ;
+    foaf:lastName "John Doe" .
+
+"""
+        self.assertEqual(expected_ttl, b.serialize(format="ttl"))
+
+    def test_relation(self):
+        @namespaces(foaf="http://xmlns.com/foaf/0.1/")
+        @urirefs(Agent='foaf:Agent',
+                 name='foaf:lastName',
+                 age='foaf:age')
+        class Agent(Thing):
+            name: str = Field(default=None, alias="lastName")  # name is synonymous to lastName
+            age: int = None
+            special_field: Optional[str] = None
+
+        a = Agent(name='John Doe', age=23, relation="https://example.org/123")
+
+        expected_ttl = """@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+[] a foaf:Agent ;
+    dcterms:relation "https://example.org/123" ;
+    foaf:age 23 ;
+    foaf:lastName "John Doe" .
+
+"""
+        self.assertEqual(expected_ttl, a.serialize(format="ttl"))

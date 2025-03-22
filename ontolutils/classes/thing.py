@@ -77,8 +77,15 @@ def build_blank_n3() -> str:
 
 
 @namespaces(owl='http://www.w3.org/2002/07/owl#',
-            rdfs='http://www.w3.org/2000/01/rdf-schema#')
-@urirefs(Thing='owl:Thing', label='rdfs:label')
+            rdfs='http://www.w3.org/2000/01/rdf-schema#',
+            dcterms='http://purl.org/dc/terms/',
+            skos='http://www.w3.org/2004/02/skos/core#',
+            )
+@urirefs(Thing='owl:Thing',
+         label='rdfs:label',
+         relation='dcterms:relation',
+         closeMatch='skos:closeMatch',
+         exactMatch='skos:exactMatch')
 class Thing(ThingModel):
     """Most basic concept class owl:Thing (see also https://www.w3.org/TR/owl-guide/)
 
@@ -127,6 +134,9 @@ class Thing(ThingModel):
     """
     id: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, None]] = Field(default_factory=build_blank_n3)  # @id
     label: str = None  # rdfs:label
+    relation: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
+    closeMatch: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
+    exactMatch: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
 
     @field_validator('id')
     @classmethod

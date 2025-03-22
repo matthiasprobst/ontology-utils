@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.15.0
+
+- Thing class got three new fields: `dcterms:relation`, `skos:closeMatch`, and `skos:exactMatch`
+
 ## v0.14.2
 
 - add some more unit translations to dictionary `qudt_lookup`

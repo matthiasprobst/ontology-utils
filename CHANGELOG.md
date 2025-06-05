@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.16.0
+- upgrade setuptools due to CVE. For that reason, the python version
+  requirement is now >=3.9
+
 ## v0.15.0
 
 - Thing class got three new fields: `dcterms:relation`, `skos:closeMatch`, and `skos:exactMatch`

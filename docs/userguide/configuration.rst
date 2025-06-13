@@ -14,6 +14,7 @@ by using `set_config(blank_id_generator=...)` you can provide your own function 
 Consider for both settings the below example:
 
 .. code-block:: python
+
     from ontolutils import Thing, urirefs, namespaces, set_config
     from pydantic import EmailStr
 

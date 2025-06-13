@@ -42,7 +42,7 @@ class ThingModel(BaseModel, abc.ABC, validate_assignment=True):
     model_config = ConfigDict(extra=PYDANTIC_EXTRA, populate_by_name=True)
 
     def __getattr__(self, item):
-        for field, meta in self.model_fields.items():
+        for field, meta in self.__class__.model_fields.items():
             if meta.alias == item:
                 return getattr(self, field)
         return super().__getattr__(item)
@@ -68,8 +68,20 @@ def resolve_iri(key_or_iri: str, context: Context) -> Optional[str]:
     return
 
 
+def _get_n3():
+    return rdflib.BNode().n3()
+
+
 def build_blank_n3() -> str:
-    _blank_node = rdflib.BNode().n3()
+    return rdflib.BNode().n3()
+
+
+def build_blank_id() -> str:
+    id_generator = get_config("blank_id_generator")
+    if id_generator is None:
+        id_generator = _get_n3
+
+    _blank_node = id_generator()
     bnode_prefix_name = get_config("blank_node_prefix_name")
     if bnode_prefix_name is None:
         return _blank_node
@@ -132,7 +144,7 @@ class Thing(ThingModel):
     >>> #     For further information visit https://errors.pydantic.dev/2.4/v/string_type
 
     """
-    id: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, None]] = Field(default_factory=build_blank_n3)  # @id
+    id: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, None]] = Field(default_factory=build_blank_id)  # @id
     label: str = None  # rdfs:label
     relation: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
     closeMatch: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
@@ -455,7 +467,7 @@ class Thing(ThingModel):
                            indent=indent)
 
     def __repr__(self, limit: Optional[int] = None):
-        _fields = {k: getattr(self, k) for k in self.model_fields if getattr(self, k) is not None}
+        _fields = {k: getattr(self, k) for k in self.__class__.model_fields.keys() if getattr(self, k) is not None}
         if self.model_extra:
             repr_extra = ", ".join([f"{k}={v}" for k, v in {**_fields, **self.model_extra}.items()])
         else:

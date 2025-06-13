@@ -5,7 +5,7 @@
 [![Documentation Status](https://readthedocs.org/projects/ontology-utils/badge/?version=latest)](https://ontology-utils.readthedocs.io/en/latest/)
 ![pyvers Status](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-blue)
 
-This package helps you in generating ontology-related objects and let's you easily create JSON-LD files.
+This package helps you in generating ontology-related objects and lets you easily create JSON-LD files.
 
 ## Quickstart
 

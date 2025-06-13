@@ -1,6 +1,12 @@
 # Changelog
 
+## v0.17.0
+
+- id generation may be injected by the user via `set_config(blank_id_generator=...)`
+- updated docs
+
 ## v0.16.0
+
 - upgrade setuptools due to CVE. For that reason, the python version
   requirement is now >=3.9
 

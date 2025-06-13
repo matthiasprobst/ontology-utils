@@ -2,6 +2,7 @@ import datetime
 import json
 import logging
 import unittest
+from itertools import count
 from typing import Optional, List
 
 import pydantic
@@ -668,6 +669,25 @@ class TestNamespaces(unittest.TestCase):
         jsonld_dict.pop('@id', None)
         self.assertDictEqual(jsonld_dict,
                              ref_jsonld)
+
+    def test_blank_id_generator(self):
+        @namespaces(foaf='http://xmlns.com/foaf/0.1/',
+                    prov='https://www.w3.org/ns/prov#')
+        @urirefs(Person='prov:Person',
+                 first_name='foaf:firstName')
+        class Person(Thing):
+            first_name: str = Field(default=None, alias='firstName')
+
+        counter = count()
+
+        def my_generator():
+            return f"_:{next(counter)}"
+
+        with set_config(blank_id_generator=my_generator):
+            p = Person(firstName="John")
+            self.assertEqual("_:0", p.id)
+            p = Person(firstName="John")
+            self.assertEqual("_:1", p.id)
 
     def test_blank_node_prefix(self):
         @namespaces(foaf='http://xmlns.com/foaf/0.1/',

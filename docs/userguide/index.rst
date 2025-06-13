@@ -9,4 +9,5 @@ which are needed to identify entities in ontologies.
 .. toctree::
 
    classes
+   configuration
    namespacelib

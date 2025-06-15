@@ -1,7 +1,7 @@
 # Ontolutils - Object-oriented "Things"
 
 ![Tests Status](https://github.com/matthiasprobst/ontology-utils/actions/workflows/tests.yml/badge.svg)
-![Coverage](https://codecov.io/gh/matthiasprobst/ontology-utils/branch/main/graph/badge.svg)
+[![codecov](https://codecov.io/gh/matthiasprobst/ontology-utils/graph/badge.svg?token=KKZ3PTO73T)](https://codecov.io/gh/matthiasprobst/ontology-utils)
 [![Documentation Status](https://readthedocs.org/projects/ontology-utils/badge/?version=latest)](https://ontology-utils.readthedocs.io/en/latest/)
 ![pyvers Status](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-blue)
 

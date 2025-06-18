@@ -241,6 +241,7 @@ class Thing(ThingModel):
         Dict
             The JSON-LD dictionary
         """
+        from .urivalue import URIValue
         logger.debug('Initializing RDF graph to dump the Thing to JSON-LD')
 
         # lets auto-generate the context
@@ -289,6 +290,11 @@ class Thing(ThingModel):
             uri_ref_manager = URIRefManager.get(obj.__class__, None)
             at_context.update(NamespaceManager.get(obj.__class__, {}))
 
+            if isinstance(obj, ThingModel):
+                for extra in obj.model_extra.values():
+                    if isinstance(extra, URIValue):
+                        at_context[extra.prefix] = extra.namespace
+
             obj_ctx = Context(source={**context,
                                       **NamespaceManager.get(obj.__class__, {}),
                                       **URIRefManager.get(obj.__class__, {})})
@@ -298,6 +304,10 @@ class Thing(ThingModel):
 
             try:
                 serialized_fields = {}
+                if isinstance(obj, ThingModel):
+                    for extra_field_name, extra_field_value in obj.model_extra.items():
+                        if isinstance(extra_field_value, URIValue):
+                            serialized_fields[extra_field_name] = f"{extra_field_value.prefix}:{extra_field_name}"
                 for k in obj.model_dump(exclude_none=_exclude_none):
                     value = getattr(obj, k)
                     if value is not None and k not in ('id', '@id'):
@@ -329,6 +339,8 @@ class Thing(ThingModel):
                         _serialize_fields(i, _exclude_none=_exclude_none) for i in v]
                 elif isinstance(v, (int, float)):
                     serialized_fields[key] = v
+                elif isinstance(v, URIValue):
+                    serialized_fields[f"{v.prefix}:{key}"] = v.value
                 else:
                     serialized_fields[key] = _serialize_fields(v, _exclude_none=_exclude_none)
 

@@ -865,6 +865,22 @@ class TestNamespaces(unittest.TestCase):
 """
         self.assertEqual(expected_ttl, b.serialize(format="ttl"))
 
+    def test_behaviour_of_non_specified_fields(self):
+        # if a Thing has not specified a specific field, but a user sets it, it cannot be validated, however,
+        # if the user somehow passes the URI of the field, it should be accepted.
+
+        @namespaces(foaf="http://xmlns.com/foaf/0.1/")
+        @urirefs(Agent='foaf:Agent',
+                 name='foaf:lastName',
+                 age='foaf:age')
+        class Agent(Thing):
+            name: str = Field(default=None, alias="lastName")  # name is synonymous to lastName
+            age: int = None
+
+        # in the following, home_town is not specified in the Agent class, but we set it anyway
+        a = Agent(name='John Doe', age=23, homeTown=ontolutils.URIValue("Berlin", "http://example.org", "ex"))
+        print(a.model_dump_jsonld())
+
     def test_relation(self):
         @namespaces(foaf="http://xmlns.com/foaf/0.1/")
         @urirefs(Agent='foaf:Agent',

@@ -326,6 +326,41 @@ class TestNamespaces(unittest.TestCase):
             'https://git.rwth-aachen.de/nfdi4ing/metadata4ing/metadata4ing/-/raw/master/m4i_context.jsonld'
         )
 
+    def test_model_dump_ttl(self):
+        @namespaces(foaf="http://xmlns.com/foaf/0.1/")
+        @urirefs(Agent='foaf:Agent',
+                 mbox='foaf:mbox',
+                 age='foaf:age')
+        class Agent(Thing):
+            """Pydantic Model for http://xmlns.com/foaf/0.1/Agent
+            Parameters
+            ----------
+            mbox: EmailStr = None
+                Email address (foaf:mbox)
+            """
+            mbox: EmailStr = None
+            age: int = None
+
+        agent = Agent(
+            label='Agent 1',
+            mbox='my@email.com',
+            age=23,
+        )
+        self.assertEqual(
+            """@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+[] a foaf:Agent ;
+    rdfs:label "Agent 1" ;
+    foaf:age 23 ;
+    foaf:mbox "my@email.com" .
+
+""",
+            agent.model_dump_ttl()
+        )
+
+
     def test_model_dump_jsonld_and_load_with_import(self):
         @namespaces(foaf="http://xmlns.com/foaf/0.1/")
         @urirefs(Agent='foaf:Agent',

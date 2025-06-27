@@ -505,6 +505,22 @@ class Thing(ThingModel):
                            context=_context,
                            indent=indent)
 
+    def model_dump_ttl(self,
+                  context: Optional[Dict] = None,
+                  exclude_none: bool = True,
+                  resolve_keys: bool = True,
+                  assign_bnode: bool = True):
+        """Dump the model as a Turtle string."""
+        return self.serialize(
+            format="turtle",
+            context=context,
+            exclude_none=exclude_none,
+            resolve_keys=resolve_keys,
+            assign_bnode=assign_bnode
+        )
+
+
+
     def __repr__(self, limit: Optional[int] = None):
         _fields = {k: getattr(self, k) for k in self.__class__.model_fields.keys() if getattr(self, k) is not None}
         if self.model_extra:

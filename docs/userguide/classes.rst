@@ -44,7 +44,9 @@ The like this created class can be used to create an instance of a person:
 
     person = Person(id='_:123uf4', label='test_person', firstName="John", mbox="john@email.com")
 
-The advantage of creating such classes are twofold: 1. The properties (predicates of the ontology) are (type-)validated.
+The advantage of creating such classes are twofold:
+
+1. The properties (predicates of the ontology) are (type-)validated.
 2. The class can be serialized to JSON-LD and back. The latter is shown next:
 
 
@@ -127,6 +129,10 @@ The return value is a JSON-LD string:
     }
 
 
+You may also use `model_dump_ttl()` to serialize the object to Turtle format or `serialize(...)` to serialize it to
+other formats supported by `rdflib` (e.g. RDF/XML, N-Triples, etc.).
+
+
 Save to file
 ............
 
@@ -151,6 +157,26 @@ Let's load a person from a file:
     # Person(id=123uf4, label=test_person, firstName=John, mbox=john@email.com)
 
 
+Conversion between semantically identical classes but different instances
+.........................................................................
 
+Sometimes two codes may implement the same ontology class, that are the same thing, meaning they have the same
+URI and therefore properties. Since `pydantic` ensures the types of the properties, an option is needed to convert
+between these two classes. Normally, this should not be done, but since the URI is the same, it is possible to convert between them.
+For this `.map()` method is provided:
 
+.. code-block:: python
 
+    @namespaces(prov="http://www.w3.org/ns/prov#",
+           foaf="http://xmlns.com/foaf/0.1/")
+    @urirefs(PersonAlternative='prov:PersonAlternative',
+             firstName='foaf:firstName',
+             lastName='foaf:lastName',
+             mbox='foaf:mbox')
+    class PersonAlternative(Thing):
+        firstName: str
+        lastName: str = None
+        mbox: EmailStr = None
+
+    person_alt = PersonAlternative(label='test_person', firstName="John", mbox="e@mail.com", homeTown=URIValue("Berlin", "https://example.org", "ex"))
+    person_alt.map(Person)  # map to Person class (see above)

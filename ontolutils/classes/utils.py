@@ -38,6 +38,7 @@ class UNManager:
         return self.data[cls]
 
 
+
 def split_URIRef(uri: rdflib.URIRef) -> List[Union[str, None]]:
     """Split a URIRef into namespace and key."""
     _uri = str(uri)

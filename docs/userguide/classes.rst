@@ -48,12 +48,26 @@ The advantage of creating such classes are twofold: 1. The properties (predicate
 2. The class can be serialized to JSON-LD and back. The latter is shown next:
 
 
+Add a field posterior to the class definition:
+..............................................
+
+Sometimes the definition of a "Thing", e.g. "Person", is not complete and one wants to add a field later during the
+runtime. This can be done by using the `URIValue` class, which allows to define a property with a URI and a namespace:
+
+.. code-block:: python
+
+    from ontolutils import URIValue
+
+    a = Person(id='_:123uf4', label='test_person', firstName="John", mbox="john@email.com", homeTown=URIValue("Berlin", "http://example.org", "ex"))
+
+
 Define an ontology class dynamically:
 .....................................
 
 If you cannot define the class statically as above, you can also define it dynamically:
 
 .. code-block:: python
+
     from typing import List, Union
 
     from ontolutils import build, Property, Thing
@@ -74,6 +88,7 @@ If you cannot define the class statically as above, you can also define it dynam
 The serialization in turtle format looks like this:
 
 .. code-block:: turtle
+
     @prefix owl: <http://www.w3.org/2002/07/owl#> .
     @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
     @prefix schema: <https://schema.org/> .
@@ -82,7 +97,6 @@ The serialization in turtle format looks like this:
         rdfs:label "my conference" ;
         schema:about [ a owl:Thing ;
                 rdfs:label "The thing it is about" ] .
-
 
 
 Dump/Serialize

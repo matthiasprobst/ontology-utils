@@ -150,6 +150,33 @@ class Thing(ThingModel):
     closeMatch: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
     exactMatch: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
 
+    @property
+    def namespace(self) -> str:
+        compact_uri = self.urirefs[self.__class__.__name__]
+        prefix, name = compact_uri.split(':')
+        return self.namespaces[prefix]
+    
+    @property
+    def uri(self) -> str:
+        compact_uri = self.urirefs[self.__class__.__name__]
+        prefix, name = compact_uri.split(':')
+        namespace =self.namespaces[prefix]
+        return f"{namespace}{name}"
+
+    def map(self, other: Type[ThingModel]) -> ThingModel:
+        """Return the class as another class. This is useful to convert a ThingModel
+        to another ThingModel class."""
+        if not issubclass(other, ThingModel):
+            raise TypeError(f"Cannot convert {self.__class__} to {other}. "
+                            f"{other} must be a subclass of ThingModel.")
+        combined_urirefs = {**self.urirefs, **URIRefManager[other]}
+        combined_urirefs.pop(self.__class__.__name__)
+        URIRefManager.data[other] = combined_urirefs
+
+        combined_namespaces = {**self.namespaces, **NamespaceManager[other]}
+        NamespaceManager.data[other] = combined_namespaces
+        return other(**self.model_dump(exclude_none=True))
+
     @field_validator('id')
     @classmethod
     def _id(cls, id: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType]]) -> str:
@@ -649,3 +676,10 @@ def build(
     _decorate_urirefs(new_cls, **_urirefs)
     _add_namesapces(new_cls, _namespaces)
     return new_cls
+
+
+def is_semantically_equal(thing1, thing2) -> bool:
+    # Prüfe, ob beide Instanzen von Thing sind
+    if isinstance(thing1, Thing) and isinstance(thing2, Thing):
+        return thing1.uri == thing2.uri
+    return thing1 == thing2

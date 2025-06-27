@@ -2,6 +2,8 @@ import json
 import pathlib
 import unittest
 
+import yaml
+
 from ontolutils import __version__
 
 
@@ -33,3 +35,9 @@ class TestVersion(unittest.TestCase):
         codemeta = get_package_meta()
 
         assert codemeta['version'] == __version__
+
+    def test_citation_cff(self):
+        citation_cff = __this_dir__ / "../CITATION.cff"
+        with open(citation_cff, 'r') as f:
+            cff = yaml.safe_load(f)
+        self.assertTrue("todo" not in cff["doi"].lower(), "Please replace 'todo' in CITATION.cff")

@@ -1,9 +1,14 @@
 # Changelog
 
+## v0.18.0
+- fields/properties can be added posterior to instantiation of a Thing object
+- semantically identical "things" (same URI) can be converted into each other
+- fixed coverage issues and documentation
+
 ## v0.17.0
 
 - id generation may be injected by the user via `set_config(blank_id_generator=...)`
-- updated docs
+- updated docs``
 
 ## v0.16.0
 

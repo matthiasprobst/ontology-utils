@@ -150,6 +150,33 @@ class Thing(ThingModel):
     closeMatch: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
     exactMatch: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
 
+    @property
+    def namespace(self) -> str:
+        compact_uri = self.urirefs[self.__class__.__name__]
+        prefix, name = compact_uri.split(':')
+        return self.namespaces[prefix]
+    
+    @property
+    def uri(self) -> str:
+        compact_uri = self.urirefs[self.__class__.__name__]
+        prefix, name = compact_uri.split(':')
+        namespace =self.namespaces[prefix]
+        return f"{namespace}{name}"
+
+    def map(self, other: Type[ThingModel]) -> ThingModel:
+        """Return the class as another class. This is useful to convert a ThingModel
+        to another ThingModel class."""
+        if not issubclass(other, ThingModel):
+            raise TypeError(f"Cannot convert {self.__class__} to {other}. "
+                            f"{other} must be a subclass of ThingModel.")
+        combined_urirefs = {**self.urirefs, **URIRefManager[other]}
+        combined_urirefs.pop(self.__class__.__name__)
+        URIRefManager.data[other] = combined_urirefs
+
+        combined_namespaces = {**self.namespaces, **NamespaceManager[other]}
+        NamespaceManager.data[other] = combined_namespaces
+        return other(**self.model_dump(exclude_none=True))
+
     @field_validator('id')
     @classmethod
     def _id(cls, id: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType]]) -> str:
@@ -241,6 +268,7 @@ class Thing(ThingModel):
         Dict
             The JSON-LD dictionary
         """
+        from .urivalue import URIValue
         logger.debug('Initializing RDF graph to dump the Thing to JSON-LD')
 
         # lets auto-generate the context
@@ -289,6 +317,11 @@ class Thing(ThingModel):
             uri_ref_manager = URIRefManager.get(obj.__class__, None)
             at_context.update(NamespaceManager.get(obj.__class__, {}))
 
+            if isinstance(obj, ThingModel):
+                for extra in obj.model_extra.values():
+                    if isinstance(extra, URIValue):
+                        at_context[extra.prefix] = extra.namespace
+
             obj_ctx = Context(source={**context,
                                       **NamespaceManager.get(obj.__class__, {}),
                                       **URIRefManager.get(obj.__class__, {})})
@@ -298,6 +331,10 @@ class Thing(ThingModel):
 
             try:
                 serialized_fields = {}
+                if isinstance(obj, ThingModel):
+                    for extra_field_name, extra_field_value in obj.model_extra.items():
+                        if isinstance(extra_field_value, URIValue):
+                            serialized_fields[extra_field_name] = f"{extra_field_value.prefix}:{extra_field_name}"
                 for k in obj.model_dump(exclude_none=_exclude_none):
                     value = getattr(obj, k)
                     if value is not None and k not in ('id', '@id'):
@@ -329,6 +366,8 @@ class Thing(ThingModel):
                         _serialize_fields(i, _exclude_none=_exclude_none) for i in v]
                 elif isinstance(v, (int, float)):
                     serialized_fields[key] = v
+                elif isinstance(v, URIValue):
+                    serialized_fields[f"{v.prefix}:{key}"] = v.value
                 else:
                     serialized_fields[key] = _serialize_fields(v, _exclude_none=_exclude_none)
 
@@ -465,6 +504,22 @@ class Thing(ThingModel):
         return g.serialize(format='json-ld',
                            context=_context,
                            indent=indent)
+
+    def model_dump_ttl(self,
+                  context: Optional[Dict] = None,
+                  exclude_none: bool = True,
+                  resolve_keys: bool = True,
+                  assign_bnode: bool = True):
+        """Dump the model as a Turtle string."""
+        return self.serialize(
+            format="turtle",
+            context=context,
+            exclude_none=exclude_none,
+            resolve_keys=resolve_keys,
+            assign_bnode=assign_bnode
+        )
+
+
 
     def __repr__(self, limit: Optional[int] = None):
         _fields = {k: getattr(self, k) for k in self.__class__.model_fields.keys() if getattr(self, k) is not None}
@@ -637,3 +692,10 @@ def build(
     _decorate_urirefs(new_cls, **_urirefs)
     _add_namesapces(new_cls, _namespaces)
     return new_cls
+
+
+def is_semantically_equal(thing1, thing2) -> bool:
+    # Prüfe, ob beide Instanzen von Thing sind
+    if isinstance(thing1, Thing) and isinstance(thing2, Thing):
+        return thing1.uri == thing2.uri
+    return thing1 == thing2

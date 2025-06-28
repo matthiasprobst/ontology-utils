@@ -3,10 +3,11 @@ import json
 import logging
 import unittest
 from itertools import count
-from typing import Optional, List
+from typing import Optional, List, Union
 
 import pydantic
 import rdflib
+from asttokens.util import last_stmt
 from pydantic import EmailStr, model_validator
 from pydantic import ValidationError
 from pydantic import field_validator, Field
@@ -324,6 +325,41 @@ class TestNamespaces(unittest.TestCase):
             jsonld_str3_dict['@context']['@import'],
             'https://git.rwth-aachen.de/nfdi4ing/metadata4ing/metadata4ing/-/raw/master/m4i_context.jsonld'
         )
+
+    def test_model_dump_ttl(self):
+        @namespaces(foaf="http://xmlns.com/foaf/0.1/")
+        @urirefs(Agent='foaf:Agent',
+                 mbox='foaf:mbox',
+                 age='foaf:age')
+        class Agent(Thing):
+            """Pydantic Model for http://xmlns.com/foaf/0.1/Agent
+            Parameters
+            ----------
+            mbox: EmailStr = None
+                Email address (foaf:mbox)
+            """
+            mbox: EmailStr = None
+            age: int = None
+
+        agent = Agent(
+            label='Agent 1',
+            mbox='my@email.com',
+            age=23,
+        )
+        self.assertEqual(
+            """@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+[] a foaf:Agent ;
+    rdfs:label "Agent 1" ;
+    foaf:age 23 ;
+    foaf:mbox "my@email.com" .
+
+""",
+            agent.model_dump_ttl()
+        )
+
 
     def test_model_dump_jsonld_and_load_with_import(self):
         @namespaces(foaf="http://xmlns.com/foaf/0.1/")
@@ -865,6 +901,22 @@ class TestNamespaces(unittest.TestCase):
 """
         self.assertEqual(expected_ttl, b.serialize(format="ttl"))
 
+    def test_behaviour_of_non_specified_fields(self):
+        # if a Thing has not specified a specific field, but a user sets it, it cannot be validated, however,
+        # if the user somehow passes the URI of the field, it should be accepted.
+
+        @namespaces(foaf="http://xmlns.com/foaf/0.1/")
+        @urirefs(Agent='foaf:Agent',
+                 name='foaf:lastName',
+                 age='foaf:age')
+        class Agent(Thing):
+            name: str = Field(default=None, alias="lastName")  # name is synonymous to lastName
+            age: int = None
+
+        # in the following, home_town is not specified in the Agent class, but we set it anyway
+        a = Agent(name='John Doe', age=23, homeTown=ontolutils.URIValue("Berlin", "http://example.org", "ex"))
+        print(a.model_dump_jsonld())
+
     def test_relation(self):
         @namespaces(foaf="http://xmlns.com/foaf/0.1/")
         @urirefs(Agent='foaf:Agent',
@@ -888,3 +940,49 @@ class TestNamespaces(unittest.TestCase):
 
 """
         self.assertEqual(expected_ttl, a.serialize(format="ttl"))
+
+    def test_different_python_classes_same_uri(self):
+        @namespaces(foaf='http://xmlns.com/foaf/0.1/',
+                    prov='https://www.w3.org/ns/prov#')
+        @urirefs(Person1='prov:Person',
+                 first_name='foaf:firstName')
+        class Person1(Thing):
+            first_name: str = Field(default=None, alias='firstName')
+
+        p1 = Person1(first_name='John')
+        self.assertEqual(p1.namespace, "https://www.w3.org/ns/prov#")
+        self.assertEqual(p1.uri, "https://www.w3.org/ns/prov#Person")
+
+        @namespaces(foaf='http://xmlns.com/foaf/0.1/',
+                    prov='https://www.w3.org/ns/prov#')
+        @urirefs(Person2='prov:Person',
+                 first_name='foaf:firstName',
+                 last_name='foaf:lastName')
+        class Person2(Thing):
+            first_name: str = Field(alias='firstName')
+            last_name: str= Field(alias='lastName')
+
+        p1 = Person1(first_name='John')
+        p2 = Person2(first_name='John', last_name="Doe")
+        self.assertNotEqual(p1, p2)
+        self.assertEqual(p1.namespace, p2.namespace)
+
+        p1_from_p2 = p2.map(Person1)
+        self.assertIsInstance(p1_from_p2, Thing)
+        self.assertIsInstance(p1_from_p2, Person1)
+        self.assertEqual(p1_from_p2.first_name, 'John')
+        self.assertEqual(p1_from_p2.last_name, 'Doe')
+        jsonld_dict = json.loads(p1_from_p2.model_dump_jsonld())
+        self.assertTrue("foaf:lastName" in jsonld_dict)
+
+        @namespaces(ex='http://example.org/',
+                    prov='https://www.w3.org/ns/prov#')
+        @urirefs(Organization='ex:Organization',
+                 members='prov:Person')
+        class Organization(Thing):
+            members: Union[Person1, List[Person1]]
+
+        # it should be irrelevant which Person class is taken, unless the uri is different
+        org1 = Organization(members=p1)
+        org2 = Organization(members=p2.map(Person1))
+        # org3 = Organization(members=[p1, p2])

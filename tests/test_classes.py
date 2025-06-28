@@ -7,7 +7,6 @@ from typing import Optional, List, Union
 
 import pydantic
 import rdflib
-from asttokens.util import last_stmt
 from pydantic import EmailStr, model_validator
 from pydantic import ValidationError
 from pydantic import field_validator, Field
@@ -359,7 +358,6 @@ class TestNamespaces(unittest.TestCase):
 """,
             agent.model_dump_ttl()
         )
-
 
     def test_model_dump_jsonld_and_load_with_import(self):
         @namespaces(foaf="http://xmlns.com/foaf/0.1/")
@@ -960,7 +958,7 @@ class TestNamespaces(unittest.TestCase):
                  last_name='foaf:lastName')
         class Person2(Thing):
             first_name: str = Field(alias='firstName')
-            last_name: str= Field(alias='lastName')
+            last_name: str = Field(alias='lastName')
 
         p1 = Person1(first_name='John')
         p2 = Person2(first_name='John', last_name="Doe")

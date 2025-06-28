@@ -43,5 +43,6 @@ __all__ = ['Thing',
            'parse_unit',
            'as_id',
            'build',
-           'Property'
+           'Property',
+           'set_config',
            ]

@@ -318,9 +318,10 @@ class Thing(ThingModel):
             at_context.update(NamespaceManager.get(obj.__class__, {}))
 
             if isinstance(obj, ThingModel):
-                for extra in obj.model_extra.values():
-                    if isinstance(extra, URIValue):
-                        at_context[extra.prefix] = extra.namespace
+                if obj.model_extra:
+                    for extra in obj.model_extra.values():
+                        if isinstance(extra, URIValue):
+                            at_context[extra.prefix] = extra.namespace
 
             obj_ctx = Context(source={**context,
                                       **NamespaceManager.get(obj.__class__, {}),
@@ -332,9 +333,10 @@ class Thing(ThingModel):
             try:
                 serialized_fields = {}
                 if isinstance(obj, ThingModel):
-                    for extra_field_name, extra_field_value in obj.model_extra.items():
-                        if isinstance(extra_field_value, URIValue):
-                            serialized_fields[extra_field_name] = f"{extra_field_value.prefix}:{extra_field_name}"
+                    if obj.model_extra:
+                        for extra_field_name, extra_field_value in obj.model_extra.items():
+                            if isinstance(extra_field_value, URIValue):
+                                serialized_fields[extra_field_name] = f"{extra_field_value.prefix}:{extra_field_name}"
                 for k in obj.model_dump(exclude_none=_exclude_none):
                     value = getattr(obj, k)
                     if value is not None and k not in ('id', '@id'):

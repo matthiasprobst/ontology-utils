@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.18.1
+
+- hotfix
+
 ## v0.18.0
 
 - fields/properties can be added posterior to instantiation of a Thing object

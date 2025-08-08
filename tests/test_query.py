@@ -187,7 +187,8 @@ class TestQuery(unittest.TestCase):
                 {
                     "@context": {
                         "prov": "https://www.w3.org/ns/prov#",
-                        "foaf": "http://xmlns.com/foaf/0.1/"
+                        "foaf": "http://xmlns.com/foaf/0.1/",
+                        "local": "http:/local.org/"
                     },
                     "@graph": [
                         {
@@ -208,8 +209,9 @@ class TestQuery(unittest.TestCase):
                     ]
                 }"""
             )
-        found_agents = ontolutils.query(self.Agent, source=__this_dir__ / 'agent.jsonld',
-                                        limit=2)
+        found_agents = ontolutils.query(
+            self.Agent, source=__this_dir__ / 'agent.jsonld',
+            limit=2)
         self.assertEqual(len(found_agents), 2)
         self.assertEqual(found_agents[0].mbox, 'a@mail.com')
         self.assertEqual(found_agents[1].mbox, 'b@mail.com')

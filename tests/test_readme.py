@@ -3,11 +3,13 @@ import json
 import unittest
 from typing import List, Union
 
-from pydantic import EmailStr, Field
+from pydantic import EmailStr
+from pydantic import Field
 from pydantic import HttpUrl, model_validator
 
-from ontolutils import build, Property, Thing
-from ontolutils import urirefs, namespaces, as_id
+from ontolutils import Thing, urirefs, namespaces
+from ontolutils import as_id
+from ontolutils import build, Property
 
 
 class TestReadmeCode(unittest.TestCase):
@@ -38,7 +40,7 @@ class TestReadmeCode(unittest.TestCase):
                 return as_id(self, "orcidId")
 
         Person(id="https://orcid.org/0000-0001-8729-0482",
-                   firstName='Matthias', last_name='Probst')
+               firstName='Matthias', last_name='Probst')
         # as we have set an alias, we can also use "lastName":
         p = Person(id="https://orcid.org/0000-0001-8729-0482",
                    firstName='Matthias', lastName='Probst')
@@ -87,3 +89,43 @@ class TestReadmeCode(unittest.TestCase):
 
 """
         self.assertEqual(ttl, expected)
+
+    def test_person_with_base_uri(self):
+        @namespaces(prov="http://www.w3.org/ns/prov#",
+                    foaf="http://xmlns.com/foaf/0.1/")
+        @urirefs(Person='prov:Person',
+                 firstName='foaf:firstName',
+                 lastName='foaf:lastName',
+                 mbox='foaf:mbox')
+        class Person(Thing):
+            firstName: str
+            lastName: str = None
+            mbox: EmailStr = None
+
+        person = Person(id='_:123uf4', label='test_person', firstName="John", mbox="john@email.com")
+        json_ld_str = person.model_dump_jsonld(
+            base_uri="https://example.org/",
+            context={"ex": "https://example.org/"},
+            resolve_keys=True
+        )
+        json_ld_dict = json.loads(json_ld_str)
+        expected_dict = json.loads("""{
+    "@context": {
+        "owl": "http://www.w3.org/2002/07/owl#",
+        "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+        "dcterms": "http://purl.org/dc/terms/",
+        "skos": "http://www.w3.org/2004/02/skos/core#",
+        "prov": "http://www.w3.org/ns/prov#",
+        "foaf": "http://xmlns.com/foaf/0.1/",
+        "ex": "https://example.org/"
+    },
+    "@type": "prov:Person",
+    "rdfs:label": "test_person",
+    "foaf:firstName": "John",
+    "foaf:mbox": "john@email.com",
+    "@id": "ex:123uf4"
+}""")
+        self.assertEqual(
+            expected_dict,
+            json_ld_dict
+        )

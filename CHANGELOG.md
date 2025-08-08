@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.19.1
+
+- hotfix using rdflib.BNode as id of a Thing object
+- improve error handling parsing id of a Thing object
+
 ## v0.19.0
 
 - add `base_uri` to `model_dump_jsonld()` to allow setting a base URI for the JSON-LD output

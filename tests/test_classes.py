@@ -232,8 +232,10 @@ class TestNamespaces(unittest.TestCase):
         self.assertEqual(thing._repr_html_(), f'Thing(id={thing.id}, label=Thing 1)')
 
     def test_thing_get_jsonld_dict(self):
-        with self.assertRaises(pydantic.ValidationError):
+        with self.assertRaises(TypeError):
             _ = Thing(id=1, label='Thing 1')
+        with self.assertRaises(pydantic.ValidationError):
+            _ = Thing(id="1", label='Thing 1')
 
         thing = Thing(id='https://example.org/TestThing', label='Test Thing', numerical_value=1.0,
                       dt=datetime.datetime(2021, 1, 1))

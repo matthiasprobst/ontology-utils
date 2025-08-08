@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Dict, Union, Optional, Any, List, Type
 
+import pydantic
 import rdflib
 from pydantic import AnyUrl, HttpUrl, FileUrl, BaseModel, ConfigDict, Field
 from pydantic import field_validator
@@ -174,18 +175,29 @@ class Thing(ThingModel):
         NamespaceManager.data[other] = combined_namespaces
         return other(**self.model_dump(exclude_none=True))
 
-    @field_validator('id')
+    @field_validator('id', mode="before")
     @classmethod
     def _id(cls, id: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType]]) -> str:
         if id is None:
             return build_blank_n3()
-        if isinstance(id, str):
-            if not id.startswith(('_:', 'http', 'file', 'urn', 'bnode:')):
-                raise ValueError(
-                    f'The ID must be a valid IRI or blank node but got "{id}". '
-                    'It must start with "_:", "http", "file", "urn" or "bnode:".'
-                )
-        return str(id)
+        if isinstance(id, rdflib.URIRef):
+            return id.n3()
+        if isinstance(id, rdflib.BNode):
+            return id.n3()
+        if not isinstance(id, str):
+            raise TypeError(
+                f'The ID must be a string, HttpUrl, FileUrl or BlankNodeType but got {type(id)}.'
+            )
+        if id.startswith('http'):
+            return str(HttpUrl(id))
+        if id.startswith('file'):
+            return str(FileUrl(id))
+        if id.startswith('_:'):
+            return id  # this is a blank node
+        raise ValueError(
+            f'The ID must be a valid IRI or blank node but got "{id}". '
+            'It must start with "_:", "http", "file".'
+        )
 
     @classmethod
     def build(cls, namespace: HttpUrl,
@@ -212,7 +224,7 @@ class Thing(ThingModel):
         return self.id <= other.id
 
     def get_jsonld_dict(self,
-                        base_uri: Optional[Union[str, AnyUrl]]=None,
+                        base_uri: Optional[Union[str, AnyUrl]] = None,
                         context: Optional[Union[Dict, str]] = None,
                         exclude_none: bool = True,
                         resolve_keys: bool = False,

@@ -238,9 +238,14 @@ class TestNamespaces(unittest.TestCase):
         thing = Thing(id='https://example.org/TestThing', label='Test Thing', numerical_value=1.0,
                       dt=datetime.datetime(2021, 1, 1))
         with self.assertRaises(TypeError):
-            thing.get_jsonld_dict(context=1)
+            thing.get_jsonld_dict(context=1, base_uri=None)
 
-        thing_dict = thing.get_jsonld_dict(resolve_keys=True)
+        thing_dict = thing.get_jsonld_dict(
+            resolve_keys=True,
+            exclude_none=True,
+            base_uri=None,
+            context=None
+        )
         self.assertIsInstance(thing_dict, dict)
         self.assertDictEqual(
             thing_dict['@context'],
@@ -324,6 +329,51 @@ class TestNamespaces(unittest.TestCase):
             jsonld_str3_dict['@context']['@import'],
             'https://git.rwth-aachen.de/nfdi4ing/metadata4ing/metadata4ing/-/raw/master/m4i_context.jsonld'
         )
+
+        def base_uri_generator():
+            return f"https://example.org/agents/{rdflib.BNode()}"
+
+        with set_config(blank_id_generator=base_uri_generator):
+            new_agent = Agent(
+                label='Agent new',
+                mbox='new_agent@email.com',
+                age=33, )
+            jsonld_with_base_uri = new_agent.model_dump_jsonld()
+        self.assertTrue(
+            Agent.from_jsonld(data=jsonld_with_base_uri, limit=1).id.startswith("https://example.org/agents/"))
+
+        new_agent = Agent(
+            label='Agent new',
+            mbox='new_agent@email.com',
+            age=33, )
+        jsonld_with_blank_node_base_uri = new_agent.model_dump_jsonld()
+        self.assertTrue(Agent.from_jsonld(data=jsonld_with_blank_node_base_uri, limit=1).id.startswith("_:"))
+
+        jsonld_with_base_uri = new_agent.model_dump_jsonld(base_uri="https://example.org/agents/")
+        self.assertTrue(
+            Agent.from_jsonld(data=jsonld_with_base_uri, limit=1).id.startswith("https://example.org/agents/"))
+
+        new_agent = Agent(
+            id="https://example.org/agents/new_agent/123",
+            label='Agent new',
+            mbox='new_agent@email.com',
+            age=33, )
+        new_agent_jsonld = new_agent.model_dump_jsonld()
+        self.assertEqual(Agent.from_jsonld(data=new_agent_jsonld, limit=1).id,
+                         "https://example.org/agents/new_agent/123")
+
+        new_agent_jsonld = new_agent.model_dump_jsonld(base_uri="https://example.org/agents/")
+        self.assertEqual(Agent.from_jsonld(data=new_agent_jsonld, limit=1).id,
+                         "https://example.org/agents/new_agent/123")
+
+        new_agent = Agent(
+            id="_:123",
+            label='Agent new',
+            mbox='new_agent@email.com',
+            age=33, )
+        new_agent_jsonld = new_agent.model_dump_jsonld(base_uri="https://example.org/agents/")
+        self.assertEqual(Agent.from_jsonld(data=new_agent_jsonld, limit=1).id,
+                         "https://example.org/agents/123")
 
     def test_model_dump_ttl(self):
         @namespaces(foaf="http://xmlns.com/foaf/0.1/")
@@ -495,7 +545,7 @@ class TestNamespaces(unittest.TestCase):
                 return as_id(self, "orcidId")
 
         p = Person(
-            id="local:cde4c79c-21f2-4ab7-b01d-28de6e4aade4",
+            id="_:cde4c79c-21f2-4ab7-b01d-28de6e4aade4",
             firstName='John',
             lastName='Doe',
             orcidId='https://orcid.org/0000-0001-8729-0482', )
@@ -513,7 +563,7 @@ class TestNamespaces(unittest.TestCase):
             "foaf:firstName": "John",
             "foaf:lastName": "Doe",
             "m4i:orcidId": "https://orcid.org/0000-0001-8729-0482",
-            "@id": "local:cde4c79c-21f2-4ab7-b01d-28de6e4aade4",
+            "@id": "_:cde4c79c-21f2-4ab7-b01d-28de6e4aade4",
         }
 
         self.assertDictEqual(json.loads(p.model_dump_jsonld()),
@@ -590,14 +640,14 @@ class TestNamespaces(unittest.TestCase):
                 return as_id(self, "orcidId")
 
         p = Person(
-            id="local:cde4c79c-21f2-4ab7-b01d-28de6e4aade4",
+            id="_:cde4c79c-21f2-4ab7-b01d-28de6e4aade4",
             firstName='John',
             lastName='Doe',
             orcidId='https://orcid.org/0000-0001-8729-0482',
             affiliation=Orga(identifier='https://example.org/123', name='Orga 1')
         )
         # Person was created with an explicit ID
-        self.assertEqual(p.id, "local:cde4c79c-21f2-4ab7-b01d-28de6e4aade4")
+        self.assertEqual(p.id, "_:cde4c79c-21f2-4ab7-b01d-28de6e4aade4")
 
         p = Person(
             firstName='John',
@@ -649,7 +699,7 @@ class TestNamespaces(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             Person(
-                id="local:cde4c79c-21f2-4ab7-b01d-28de6e4aade4",
+                id="_:cde4c79c-21f2-4ab7-b01d-28de6e4aade4",
                 firstName='John',
                 lastName='Doe',
                 orcidId='https://orcid.org/0000-0001-8729-0482',
@@ -681,7 +731,7 @@ class TestNamespaces(unittest.TestCase):
         mt.namespaces['foaf'] = 'http://xmlns.com/foaf/0.1/'
         mt.urirefs['first_name'] = 'foaf:firstName'
         mt.urirefs['last_name'] = 'foaf:lastName'
-        # print(mt.model_dump_json(indent=2, exclude_none=True))
+
         ref_jsonld = {
             "@context": {
                 "owl": "http://www.w3.org/2002/07/owl#",
@@ -734,19 +784,6 @@ class TestNamespaces(unittest.TestCase):
         p = Person(firstName="John")
         self.assertTrue(p.id.startswith("_:"))
 
-        with set_config(blank_node_prefix_name="local:"):
-            p = Person(firstName="John")
-            self.assertTrue(p.id.startswith("local:"))
-
-        p = Person(firstName="John")
-        self.assertTrue(p.id.startswith("_:"))
-
-        ontolutils.set_config(blank_node_prefix_name="test:")
-
-        p = Person(firstName="John")
-        self.assertTrue(p.id.startswith("test:"))
-
-        ontolutils.set_config(blank_node_prefix_name=None)
         p = Person(firstName="John")
         self.assertTrue(p.id.startswith("_:"))
 
@@ -913,7 +950,6 @@ class TestNamespaces(unittest.TestCase):
 
         # in the following, home_town is not specified in the Agent class, but we set it anyway
         a = Agent(name='John Doe', age=23, homeTown=ontolutils.URIValue("Berlin", "http://example.org", "ex"))
-        print(a.model_dump_jsonld())
 
     def test_relation(self):
         @namespaces(foaf="http://xmlns.com/foaf/0.1/")
@@ -937,7 +973,40 @@ class TestNamespaces(unittest.TestCase):
     foaf:lastName "John Doe" .
 
 """
+        with self.assertRaises(ValueError):
+            a = Agent(id="agents/123", name='John Doe', age=23, relation="https://example.org/123")
+
+        a = Agent(id="_:agents/123", name='John Doe', age=23, relation="https://example.org/123")
         self.assertEqual(expected_ttl, a.serialize(format="ttl"))
+
+        expected_ttl_with_base_uri = """@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://example.org/agents/123> a foaf:Agent ;
+    dcterms:relation "https://example.org/123" ;
+    foaf:age 23 ;
+    foaf:lastName "John Doe" .
+
+"""
+        self.assertEqual(expected_ttl_with_base_uri, a.serialize(format="ttl", base_uri="https://example.org/"))
+
+        expected_ttl_with_base_uri2 = """@prefix agents: <https://example.org/agents/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+agents:123 a foaf:Agent ;
+    dcterms:relation "https://example.org/123" ;
+    foaf:age 23 ;
+    foaf:lastName "John Doe" .
+
+"""
+        self.assertEqual(
+            expected_ttl_with_base_uri2,
+            a.serialize(format="ttl", base_uri="https://example.org/",
+                        context={"agents": "https://example.org/agents/"})
+        )
 
     def test_different_python_classes_same_uri(self):
         @namespaces(foaf='http://xmlns.com/foaf/0.1/',

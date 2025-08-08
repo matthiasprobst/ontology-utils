@@ -8,7 +8,7 @@ from datetime import datetime
 from typing import Dict, Union, Optional, Any, List, Type
 
 import rdflib
-from pydantic import HttpUrl, FileUrl, BaseModel, ConfigDict, Field
+from pydantic import AnyUrl, HttpUrl, FileUrl, BaseModel, ConfigDict, Field
 from pydantic import field_validator
 from rdflib.plugins.shared.jsonld.context import Context
 
@@ -82,10 +82,7 @@ def build_blank_id() -> str:
         id_generator = _get_n3
 
     _blank_node = id_generator()
-    bnode_prefix_name = get_config("blank_node_prefix_name")
-    if bnode_prefix_name is None:
-        return _blank_node
-    return _blank_node.replace('_:', bnode_prefix_name)
+    return _blank_node
 
 
 @namespaces(owl='http://www.w3.org/2002/07/owl#',
@@ -155,12 +152,12 @@ class Thing(ThingModel):
         compact_uri = self.urirefs[self.__class__.__name__]
         prefix, name = compact_uri.split(':')
         return self.namespaces[prefix]
-    
+
     @property
     def uri(self) -> str:
         compact_uri = self.urirefs[self.__class__.__name__]
         prefix, name = compact_uri.split(':')
-        namespace =self.namespaces[prefix]
+        namespace = self.namespaces[prefix]
         return f"{namespace}{name}"
 
     def map(self, other: Type[ThingModel]) -> ThingModel:
@@ -182,6 +179,12 @@ class Thing(ThingModel):
     def _id(cls, id: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType]]) -> str:
         if id is None:
             return build_blank_n3()
+        if isinstance(id, str):
+            if not id.startswith(('_:', 'http', 'file', 'urn', 'bnode:')):
+                raise ValueError(
+                    f'The ID must be a valid IRI or blank node but got "{id}". '
+                    'It must start with "_:", "http", "file", "urn" or "bnode:".'
+                )
         return str(id)
 
     @classmethod
@@ -209,10 +212,11 @@ class Thing(ThingModel):
         return self.id <= other.id
 
     def get_jsonld_dict(self,
+                        base_uri: Optional[Union[str, AnyUrl]]=None,
                         context: Optional[Union[Dict, str]] = None,
                         exclude_none: bool = True,
                         resolve_keys: bool = False,
-                        assign_bnode: bool = True) -> Dict:
+                        ) -> Dict:
         """Return the JSON-LD dictionary of the object. This will include the context
         and the fields of the object.
 
@@ -226,8 +230,10 @@ class Thing(ThingModel):
         resolve_keys: bool=False
             If True, then attributes of a Thing class will be resolved to the full IRI and
             explained in the context.
-        assign_bnode: bool=True
-            Assigns a blank node if no ID is set.
+        base_uri: Optional[Union[str, AnyUrl]]=None
+            The base URI to use for blank nodes (only used if no ID is set).
+            This is useful, because blank nodes are not globally unique and
+            can lead to problems when merging data from different sources.
 
             Example:
 
@@ -339,6 +345,8 @@ class Thing(ThingModel):
                                 serialized_fields[extra_field_name] = f"{extra_field_value.prefix}:{extra_field_name}"
                 for k in obj.model_dump(exclude_none=_exclude_none):
                     value = getattr(obj, k)
+                    if isinstance(value, str):
+                        value = _replace_context_url_with_prefix(value, at_context)
                     if value is not None and k not in ('id', '@id'):
                         iri = uri_ref_manager.get(k, k)
                         if _is_http_url(iri):
@@ -378,10 +386,9 @@ class Thing(ThingModel):
             out = {"@type": _type, **serialized_fields}
             # if no ID is given, generate a local one:
             if obj.id is not None:
-                out["@id"] = obj.id
+                out["@id"] = _replace_context_url_with_prefix(_parse_blank_node(obj.id, base_uri), context)
             else:
-                if assign_bnode:
-                    out["@id"] = rdflib.BNode().n3()
+                out["@id"] = _replace_context_url_with_prefix(_parse_blank_node(rdflib.BNode().n3(), base_uri), context)
             return out
 
         serialization = _serialize_fields(self, _exclude_none=exclude_none)
@@ -413,7 +420,7 @@ class Thing(ThingModel):
                   context: Optional[Dict] = None,
                   exclude_none: bool = True,
                   resolve_keys: bool = True,
-                  assign_bnode: bool = True,
+                  base_uri: Optional[Union[str, AnyUrl]] = None,
                   **kwargs) -> str:
         """
         Serialize the object to a given format. This method calls rdflib.Graph().parse(),
@@ -428,12 +435,17 @@ class Thing(ThingModel):
             context=context,
             exclude_none=exclude_none,
             resolve_keys=resolve_keys,
-            assign_bnode=assign_bnode
+            base_uri=base_uri
         )
         jsonld_str = json.dumps(jsonld_dict)
 
         logger.debug(f'Parsing the following jsonld dict to the RDF graph: {jsonld_str}')
         g = rdflib.Graph()
+
+        if context:
+            for k, v in context.items():
+                g.bind(k, rdflib.Namespace(v))
+
         g.parse(data=jsonld_str, format='json-ld')
 
         _context = jsonld_dict.get('@context', {})
@@ -449,7 +461,7 @@ class Thing(ThingModel):
                           exclude_none: bool = True,
                           rdflib_serialize: bool = False,
                           resolve_keys: bool = True,
-                          assign_bnode: bool = True,
+                          base_uri: Optional[Union[str, AnyUrl]] = None,
                           indent: int = 4) -> str:
         """Similar to model_dump_json() but will return a JSON string with
         context resulting in a JSON-LD serialization. Using `rdflib_serialize=True`
@@ -473,10 +485,12 @@ class Thing(ThingModel):
         resolve_keys: bool=False
             If True, then attributes of a Thing class will be resolved to the full IRI and
             explained in the context.
-        assign_bnode: bool=True
-            Assigns a blank node if no ID is set.
         indent: int=4
             The indent of the JSON-LD string
+        base_uri: Optional[HttpUrl]=None
+            The base URI to use for blank nodes (only used if no ID is set).
+            This is useful, because blank nodes are not globally unique and
+            can lead to problems when merging data from different sources.
 
             .. seealso:: `Thing.get_jsonld_dict`
 
@@ -489,7 +503,7 @@ class Thing(ThingModel):
             context=context,
             exclude_none=exclude_none,
             resolve_keys=resolve_keys,
-            assign_bnode=assign_bnode
+            base_uri=base_uri
         )
         jsonld_str = json.dumps(jsonld_dict, indent=4)
         if not rdflib_serialize:
@@ -508,10 +522,10 @@ class Thing(ThingModel):
                            indent=indent)
 
     def model_dump_ttl(self,
-                  context: Optional[Dict] = None,
-                  exclude_none: bool = True,
-                  resolve_keys: bool = True,
-                  assign_bnode: bool = True):
+                       context: Optional[Dict] = None,
+                       exclude_none: bool = True,
+                       resolve_keys: bool = True,
+                       assign_bnode: bool = True):
         """Dump the model as a Turtle string."""
         return self.serialize(
             format="turtle",
@@ -520,8 +534,6 @@ class Thing(ThingModel):
             resolve_keys=resolve_keys,
             assign_bnode=assign_bnode
         )
-
-
 
     def __repr__(self, limit: Optional[int] = None):
         _fields = {k: getattr(self, k) for k in self.__class__.model_fields.keys() if getattr(self, k) is not None}
@@ -621,6 +633,37 @@ class Thing(ThingModel):
     def get_context(cls) -> Dict:
         """Return the context of the class"""
         return get_namespaces(cls)
+
+
+def _replace_context_url_with_prefix(value: str, context: Dict) -> str:
+    for context_key, context_url in context.items():
+        if value.startswith(context_url):
+            return value.replace(context_url, context_key + ':')
+    return value
+
+
+def _parse_blank_node(_id, base_uri: Optional[Union[str, AnyUrl]]):
+    if base_uri:
+        base_uri = AnyUrl(base_uri)
+    if base_uri is None:
+        return _id
+    if isinstance(_id, rdflib.BNode):
+        return f"{base_uri}{_id}"
+    if isinstance(_id, str) and _id.startswith('_:'):
+        return f"{base_uri}{_id[2:]}"
+    if isinstance(_id, str) and _id.startswith('http'):
+        return _id
+    if isinstance(_id, str) and _id.startswith('file://'):
+        return _id
+    if isinstance(_id, str) and _id.startswith('urn:'):
+        return _id
+    if isinstance(_id, str) and _id.startswith('bnode:'):
+        return f"{base_uri}{_id[6:]}"
+    if isinstance(_id, str) and _id.startswith('N'):
+        # This is a blank node generated by rdflib
+        return f"{base_uri}{_id}"
+    warnings.warn(f"Could not parse blank node ID '{_id}'. ")
+    return _id
 
 
 def get_urirefs(cls: Thing) -> Dict:

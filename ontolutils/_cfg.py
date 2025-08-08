@@ -1,11 +1,9 @@
 from typing import Dict
 
 CONFIG = {
-    'blank_node_prefix_name': None,
     'blank_id_generator': None,
 }
 _VALIDATORS = {
-    'blank_node_prefix_name': lambda x: x.endswith(':') if x is not None else True,
     'blank_id_generator': lambda x: callable(x) or x is None,
 }
 

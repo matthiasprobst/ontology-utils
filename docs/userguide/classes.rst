@@ -132,6 +132,34 @@ The return value is a JSON-LD string:
 You may also use `model_dump_ttl()` to serialize the object to Turtle format or `serialize(...)` to serialize it to
 other formats supported by `rdflib` (e.g. RDF/XML, N-Triples, etc.).
 
+**New as from version 0.19.0**: The `model_dump_jsonld()` method now supports the `base_uri` parameter, which allows to
+set a base URI for the serialization. This is useful if you want to serialize the object with a specific base URI. This
+will avoid the creation of blank nodes in the serialization, which is useful, because blank nodes are not
+globally unique and can lead to issues when the data is shared or stored in a distributed system. Example:
+.. code-block:: python
+
+    person.model_dump_jsonld(base_uri="https://example.org/", context={"ex": "https://example.org/"})
+
+
+The return value is a JSON-LD string:
+
+.. code-block:: json
+
+    {
+        "@context": {
+            "owl": "http://www.w3.org/2002/07/owl#",
+            "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+            "prov": "http://www.w3.org/ns/prov#",
+            "foaf": "http://xmlns.com/foaf/0.1/",
+            "ex": "https://example.org/"
+        },
+        "@type": "prov:Person",
+        "@id": "ex:123uf4",
+        "rdfs:label": "test_person",
+        "foaf:mbox": "john@email.com",
+        "firstName": "John"
+    }
+
 
 Save to file
 ............

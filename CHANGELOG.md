@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.19.0
+
+- add `base_uri` to `model_dump_jsonld()` to allow setting a base URI for the JSON-LD output
+- remove `blank_node_prefix_name` from `set_config()`, as it is not used anymore
+
 ## v0.18.1
 
 - hotfix

@@ -136,6 +136,7 @@ other formats supported by `rdflib` (e.g. RDF/XML, N-Triples, etc.).
 set a base URI for the serialization. This is useful if you want to serialize the object with a specific base URI. This
 will avoid the creation of blank nodes in the serialization, which is useful, because blank nodes are not
 globally unique and can lead to issues when the data is shared or stored in a distributed system. Example:
+
 .. code-block:: python
 
     person.model_dump_jsonld(base_uri="https://example.org/", context={"ex": "https://example.org/"})

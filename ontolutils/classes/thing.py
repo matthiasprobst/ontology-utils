@@ -212,7 +212,7 @@ class Thing(ThingModel):
         return self.id <= other.id
 
     def get_jsonld_dict(self,
-                        base_uri: Optional[Union[str, AnyUrl]],
+                        base_uri: Optional[Union[str, AnyUrl]]=None,
                         context: Optional[Union[Dict, str]] = None,
                         exclude_none: bool = True,
                         resolve_keys: bool = False,

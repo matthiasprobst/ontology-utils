@@ -7,7 +7,6 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Dict, Union, Optional, Any, List, Type
 
-import pydantic
 import rdflib
 from pydantic import AnyUrl, HttpUrl, FileUrl, BaseModel, ConfigDict, Field
 from pydantic import field_validator
@@ -468,13 +467,14 @@ class Thing(ThingModel):
                            context=_context,
                            **kwargs)
 
-    def model_dump_jsonld(self,
-                          context: Optional[Dict] = None,
-                          exclude_none: bool = True,
-                          rdflib_serialize: bool = False,
-                          resolve_keys: bool = True,
-                          base_uri: Optional[Union[str, AnyUrl]] = None,
-                          indent: int = 4) -> str:
+    def model_dump_jsonld(
+            self,
+            context: Optional[Dict] = None,
+            exclude_none: bool = True,
+            rdflib_serialize: bool = False,
+            resolve_keys: bool = True,
+            base_uri: Optional[Union[str, AnyUrl]] = None,
+            indent: int = 4) -> str:
         """Similar to model_dump_json() but will return a JSON string with
         context resulting in a JSON-LD serialization. Using `rdflib_serialize=True`
         will use the rdflib to serialize. This will make the output a bit cleaner
@@ -537,14 +537,15 @@ class Thing(ThingModel):
                        context: Optional[Dict] = None,
                        exclude_none: bool = True,
                        resolve_keys: bool = True,
-                       assign_bnode: bool = True):
+                       base_uri: Optional[Union[str, AnyUrl]] = None
+                       ):
         """Dump the model as a Turtle string."""
         return self.serialize(
             format="turtle",
             context=context,
             exclude_none=exclude_none,
             resolve_keys=resolve_keys,
-            assign_bnode=assign_bnode
+            base_uri=base_uri
         )
 
     def __repr__(self, limit: Optional[int] = None):

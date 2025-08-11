@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.19.2
+
+- add `base_uri` to `serialize()` and `model_dump_ttl()` to allow setting a base URI for the output
+
 ## v0.19.1
 
 - hotfix using rdflib.BNode as id of a Thing object

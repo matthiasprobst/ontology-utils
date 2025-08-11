@@ -22,7 +22,6 @@ class TestSerialization(unittest.TestCase):
     def test_jsonld(self):
         thing = Thing(id="https://example.com/123")
         json_ld: str = thing.model_dump_jsonld()
-        print(json_ld)
         g = rdflib.Graph()
         g.parse(data=json_ld, format='json-ld')
         res = g.query(_QUERY)
@@ -31,8 +30,14 @@ class TestSerialization(unittest.TestCase):
 
     def test_ttl(self):
         thing = Thing(id="https://example.com/123")
-        serialized: str = thing.serialize(format='ttl')
-        print(serialized)
+        serialized: str = thing.serialize(format='ttl', base_uri="https://example.com/")
+        expected_serialization = """@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+<https://example.com/123> a owl:Thing .
+
+"""
+        self.assertEqual(serialized, expected_serialization)
+
         g = rdflib.Graph()
         g.parse(data=serialized, format='ttl')
         res = g.query(_QUERY)
@@ -41,8 +46,13 @@ class TestSerialization(unittest.TestCase):
 
     def test_n3(self):
         thing = Thing(id="https://example.com/123")
-        serialized: str = thing.serialize(format='n3')
-        print(serialized)
+        serialized: str = thing.serialize(format='n3', base_uri="https://example.com/")
+        expected_serialization = """@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+<https://example.com/123> a owl:Thing .
+
+"""
+        self.assertEqual(serialized, expected_serialization)
         g = rdflib.Graph()
         g.parse(data=serialized, format='n3')
         res = g.query(_QUERY)

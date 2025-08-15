@@ -10,6 +10,9 @@ from .decorator import URIRefManager, NamespaceManager
 from .thing import Thing
 from .utils import split_URIRef
 
+import re
+from collections.abc import Mapping, Iterable
+
 logger = logging.getLogger('ontolutils')
 
 
@@ -310,6 +313,7 @@ def query(cls: Type[Thing],
     # As we have the latter, the inverse dictionary let's us find the model field names.
     # inverse_urirefs = {_v.split(':', 1)[-1]: _k for _k, _v in get_urirefs(cls).items()}
 
+    kwargs = _expand_compact_iris(kwargs,_context)
     if limit is not None:
         out = []
         for i, (k, v) in enumerate(kwargs.items()):
@@ -320,3 +324,62 @@ def query(cls: Type[Thing],
             if i == limit - 1:
                 return out
     return [cls.model_validate({'id': _id, **params}) for _id, params in kwargs.items()]
+
+
+
+_SCHEME_RE = re.compile(r'^[A-Za-z][A-Za-z0-9+.-]*:')
+
+def _expand_compact_iris(obj, context, *, transform_keys=False):
+    """
+    Recursively expand 'prefix:suffix' strings using a JSON-LD-like context.
+
+    - obj: any nested structure (dict/list/tuple/set/str/…).
+    - context: mapping like {'pivmeta': 'https://…#', ...}.
+      If a context value is a dict (e.g. {'@id': '…'}), '@id' is used.
+    - transform_keys: if True, also expand dictionary KEYS that are 'prefix:suffix'.
+
+    Returns a new structure with expansions applied.
+    """
+    # Normalize context to {prefix: base_iri_string}
+    prefixes = {}
+    for k, v in context.items():
+        if k.startswith('@'):
+            continue
+        if isinstance(v, str):
+            prefixes[k] = v
+        elif isinstance(v, Mapping):
+            iri = v.get('@id')
+            if isinstance(iri, str):
+                prefixes[k] = iri
+
+    def expand_str(s: str) -> str:
+        # Only consider exact 'prefix:suffix' forms where prefix is in context.
+        if ':' in s and not s.startswith(('http://', 'https://', 'urn:', 'mailto:')):
+            pref, rest = s.split(':', 1)
+            base = prefixes.get(pref)
+            if base:
+                # Ensure we don't accidentally drop/add separators incorrectly
+                needs_sep = not (base.endswith(('/', '#')) or rest.startswith(('/', '#')))
+                sep = '#' if needs_sep else ''
+                return f"{base}{sep}{rest}"
+        return s
+
+    def expand_any(x):
+        if isinstance(x, str):
+            return expand_str(x)
+        elif isinstance(x, Mapping):
+            if transform_keys:
+                return {expand_str(k) if isinstance(k, str) else k: expand_any(v)
+                        for k, v in x.items()}
+            else:
+                return {k: expand_any(v) for k, v in x.items()}
+        elif isinstance(x, tuple):
+            return tuple(expand_any(i) for i in x)
+        elif isinstance(x, set):
+            return {expand_any(i) for i in x}
+        elif isinstance(x, list):
+            return [expand_any(i) for i in x]
+        else:
+            return x
+
+    return expand_any(obj)

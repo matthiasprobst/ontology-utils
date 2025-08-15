@@ -1,8 +1,9 @@
 import logging
 import pathlib
 import unittest
+from typing import Union
 
-from pydantic import EmailStr
+from pydantic import EmailStr, HttpUrl
 
 import ontolutils
 from ontolutils import __version__
@@ -23,6 +24,13 @@ class TestQuery(unittest.TestCase):
 
         assert logger.level == LOG_LEVEL
 
+        @ontolutils.namespaces(ex='http://example.org/',
+                               prov='https://www.w3.org/ns/prov#')
+        @ontolutils.urirefs(Organization='ex:Organization',
+                            name='prov:name')
+        class Organization(ontolutils.Thing):
+            name: str
+
         @ontolutils.namespaces(prov="https://www.w3.org/ns/prov#",
                                foaf="http://xmlns.com/foaf/0.1/")
         @ontolutils.urirefs(Agent='prov:Agent',
@@ -30,8 +38,10 @@ class TestQuery(unittest.TestCase):
         class Agent(ontolutils.Thing):
             """Pydantic Model for https://www.w3.org/ns/prov#Agent"""
             mbox: EmailStr = None  # foaf:mbox
+            orga: Union[Organization, HttpUrl] = None
 
         self.Agent = Agent
+        self.Organization = Organization
 
     def test_dquery(self):
         test_data = """{"@context": {"foaf": "http://xmlns.com/foaf/0.1/", "prov": "http://www.w3.org/ns/prov#",
@@ -170,10 +180,12 @@ class TestQuery(unittest.TestCase):
         self.assertEqual(p.hasSectionLeader.hasStudent.age, 30)
 
     def test_query(self):
-        agent = self.Agent(mbox='e@mail.com')
+        agent = self.Agent(mbox='e@mail.com', orga=str(self.Organization(id="https://example.org/myorga", name="my orga").id))
         with open(__this_dir__ / 'agent.jsonld', 'w') as f:
             json_ld_str = agent.model_dump_jsonld(context={'prov': 'https://www.w3.org/ns/prov#',
-                                                           'foaf': 'http://xmlns.com/foaf/0.1/'})
+                                                           'foaf': 'http://xmlns.com/foaf/0.1/',
+                                                           "ex": "https://example.org/"})
+            print(json_ld_str)
             f.write(
                 json_ld_str
             )

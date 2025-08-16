@@ -38,7 +38,6 @@ class UNManager:
         return self.data[cls]
 
 
-
 def split_URIRef(uri: rdflib.URIRef) -> List[Union[str, None]]:
     """Split a URIRef into namespace and key."""
     _uri = str(uri)
@@ -62,7 +61,11 @@ def merge_jsonld(jsonld_strings: List[str]) -> str:
         if jlds['@context'] not in contexts:
             contexts.append(jlds['@context'])
 
-    out = {'@context': contexts,
+    merged_contexts = {}
+    for d in contexts:
+        merged_contexts.update(d)
+
+    out = {'@context': merged_contexts,
            '@graph': []}
 
     for jlds in jsonld_dicts:

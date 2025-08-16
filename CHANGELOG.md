@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.19.4
+
+- hotfix querying nested jsonld data and convert it to Thing objects
+
 ## v0.19.3
 
 - hotfix querying jsonld data and convert it to Thing objects

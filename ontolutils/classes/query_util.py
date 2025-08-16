@@ -313,7 +313,8 @@ def query(cls: Type[Thing],
     # As we have the latter, the inverse dictionary let's us find the model field names.
     # inverse_urirefs = {_v.split(':', 1)[-1]: _k for _k, _v in get_urirefs(cls).items()}
 
-    kwargs = _expand_compact_iris(kwargs,_context)
+    kwargs = _at_id_to_id(_expand_compact_iris(kwargs,_context))
+
     if limit is not None:
         out = []
         for i, (k, v) in enumerate(kwargs.items()):
@@ -323,6 +324,7 @@ def query(cls: Type[Thing],
             out.append(cls.model_validate({'id': k, **model_field_dict}))
             if i == limit - 1:
                 return out
+
     return [cls.model_validate({'id': _id, **params}) for _id, params in kwargs.items()]
 
 
@@ -383,3 +385,20 @@ def _expand_compact_iris(obj, context, *, transform_keys=False):
             return x
 
     return expand_any(obj)
+
+
+def _at_id_to_id(data: Dict) -> Dict:
+    """Convert recursively '@id' keys to 'id' keys in a dictionary."""
+    """Convert '@id' keys to 'id' keys in a dictionary."""
+    if isinstance(data, dict):
+        new_data = {}
+        for k, v in data.items():
+            if k == '@id':
+                new_data['id'] = v
+            else:
+                new_data[k] = _at_id_to_id(v)
+        return new_data
+    elif isinstance(data, list):
+        return [_at_id_to_id(item) for item in data]
+    else:
+        return data

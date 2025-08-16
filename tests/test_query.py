@@ -82,10 +82,11 @@ class TestQuery(unittest.TestCase):
         self.assertTrue(len(res) == 1)
         self.assertTrue(res[0]['version'] == __version__)
         self.assertTrue('author' in res[0])
-        print(res[0]['author'])
         self.assertIsInstance(res[0]['author'], list)
+        self.assertEqual(res[0]['author'][0]["@id"], 'https://orcid.org/0000-0001-8729-0482')
         self.assertEqual(res[0]['author'][0]['@type'], 'http://schema.org/Person')
         self.assertEqual(res[0]['author'][0]['givenName'], 'Matthias')
+        self.assertEqual(res[0]['author'][0]['affiliation']["@id"], 'https://ror.org/04t3en479')
 
     def test_query_get_dict(self):
         """query excepts a class or a type string"""
@@ -180,7 +181,8 @@ class TestQuery(unittest.TestCase):
         self.assertEqual(p.hasSectionLeader.hasStudent.age, 30)
 
     def test_query(self):
-        agent = self.Agent(mbox='e@mail.com', orga=str(self.Organization(id="https://example.org/myorga", name="my orga").id))
+        agent = self.Agent(mbox='e@mail.com',
+                           orga=str(self.Organization(id="https://example.org/myorga", name="my orga").id))
         with open(__this_dir__ / 'agent.jsonld', 'w') as f:
             json_ld_str = agent.model_dump_jsonld(context={'prov': 'https://www.w3.org/ns/prov#',
                                                            'foaf': 'http://xmlns.com/foaf/0.1/',

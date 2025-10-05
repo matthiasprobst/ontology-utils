@@ -172,12 +172,13 @@ class LangString(BaseModel):
         if isinstance(v, dict):
             return v
 
-        # if isinstance(v, str):
-        #     return {"value": v}
-
         if isinstance(v, str):
             value, lang = _split_value_lang(v)
             return {"value": value, "lang": lang}
+
+        if isinstance(v, list):
+            return [cls.model_validate(_v) for _v in v]
+
         raise TypeError("LangString must be a str, dict, rdflib.Literal or LangString instance")
 
     def __str__(self):
@@ -263,7 +264,7 @@ class Thing(ThingModel):
 
     """
     id: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, None]] = Field(default_factory=build_blank_id)  # @id
-    label: Optional[LangString] = None  # rdfs:label
+    label: Optional[Union[LangString, List[LangString]]] = None  # rdfs:label
     relation: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
     closeMatch: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
     exactMatch: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
@@ -452,6 +453,8 @@ class Thing(ThingModel):
             """
             if isinstance(obj, (int, str, float, bool)):
                 return obj
+            if isinstance(obj, LangString):
+                return serialize_lang_str_field(obj)
             if isinstance(obj, datetime):
                 return obj.isoformat()
 

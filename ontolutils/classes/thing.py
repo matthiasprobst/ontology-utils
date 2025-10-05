@@ -9,6 +9,7 @@ from typing import Dict, Union, Optional, Any, List, Type
 from urllib.parse import urlparse
 
 import rdflib
+import yaml
 from pydantic import AnyUrl, HttpUrl, FileUrl, BaseModel, ConfigDict, Field, field_validator, model_validator
 from pydantic import field_serializer
 from rdflib.plugins.shared.jsonld.context import Context
@@ -199,6 +200,13 @@ class LangString(BaseModel):
         if isinstance(other, str):
             return self.value == self.value
         raise TypeError(f"Cannot compare LangString with {type(other)}")
+
+
+def langstring_representer(dumper, data):
+    return dumper.represent_scalar('tag:yaml.org,2002:str', str(data))
+
+
+yaml.add_representer(LangString, langstring_representer)
 
 
 def serialize_lang_str_field(lang_str: LangString):

@@ -7,6 +7,7 @@ from typing import Optional, List, Union
 
 import pydantic
 import rdflib
+import yaml
 from pydantic import EmailStr, model_validator
 from pydantic import ValidationError
 from pydantic import field_validator, Field
@@ -245,7 +246,7 @@ class TestNamespaces(unittest.TestCase):
     def test_language_string2(self):
         thing_en = Thing(
             label=[LangString(value='a thing.', lang='en'),
-                   LangString(value='ein Ding.', lang='de'),]
+                   LangString(value='ein Ding.', lang='de'), ]
         )
         ttl = thing_en.model_dump_ttl()
         self.assertEqual(ttl, """@prefix owl: <http://www.w3.org/2002/07/owl#> .
@@ -256,6 +257,7 @@ class TestNamespaces(unittest.TestCase):
         "a thing."@en .
 
 """)
+
     def test_language_string3(self):
         thing_en = Thing(label="deutsch@de")
         ttl = thing_en.model_dump_ttl()
@@ -277,6 +279,7 @@ class TestNamespaces(unittest.TestCase):
         #     rdfs:label "2025-01-01"^^xsd:date .
         #
         # """)
+
     def test_language_string4(self):
         thing_en = Thing(label=[
             "a thing.@en",
@@ -291,6 +294,14 @@ class TestNamespaces(unittest.TestCase):
         "a thing."@en .
 
 """)
+
+    def test_lang_string_yaml_support(self):
+        ls = LangString(value="hallo", lang="de")
+        with open("output.yaml", "w", encoding="utf-8") as f:
+            yaml.dump(ls, f, allow_unicode=True)
+        with open("output.yaml", "r", encoding="utf-8") as f:
+            ls2 = yaml.load(f, Loader=yaml.Loader)
+        self.assertEqual(ls, ls2)
 
     def test__repr_html_(self):
         thing = Thing(label='Thing 1')

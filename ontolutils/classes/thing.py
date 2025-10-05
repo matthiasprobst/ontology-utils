@@ -362,7 +362,6 @@ class Thing(ThingModel):
                         iri = uri_ref_manager.get(k, k)
                         if _is_http_url(iri):
                             serialized_fields[iri] = value
-
                         if resolve_keys:
                             serialized_fields[iri] = value
                         else:
@@ -387,6 +386,8 @@ class Thing(ThingModel):
                         _serialize_fields(i, _exclude_none=_exclude_none) for i in v]
                 elif isinstance(v, (int, float)):
                     serialized_fields[key] = v
+                elif isinstance(v, HttpUrl):
+                    serialized_fields[key] = {"@id": str(v)}
                 elif isinstance(v, URIValue):
                     serialized_fields[f"{v.prefix}:{key}"] = v.value
                 else:

@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.20.0
+
+- TTL serialization now treats IRIs correctly, i.e., they are not enclosed in `<...>`
+
 ## v0.19.4
 
 - hotfix querying nested jsonld data and convert it to Thing objects

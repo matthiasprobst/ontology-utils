@@ -20,7 +20,7 @@ from ontolutils import as_id
 from ontolutils import get_urirefs, get_namespaces, set_config
 from ontolutils import set_logging_level
 from ontolutils.classes import decorator
-from ontolutils.classes.thing import resolve_iri, Literal
+from ontolutils.classes.thing import resolve_iri, LangString
 from ontolutils.classes.utils import split_URIRef
 
 LOG_LEVEL = logging.DEBUG
@@ -230,10 +230,10 @@ class TestNamespaces(unittest.TestCase):
 
     def test_language(self):
 
-        with self.assertRaises(ValueError):
-            Literal(value='invalid', lang='en', datatype=XSD.date)
+        # with self.assertRaises(ValueError):
+        #     LangString(value='invalid', lang='en', datatype=XSD.date)
 
-        thing_en = Thing(label=Literal(value='a thing', lang='en'))
+        thing_en = Thing(label=LangString(value='a thing', lang='en'))
         ttl = thing_en.model_dump_ttl()
         self.assertEqual(ttl, """@prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -243,16 +243,26 @@ class TestNamespaces(unittest.TestCase):
 
 """)
 
-        thing_en = Thing(label=Literal(value='2025-01-01', datatype=XSD.date))
+        thing_en = Thing(label="deutsch@de")
         ttl = thing_en.model_dump_ttl()
         self.assertEqual(ttl, """@prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 [] a owl:Thing ;
-    rdfs:label "2025-01-01"^^xsd:date .
+    rdfs:label "deutsch"@de .
 
 """)
+
+#         thing_en = Thing(label=LangString(value='2025-01-01', datatype=XSD.date))
+#         ttl = thing_en.model_dump_ttl()
+#         self.assertEqual(ttl, """@prefix owl: <http://www.w3.org/2002/07/owl#> .
+# @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+# @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+#
+# [] a owl:Thing ;
+#     rdfs:label "2025-01-01"^^xsd:date .
+#
+# """)
 
         thing_en = Thing(label='2025-01-01')
         ttl = thing_en.model_dump_ttl()
@@ -480,7 +490,7 @@ class TestNamespaces(unittest.TestCase):
 
         # do the same with thing:
         thing = Thing.from_jsonld(data=jsonld_string, limit=1)
-        self.assertEqual(thing.label, 'Agent 1')
+        self.assertEqual(thing.label, LangString(value="Agent 1"))
         self.assertTrue(thing.id.startswith('_:'))
         _id = thing.id
 

@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Dict, Union, Optional, Any, List, Type
 from urllib.parse import urlparse
-
+from pydantic import field_serializer
 import rdflib
 from pydantic import AnyUrl, HttpUrl, FileUrl, BaseModel, ConfigDict, Field, field_validator, model_validator
 from rdflib.plugins.shared.jsonld.context import Context
@@ -96,39 +96,101 @@ def is_url(iri: str) -> bool:
     return scheme in URL_SCHEMES
 
 
-class Literal(BaseModel):
-    value: Union[str, int, float]
+# class LangString(BaseModel):
+#     value: Union[str, int, float]
+#     lang: Optional[str] = None
+#     datatype: Optional[Union[HttpUrl, str]] = None
+#
+#     # Validate the datatype itself
+#     @field_validator('datatype', mode='before')
+#     @classmethod
+#     def validate_datatype(cls, datatype):
+#         if datatype is None:
+#             return datatype
+#         # accept either HttpUrl objects or strings that parse as HttpUrl
+#         if not is_url(datatype):
+#             raise ValueError(f"The datatype must be a valid IRI but got {datatype}.")
+#         return datatype
+#
+#     # Enforce: lang XOR datatype (not both set)
+#     @model_validator(mode='after')
+#     def check_lang_xor_datatype(self):
+#         if self.lang and self.datatype:
+#             raise ValueError("A LangString cannot have both a datatype and a language.")
+#         return self
+#
+#     def __str__(self) -> str:
+#         return str(self.value)
+
+# A light, permissive BCP-47-ish check: en | en-US | zh-Hant | de-CH-1996, etc.
+def _looks_like_lang(tag: str) -> bool:
+    import re
+    return bool(re.fullmatch(r"[A-Za-z]{1,8}(?:-[A-Za-z0-9]{1,8})*", tag))
+
+def _split_value_lang(s: str) -> tuple[str, Optional[str]]:
+    """
+    Split 'value@lang' only if the suffix looks like a language tag and there is no trailing space.
+    Otherwise, return (s, None).
+    """
+    if "@" not in s:
+        return s, None
+    # Take the last '@' so values with earlier '@' (e.g., emails) aren't split incorrectly
+    head, tail = s.rsplit("@", 1)
+    if not head:                       # avoid '@en' case
+        return s, None
+    if " " in tail:                    # lang tags shouldn't contain spaces
+        return s, None
+    if _looks_like_lang(tail):
+        return head, tail
+    return s, None
+
+class LangString(BaseModel):
+    value: str
     lang: Optional[str] = None
-    datatype: Optional[Union[HttpUrl, str]] = None
 
-    # Validate the datatype itself
-    @field_validator('datatype', mode='before')
+    # Accept str, dict, rdflib.Literal, or LangString
+    @model_validator(mode="before")
     @classmethod
-    def validate_datatype(cls, datatype):
-        if datatype is None:
-            return datatype
-        # accept either HttpUrl objects or strings that parse as HttpUrl
-        if not is_url(datatype):
-            raise ValueError(f"The datatype must be a valid IRI but got {datatype}.")
-        return datatype
+    def coerce_input(cls, v: Any):
+        # Avoid importing rdflib unless needed
+        try:
+            import rdflib  # type: ignore
+            RDFLIB_AVAILABLE = True
+        except Exception:
+            RDFLIB_AVAILABLE = False
 
-    # Enforce: lang XOR datatype (not both set)
-    @model_validator(mode='after')
-    def check_lang_xor_datatype(self):
-        if self.lang and self.datatype:
-            raise ValueError("A Literal cannot have both a datatype and a language.")
-        return self
+        if isinstance(v, cls):
+            return v
+        if RDFLIB_AVAILABLE:
+            import rdflib  # type: ignore
+            if isinstance(v, rdflib.Literal):
+                return {"value": str(v), "lang": v.language}
 
-    def __str__(self) -> str:
-        return str(self.value)
+        if isinstance(v, dict):
+            return v
 
+        # if isinstance(v, str):
+        #     return {"value": v}
 
-def serialize_literal_field(literal: Literal):
-    result = {"@value": literal.value}
-    if literal.lang:
-        result["@language"] = literal.lang
-    if literal.datatype:
-        result["@type"] = literal.datatype
+        if isinstance(v, str):
+            value, lang = _split_value_lang(v)
+            return {"value": value, "lang": lang}
+        raise TypeError("LangString must be a str, dict, rdflib.Literal or LangString instance")
+
+    def __str__(self):
+        return f"{self.value}@{self.lang}" if self.lang else self.value
+
+    def to_dict(self):
+        return {"value": self.value, "lang": self.lang}
+
+    @field_serializer("value", "lang")
+    def _identity(self, v):
+        return v
+
+def serialize_lang_str_field(lang_str: LangString):
+    if lang_str.lang is None:
+        return lang_str.value
+    result = {"@value": lang_str.value, "@language": lang_str.lang}
     return result
 
 
@@ -189,10 +251,13 @@ class Thing(ThingModel):
 
     """
     id: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, None]] = Field(default_factory=build_blank_id)  # @id
-    label: Union[str, Literal] = None  # rdfs:label
+    label: Optional[LangString] = None  # rdfs:label
     relation: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
     closeMatch: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
     exactMatch: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
+
+    class Config:
+        arbitrary_types_allowed = True
 
     @property
     def namespace(self) -> str:
@@ -433,8 +498,8 @@ class Thing(ThingModel):
                         _serialize_fields(i, _exclude_none=_exclude_none) for i in v]
                 elif isinstance(v, (int, float)):
                     serialized_fields[key] = v
-                elif isinstance(v, Literal):
-                    serialized_fields[key] = serialize_literal_field(v)
+                elif isinstance(v, LangString):
+                    serialized_fields[key] = serialize_lang_str_field(v)
                 elif _is_http_url(v):
                     serialized_fields[key] = {"@id": str(v)}
                 elif isinstance(v, URIValue):

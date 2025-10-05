@@ -11,6 +11,8 @@ from ontolutils import set_logging_level
 
 __this_dir__ = pathlib.Path(__file__).parent
 
+from ontolutils.classes import LangString
+
 LOG_LEVEL = logging.DEBUG
 
 
@@ -116,7 +118,7 @@ class TestQuery(unittest.TestCase):
         self.assertEqual(agents[1]['label'], 'agent2')
 
         agent_load = self.Agent.from_jsonld(__this_dir__ / 'agent1.jsonld', limit=1)
-        self.assertEqual(agent_load.label, 'agent1')
+        self.assertEqual(agent_load.label, LangString(value='agent1'))
 
         (__this_dir__ / 'agent1.jsonld').unlink(missing_ok=True)
 
@@ -136,8 +138,8 @@ class TestQuery(unittest.TestCase):
 
         agentX = self.Agent.from_jsonld(__this_dir__ / 'agents.jsonld')
         self.assertEqual(len(agentX), 2)
-        self.assertEqual(agentX[0].label, 'agent1')
-        self.assertEqual(agentX[1].label, 'agent2')
+        self.assertEqual(agentX[0].label, LangString(value='agent1'))
+        self.assertEqual(agentX[1].label, LangString(value='agent2'))
 
     def test_recursive_query(self):
         @ontolutils.namespaces(prov="https://www.w3.org/ns/prov#",
@@ -175,9 +177,9 @@ class TestQuery(unittest.TestCase):
             f.write(prof.model_dump_jsonld())
 
         p = Professor.from_jsonld(__this_dir__ / 'supersuperagent.json')[0]
-        self.assertEqual(p.label, 'Professor')
-        self.assertEqual(p.hasSectionLeader.label, 'section_leader')
-        self.assertEqual(p.hasSectionLeader.hasStudent.label, 'student')
+        self.assertEqual(p.label, LangString(value='Professor'))
+        self.assertEqual(p.hasSectionLeader.label, LangString(value='section_leader'))
+        self.assertEqual(p.hasSectionLeader.hasStudent.label, LangString(value='student'))
         self.assertEqual(p.hasSectionLeader.hasStudent.age, 30)
 
     def test_query(self):

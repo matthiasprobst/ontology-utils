@@ -3,6 +3,7 @@
 ## v0.20.1
 
 - Add comparison method to LangString to allow comparison like "a thing" == LangString("a thing", "en")
+- Allowing multiple labels in multiple languages for Thing objects
 
 ## v0.20.0
 

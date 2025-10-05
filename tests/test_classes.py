@@ -227,7 +227,7 @@ class TestNamespaces(unittest.TestCase):
         thing2 = Thing(label='Thing 2', id='https://example.com/thing2')
         self.assertTrue(thing1 < thing2)
 
-    def test_language(self):
+    def test_language_string1(self):
         self.assertEqual("a thing", LangString(value="a thing", lang="en").value)
         self.assertEqual("a thing", LangString(value="a thing").value)
         self.assertNotEqual("a thing", LangString(value="another thing", lang="en").value)
@@ -241,6 +241,8 @@ class TestNamespaces(unittest.TestCase):
     rdfs:label "a thing."@en .
 
 """)
+
+    def test_language_string2(self):
         thing_en = Thing(
             label=[LangString(value='a thing.', lang='en'),
                    LangString(value='ein Ding.', lang='de'),]
@@ -254,7 +256,7 @@ class TestNamespaces(unittest.TestCase):
         "a thing."@en .
 
 """)
-
+    def test_language_string3(self):
         thing_en = Thing(label="deutsch@de")
         ttl = thing_en.model_dump_ttl()
         self.assertEqual(ttl, """@prefix owl: <http://www.w3.org/2002/07/owl#> .
@@ -275,14 +277,18 @@ class TestNamespaces(unittest.TestCase):
         #     rdfs:label "2025-01-01"^^xsd:date .
         #
         # """)
-
-        thing_en = Thing(label='2025-01-01')
+    def test_language_string4(self):
+        thing_en = Thing(label=[
+            "a thing.@en",
+            "ein Ding@de"
+        ])
         ttl = thing_en.model_dump_ttl()
         self.assertEqual(ttl, """@prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
 [] a owl:Thing ;
-    rdfs:label "2025-01-01" .
+    rdfs:label "ein Ding"@de,
+        "a thing."@en .
 
 """)
 

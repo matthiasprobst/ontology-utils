@@ -148,6 +148,7 @@ def _split_value_lang(s: str) -> tuple[str, Optional[str]]:
 
 
 class LangString(BaseModel):
+    """Language-String"""
     value: str
     lang: Optional[str] = None
 

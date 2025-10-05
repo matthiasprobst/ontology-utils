@@ -6,10 +6,10 @@ import warnings
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Dict, Union, Optional, Any, List, Type
+from urllib.parse import urlparse
 
 import rdflib
-from pydantic import AnyUrl, HttpUrl, FileUrl, BaseModel, ConfigDict, Field
-from pydantic import field_validator
+from pydantic import AnyUrl, HttpUrl, FileUrl, BaseModel, ConfigDict, Field, field_validator, model_validator
 from rdflib.plugins.shared.jsonld.context import Context
 
 from .decorator import urirefs, namespaces, URIRefManager, NamespaceManager, _is_http_url
@@ -19,6 +19,7 @@ from .. import get_config
 from ..config import PYDANTIC_EXTRA
 
 logger = logging.getLogger('ontolutils')
+URL_SCHEMES = {"http", "https", "urn", "doi"}
 
 
 @dataclass
@@ -85,6 +86,52 @@ def build_blank_id() -> str:
     return _blank_node
 
 
+def is_url(iri: str) -> bool:
+    iri = str(iri)
+    try:
+        s = str(iri)  # works for Pydantic URL types and plain strings
+    except Exception:
+        return False
+    scheme = urlparse(s).scheme.lower()
+    return scheme in URL_SCHEMES
+
+
+class Literal(BaseModel):
+    value: Union[str, int, float]
+    lang: Optional[str] = None
+    datatype: Optional[Union[HttpUrl, str]] = None
+
+    # Validate the datatype itself
+    @field_validator('datatype', mode='before')
+    @classmethod
+    def validate_datatype(cls, datatype):
+        if datatype is None:
+            return datatype
+        # accept either HttpUrl objects or strings that parse as HttpUrl
+        if not is_url(datatype):
+            raise ValueError(f"The datatype must be a valid IRI but got {datatype}.")
+        return datatype
+
+    # Enforce: lang XOR datatype (not both set)
+    @model_validator(mode='after')
+    def check_lang_xor_datatype(self):
+        if self.lang and self.datatype:
+            raise ValueError("A Literal cannot have both a datatype and a language.")
+        return self
+
+    def __str__(self) -> str:
+        return str(self.value)
+
+
+def serialize_literal_field(literal: Literal):
+    result = {"@value": literal.value}
+    if literal.lang:
+        result["@language"] = literal.lang
+    if literal.datatype:
+        result["@type"] = literal.datatype
+    return result
+
+
 @namespaces(owl='http://www.w3.org/2002/07/owl#',
             rdfs='http://www.w3.org/2000/01/rdf-schema#',
             dcterms='http://purl.org/dc/terms/',
@@ -142,7 +189,7 @@ class Thing(ThingModel):
 
     """
     id: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, None]] = Field(default_factory=build_blank_id)  # @id
-    label: str = None  # rdfs:label
+    label: Union[str, Literal] = None  # rdfs:label
     relation: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
     closeMatch: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
     exactMatch: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
@@ -386,7 +433,9 @@ class Thing(ThingModel):
                         _serialize_fields(i, _exclude_none=_exclude_none) for i in v]
                 elif isinstance(v, (int, float)):
                     serialized_fields[key] = v
-                elif isinstance(v, HttpUrl):
+                elif isinstance(v, Literal):
+                    serialized_fields[key] = serialize_literal_field(v)
+                elif _is_http_url(v):
                     serialized_fields[key] = {"@id": str(v)}
                 elif isinstance(v, URIValue):
                     serialized_fields[f"{v.prefix}:{key}"] = v.value

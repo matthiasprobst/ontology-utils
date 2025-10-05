@@ -3,6 +3,7 @@
 ## v0.20.0
 
 - TTL serialization now treats IRIs correctly, i.e., they are not enclosed in `<...>`
+- Allow using literal fields (`Literal`)
 
 ## v0.19.4
 

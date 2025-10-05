@@ -5,6 +5,7 @@ import unittest
 from itertools import count
 from typing import Optional, List, Union
 
+from rdflib.namespace import XSD
 import pydantic
 import rdflib
 from pydantic import EmailStr, model_validator
@@ -19,7 +20,7 @@ from ontolutils import as_id
 from ontolutils import get_urirefs, get_namespaces, set_config
 from ontolutils import set_logging_level
 from ontolutils.classes import decorator
-from ontolutils.classes.thing import resolve_iri
+from ontolutils.classes.thing import resolve_iri, Literal
 from ontolutils.classes.utils import split_URIRef
 
 LOG_LEVEL = logging.DEBUG
@@ -226,6 +227,42 @@ class TestNamespaces(unittest.TestCase):
         thing1 = Thing(label='Thing 1', id='https://example.com/thing1')
         thing2 = Thing(label='Thing 2', id='https://example.com/thing2')
         self.assertTrue(thing1 < thing2)
+
+    def test_language(self):
+
+        with self.assertRaises(ValueError):
+            Literal(value='invalid', lang='en', datatype=XSD.date)
+
+        thing_en = Thing(label=Literal(value='a thing', lang='en'))
+        ttl = thing_en.model_dump_ttl()
+        self.assertEqual(ttl, """@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+[] a owl:Thing ;
+    rdfs:label "a thing"@en .
+
+""")
+
+        thing_en = Thing(label=Literal(value='2025-01-01', datatype=XSD.date))
+        ttl = thing_en.model_dump_ttl()
+        self.assertEqual(ttl, """@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+[] a owl:Thing ;
+    rdfs:label "2025-01-01"^^xsd:date .
+
+""")
+
+        thing_en = Thing(label='2025-01-01')
+        ttl = thing_en.model_dump_ttl()
+        self.assertEqual(ttl, """@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+[] a owl:Thing ;
+    rdfs:label "2025-01-01" .
+
+""")
 
     def test__repr_html_(self):
         thing = Thing(label='Thing 1')
@@ -564,7 +601,7 @@ class TestNamespaces(unittest.TestCase):
             "@type": "prov:Person",
             "foaf:firstName": "John",
             "foaf:lastName": "Doe",
-            "m4i:orcidId": "https://orcid.org/0000-0001-8729-0482",
+            "m4i:orcidId": {"@id": "https://orcid.org/0000-0001-8729-0482"},
             "@id": "_:cde4c79c-21f2-4ab7-b01d-28de6e4aade4",
         }
 
@@ -597,7 +634,7 @@ class TestNamespaces(unittest.TestCase):
             "@type": "prov:Person",
             "foaf:firstName": "John",
             "foaf:lastName": "Doe",
-            "m4i:orcidId": "https://orcid.org/0000-0001-8729-0482",
+            "m4i:orcidId": {"@id": "https://orcid.org/0000-0001-8729-0482"},
             "@id": "https://orcid.org/0000-0001-8729-0482",
         }
 
@@ -931,7 +968,7 @@ class TestNamespaces(unittest.TestCase):
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 [] a foaf:Agent ;
-    skos:closeMatch "https://example.org/jd" ;
+    skos:closeMatch <https://example.org/jd> ;
     foaf:age 23 ;
     foaf:lastName "John Doe" .
 
@@ -970,7 +1007,7 @@ class TestNamespaces(unittest.TestCase):
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 [] a foaf:Agent ;
-    dcterms:relation "https://example.org/123" ;
+    dcterms:relation <https://example.org/123> ;
     foaf:age 23 ;
     foaf:lastName "John Doe" .
 
@@ -986,7 +1023,7 @@ class TestNamespaces(unittest.TestCase):
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <https://example.org/agents/123> a foaf:Agent ;
-    dcterms:relation "https://example.org/123" ;
+    dcterms:relation <https://example.org/123> ;
     foaf:age 23 ;
     foaf:lastName "John Doe" .
 
@@ -999,7 +1036,7 @@ class TestNamespaces(unittest.TestCase):
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 agents:123 a foaf:Agent ;
-    dcterms:relation "https://example.org/123" ;
+    dcterms:relation <https://example.org/123> ;
     foaf:age 23 ;
     foaf:lastName "John Doe" .
 

@@ -34,3 +34,15 @@ class TestHDF5(unittest.TestCase):
 
 """
         self.assertEqual(serialization, expectation)
+
+        # ds = Dataset(name="test", datatype=HDF5.H5T_INTEGER)
+        ds = Dataset(name="test", datatype="https://example/integer")
+        serialization = ds.serialize(format="ttl")
+        expectation = """@prefix hdf: <http://purl.allotrope.org/ontologies/hdf5/1.8#> .
+
+[] a hdf:Dataset ;
+    hdf:datatype <https://example/integer> ;
+    hdf:name "test" .
+
+"""
+        self.assertEqual(serialization, expectation)

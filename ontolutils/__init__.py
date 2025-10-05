@@ -3,7 +3,7 @@ import logging
 
 from ._cfg import set_config, get_config
 from ._version import __version__
-from .classes import Thing, get_urirefs, get_namespaces, as_id, build, Property
+from .classes import Thing, LangString, get_urirefs, get_namespaces, as_id, build, Property
 from .classes import namespaces, urirefs
 from .classes import query, dquery, URIValue
 from .classes.utils import merge_jsonld
@@ -31,6 +31,7 @@ def set_logging_level(level: str):
 set_logging_level(DEFAULT_LOGGING_LEVEL)
 
 __all__ = ['Thing',
+           'LangString',
            '__version__',
            'namespaces',
            'urirefs',

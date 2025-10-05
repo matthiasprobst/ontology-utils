@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.20.1
+
+- Add comparison method to LangString to allow comparison like "a thing" == LangString("a thing", "en")
+
 ## v0.20.0
 
 - TTL serialization now treats IRIs correctly, i.e., they are not enclosed in `<...>`

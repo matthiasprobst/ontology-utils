@@ -7,9 +7,10 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Dict, Union, Optional, Any, List, Type
 from urllib.parse import urlparse
-from pydantic import field_serializer
+
 import rdflib
 from pydantic import AnyUrl, HttpUrl, FileUrl, BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import field_serializer
 from rdflib.plugins.shared.jsonld.context import Context
 
 from .decorator import urirefs, namespaces, URIRefManager, NamespaceManager, _is_http_url
@@ -127,6 +128,7 @@ def _looks_like_lang(tag: str) -> bool:
     import re
     return bool(re.fullmatch(r"[A-Za-z]{1,8}(?:-[A-Za-z0-9]{1,8})*", tag))
 
+
 def _split_value_lang(s: str) -> tuple[str, Optional[str]]:
     """
     Split 'value@lang' only if the suffix looks like a language tag and there is no trailing space.
@@ -136,13 +138,14 @@ def _split_value_lang(s: str) -> tuple[str, Optional[str]]:
         return s, None
     # Take the last '@' so values with earlier '@' (e.g., emails) aren't split incorrectly
     head, tail = s.rsplit("@", 1)
-    if not head:                       # avoid '@en' case
+    if not head:  # avoid '@en' case
         return s, None
-    if " " in tail:                    # lang tags shouldn't contain spaces
+    if " " in tail:  # lang tags shouldn't contain spaces
         return s, None
     if _looks_like_lang(tail):
         return head, tail
     return s, None
+
 
 class LangString(BaseModel):
     value: str
@@ -186,6 +189,15 @@ class LangString(BaseModel):
     @field_serializer("value", "lang")
     def _identity(self, v):
         return v
+
+    def __eq__(self, other):
+        """Equality comparison with another LangString or a plain string."""
+        if isinstance(other, LangString):
+            return self.value == other.value and self.lang == other.lang
+        if isinstance(other, str):
+            return self.value == self.value
+        raise TypeError(f"Cannot compare LangString with {type(other)}")
+
 
 def serialize_lang_str_field(lang_str: LangString):
     if lang_str.lang is None:

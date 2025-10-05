@@ -5,7 +5,6 @@ import unittest
 from itertools import count
 from typing import Optional, List, Union
 
-from rdflib.namespace import XSD
 import pydantic
 import rdflib
 from pydantic import EmailStr, model_validator
@@ -229,17 +228,17 @@ class TestNamespaces(unittest.TestCase):
         self.assertTrue(thing1 < thing2)
 
     def test_language(self):
+        self.assertEqual("a thing", LangString(value="a thing", lang="en").value)
+        self.assertEqual("a thing", LangString(value="a thing").value)
+        self.assertNotEqual("a thing", LangString(value="another thing", lang="en").value)
 
-        # with self.assertRaises(ValueError):
-        #     LangString(value='invalid', lang='en', datatype=XSD.date)
-
-        thing_en = Thing(label=LangString(value='a thing', lang='en'))
+        thing_en = Thing(label=LangString(value='a thing.', lang='en'))
         ttl = thing_en.model_dump_ttl()
         self.assertEqual(ttl, """@prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
 [] a owl:Thing ;
-    rdfs:label "a thing"@en .
+    rdfs:label "a thing."@en .
 
 """)
 
@@ -253,16 +252,16 @@ class TestNamespaces(unittest.TestCase):
 
 """)
 
-#         thing_en = Thing(label=LangString(value='2025-01-01', datatype=XSD.date))
-#         ttl = thing_en.model_dump_ttl()
-#         self.assertEqual(ttl, """@prefix owl: <http://www.w3.org/2002/07/owl#> .
-# @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-# @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-#
-# [] a owl:Thing ;
-#     rdfs:label "2025-01-01"^^xsd:date .
-#
-# """)
+        #         thing_en = Thing(label=LangString(value='2025-01-01', datatype=XSD.date))
+        #         ttl = thing_en.model_dump_ttl()
+        #         self.assertEqual(ttl, """@prefix owl: <http://www.w3.org/2002/07/owl#> .
+        # @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+        # @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+        #
+        # [] a owl:Thing ;
+        #     rdfs:label "2025-01-01"^^xsd:date .
+        #
+        # """)
 
         thing_en = Thing(label='2025-01-01')
         ttl = thing_en.model_dump_ttl()

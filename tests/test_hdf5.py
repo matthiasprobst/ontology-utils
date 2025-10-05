@@ -3,6 +3,7 @@ import unittest
 from typing import List
 from typing import Union
 
+import rdflib
 from pydantic import Field, HttpUrl
 
 from ontolutils import Property
@@ -18,7 +19,7 @@ class TestHDF5(unittest.TestCase):
                     hdf=str(HDF5))
         @urirefs(Dataset='hdf:Dataset',
                  name='hdf:name',
-                 datatype='hdf::datatype')
+                 datatype='hdf:datatype')
         class Dataset(Thing):
             name: str = Field(..., description="Name of the dataset")
             datatype: HttpUrl = Field(..., description="Datatype of the dataset")
@@ -26,10 +27,21 @@ class TestHDF5(unittest.TestCase):
         ds = Dataset(name="test", datatype=HDF5.H5T_INTEGER)
         serialization = ds.serialize(format="ttl")
         expectation = """@prefix hdf: <http://purl.allotrope.org/ontologies/hdf5/1.8#> .
-@prefix ns1: <http://purl.allotrope.org/ontologies/hdf5/1.8#:> .
 
 [] a hdf:Dataset ;
-    ns1:datatype "http://purl.allotrope.org/ontologies/hdf5/1.8#H5T_INTEGER" ;
+    hdf:datatype hdf:H5T_INTEGER ;
+    hdf:name "test" .
+
+"""
+        self.assertEqual(serialization, expectation)
+
+        # ds = Dataset(name="test", datatype=HDF5.H5T_INTEGER)
+        ds = Dataset(name="test", datatype="https://example/integer")
+        serialization = ds.serialize(format="ttl")
+        expectation = """@prefix hdf: <http://purl.allotrope.org/ontologies/hdf5/1.8#> .
+
+[] a hdf:Dataset ;
+    hdf:datatype <https://example/integer> ;
     hdf:name "test" .
 
 """

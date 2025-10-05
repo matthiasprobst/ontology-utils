@@ -23,7 +23,9 @@ __package_dir__ = __this_dir__.parent / 'namespacelib'
 
 FORCE_DOWNLOAD = True
 
-FORBIDDEN_PROPERTIES = ["and", "or", "type", "yield", "True", "False", "in", "not", "is", "as", "if", "else", "elif",]
+FORBIDDEN_PROPERTIES = ["and", "or", "type", "yield", "True", "False", "in", "not", "is", "as", "if", "else", "elif", ]
+
+
 def generate_namespace_file_from_ttl(namespace: str,
                                      source: str,
                                      ns: str,
@@ -40,7 +42,6 @@ def generate_namespace_file_from_ttl(namespace: str,
     else:
         named_individual = None
         data_prop = None
-
 
     g = Graph()
     g.parse(source)
@@ -69,7 +70,7 @@ def generate_namespace_file_from_ttl(namespace: str,
                     f.write(f'\n    {_key}: URIRef')
         for prop in g.subjects(RDF.type, prop_type):
             if not isinstance(prop, BNode):
-                prop_split =str(prop).split(ns)
+                prop_split = str(prop).split(ns)
                 if len(prop_split) == 2:
                     if prop_split[-1] not in FORBIDDEN_PROPERTIES:
                         _key = prop_split[-1]
@@ -80,7 +81,7 @@ def generate_namespace_file_from_ttl(namespace: str,
         if data_prop:
             for prop in g.subjects(RDF.type, data_prop):
                 if not isinstance(prop, BNode):
-                    prop_split =str(prop).split(ns)
+                    prop_split = str(prop).split(ns)
                     if len(prop_split) == 2:
                         if prop_split[-1] not in FORBIDDEN_PROPERTIES:
                             f.write(f'\n    {prop_split[-1]}: URIRef')
@@ -88,11 +89,10 @@ def generate_namespace_file_from_ttl(namespace: str,
         if named_individual:
             for prop in g.subjects(RDF.type, named_individual):
                 if not isinstance(prop, BNode):
-                    prop_split =str(prop).split(ns)
+                    prop_split = str(prop).split(ns)
                     if len(prop_split) == 2:
                         if prop_split[-1] not in FORBIDDEN_PROPERTIES:
                             f.write(f'\n    {prop_split[-1]}: URIRef')
-
 
         f.write(f'\n\n    _NS = Namespace("{ns}")')
 
@@ -122,7 +122,7 @@ def generate_namespace_file_from_context(namespace: str,
     for k, v in context['@context'].items():
         if k not in ('type', 'id'):
             if '@id' in v:
-                if namespace in v['@id']:
+                if isinstance(v, dict) and namespace in v['@id']:
                     name = v["@id"].rsplit(":", 1)[-1]
 
                     if '#' in name:
@@ -186,6 +186,79 @@ def generate_namespace_file_from_context(namespace: str,
         for lang in languages:
             f.write(f'\n\nsetattr({namespace.upper()}, "{lang}", {lang})')
     context_file.unlink(missing_ok=True)
+
+
+def generate_namespace_file_from_owl_xml(
+        namespace: str,
+        xml_source: str,
+        target_dir: Optional[Union[str, pathlib.Path]] = None,
+        fail: bool = True,
+        filename: Optional[Union[str, pathlib.Path]] = None,
+        ns: str = None,
+):
+    xml_file = __this_dir__ / f'{namespace}.xml'
+
+    if not xml_file.exists() or FORCE_DOWNLOAD:
+        with open(xml_file, 'w', encoding='utf-8') as f:
+            f.write(requests.get(xml_source).text, )
+    g = Graph()
+    g.parse(xml_file, format="xml")
+
+    if target_dir is None:
+        target_dir = __this_dir__
+    else:
+        target_dir = pathlib.Path(target_dir)
+    if filename is None:
+        filename = target_dir / f'{namespace}.py'
+    else:
+        filename = pathlib.Path(filename)
+    with open(filename, 'w', encoding='UTF8') as f:
+        f.write('from rdflib.namespace import DefinedNamespace, Namespace\n')
+        f.write('from rdflib.term import URIRef\n\n\n')
+        f.write(f'class {namespace.upper()}(DefinedNamespace):')
+        f.write(f'\n    _fail = {fail}')
+
+        # Klassen
+        for cls in g.subjects(RDF.type, OWL.Class):
+            if not isinstance(cls, BNode):
+                class_split = str(cls).split(ns)
+                if len(class_split) == 2:
+                    _key = class_split[-1]
+                    if _key[0].isdigit():
+                        _key = f'_{_key}'
+                    f.write(f'\n    {_key}: URIRef')
+
+        # Objekt-Properties
+        for prop in g.subjects(RDF.type, OWL.ObjectProperty):
+            if not isinstance(prop, BNode):
+                prop_split = str(prop).split(ns)
+                if len(prop_split) == 2 and prop_split[-1] not in FORBIDDEN_PROPERTIES:
+                    _key = prop_split[-1]
+                    if _key[0].isdigit():
+                        _key = f'_{_key}'
+                    f.write(f'\n    {_key}: URIRef')
+
+        # Daten-Properties
+        for prop in g.subjects(RDF.type, OWL.DatatypeProperty):
+            if not isinstance(prop, BNode):
+                prop_split = str(prop).split(ns)
+                if len(prop_split) == 2 and prop_split[-1] not in FORBIDDEN_PROPERTIES:
+                    _key = prop_split[-1]
+                    if _key[0].isdigit():
+                        _key = f'_{_key}'
+                    f.write(f'\n    {_key}: URIRef')
+
+        # Named Individuals
+        for ind in g.subjects(RDF.type, OWL.NamedIndividual):
+            if not isinstance(ind, BNode):
+                ind_split = str(ind).split(ns)
+                if len(ind_split) == 2:
+                    _key = ind_split[-1]
+                    if _key[0].isdigit():
+                        _key = f'_{_key}'
+                    f.write(f'\n    {_key}: URIRef')
+
+        f.write(f'\n\n    _NS = Namespace("{ns}")')
 
 
 def m4i():
@@ -262,6 +335,15 @@ def m4i():
             'Betreuer*in',
             'Arbeitspaketleiter*in',
         ]}
+    )
+
+
+def spdx():
+    """generates namespace for The System Package Data Exchange ontology (spdx)"""
+    generate_namespace_file_from_owl_xml(
+        "spdx",
+        xml_source="https://raw.githubusercontent.com/spdx/spdx-spec/refs/heads/development/v2.2.2/ontology/spdx-ontology.owl.xml",
+        ns="http://spdx.org/rdf/terms#",
     )
 
 
@@ -343,7 +425,7 @@ def build_namespace_files():
     #     f.write('"""Auto-generated file. Do not edit!"""\n')
     # f.write('from ._version import __version__\n')
 
-    m4i()
+    # m4i()
     #
     # obo()
     #
@@ -353,10 +435,10 @@ def build_namespace_files():
     #
     # codemeta()
     #
-    schema()
+    # schema()
 
-    hdf5()
-
+    # hdf5()
+    spdx()
     # with open(__package_dir__ / '__init__.py', 'a') as f:
     # f.write('from .m4i import M4I\n')
     # f.write('from .obo import OBO\n')

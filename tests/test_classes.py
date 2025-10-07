@@ -228,6 +228,17 @@ class TestNamespaces(unittest.TestCase):
         thing2 = Thing(label='Thing 2', id='https://example.com/thing2')
         self.assertTrue(thing1 < thing2)
 
+    def test_language_string0(self):
+        thing_en = Thing(label=rdflib.Literal(lexical_or_value='a thing.', lang='en'))
+        ttl = thing_en.model_dump_ttl()
+        self.assertEqual(ttl, """@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+[] a owl:Thing ;
+    rdfs:label "a thing."@en .
+
+""")
+
     def test_language_string1(self):
         self.assertEqual("a thing", LangString(value="a thing", lang="en").value)
         self.assertEqual("a thing", LangString(value="a thing").value)
@@ -307,6 +318,32 @@ class TestNamespaces(unittest.TestCase):
         thing = Thing(label='Thing 1')
         self.assertEqual(thing._repr_html_(), f'Thing(id={thing.id}, label=Thing 1)')
 
+    def test_serialize_date(self):
+        @namespaces(dcterms="http://purl.org/dc/terms/")
+        @urirefs(MyThing='foaf:MyThing',
+                 created='dcterms:created')
+        class MyThing(Thing):
+            created: datetime.datetime = None
+
+        mything = MyThing(created=datetime.datetime(year=2025, month=10, day=1, hour=12, minute=30))
+        ttl = mything.serialize("ttl")
+        self.assertEqual(ttl, """@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+[] a <foaf:MyThing> ;
+    dcterms:created "2025-10-01T12:30:00"^^xsd:dateTime .
+
+""")
+        mything = MyThing(created=datetime.datetime(year=2025, month=10, day=1))
+        ttl = mything.serialize("ttl")
+        self.assertEqual(ttl, """@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+[] a <foaf:MyThing> ;
+    dcterms:created "2025-10-01"^^xsd:date .
+
+""")
+
     def test_thing_get_jsonld_dict(self):
         with self.assertRaises(TypeError):
             _ = Thing(id=1, label='Thing 1')
@@ -329,6 +366,7 @@ class TestNamespaces(unittest.TestCase):
             thing_dict['@context'],
             {'owl': 'http://www.w3.org/2002/07/owl#',
              'rdfs': 'http://www.w3.org/2000/01/rdf-schema#',
+             'schema': 'https://schema.org/',
              'skos': 'http://www.w3.org/2004/02/skos/core#',
              'dcterms': 'http://purl.org/dc/terms/'
              }
@@ -634,6 +672,7 @@ class TestNamespaces(unittest.TestCase):
                 "prov": "https://www.w3.org/ns/prov#",
                 "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
                 "dcterms": "http://purl.org/dc/terms/",
+                'schema': 'https://schema.org/',
                 "skos": "http://www.w3.org/2004/02/skos/core#",
                 "foaf": "http://xmlns.com/foaf/0.1/",
             },
@@ -666,6 +705,7 @@ class TestNamespaces(unittest.TestCase):
                 "owl": "http://www.w3.org/2002/07/owl#",
                 "prov": "https://www.w3.org/ns/prov#",
                 "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+                'schema': 'https://schema.org/',
                 "dcterms": "http://purl.org/dc/terms/",
                 "skos": "http://www.w3.org/2004/02/skos/core#",
                 "foaf": "http://xmlns.com/foaf/0.1/",
@@ -793,10 +833,11 @@ class TestNamespaces(unittest.TestCase):
         self.assertDictEqual(mt.urirefs, get_urirefs(Thing))
         self.assertDictEqual(mt.urirefs,
                              {'Thing': 'owl:Thing', 'closeMatch': 'skos:closeMatch', 'exactMatch': 'skos:exactMatch',
-                              'label': 'rdfs:label', 'relation': 'dcterms:relation'})
+                              'label': 'rdfs:label', 'about': 'schema:about', 'relation': 'dcterms:relation'})
         self.assertDictEqual(mt.namespaces, get_namespaces(Thing))
         self.assertDictEqual(mt.namespaces, {'owl': 'http://www.w3.org/2002/07/owl#',
                                              'rdfs': 'http://www.w3.org/2000/01/rdf-schema#',
+                                             'schema': 'https://schema.org/',
                                              'skos': 'http://www.w3.org/2004/02/skos/core#',
                                              'dcterms': 'http://purl.org/dc/terms/'})
 
@@ -814,6 +855,7 @@ class TestNamespaces(unittest.TestCase):
             "@context": {
                 "owl": "http://www.w3.org/2002/07/owl#",
                 "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+                'schema': 'https://schema.org/',
                 "dcterms": "http://purl.org/dc/terms/",
                 "skos": "http://www.w3.org/2004/02/skos/core#",
                 "foaf": "http://xmlns.com/foaf/0.1/"
@@ -1131,3 +1173,47 @@ agents:123 a foaf:Agent ;
         org1 = Organization(members=p1)
         org2 = Organization(members=p2.map(Person1))
         # org3 = Organization(members=[p1, p2])
+
+    def test_about(self):
+        @namespaces(foaf="http://xmlns.com/foaf/0.1/")
+        @urirefs(Agent='foaf:Agent',
+                 name='foaf:lastName')
+        class Agent(Thing):
+            """Pydantic Model for http://xmlns.com/foaf/0.1/Agent
+            Parameters
+            ----------
+            mbox: EmailStr = None
+                Email address (foaf:mbox)
+            """
+            name: str = Field(default=None, alias="lastName")  # name is synonymous to lastName
+
+        with self.assertRaises(ValidationError):
+            Agent(
+                name="John Doe",
+                about="A person"
+            )
+        p = Agent(
+            name="John Doe",
+            about="http://example.org/123"
+        )
+        p = Agent(
+            name="John Doe",
+            about=["http://example.org/123", "http://example.org/456"]
+        )
+        p = Agent(
+            name="John Doe",
+            about=["http://example.org/123", Thing(id="http://example.org/456")]
+        )
+        ttl = p.model_dump_ttl()
+        self.assertEqual(ttl, """@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix schema: <https://schema.org/> .
+
+<http://example.org/456> a owl:Thing .
+
+[] a foaf:Agent ;
+    foaf:lastName "John Doe" ;
+    schema:about <http://example.org/456>,
+        "http://example.org/123" .
+
+""")

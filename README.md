@@ -24,6 +24,7 @@ the JSON-LD file yourself is too cumbersome *and* you want validation of the par
 lets you design classes, which describe ontology classes like this:
 
 ```python
+import rdflib
 from pydantic import EmailStr, Field
 from pydantic import HttpUrl, model_validator
 
@@ -50,15 +51,19 @@ class Person(Thing):
         return as_id(self, "orcidId")
 
 
-p = Person(id="https://orcid.org/0000-0001-8729-0482",
-           firstName='Matthias', last_name='Probst')
+p = Person(
+    id="https://orcid.org/0000-0001-8729-0482",
+    label=rdflib.Literal("The creator of this package", lang="en"),
+    firstName='Matthias',
+    last_name='Probst'
+)
 # as we have set an alias, we can also use "lastName":
 p = Person(id="https://orcid.org/0000-0001-8729-0482",
            firstName='Matthias', lastName='Probst')
 # The jsonld representation of the object will be the same in both cases:
 json_ld_serialization = p.model_dump_jsonld()
 # Alternatively use
-serialized_str = p.serialize(format="json-ld") # or "ttl", "n3", "nt", "xml"
+serialized_str = p.serialize(format="json-ld")  # or "ttl", "n3", "nt", "xml"
 ```
 
 The result of the serialization is shown below:
@@ -68,6 +73,7 @@ The result of the serialization is shown below:
   "@context": {
     "owl": "http://www.w3.org/2002/07/owl#",
     "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "schema": "http://schema.org/",
     "prov": "https://www.w3.org/ns/prov#",
     "foaf": "https://xmlns.com/foaf/0.1/",
     "m4i": "http://w3id.org/nfdi4ing/metadata4ing#"

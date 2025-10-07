@@ -5,6 +5,7 @@
 - Add comparison method to LangString to allow comparison like "a thing" == LangString("a thing", "en")
 - Allowing multiple labels in multiple languages for Thing objects
 - Add support for YAML export
+- Added `schema:about` to Thing
 
 ## v0.20.0
 

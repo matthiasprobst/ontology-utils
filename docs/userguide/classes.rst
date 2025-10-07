@@ -119,6 +119,7 @@ The return value is a JSON-LD string:
             "owl": "http://www.w3.org/2002/07/owl#",
             "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
             "prov": "http://www.w3.org/ns/prov#",
+            "schema": "https://schema.org/",
             "foaf": "http://xmlns.com/foaf/0.1/"
         },
         "@type": "prov:Person",
@@ -151,6 +152,7 @@ The return value is a JSON-LD string:
             "owl": "http://www.w3.org/2002/07/owl#",
             "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
             "prov": "http://www.w3.org/ns/prov#",
+            "schema": "https://schema.org/",
             "foaf": "http://xmlns.com/foaf/0.1/",
             "ex": "https://example.org/"
         },

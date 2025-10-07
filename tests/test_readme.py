@@ -3,6 +3,7 @@ import json
 import unittest
 from typing import List, Union
 
+import rdflib
 from pydantic import EmailStr
 from pydantic import Field
 from pydantic import HttpUrl, model_validator
@@ -39,8 +40,12 @@ class TestReadmeCode(unittest.TestCase):
             def _change_id(self):
                 return as_id(self, "orcidId")
 
-        Person(id="https://orcid.org/0000-0001-8729-0482",
-               firstName='Matthias', last_name='Probst')
+        p = Person(
+            id="https://orcid.org/0000-0001-8729-0482",
+            label=rdflib.Literal("The creator of this package", lang="en"),
+            firstName='Matthias',
+            last_name='Probst'
+        )
         # as we have set an alias, we can also use "lastName":
         p = Person(id="https://orcid.org/0000-0001-8729-0482",
                    firstName='Matthias', lastName='Probst')
@@ -52,6 +57,7 @@ class TestReadmeCode(unittest.TestCase):
     "owl": "http://www.w3.org/2002/07/owl#",
     "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
     "dcterms": "http://purl.org/dc/terms/",
+    "schema": "https://schema.org/",
     "skos": "http://www.w3.org/2004/02/skos/core#",
     "prov": "https://www.w3.org/ns/prov#",
     "foaf": "http://xmlns.com/foaf/0.1/",
@@ -117,6 +123,7 @@ class TestReadmeCode(unittest.TestCase):
         "skos": "http://www.w3.org/2004/02/skos/core#",
         "prov": "http://www.w3.org/ns/prov#",
         "foaf": "http://xmlns.com/foaf/0.1/",
+        "schema": "https://schema.org/",
         "ex": "https://example.org/"
     },
     "@type": "prov:Person",

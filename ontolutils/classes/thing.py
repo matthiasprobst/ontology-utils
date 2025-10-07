@@ -12,6 +12,7 @@ import rdflib
 import yaml
 from pydantic import AnyUrl, HttpUrl, FileUrl, BaseModel, ConfigDict, Field, field_validator, model_validator
 from pydantic import field_serializer
+from rdflib import XSD
 from rdflib.plugins.shared.jsonld.context import Context
 
 from .decorator import urirefs, namespaces, URIRefManager, NamespaceManager, _is_http_url
@@ -157,19 +158,12 @@ class LangString(BaseModel):
     @model_validator(mode="before")
     @classmethod
     def coerce_input(cls, v: Any):
-        # Avoid importing rdflib unless needed
-        try:
-            import rdflib  # type: ignore
-            RDFLIB_AVAILABLE = True
-        except Exception:
-            RDFLIB_AVAILABLE = False
 
         if isinstance(v, cls):
             return v
-        if RDFLIB_AVAILABLE:
-            import rdflib  # type: ignore
-            if isinstance(v, rdflib.Literal):
-                return {"value": str(v), "lang": v.language}
+
+        if isinstance(v, rdflib.Literal):
+            return {"value": str(v), "lang": v.language}
 
         if isinstance(v, dict):
             return v
@@ -216,13 +210,23 @@ def serialize_lang_str_field(lang_str: LangString):
     return result
 
 
+def datetime_to_literal(dt: datetime):
+    """Turn a datetime into a literal."""
+    return {
+        "@value": dt.isoformat(),
+        "@type": str(XSD.dateTime if dt.hour or dt.minute or dt.second else XSD.date)
+    }
+
+
 @namespaces(owl='http://www.w3.org/2002/07/owl#',
             rdfs='http://www.w3.org/2000/01/rdf-schema#',
             dcterms='http://purl.org/dc/terms/',
+            schema='https://schema.org/',
             skos='http://www.w3.org/2004/02/skos/core#',
             )
 @urirefs(Thing='owl:Thing',
          label='rdfs:label',
+         about='schema:about',
          relation='dcterms:relation',
          closeMatch='skos:closeMatch',
          exactMatch='skos:exactMatch')
@@ -274,12 +278,15 @@ class Thing(ThingModel):
     """
     id: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, None]] = Field(default_factory=build_blank_id)  # @id
     label: Optional[Union[LangString, List[LangString]]] = None  # rdfs:label
+    about: Optional[
+        Union[HttpUrl, ThingModel, BlankNodeType, List[Union[HttpUrl, ThingModel, BlankNodeType]]]
+    ] = None  # schema:about
     relation: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
     closeMatch: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
     exactMatch: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
 
-    class Config:
-        arbitrary_types_allowed = True
+    # class Config:
+    #     arbitrary_types_allowed = True
 
     @property
     def namespace(self) -> str:
@@ -465,7 +472,7 @@ class Thing(ThingModel):
             if isinstance(obj, LangString):
                 return serialize_lang_str_field(obj)
             if isinstance(obj, datetime):
-                return obj.isoformat()
+                return datetime_to_literal(obj)
 
             uri_ref_manager = URIRefManager.get(obj.__class__, None)
             at_context.update(NamespaceManager.get(obj.__class__, {}))
@@ -528,6 +535,8 @@ class Thing(ThingModel):
                     serialized_fields[key] = {"@id": str(v)}
                 elif isinstance(v, URIValue):
                     serialized_fields[f"{v.prefix}:{key}"] = v.value
+                elif isinstance(v, datetime):
+                    serialized_fields[key] = datetime_to_literal(v)
                 else:
                     serialized_fields[key] = _serialize_fields(v, _exclude_none=_exclude_none)
 

@@ -600,7 +600,7 @@ class TestNamespaces(unittest.TestCase):
                  affiliation='schema:affiliation')
         class Person(Agent):
             firstName: str = None
-            affiliation: Organization = None
+            affiliation: Union[str, Organization] = None
 
         person = Person(
             label='Person 1',
@@ -615,6 +615,13 @@ class TestNamespaces(unittest.TestCase):
         self.assertEqual(jsonld_dict['schema:affiliation']['rdfs:label'], 'Organization 1')
         self.assertEqual(jsonld_dict['rdfs:label'], 'Person 1')
         self.assertEqual(jsonld_dict['@type'], 'foaf:Person')
+
+        person = Person(
+            label='Person 1',
+            affiliation='schema:Organization/123',
+        )
+
+        print(person.serialize("ttl"))
 
     def test_prov(self):
         @namespaces(prov="https://www.w3.org/ns/prov#",

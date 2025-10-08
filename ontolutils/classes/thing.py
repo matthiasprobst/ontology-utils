@@ -90,13 +90,18 @@ def build_blank_id() -> str:
 
 
 def is_url(iri: str) -> bool:
-    iri = str(iri)
     try:
-        s = str(iri)  # works for Pydantic URL types and plain strings
+        s = str(iri)
+        scheme = urlparse(s).scheme.lower()
+        if scheme in URL_SCHEMES:
+            try:
+                AnyUrl(iri)
+                return True
+            except Exception:
+                return False
+        return False
     except Exception:
         return False
-    scheme = urlparse(s).scheme.lower()
-    return scheme in URL_SCHEMES
 
 
 # class LangString(BaseModel):
@@ -217,6 +222,15 @@ def datetime_to_literal(dt: datetime):
         "@type": str(XSD.dateTime if dt.hour or dt.minute or dt.second else XSD.date)
     }
 
+
+def _parse_string_value(value, ctx):
+    if is_url(value):
+        return {"@id": str(value)}
+    elif ":" in value:
+        _ns, _value = value.split(":", 1)
+        if _ns in ctx:
+            return {"@id": f"{ctx[_ns]}{_value}"}
+    return value
 
 @namespaces(owl='http://www.w3.org/2002/07/owl#',
             rdfs='http://www.w3.org/2000/01/rdf-schema#',
@@ -468,10 +482,13 @@ class Thing(ThingModel):
             Union[Dict, int, str, float, bool]
                 The serialized fields or the object as is
             """
+
+            obj_ctx = Context(source={**context,
+                                      **NamespaceManager.get(obj.__class__, {}),
+                                      **URIRefManager.get(obj.__class__, {})})
+
             if isinstance(obj, str):
-                if is_resource(obj):
-                    return {"@id": str(obj)}
-                return obj
+                return _parse_string_value(obj, at_context)
             if isinstance(obj, (int, float, bool)):
                 return obj
             if isinstance(obj, LangString):
@@ -488,9 +505,6 @@ class Thing(ThingModel):
                         if isinstance(extra, URIValue):
                             at_context[extra.prefix] = extra.namespace
 
-            obj_ctx = Context(source={**context,
-                                      **NamespaceManager.get(obj.__class__, {}),
-                                      **URIRefManager.get(obj.__class__, {})})
 
             if uri_ref_manager is None:
                 return str(obj)
@@ -542,12 +556,10 @@ class Thing(ThingModel):
                     serialized_fields[f"{v.prefix}:{key}"] = v.value
                 elif isinstance(v, datetime):
                     serialized_fields[key] = datetime_to_literal(v)
+                elif isinstance(v, str):
+                    serialized_fields[key] = _parse_string_value(v, at_context)
                 else:
-                    try:
-                        _v = obj_ctx.find_term(obj_ctx.expand(v)).id
-                        serialized_fields[key] = {"@id": _v}
-                    except AttributeError as _:
-                        serialized_fields[key] = _serialize_fields(v, _exclude_none=_exclude_none)
+                    serialized_fields[key] = _serialize_fields(v, _exclude_none=_exclude_none)
 
             _type = URIRefManager[obj.__class__].get(obj.__class__.__name__, obj.__class__.__name__)
 
@@ -836,29 +848,6 @@ def _parse_blank_node(_id, base_uri: Optional[Union[str, AnyUrl]]):
     return _id
 
 
-def is_resource(iri: str) -> bool:
-    """Lightweight heuristic: check if a string looks like a valid IRI or blank node."""
-    if not isinstance(iri, str) or not iri:
-        return False
-
-    iri_lower = iri.lower()
-
-    # Common IRI schemes
-    valid_prefixes = (
-        "http://",
-        "https://",
-        "ftp://",
-        "ftps://",
-        "urn:",
-        "doi:",
-        "mailto:",
-        "data:",
-        "ws://",
-        "wss://",
-        "_:",  # RDF blank node
-    )
-
-    return iri_lower.startswith(valid_prefixes)
 
 
 def get_urirefs(cls: Thing) -> Dict:

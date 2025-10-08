@@ -279,11 +279,12 @@ class Thing(ThingModel):
     id: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, None]] = Field(default_factory=build_blank_id)  # @id
     label: Optional[Union[LangString, List[LangString]]] = None  # rdfs:label
     about: Optional[
-        Union[HttpUrl, ThingModel, BlankNodeType, List[Union[HttpUrl, ThingModel, BlankNodeType]]]
+        Union[
+            str, HttpUrl, FileUrl, ThingModel, BlankNodeType, List[Union[HttpUrl, FileUrl, ThingModel, BlankNodeType]]]
     ] = None  # schema:about
-    relation: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
-    closeMatch: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
-    exactMatch: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
+    relation: Optional[Union[HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
+    closeMatch: Optional[Union[HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
+    exactMatch: Optional[Union[HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
 
     # class Config:
     #     arbitrary_types_allowed = True
@@ -467,7 +468,11 @@ class Thing(ThingModel):
             Union[Dict, int, str, float, bool]
                 The serialized fields or the object as is
             """
-            if isinstance(obj, (int, str, float, bool)):
+            if isinstance(obj, str):
+                if is_resource(obj):
+                    return {"@id": str(obj)}
+                return obj
+            if isinstance(obj, (int, float, bool)):
                 return obj
             if isinstance(obj, LangString):
                 return serialize_lang_str_field(obj)
@@ -538,7 +543,11 @@ class Thing(ThingModel):
                 elif isinstance(v, datetime):
                     serialized_fields[key] = datetime_to_literal(v)
                 else:
-                    serialized_fields[key] = _serialize_fields(v, _exclude_none=_exclude_none)
+                    try:
+                        _v = obj_ctx.find_term(obj_ctx.expand(v)).id
+                        serialized_fields[key] = {"@id": _v}
+                    except AttributeError as _:
+                        serialized_fields[key] = _serialize_fields(v, _exclude_none=_exclude_none)
 
             _type = URIRefManager[obj.__class__].get(obj.__class__.__name__, obj.__class__.__name__)
 
@@ -825,6 +834,31 @@ def _parse_blank_node(_id, base_uri: Optional[Union[str, AnyUrl]]):
         return f"{base_uri}{_id}"
     warnings.warn(f"Could not parse blank node ID '{_id}'. ")
     return _id
+
+
+def is_resource(iri: str) -> bool:
+    """Lightweight heuristic: check if a string looks like a valid IRI or blank node."""
+    if not isinstance(iri, str) or not iri:
+        return False
+
+    iri_lower = iri.lower()
+
+    # Common IRI schemes
+    valid_prefixes = (
+        "http://",
+        "https://",
+        "ftp://",
+        "ftps://",
+        "urn:",
+        "doi:",
+        "mailto:",
+        "data:",
+        "ws://",
+        "wss://",
+        "_:",  # RDF blank node
+    )
+
+    return iri_lower.startswith(valid_prefixes)
 
 
 def get_urirefs(cls: Thing) -> Dict:

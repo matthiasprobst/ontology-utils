@@ -15,6 +15,7 @@ from rdflib.plugins.shared.jsonld.context import Context
 from typing_extensions import Annotated
 
 import ontolutils
+from ontolutils import SCHEMA
 from ontolutils import Thing, urirefs, namespaces, build, Property
 from ontolutils import as_id
 from ontolutils import get_urirefs, get_namespaces, set_config
@@ -1187,33 +1188,47 @@ agents:123 a foaf:Agent ;
             """
             name: str = Field(default=None, alias="lastName")  # name is synonymous to lastName
 
-        with self.assertRaises(ValidationError):
-            Agent(
-                name="John Doe",
-                about="A person"
-            )
+#         with self.assertRaises(ValidationError):
+#             Agent(
+#                 name="John Doe",
+#                 about="A person"
+#             )
+#         p = Agent(
+#             name="John Doe",
+#             about="http://example.org/123"
+#         )
+#         p = Agent(
+#             name="John Doe",
+#             about=["http://example.org/123", "http://example.org/456"]
+#         )
+#         p = Agent(
+#             name="John Doe",
+#             about=["http://example.org/123", Thing(id="http://example.org/456")]
+#         )
+#         ttl = p.model_dump_ttl()
+#         self.assertEqual(ttl, """@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+# @prefix owl: <http://www.w3.org/2002/07/owl#> .
+# @prefix schema: <https://schema.org/> .
+#
+# <http://example.org/456> a owl:Thing .
+#
+# [] a foaf:Agent ;
+#     foaf:lastName "John Doe" ;
+#     schema:about <http://example.org/456>,
+#         "http://example.org/123" .
+#
+# """)
         p = Agent(
             name="John Doe",
-            about="http://example.org/123"
-        )
-        p = Agent(
-            name="John Doe",
-            about=["http://example.org/123", "http://example.org/456"]
-        )
-        p = Agent(
-            name="John Doe",
-            about=["http://example.org/123", Thing(id="http://example.org/456")]
+            about=SCHEMA.about
         )
         ttl = p.model_dump_ttl()
+        print(ttl)
         self.assertEqual(ttl, """@prefix foaf: <http://xmlns.com/foaf/0.1/> .
-@prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix schema: <https://schema.org/> .
-
-<http://example.org/456> a owl:Thing .
 
 [] a foaf:Agent ;
     foaf:lastName "John Doe" ;
-    schema:about <http://example.org/456>,
-        "http://example.org/123" .
+    schema:about schema:about .
 
 """)

@@ -30,6 +30,7 @@ def _is_http_url(url: str) -> bool:
         return False
     return True
 
+
 def _add_namesapces(cls, namespaces: Dict):
     for k, v in namespaces.items():
         NamespaceManager[cls][k] = str(HttpUrl(v))

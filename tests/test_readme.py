@@ -47,8 +47,12 @@ class TestReadmeCode(unittest.TestCase):
             last_name='Probst'
         )
         # as we have set an alias, we can also use "lastName":
-        p = Person(id="https://orcid.org/0000-0001-8729-0482",
-                   firstName='Matthias', lastName='Probst')
+        p = Person(
+            id="https://orcid.org/0000-0001-8729-0482",
+            label=rdflib.Literal("The creator of this package", lang="en"),
+            firstName='Matthias',
+            lastName='Probst'
+        )
 
         json_ld_serialization = p.model_dump_jsonld()
         serialized_str = p.serialize(format="json-ld")
@@ -65,6 +69,7 @@ class TestReadmeCode(unittest.TestCase):
   },
   "@id": "https://orcid.org/0000-0001-8729-0482",
   "@type": "prov:Person",
+  "rdfs:label": {"@language": "en", "@value": "The creator of this package"},
   "foaf:firstName": "Matthias",
   "foaf:lastName": "Probst"
 }"""

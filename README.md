@@ -58,8 +58,12 @@ p = Person(
     last_name='Probst'
 )
 # as we have set an alias, we can also use "lastName":
-p = Person(id="https://orcid.org/0000-0001-8729-0482",
-           firstName='Matthias', lastName='Probst')
+p = Person(
+    id="https://orcid.org/0000-0001-8729-0482",
+    label=rdflib.Literal("The creator of this package", lang="en"),
+    firstName='Matthias',
+    lastName='Probst'
+)
 # The jsonld representation of the object will be the same in both cases:
 json_ld_serialization = p.model_dump_jsonld()
 # Alternatively use
@@ -122,4 +126,5 @@ The serialization in turtle format looks like this:
 ## Documentation
 
 Please visit the [documentation](https://ontology-utils.readthedocs.io/en/latest/) for more information.
+
 

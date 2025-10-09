@@ -7,9 +7,12 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Dict, Union, Optional, Any, List, Type
 from urllib.parse import urlparse
-from pydantic import field_serializer
+
 import rdflib
+import yaml
 from pydantic import AnyUrl, HttpUrl, FileUrl, BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import field_serializer
+from rdflib import XSD
 from rdflib.plugins.shared.jsonld.context import Context
 
 from .decorator import urirefs, namespaces, URIRefManager, NamespaceManager, _is_http_url
@@ -87,13 +90,18 @@ def build_blank_id() -> str:
 
 
 def is_url(iri: str) -> bool:
-    iri = str(iri)
     try:
-        s = str(iri)  # works for Pydantic URL types and plain strings
+        s = str(iri)
+        scheme = urlparse(s).scheme.lower()
+        if scheme in URL_SCHEMES:
+            try:
+                AnyUrl(iri)
+                return True
+            except Exception:
+                return False
+        return False
     except Exception:
         return False
-    scheme = urlparse(s).scheme.lower()
-    return scheme in URL_SCHEMES
 
 
 # class LangString(BaseModel):
@@ -127,6 +135,7 @@ def _looks_like_lang(tag: str) -> bool:
     import re
     return bool(re.fullmatch(r"[A-Za-z]{1,8}(?:-[A-Za-z0-9]{1,8})*", tag))
 
+
 def _split_value_lang(s: str) -> tuple[str, Optional[str]]:
     """
     Split 'value@lang' only if the suffix looks like a language tag and there is no trailing space.
@@ -136,15 +145,17 @@ def _split_value_lang(s: str) -> tuple[str, Optional[str]]:
         return s, None
     # Take the last '@' so values with earlier '@' (e.g., emails) aren't split incorrectly
     head, tail = s.rsplit("@", 1)
-    if not head:                       # avoid '@en' case
+    if not head:  # avoid '@en' case
         return s, None
-    if " " in tail:                    # lang tags shouldn't contain spaces
+    if " " in tail:  # lang tags shouldn't contain spaces
         return s, None
     if _looks_like_lang(tail):
         return head, tail
     return s, None
 
+
 class LangString(BaseModel):
+    """Language-String"""
     value: str
     lang: Optional[str] = None
 
@@ -152,33 +163,32 @@ class LangString(BaseModel):
     @model_validator(mode="before")
     @classmethod
     def coerce_input(cls, v: Any):
-        # Avoid importing rdflib unless needed
-        try:
-            import rdflib  # type: ignore
-            RDFLIB_AVAILABLE = True
-        except Exception:
-            RDFLIB_AVAILABLE = False
 
         if isinstance(v, cls):
             return v
-        if RDFLIB_AVAILABLE:
-            import rdflib  # type: ignore
-            if isinstance(v, rdflib.Literal):
-                return {"value": str(v), "lang": v.language}
+
+        if isinstance(v, rdflib.Literal):
+            return {"value": str(v), "lang": v.language}
 
         if isinstance(v, dict):
             return v
 
-        # if isinstance(v, str):
-        #     return {"value": v}
-
         if isinstance(v, str):
             value, lang = _split_value_lang(v)
             return {"value": value, "lang": lang}
-        raise TypeError("LangString must be a str, dict, rdflib.Literal or LangString instance")
 
-    def __str__(self):
-        return f"{self.value}@{self.lang}" if self.lang else self.value
+        if isinstance(v, list):
+            return [cls.model_validate(_v) for _v in v]
+
+        return v
+
+    def __str__(self, show_lang: bool = None):
+        if show_lang is None:
+            show_lang = get_config("show_lang_in_str")
+        if self.lang and show_lang:
+            return f"{self.value}@{self.lang}"
+        return f"{self.value}" if self.lang else str(self.value)
+
 
     def to_dict(self):
         return {"value": self.value, "lang": self.lang}
@@ -187,6 +197,37 @@ class LangString(BaseModel):
     def _identity(self, v):
         return v
 
+    def __eq__(self, other):
+        """Equality comparison with another LangString or a plain string.
+
+        Examples of equality:
+        >>> LangString(value="Hello", lang="en") == LangString(value="Hello", lang="en")
+        True
+        >>> LangString(value="Hello", lang="en") == "Hello@en"
+        True
+        >>> LangString(value="Hello", lang="en") == "Hello"
+        True
+        >>> LangString(value="Hello") == "Hello"
+        True
+        >>> LangString(value="Hello") == LangString(value="Hello")
+        True
+        >>> LangString(value="Hello", lang="en") == "Hello@fr"
+        False
+        """
+        if isinstance(other, LangString):
+            return self.value == other.value and self.lang == other.lang
+        if isinstance(other, str):
+            return str(self) == other or self.value == other
+        raise TypeError(f"Cannot compare LangString with {type(other)}")
+
+
+def langstring_representer(dumper, data):
+    return dumper.represent_scalar('tag:yaml.org,2002:str', str(data))
+
+
+yaml.add_representer(LangString, langstring_representer)
+
+
 def serialize_lang_str_field(lang_str: LangString):
     if lang_str.lang is None:
         return lang_str.value
@@ -194,13 +235,33 @@ def serialize_lang_str_field(lang_str: LangString):
     return result
 
 
+def datetime_to_literal(dt: datetime):
+    """Turn a datetime into a literal."""
+    return {
+        "@value": dt.isoformat(),
+        "@type": str(XSD.dateTime if dt.hour or dt.minute or dt.second else XSD.date)
+    }
+
+
+def _parse_string_value(value, ctx):
+    if is_url(value):
+        return {"@id": str(value)}
+    elif ":" in value:
+        _ns, _value = value.split(":", 1)
+        if _ns in ctx:
+            return {"@id": f"{ctx[_ns]}{_value}"}
+    return value
+
+
 @namespaces(owl='http://www.w3.org/2002/07/owl#',
             rdfs='http://www.w3.org/2000/01/rdf-schema#',
             dcterms='http://purl.org/dc/terms/',
+            schema='https://schema.org/',
             skos='http://www.w3.org/2004/02/skos/core#',
             )
 @urirefs(Thing='owl:Thing',
          label='rdfs:label',
+         about='schema:about',
          relation='dcterms:relation',
          closeMatch='skos:closeMatch',
          exactMatch='skos:exactMatch')
@@ -251,13 +312,17 @@ class Thing(ThingModel):
 
     """
     id: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, None]] = Field(default_factory=build_blank_id)  # @id
-    label: Optional[LangString] = None  # rdfs:label
-    relation: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
-    closeMatch: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
-    exactMatch: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
+    label: Optional[Union[LangString, List[LangString]]] = None  # rdfs:label
+    about: Optional[
+        Union[
+            str, HttpUrl, FileUrl, ThingModel, BlankNodeType, List[Union[HttpUrl, FileUrl, ThingModel, BlankNodeType]]]
+    ] = None  # schema:about
+    relation: Optional[Union[HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
+    closeMatch: Optional[Union[HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
+    exactMatch: Optional[Union[HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
 
-    class Config:
-        arbitrary_types_allowed = True
+    # class Config:
+    #     arbitrary_types_allowed = True
 
     @property
     def namespace(self) -> str:
@@ -438,10 +503,19 @@ class Thing(ThingModel):
             Union[Dict, int, str, float, bool]
                 The serialized fields or the object as is
             """
-            if isinstance(obj, (int, str, float, bool)):
+
+            obj_ctx = Context(source={**context,
+                                      **NamespaceManager.get(obj.__class__, {}),
+                                      **URIRefManager.get(obj.__class__, {})})
+
+            if isinstance(obj, str):
+                return _parse_string_value(obj, at_context)
+            if isinstance(obj, (int, float, bool)):
                 return obj
+            if isinstance(obj, LangString):
+                return serialize_lang_str_field(obj)
             if isinstance(obj, datetime):
-                return obj.isoformat()
+                return datetime_to_literal(obj)
 
             uri_ref_manager = URIRefManager.get(obj.__class__, None)
             at_context.update(NamespaceManager.get(obj.__class__, {}))
@@ -451,10 +525,6 @@ class Thing(ThingModel):
                     for extra in obj.model_extra.values():
                         if isinstance(extra, URIValue):
                             at_context[extra.prefix] = extra.namespace
-
-            obj_ctx = Context(source={**context,
-                                      **NamespaceManager.get(obj.__class__, {}),
-                                      **URIRefManager.get(obj.__class__, {})})
 
             if uri_ref_manager is None:
                 return str(obj)
@@ -504,6 +574,10 @@ class Thing(ThingModel):
                     serialized_fields[key] = {"@id": str(v)}
                 elif isinstance(v, URIValue):
                     serialized_fields[f"{v.prefix}:{key}"] = v.value
+                elif isinstance(v, datetime):
+                    serialized_fields[key] = datetime_to_literal(v)
+                elif isinstance(v, str):
+                    serialized_fields[key] = _parse_string_value(v, at_context)
                 else:
                     serialized_fields[key] = _serialize_fields(v, _exclude_none=_exclude_none)
 

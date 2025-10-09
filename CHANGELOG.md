@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.21.0
+
+- Add comparison method to LangString to allow comparison like "a thing" == LangString("a thing", "en")
+- Allowing multiple labels in multiple languages for Thing objects
+- Add support for YAML export
+- Added property `schema:about` to Thing
+- support python versions up to 3.14
+- Control string representation of LangString via config `show_lang_in_str`. It allows to control whether
+  `LangString("text", "en")` is represented as `text@en` or just `text` in the `__str__`
+
 ## v0.20.0
 
 - TTL serialization now treats IRIs correctly, i.e., they are not enclosed in `<...>`

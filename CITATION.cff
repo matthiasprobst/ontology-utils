@@ -5,7 +5,7 @@ authors:
     given-names: "Matthias"
     orcid: "https://orcid.org/0000-0001-8729-0482"
 title: "Ontolutils - Object-oriented Things"
-version: 0.20.0
-doi: 10.5281/zenodo.16887324
-date-released: 2025-10-05
+version: 0.21.0
+doi: 10.5281/zenodo.17303372
+date-released: 2025-10-09
 url: "https://github.com/matthiasprobst/ontology-utils"

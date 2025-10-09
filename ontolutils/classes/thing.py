@@ -180,7 +180,7 @@ class LangString(BaseModel):
         if isinstance(v, list):
             return [cls.model_validate(_v) for _v in v]
 
-        raise TypeError("LangString must be a str, dict, rdflib.Literal or LangString instance")
+        return v
 
     def __str__(self):
         return f"{self.value}@{self.lang}" if self.lang else self.value
@@ -193,11 +193,26 @@ class LangString(BaseModel):
         return v
 
     def __eq__(self, other):
-        """Equality comparison with another LangString or a plain string."""
+        """Equality comparison with another LangString or a plain string.
+
+        Examples of equality:
+        >>> LangString(value="Hello", lang="en") == LangString(value="Hello", lang="en")
+        True
+        >>> LangString(value="Hello", lang="en") == "Hello@en"
+        True
+        >>> LangString(value="Hello", lang="en") == "Hello"
+        True
+        >>> LangString(value="Hello") == "Hello"
+        True
+        >>> LangString(value="Hello") == LangString(value="Hello")
+        True
+        >>> LangString(value="Hello", lang="en") == "Hello@fr"
+        False
+        """
         if isinstance(other, LangString):
             return self.value == other.value and self.lang == other.lang
         if isinstance(other, str):
-            return self.value == self.value
+            return str(self) == other or self.value == other
         raise TypeError(f"Cannot compare LangString with {type(other)}")
 
 
@@ -231,6 +246,7 @@ def _parse_string_value(value, ctx):
         if _ns in ctx:
             return {"@id": f"{ctx[_ns]}{_value}"}
     return value
+
 
 @namespaces(owl='http://www.w3.org/2002/07/owl#',
             rdfs='http://www.w3.org/2000/01/rdf-schema#',
@@ -504,7 +520,6 @@ class Thing(ThingModel):
                     for extra in obj.model_extra.values():
                         if isinstance(extra, URIValue):
                             at_context[extra.prefix] = extra.namespace
-
 
             if uri_ref_manager is None:
                 return str(obj)
@@ -846,8 +861,6 @@ def _parse_blank_node(_id, base_uri: Optional[Union[str, AnyUrl]]):
         return f"{base_uri}{_id}"
     warnings.warn(f"Could not parse blank node ID '{_id}'. ")
     return _id
-
-
 
 
 def get_urirefs(cls: Thing) -> Dict:

@@ -243,8 +243,11 @@ class TestNamespaces(unittest.TestCase):
     def test_language_string1(self):
         self.assertEqual("a thing", LangString(value="a thing", lang="en").value)
         self.assertEqual("a thing", LangString(value="a thing").value)
+        self.assertEqual("a thing", LangString(value="a thing"))
+        self.assertEqual("a thing", LangString(value="a thing", lang="en"))
+        self.assertNotEqual("a thing", LangString(value="another thing").value)
         self.assertNotEqual("a thing", LangString(value="another thing", lang="en").value)
-
+        self.assertNotEqual(LangString(value="Hello", lang="en"), "Hello@fr")
         thing_en = Thing(label=LangString(value='a thing.', lang='en'))
         ttl = thing_en.model_dump_ttl()
         self.assertEqual(ttl, """@prefix owl: <http://www.w3.org/2002/07/owl#> .
@@ -1195,36 +1198,36 @@ agents:123 a foaf:Agent ;
             """
             name: str = Field(default=None, alias="lastName")  # name is synonymous to lastName
 
-#         with self.assertRaises(ValidationError):
-#             Agent(
-#                 name="John Doe",
-#                 about="A person"
-#             )
-#         p = Agent(
-#             name="John Doe",
-#             about="http://example.org/123"
-#         )
-#         p = Agent(
-#             name="John Doe",
-#             about=["http://example.org/123", "http://example.org/456"]
-#         )
-#         p = Agent(
-#             name="John Doe",
-#             about=["http://example.org/123", Thing(id="http://example.org/456")]
-#         )
-#         ttl = p.model_dump_ttl()
-#         self.assertEqual(ttl, """@prefix foaf: <http://xmlns.com/foaf/0.1/> .
-# @prefix owl: <http://www.w3.org/2002/07/owl#> .
-# @prefix schema: <https://schema.org/> .
-#
-# <http://example.org/456> a owl:Thing .
-#
-# [] a foaf:Agent ;
-#     foaf:lastName "John Doe" ;
-#     schema:about <http://example.org/456>,
-#         "http://example.org/123" .
-#
-# """)
+        #         with self.assertRaises(ValidationError):
+        #             Agent(
+        #                 name="John Doe",
+        #                 about="A person"
+        #             )
+        #         p = Agent(
+        #             name="John Doe",
+        #             about="http://example.org/123"
+        #         )
+        #         p = Agent(
+        #             name="John Doe",
+        #             about=["http://example.org/123", "http://example.org/456"]
+        #         )
+        #         p = Agent(
+        #             name="John Doe",
+        #             about=["http://example.org/123", Thing(id="http://example.org/456")]
+        #         )
+        #         ttl = p.model_dump_ttl()
+        #         self.assertEqual(ttl, """@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+        # @prefix owl: <http://www.w3.org/2002/07/owl#> .
+        # @prefix schema: <https://schema.org/> .
+        #
+        # <http://example.org/456> a owl:Thing .
+        #
+        # [] a foaf:Agent ;
+        #     foaf:lastName "John Doe" ;
+        #     schema:about <http://example.org/456>,
+        #         "http://example.org/123" .
+        #
+        # """)
         p = Agent(
             name="John Doe",
             about=SCHEMA.about

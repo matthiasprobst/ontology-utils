@@ -6,6 +6,7 @@
 - Allowing multiple labels in multiple languages for Thing objects
 - Add support for YAML export
 - Added property `schema:about` to Thing
+- support python versions up to 3.14
 
 ## v0.20.0
 

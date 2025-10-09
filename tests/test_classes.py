@@ -241,22 +241,31 @@ class TestNamespaces(unittest.TestCase):
 """)
 
     def test_language_string1(self):
+        self.assertNotEqual("x", LangString(value='upward', lang=None))
         self.assertEqual("a thing", LangString(value="a thing", lang="en").value)
         self.assertEqual("a thing", LangString(value="a thing").value)
         self.assertEqual("a thing", LangString(value="a thing"))
         self.assertEqual("a thing", LangString(value="a thing", lang="en"))
         self.assertNotEqual("a thing", LangString(value="another thing").value)
         self.assertNotEqual("a thing", LangString(value="another thing", lang="en").value)
+
         self.assertNotEqual(LangString(value="Hello", lang="en"), "Hello@fr")
         thing_en = Thing(label=LangString(value='a thing.', lang='en'))
-        ttl = thing_en.model_dump_ttl()
-        self.assertEqual(ttl, """@prefix owl: <http://www.w3.org/2002/07/owl#> .
+        with set_config(show_lang_in_str=True):
+            ttl = thing_en.model_dump_ttl()
+            self.assertEqual(ttl, """@prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
 [] a owl:Thing ;
     rdfs:label "a thing."@en .
 
 """)
+        with set_config(show_lang_in_str=False):
+            self.assertEqual(str(LangString(value="a thing", lang="en")), "a thing")
+        with set_config(show_lang_in_str=True):
+            self.assertEqual(str(LangString(value="a thing", lang="en")), "a thing@en")
+        with set_config(show_lang_in_str=True):
+            self.assertEqual(str(LangString(value="a thing")), "a thing")
 
     def test_language_string2(self):
         thing_en = Thing(

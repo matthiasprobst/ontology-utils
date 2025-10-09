@@ -182,8 +182,13 @@ class LangString(BaseModel):
 
         return v
 
-    def __str__(self):
-        return f"{self.value}@{self.lang}" if self.lang else self.value
+    def __str__(self, show_lang: bool = None):
+        if show_lang is None:
+            show_lang = get_config("show_lang_in_str")
+        if self.lang and show_lang:
+            return f"{self.value}@{self.lang}"
+        return f"{self.value}" if self.lang else str(self.value)
+
 
     def to_dict(self):
         return {"value": self.value, "lang": self.lang}

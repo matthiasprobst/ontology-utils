@@ -7,6 +7,8 @@
 - Add support for YAML export
 - Added property `schema:about` to Thing
 - support python versions up to 3.14
+- Control string representation of LangString via config `show_lang_in_str`. It allows to control whether
+  `LangString("text", "en")` is represented as `text@en` or just `text` in the `__str__`
 
 ## v0.20.0
 

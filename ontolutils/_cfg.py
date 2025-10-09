@@ -2,9 +2,11 @@ from typing import Dict
 
 CONFIG = {
     'blank_id_generator': None,
+    'show_lang_in_str': True
 }
 _VALIDATORS = {
     'blank_id_generator': lambda x: callable(x) or x is None,
+    'show_lang_in_str': lambda x: isinstance(x, bool) or x is None,
 }
 
 

@@ -3,6 +3,7 @@
 ## v0.21.1
 
 - hotfix serialization of lists of resources
+- add type `ResourceTye` allowing to reference a resource (AnyUrl or Thing-Like)
 
 ## v0.21.0
 

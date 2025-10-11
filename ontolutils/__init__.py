@@ -3,9 +3,8 @@ import logging
 
 from ._cfg import set_config, get_config
 from ._version import __version__
-from .classes import Thing, LangString, get_urirefs, get_namespaces, as_id, build, Property
-from .classes import namespaces, urirefs
-from .classes import query, dquery, URIValue
+from .classes import Thing, LangString, get_urirefs, get_namespaces, as_id, build, Property, namespaces, urirefs, query, \
+    dquery, URIValue
 from .classes.utils import merge_jsonld
 from .namespacelib import *
 from .utils.qudt_units import parse_unit

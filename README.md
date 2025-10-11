@@ -3,7 +3,7 @@
 ![Tests Status](https://github.com/matthiasprobst/ontology-utils/actions/workflows/tests.yml/badge.svg)
 [![codecov](https://codecov.io/gh/matthiasprobst/ontology-utils/graph/badge.svg?token=KKZ3PTO73T)](https://codecov.io/gh/matthiasprobst/ontology-utils)
 [![Documentation Status](https://readthedocs.org/projects/ontology-utils/badge/?version=latest)](https://ontology-utils.readthedocs.io/en/latest/)
-![pyvers Status](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-blue)
+![pyvers Status](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue)
 
 This package helps you in generating ontology-related objects and lets you easily create JSON-LD files.
 

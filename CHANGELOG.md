@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.21.1
+
+- hotfix serialization of lists of resources
+- add type `ResourceType` allowing to reference a resource (AnyUrl or Thing-Like)
+
 ## v0.21.0
 
 - Add comparison method to LangString to allow comparison like "a thing" == LangString("a thing", "en")

@@ -1,4 +1,3 @@
-import abc
 import json
 import logging
 import pathlib
@@ -10,16 +9,17 @@ from urllib.parse import urlparse
 
 import rdflib
 import yaml
-from pydantic import AnyUrl, HttpUrl, FileUrl, BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import AnyUrl, HttpUrl, FileUrl, BaseModel, Field, field_validator, model_validator
 from pydantic import field_serializer
+from pydantic_core import Url
 from rdflib import XSD
 from rdflib.plugins.shared.jsonld.context import Context
 
 from .decorator import urirefs, namespaces, URIRefManager, NamespaceManager, _is_http_url
-from .typing import BlankNodeType
+from .thingmodel import ThingModel
 from .utils import split_URIRef
 from .. import get_config
-from ..config import PYDANTIC_EXTRA
+from ..typing import BlankNodeType
 
 logger = logging.getLogger('ontolutils')
 URL_SCHEMES = {"http", "https", "urn", "doi"}
@@ -38,22 +38,6 @@ class Property:
             raise ValueError("If namespace_prefix is given, then namespace must be given as well.")
         if self.namespace_prefix is None and self.namespace is not None:
             raise ValueError("If namespace is given, then namespace_prefix must be given as well.")
-
-
-class ThingModel(BaseModel, abc.ABC, validate_assignment=True):
-    """Abstract base model class to be used by model classes used within ontolutils"""
-
-    model_config = ConfigDict(extra=PYDANTIC_EXTRA, populate_by_name=True)
-
-    def __getattr__(self, item):
-        for field, meta in self.__class__.model_fields.items():
-            if meta.alias == item:
-                return getattr(self, field)
-        return super().__getattr__(item)
-
-    @abc.abstractmethod
-    def _repr_html_(self) -> str:
-        """Returns the HTML representation of the class"""
 
 
 def resolve_iri(key_or_iri: str, context: Context) -> Optional[str]:
@@ -182,13 +166,15 @@ class LangString(BaseModel):
 
         return v
 
+    def __hash__(self):
+        return hash((self.value, self.lang))
+
     def __str__(self, show_lang: bool = None):
         if show_lang is None:
             show_lang = get_config("show_lang_in_str")
         if self.lang and show_lang:
             return f"{self.value}@{self.lang}"
         return f"{self.value}" if self.lang else str(self.value)
-
 
     def to_dict(self):
         return {"value": self.value, "lang": self.lang}
@@ -508,8 +494,14 @@ class Thing(ThingModel):
                                       **NamespaceManager.get(obj.__class__, {}),
                                       **URIRefManager.get(obj.__class__, {})})
 
+            if isinstance(obj, str) and _is_http_url(obj):
+                return {"@id": str(obj)}
             if isinstance(obj, str):
                 return _parse_string_value(obj, at_context)
+            if isinstance(obj, Url):
+                return {"@id": str(obj)}
+            if isinstance(obj, list):
+                return [_serialize_fields(o, _exclude_none) for o in obj]
             if isinstance(obj, (int, float, bool)):
                 return obj
             if isinstance(obj, LangString):

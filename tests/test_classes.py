@@ -8,7 +8,7 @@ from typing import Optional, List, Union
 import pydantic
 import rdflib
 import yaml
-from pydantic import EmailStr, model_validator
+from pydantic import EmailStr, model_validator, HttpUrl
 from pydantic import ValidationError
 from pydantic import field_validator, Field
 from rdflib.plugins.shared.jsonld.context import Context
@@ -612,7 +612,7 @@ class TestNamespaces(unittest.TestCase):
                  affiliation='schema:affiliation')
         class Person(Agent):
             firstName: str = None
-            affiliation: Union[str, Organization] = None
+            affiliation: Union[str, HttpUrl, Organization, List[Union[str, HttpUrl, Organization]]] = None
 
         person = Person(
             label='Person 1',
@@ -630,7 +630,17 @@ class TestNamespaces(unittest.TestCase):
 
         person = Person(
             label='Person 1',
-            affiliation='schema:Organization/123',
+            affiliation='https://schema:Organization/123',
+        )
+
+        print(person.serialize("ttl"))
+
+        person = Person(
+            label='Person 1',
+            affiliation=[
+                'https://schema.org/Organization/1',
+                'https://schema.org/Organization/2'
+            ],
         )
 
         print(person.serialize("ttl"))

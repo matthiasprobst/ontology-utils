@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.21.1
+
+- hotfix serialization of lists of resources
+
 ## v0.21.0
 
 - Add comparison method to LangString to allow comparison like "a thing" == LangString("a thing", "en")

@@ -12,6 +12,7 @@ import rdflib
 import yaml
 from pydantic import AnyUrl, HttpUrl, FileUrl, BaseModel, ConfigDict, Field, field_validator, model_validator
 from pydantic import field_serializer
+from pydantic_core import Url
 from rdflib import XSD
 from rdflib.plugins.shared.jsonld.context import Context
 
@@ -188,7 +189,6 @@ class LangString(BaseModel):
         if self.lang and show_lang:
             return f"{self.value}@{self.lang}"
         return f"{self.value}" if self.lang else str(self.value)
-
 
     def to_dict(self):
         return {"value": self.value, "lang": self.lang}
@@ -508,8 +508,14 @@ class Thing(ThingModel):
                                       **NamespaceManager.get(obj.__class__, {}),
                                       **URIRefManager.get(obj.__class__, {})})
 
+            if isinstance(obj, str) and _is_http_url(obj):
+                return {"@id": str(obj)}
             if isinstance(obj, str):
                 return _parse_string_value(obj, at_context)
+            if isinstance(obj, Url):
+                return {"@id": str(obj)}
+            if isinstance(obj, list):
+                return [_serialize_fields(o, _exclude_none) for o in obj]
             if isinstance(obj, (int, float, bool)):
                 return obj
             if isinstance(obj, LangString):

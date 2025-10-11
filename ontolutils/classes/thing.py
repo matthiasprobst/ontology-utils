@@ -17,9 +17,9 @@ from rdflib.plugins.shared.jsonld.context import Context
 
 from .decorator import urirefs, namespaces, URIRefManager, NamespaceManager, _is_http_url
 from .thingmodel import ThingModel
-from ..typing import BlankNodeType
 from .utils import split_URIRef
 from .. import get_config
+from ..typing import BlankNodeType
 
 logger = logging.getLogger('ontolutils')
 URL_SCHEMES = {"http", "https", "urn", "doi"}
@@ -165,6 +165,9 @@ class LangString(BaseModel):
             return [cls.model_validate(_v) for _v in v]
 
         return v
+
+    def __hash__(self):
+        return hash((self.value, self.lang))
 
     def __str__(self, show_lang: bool = None):
         if show_lang is None:

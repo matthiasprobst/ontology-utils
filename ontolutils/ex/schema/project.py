@@ -1,22 +1,35 @@
-from datetime import datetime
-from typing import Union, List
+from typing import Union, Optional, List
 
-from ontolutils import Thing, namespaces, urirefs
-from ..prov import Organization, Person
+from pydantic import HttpUrl, field_validator, Field
+from pydantic import model_validator
+
+from ontolutils import Thing, namespaces, urirefs, as_id, LangString
+from ontolutils.ex.prov import Organization, Person
+from ontolutils.typing import ResourceType
 
 
 @namespaces(schema="https://schema.org/")
-@urirefs(Project='schema:Research',
-         identifier='schema:identifier',
-         startDate='schema:startDate',
-         endDate='schema:endDate',
-         participant='schema:participant')
+@urirefs(
+    Project='schema:Project',
+    name='schema:name',
+    identifier='schema:identifier',
+    funder='schema:funder'
+)
 class Project(Thing):
-    """Pydantic Model for schema:Project"""
-    identifier: str
-    startDate: datetime
-    endDate: datetime
-    participant: Union[Person, Organization, List[Union[Person, Organization]]]
+    """Implementation of schema:Project"""
+    name: Optional[Union[LangString, List[LangString]]] = Field(default=None)
+    identifier: Optional[ResourceType] = Field(default=None)
+    funder: Optional[Union[Person, Organization]] = Field(default=None)
+
+    @model_validator(mode="before")
+    def _change_id(self):
+        return as_id(self, "identifier")
+
+    @field_validator('identifier', mode='before')
+    @classmethod
+    def _identifier(cls, identifier):
+        HttpUrl(identifier)
+        return str(identifier)
 
 
 @urirefs(ResearchProject='schema:ResearchProject')

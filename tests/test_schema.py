@@ -1,12 +1,19 @@
 import logging
+import pathlib
 import unittest
-from typing import List
-from typing import Union
+from typing import List, Union
 
 from pydantic import Field, HttpUrl
 
 from ontolutils import Property
 from ontolutils import Thing, urirefs, namespaces, build
+from ontolutils import cache
+from ontolutils.ex import dcat, prov
+from ontolutils.ex.schema import Project, ResearchProject
+
+__this_dir__ = pathlib.Path(__file__).parent
+
+CACHE_DIR = cache.get_cache_dir()
 
 LOG_LEVEL = logging.DEBUG
 
@@ -80,3 +87,32 @@ class TestSchema(unittest.TestCase):
 """
         self.assertEqual(serialized1, expected_serialization)
         self.assertEqual(serialized2, expected_serialization)
+
+    def test_project(self):
+        snt_dist = dcat.Distribution(
+            downloadURL="https://sandbox.zenodo.org/records/123202/files/Standard_Name_Table_for_the_Property_Descriptions_of_Centrifugal_Fans.jsonld",
+            media_type="application/json+ld"
+        )
+
+        dataset = dcat.Dataset(
+            identifier="https://sandbox.zenodo.org/uploads/123202",
+            distribution=snt_dist
+        )
+
+        proj = Project(
+            identifier='https://example.com/project',
+            funder=prov.Organization(name='Funder'),
+            usesStandardnameTable=dataset
+        )
+
+        self.assertEqual(str(proj.identifier), 'https://example.com/project')
+        self.assertIsInstance(proj.funder, prov.Organization)
+        self.assertEqual(proj.funder.name, 'Funder')
+        self.assertEqual(proj.id, 'https://example.com/project')
+
+    def test_research_project(self):
+        proj = ResearchProject(
+            identifier='https://example.com/research_project',
+            funder=prov.Organization(name='Funder')
+        )
+        self.assertEqual(proj.id, 'https://example.com/research_project')

@@ -82,7 +82,8 @@ def merge_jsonld(jsonld_strings: List[str]) -> str:
 def download_file(url,
                   dest_filename=None,
                   known_hash=None,
-                  overwrite_existing: bool = False) -> pathlib.Path:
+                  exist_ok: bool = False,
+                  **kwargs) -> pathlib.Path:
     """Download a file from a URL and check its hash
     
     Parameter
@@ -93,8 +94,10 @@ def download_file(url,
         The destination filename. If None, the filename is taken from the URL
     known_hash: str
         The expected hash of the file
-    overwrite_existing: bool
+    exist_ok: bool
         Whether to overwrite an existing file
+    **kwargs
+        Additional keyword arguments passed to requests.get()
     
     Returns
     -------
@@ -106,10 +109,12 @@ def download_file(url,
     HTTPError if the request is not successful
     ValueError if the hash of the downloaded file does not match the expected hash
     """
+    if "overwrite_existing" in kwargs:
+        exist_ok = kwargs.pop("overwrite_existing")
     from ..cache import get_cache_dir
 
     logger.debug(f'Performing request to {url}')
-    response = requests.get(url, stream=True)
+    response = requests.get(url, stream=True, **kwargs)
     if not response.ok:
         response.raise_for_status()
 
@@ -140,8 +145,8 @@ def download_file(url,
         dest_parent.mkdir(parents=True)
 
     if dest_filename.exists():
-        if overwrite_existing:
-            logger.debug(f'Destination filename found: {dest_filename}. Deleting it, as overwrite_existing is True.')
+        if exist_ok:
+            logger.debug(f'Destination filename found: {dest_filename}. Deleting it, as exist_ok is True.')
             dest_filename.unlink()
         else:
             logger.debug(f'Destination filename found: {dest_filename}. Returning it')

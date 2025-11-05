@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.22.0
+
+- provide concrete implementations of some ontology classes such as skos, dcat, prov, schema.org, spdx
+
 ## v0.21.1
 
 - hotfix serialization of lists of resources

@@ -149,6 +149,27 @@ class TestDcat(utils.ClassTest):
 
 """, r3.serialize("ttl"))
 
+    def test_basic_distribution(self):
+        dist = dcat.Distribution(
+            title='Distribution title',
+            description='Distribution description',
+            media_type='application/x-hdf'
+        )
+        self.assertEqual(dist.mediaType, 'https://www.iana.org/assignments/media-types/application/x-hdf')
+        dist = dcat.Distribution(
+            title='Distribution title',
+            description='Distribution description',
+            media_type='https://www.iana.org/assignments/media-types/application/json'
+        )
+        self.assertEqual(dist.mediaType, 'https://www.iana.org/assignments/media-types/application/json')
+        dist = dcat.Distribution(
+            title='Distribution title',
+            description='Distribution description',
+            media_type='text/csv'
+        )
+        self.assertEqual(dist.mediaType, 'https://www.iana.org/assignments/media-types/text/csv')
+
+
     @unittest.skipIf(condition=9 < get_python_version()[1] < 13,
                      reason="Only testing on min and max python version")
     def test_Distribution(self):
@@ -354,3 +375,21 @@ class TestDcat(utils.ClassTest):
             was_generated_by=processing_step
         )
         print(dist.serialize(format="ttl"))
+
+    def test_dcat_DataService(self):
+        data_service = dcat.DataService(
+            id="http://local.org/sqlite3",
+            title="sqlite3 Database",
+            endpointURL="file:///path/to/endpoint",
+            servesDataset=dcat.Dataset(
+                title="Table Title",
+                description="An SQL Table with the name 'Table Title'",
+                distribution=dcat.Distribution(
+                    id="http://local.org/sqlite3/12345",
+                    identifier="12345",
+                    mediaType="application/vnd.sqlite3",
+                )
+            )
+        )
+        self.assertEqual(data_service.id, "http://local.org/sqlite3")
+        self.assertIsInstance(data_service, dcat.DataService)

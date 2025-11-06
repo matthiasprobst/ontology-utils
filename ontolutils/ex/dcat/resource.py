@@ -5,13 +5,13 @@ from datetime import datetime
 from typing import Union, List, Optional
 
 from dateutil import parser
-from pydantic import HttpUrl, FileUrl, field_validator, Field, model_validator
-
 from ontolutils import Thing, as_id, urirefs, namespaces, LangString
 from ontolutils.classes.utils import download_file
 from ontolutils.ex import foaf
 from ontolutils.ex import prov
 from ontolutils.typing import BlankNodeType, ResourceType
+from pydantic import HttpUrl, FileUrl, field_validator, Field, model_validator
+
 from ..spdx import Checksum
 
 
@@ -110,6 +110,16 @@ class Resource(Thing):
         return identifier
 
 
+@namespaces(dcat="http://www.w3.org/ns/dcat#")
+@urirefs(DataService='dcat:DataService',
+         endpointURL='dcat:endpointURL',
+         servesDataset='dcat:servesDataset')
+class DataService(Resource):
+    endpointURL: Union[HttpUrl, FileUrl] = Field(alias='endpoint_url', default=None)  # dcat:endpointURL
+    servesDataset: "Dataset" = Field(alias='serves_dataset', default=None)  # dcat:servesDataset
+
+
+
 @namespaces(dcat="http://www.w3.org/ns/dcat#",
             prov="http://www.w3.org/ns/prov#",
             dcterms="http://purl.org/dc/terms/")
@@ -118,9 +128,9 @@ class Resource(Thing):
          accessURL='dcat:accessURL',
          mediaType='dcat:mediaType',
          byteSize='dcat:byteSize',
-         keyword='dcat:keyword',
          hasPart='dcterms:hasPart',
-         checksum='spdx:checksum'
+         checksum='spdx:checksum',
+         accessService='dcat:distribution'
          )
 class Distribution(Resource):
     """Implementation of dcat:Distribution
@@ -138,16 +148,14 @@ class Distribution(Resource):
         Should be defined by the [IANA Media Types registry](https://www.iana.org/assignments/media-types/media-types.xhtml)
     byteSize: int = None
         Size of the distribution in bytes (dcat:byteSize)
-    keyword: List[str]
-        Keywords for the distribution.
     """
     downloadURL: Union[HttpUrl, FileUrl, pathlib.Path] = Field(default=None, alias='download_URL')
     accessURL: Union[HttpUrl, FileUrl, pathlib.Path] = Field(default=None, alias='access_URL')
-    mediaType: HttpUrl = Field(default=None, alias='media_type')  # dcat:mediaType
+    mediaType: Union[str, ResourceType] = Field(default=None, alias='media_type')  # dcat:mediaType
     byteSize: int = Field(default=None, alias='byte_size')  # dcat:byteSize
-    keyword: List[str] = None  # dcat:keyword
     hasPart: Union[Thing, List[Thing]] = Field(default=None, alias='has_part')  # dcterms:hasPart
     checksum: Union[ResourceType, Checksum] = None  # spdx:checksum
+    accessService: DataService = Field(default=None, alias='access_service')  # dcat:accessService
 
     def _repr_html_(self):
         """Returns the HTML representation of the class"""
@@ -161,13 +169,16 @@ class Distribution(Resource):
                  **kwargs) -> pathlib.Path:
         """Downloads the distribution
         kwargs are passed to the download_file function, which goes to requests.get()"""
-
+        if dest_filename is not None:
+            if pathlib.Path(dest_filename).is_dir():
+                raise IsADirectoryError(f'Destination filename {dest_filename} is a directory')
         if "exist_ok" in kwargs:
             overwrite_existing = kwargs.pop("exist_ok")
 
         if self.download_URL is None:
             raise ValueError('The downloadURL is not defined')
 
+        downloadURL = str(self.downloadURL)
         def _parse_file_url(furl):
             """in windows, we might need to strip the leading slash"""
             fname = pathlib.Path(furl)
@@ -183,12 +194,22 @@ class Distribution(Resource):
                 return _parse_file_url(self.download_URL.path)
             else:
                 return shutil.copy(_parse_file_url(self.download_URL.path), dest_filename)
-        dest_filename = pathlib.Path(dest_filename or self.download_URL.path.split('/')[-1])
+        if dest_filename is None:
+            import os
+            from urllib.parse import urlparse
+            dest_filename = os.path.basename(urlparse(downloadURL).path)
+            if dest_filename == '':
+                dest_filename = downloadURL.rsplit("#", 1)[-1]
+
+        dest_filename = pathlib.Path(dest_filename)
+        if not dest_filename.suffix.startswith("."):
+            raise ValueError('Destination filename must have a valid suffix/extension')
+
         if dest_filename.exists():
             return dest_filename
         return download_file(self.download_URL,
                              dest_filename,
-                             exist_ok=True,
+                             exist_ok=overwrite_existing,
                              **kwargs)
 
     @field_validator('mediaType', mode='before')
@@ -197,11 +218,11 @@ class Distribution(Resource):
         """should be a valid URI, like: https://www.iana.org/assignments/media-types/text/markdown"""
         if isinstance(mediaType, str):
             if mediaType.startswith('http'):
-                return HttpUrl(mediaType)
+                return mediaType
             elif mediaType.startswith('iana:'):
-                return HttpUrl("https://www.iana.org/assignments/media-types/" + mediaType.split(":", 1)[-1])
+                return "https://www.iana.org/assignments/media-types/" + mediaType.split(":", 1)[-1]
             elif re.match('[a-z].*/[a-z].*', mediaType):
-                return HttpUrl("https://www.iana.org/assignments/media-types/" + mediaType)
+                return "https://www.iana.org/assignments/media-types/" + mediaType
         return mediaType
 
     @field_validator('downloadURL', mode='before')
@@ -273,3 +294,6 @@ class Dataset(Resource):
         if isinstance(modified, str):
             return parser.parse(modified)
         return modified
+
+
+DataService.model_rebuild()

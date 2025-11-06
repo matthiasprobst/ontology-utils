@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.22.0-rc1
+
+- provide concrete implementations of some ontology classes from ontologies skos, dcat, prov, schema, spdx, m4i, hdf5,
+  foaf, pimsii, qudt
+
 ## v0.21.1
 
 - hotfix serialization of lists of resources

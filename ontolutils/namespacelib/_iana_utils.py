@@ -45,6 +45,16 @@ class IANACLS:
         self._text = None
         self._video = None
 
+    @classmethod
+    def get(cls, media_type):
+        """Get media type by full type string, e.g., 'text/html'."""
+        main_type, mtype = media_type.split('/',1)
+        if mtype.startswith('x-'):
+            return "https://www.iana.org/assignments/media-types/" + media_type
+        instance = cls()
+        media_types = getattr(instance, main_type, {})
+        return media_types.get(mtype, None)
+
     @property
     def application(self):
         """Return a dictionary of application media types."""

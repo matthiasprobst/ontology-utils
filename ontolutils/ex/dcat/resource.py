@@ -5,18 +5,21 @@ from datetime import datetime
 from typing import Union, List, Optional
 
 from dateutil import parser
+from pydantic import HttpUrl, FileUrl, field_validator, Field, model_validator
+
 from ontolutils import Thing, as_id, urirefs, namespaces, LangString
 from ontolutils.classes.utils import download_file
 from ontolutils.ex import foaf
 from ontolutils.ex import prov
 from ontolutils.typing import BlankNodeType, ResourceType
-from pydantic import HttpUrl, FileUrl, field_validator, Field, model_validator
-
 from ..spdx import Checksum
+from ..prov import Attribution
 
 
 @namespaces(dcat="http://www.w3.org/ns/dcat#",
-            dcterms="http://purl.org/dc/terms/", )
+            dcterms="http://purl.org/dc/terms/",
+            prov="http://www.w3.org/ns/prov#",
+            )
 @urirefs(Resource='dcat:Resource',
          title='dcterms:title',
          description='dcterms:description',
@@ -27,7 +30,9 @@ from ..spdx import Checksum
          version='dcat:version',
          identifier='dcterms:identifier',
          hasPart='dcterms:hasPart',
-         keyword='dcat:keyword')
+         keyword='dcat:keyword',
+         qualifiedAttribution='prov:qualifiedAttribution'
+         )
 class Resource(Thing):
     """Pydantic implementation of dcat:Resource
 
@@ -95,6 +100,7 @@ class Resource(Thing):
     identifier: str = None  # dcterms:identifier
     hasPart: Optional[Union[ResourceType, List[ResourceType]]] = Field(default=None, alias='has_part')
     keyword: Optional[Union[str, List[str]]] = None  # dcat:keyword
+    qualifiedAttribution: Optional[Union[ResourceType, Attribution, List[Union[ResourceType, Attribution]]]] = None  # dcterms:qualifiedAttribution
 
     @model_validator(mode="before")
     def change_id(self):
@@ -117,7 +123,6 @@ class Resource(Thing):
 class DataService(Resource):
     endpointURL: Union[HttpUrl, FileUrl] = Field(alias='endpoint_url', default=None)  # dcat:endpointURL
     servesDataset: "Dataset" = Field(alias='serves_dataset', default=None)  # dcat:servesDataset
-
 
 
 @namespaces(dcat="http://www.w3.org/ns/dcat#",
@@ -179,6 +184,7 @@ class Distribution(Resource):
             raise ValueError('The downloadURL is not defined')
 
         downloadURL = str(self.downloadURL)
+
         def _parse_file_url(furl):
             """in windows, we might need to strip the leading slash"""
             fname = pathlib.Path(furl)

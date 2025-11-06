@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.22.0-rc2
+
+- bugfix mbox
+- add `qualifiedAttribution` to `dcat:Resource`
+
 ## v0.22.0-rc1
 
 - provide concrete implementations of some ontology classes from ontologies skos, dcat, prov, schema, spdx, m4i, hdf5,

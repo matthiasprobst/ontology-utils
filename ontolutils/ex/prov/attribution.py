@@ -31,7 +31,7 @@ class Agent(Thing):
     mbox: EmailStr = None
         Email address (foaf:mbox)
     """
-    mbox: EmailStr = Field(default=None, alias="email")  # foaf:mbox
+    mbox: EmailStr = Field(default=None, alias="personal mailbox")  # foaf:mbox
 
 
 @namespaces(schema='https://schema.org/',

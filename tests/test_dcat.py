@@ -6,6 +6,7 @@ import requests.exceptions
 
 import utils
 from ontolutils.ex import dcat, prov, foaf
+from ontolutils.ex.prov import Attribution
 from ontolutils.ex.spdx import Checksum
 from ontolutils.namespacelib.spdx import SPDX
 
@@ -169,7 +170,6 @@ class TestDcat(utils.ClassTest):
         )
         self.assertEqual(dist.mediaType, 'https://www.iana.org/assignments/media-types/text/csv')
 
-
     @unittest.skipIf(condition=9 < get_python_version()[1] < 13,
                      reason="Only testing on min and max python version")
     def test_Distribution(self):
@@ -252,8 +252,12 @@ class TestDcat(utils.ClassTest):
                     accessURL='https://example.com/distribution',
                     downloadURL='https://example.com/distribution/download'
                 )
-            ]
+            ],
+            qualifiedAttribution=Attribution(agent=person)
         )
+        print(dataset1.serialize("ttl"))
+        self.assertEqual(dataset1.qualifiedAttribution.agent.id, person.id)
+        self.assertEqual(dataset1.qualifiedAttribution.agent.firstName, "John")
         self.assertEqual(dataset1.id, 'https://example.com/dataset')
         self.assertEqual(dataset1.identifier, 'https://example.com/dataset')
         self.assertEqual(dataset1.title, 'Dataset title')

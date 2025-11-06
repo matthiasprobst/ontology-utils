@@ -1,6 +1,6 @@
-import ontolutils
-from ontolutils import namespaces, urirefs
 from pydantic import HttpUrl
+
+from ontolutils import namespaces, urirefs, Thing as BaseThing
 
 
 @namespaces(schema="https://schema.org/")
@@ -8,7 +8,7 @@ from pydantic import HttpUrl
          description='schema:description',
          name='schema:name',
          url='schema:url')
-class Thing(ontolutils.Thing):
+class Thing(BaseThing):
     """schema:Thing (https://schema.org/Thing)
     The most generic type of item."""
     description: str = None

@@ -48,4 +48,4 @@ class ResearchProject(Project):
 
     def _repr_html_(self) -> str:
         """Returns the HTML representation of the class"""
-        return f"{self.__class__.__name__}({self.mbox})"
+        return f"{self.__class__.__name__}({self.identifier})"

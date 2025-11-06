@@ -82,7 +82,7 @@ class TestQuery(unittest.TestCase):
         )
         self.assertIsInstance(res, list)
         self.assertTrue(len(res) == 1)
-        self.assertTrue(res[0]['version'] == __version__)
+        self.assertTrue(res[0]['version'] == __version__.replace("rc", "-rc"))
         self.assertTrue('author' in res[0])
         self.assertIsInstance(res[0]['author'], list)
         self.assertEqual(res[0]['author'][0]["@id"], 'https://orcid.org/0000-0001-8729-0482')

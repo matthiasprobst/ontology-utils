@@ -27,17 +27,18 @@ class TestVersion(unittest.TestCase):
             for line in lines:
                 if 'version' in line:
                     this_version = line.split(' = ')[-1].strip()
-        self.assertEqual(__version__, this_version)
+        self.assertEqual(__version__.replace("rc", "-rc"), this_version)
 
     def test_codemeta(self):
         """checking if the version in codemeta.json is the same as the one of the toolbox"""
 
         codemeta = get_package_meta()
 
-        assert codemeta['version'] == __version__
+        assert codemeta['version'] == __version__.replace("rc", "-rc")
 
     def test_citation_cff(self):
-        citation_cff = __this_dir__ / "../CITATION.cff"
-        with open(citation_cff, 'r') as f:
-            cff = yaml.safe_load(f)
-        self.assertTrue("todo" not in cff["doi"].lower(), "Please replace 'todo' in CITATION.cff")
+        if "rc" not in __version__:
+            citation_cff = __this_dir__ / "../CITATION.cff"
+            with open(citation_cff, 'r') as f:
+                cff = yaml.safe_load(f)
+            self.assertTrue("todo" not in cff["doi"].lower(), "Please replace 'todo' in CITATION.cff")

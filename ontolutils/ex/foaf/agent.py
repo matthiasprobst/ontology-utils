@@ -169,7 +169,6 @@ class Person(Agent):
     firstName: str = Field(default=None, alias="first_name")
     familyName: str = Field(default=None, alias="family_name")
     lastName: str = Field(default=None, alias="last_name")
-    family_name: str = Field(default=None, alias="family_name")
     plan: str = Field(default=None, alias="plan")
     surname: str = Field(default=None, alias="surname")
     geekcode: str = Field(default=None, alias="geekcode")

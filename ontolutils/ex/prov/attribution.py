@@ -154,16 +154,7 @@ class Attribution(Thing):
     """
     agent: Union[ResourceType, Person, List[Person], ResourceType, Organization, List[Organization], List[
         Union[Person, Organization]]]
-    hadRole: Union[str, HttpUrl, Role, List[Union[str, HttpUrl, Role]]] = Field(alias="had_role", default=None)
-
-    # @field_validator('hadRole', mode='before')
-    # @classmethod
-    # def _hadRole(cls, hadRole: HttpUrl):
-    #     from ..dcat.role import Role
-    #     if isinstance(hadRole, Role):
-    #         return hadRole
-    #     HttpUrl(hadRole)
-    #     return str(hadRole)
+    hadRole: Union[str, ResourceType, Role, List[Union[str, ResourceType, Role]]] = Field(alias="had_role", default=None)
 
     @field_validator('agent', mode='before')
     @classmethod

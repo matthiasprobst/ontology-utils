@@ -100,7 +100,6 @@ class SoftwareSourceCode(CreativeWork):
             return code_repository
         if code_repository.startswith('git+'):
             _url = HttpUrl(code_repository.split("git+", 1)[1])
-            # return f'{_url}'
         return code_repository
 
     @field_validator('applicationCategory')

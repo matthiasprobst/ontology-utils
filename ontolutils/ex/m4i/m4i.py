@@ -126,6 +126,13 @@ class Tool(Thing):
     def hasPart(self, value):
         self.BFO_0000051 = value
 
+    @field_validator('manufacturer', mode="before")
+    @classmethod
+    def _validate_manufacturer(cls, value):
+        if isinstance(value, str) and value.startswith("http"):
+            return Organization(id=value)
+        return value
+
     def add_numerical_variable(self, numerical_variable: Union[dict, NumericalVariable]):
         """add numerical variable to tool"""
         if isinstance(numerical_variable, dict):
@@ -139,7 +146,7 @@ class Tool(Thing):
                                  numerical_variable]
 
 
-@namespaces(pimsii="http://www.molmod.info/semantics/pims-ii.ttl#",)
+@namespaces(pimsii="http://www.molmod.info/semantics/pims-ii.ttl#", )
 class Assignment(Thing):
     """not yet implemented"""
 

@@ -1,9 +1,25 @@
 import unittest
 
-from ontolutils.ex.m4i import TextVariable, NumericalVariable
+from ontolutils.ex.m4i import TextVariable, NumericalVariable, Tool
 
 
 class TestM4i(unittest.TestCase):
+
+    def test_tool(self):
+        tool = Tool(
+            id='http://example.org/tool/1',
+            manufacturer="http://example.org/org/1",
+        )
+        self.assertEqual(tool.serialize("ttl"), """@prefix m4i: <http://w3id.org/nfdi4ing/metadata4ing#> .
+@prefix pivmeta: <https://matthiasprobst.github.io/pivmeta#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+
+<http://example.org/tool/1> a m4i:Tool ;
+    pivmeta:manufacturer <http://example.org/org/1> .
+
+<http://example.org/org/1> a prov:Organization .
+
+""")
 
     def testTextVariable(self):
         text_variable = TextVariable(

@@ -286,7 +286,7 @@ class Distribution(Resource):
         if target_folder is not None:
             target_folder = pathlib.Path(str(target_folder))
             target_folder.mkdir(parents=True, exist_ok=True)
-            dest_filename = target_folder / dest_filename
+            dest_filename = target_folder / _get_filename()
         else:
             if dest_filename is None:
                 dest_filename = pathlib.Path(_get_filename())

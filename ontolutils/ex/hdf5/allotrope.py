@@ -59,7 +59,7 @@ class Group(Thing):
 @urirefs(File='hdf5:File',
          rootGroup='hdf5:rootGroup')
 class File(Thing):
-    """Dataset"""
+    """File"""
     rootGroup: Optional[Group] = Field(default=None, alias="root_group")
 
     @field_validator("rootGroup", mode="before")

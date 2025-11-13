@@ -1,37 +1,122 @@
+import os
 import pathlib
 import re
 import shutil
 from datetime import datetime
 from typing import Union, List, Optional
+from urllib.parse import urlparse
 
 from dateutil import parser
-from pydantic import HttpUrl, FileUrl, field_validator, Field, model_validator
+from pydantic import HttpUrl, FileUrl, field_validator, Field
 
-from ontolutils import Thing, as_id, urirefs, namespaces, LangString
+from ontolutils import Thing, urirefs, namespaces, LangString
 from ontolutils.classes.utils import download_file
 from ontolutils.ex import foaf
 from ontolutils.ex import prov
 from ontolutils.typing import BlankNodeType, ResourceType
-from ..spdx import Checksum
 from ..prov import Attribution
+from ..spdx import Checksum
+
+_EXT_MAP = {
+    "csv": "text/csv",
+    "tsv": "text/tab-separated-values",
+    "json": "application/json",
+    "jsonld": "application/ld+json",
+    "ttl": "text/turtle",
+    "hdf5": "application/x-hdf",
+    "hdf": "application/x-hdf",
+    "h5": "application/x-hdf",
+    "nc": "application/x-netcdf",
+    "zip": "application/zip",
+    "iges": "model/iges",
+    "igs": "model/iges",
+    "md": "text/markdown",
+    "txt": "text/plain",
+    "xml": "application/xml",
+    "rdf": "application/rdf+xml",
+}
+
+
+def _parse_media_type(filename_suffix: str) -> str:
+    ext = filename_suffix.rsplit('.', 1)[-1].lower()
+    return _EXT_MAP.get(ext, "application/octet-stream")
+
+
+def _parse_license(license: str) -> str:
+    """
+    Convert a short license code (e.g., 'cc-by-4.0') to its official license URL.
+
+    Supports Creative Commons, MIT, Apache, GPL, BSD, MPL, and others.
+    Returns None if no match is found.
+    """
+    if not license:
+        return None
+    license_str = str(license)
+
+    if license_str.startswith("http://") or license_str.startswith("https://"):
+        return license_str
+
+    code = license_str.strip().lower()
+
+    mapping = {
+        # Creative Commons licenses
+        "cc0": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "cc-by": "https://creativecommons.org/licenses/by/4.0/",
+        "cc-by-3.0": "https://creativecommons.org/licenses/by/3.0/",
+        "cc-by-4.0": "https://creativecommons.org/licenses/by/4.0/",
+        "cc-by-sa": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "cc-by-sa-3.0": "https://creativecommons.org/licenses/by-sa/3.0/",
+        "cc-by-sa-4.0": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "cc-by-nd": "https://creativecommons.org/licenses/by-nd/4.0/",
+        "cc-by-nd-4.0": "https://creativecommons.org/licenses/by-nd/4.0/",
+        "cc-by-nc": "https://creativecommons.org/licenses/by-nc/4.0/",
+        "cc-by-nc-4.0": "https://creativecommons.org/licenses/by-nc/4.0/",
+        "cc-by-nc-sa": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "cc-by-nc-sa-4.0": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "cc-by-nc-nd": "https://creativecommons.org/licenses/by-nc-nd/4.0/",
+        "cc-by-nc-nd-4.0": "https://creativecommons.org/licenses/by-nc-nd/4.0/",
+        # Software licenses
+        "mit": "https://opensource.org/licenses/MIT",
+        "apache-2.0": "https://www.apache.org/licenses/LICENSE-2.0",
+        "gpl-2.0": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+        "gpl-3.0": "https://www.gnu.org/licenses/gpl-3.0.html",
+        "lgpl-2.1": "https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html",
+        "lgpl-3.0": "https://www.gnu.org/licenses/lgpl-3.0.html",
+        "bsd-2-clause": "https://opensource.org/licenses/BSD-2-Clause",
+        "bsd-3-clause": "https://opensource.org/licenses/BSD-3-Clause",
+        "mpl-2.0": "https://www.mozilla.org/en-US/MPL/2.0/",
+        "epl-2.0": "https://www.eclipse.org/legal/epl-2.0/",
+        "unlicense": "https://unlicense.org/",
+        "proprietary": "https://en.wikipedia.org/wiki/Proprietary_software",
+    }
+
+    return mapping.get(code, code)
 
 
 @namespaces(dcat="http://www.w3.org/ns/dcat#",
             dcterms="http://purl.org/dc/terms/",
             prov="http://www.w3.org/ns/prov#",
+            adms="http://www.w3.org/ns/adms#",
             )
 @urirefs(Resource='dcat:Resource',
          title='dcterms:title',
          description='dcterms:description',
          creator='dcterms:creator',
          publisher='dcterms:publisher',
+         issued='dcterms:issued',
+         modified='dcterms:modified',
          contributor='dcterms:contributor',
          license='dcterms:license',
          version='dcat:version',
+         hasVersion='dcat:hasVersion',
          identifier='dcterms:identifier',
          hasPart='dcterms:hasPart',
          keyword='dcat:keyword',
-         qualifiedAttribution='prov:qualifiedAttribution'
+         qualifiedAttribution='prov:qualifiedAttribution',
+         accessRights='dcterms:accessRights',
+         language='dcterms:language',
+         versionNotes='adms:versionNotes',
+         wasGeneratedBy='prov:wasGeneratedBy',
          )
 class Resource(Thing):
     """Pydantic implementation of dcat:Resource
@@ -94,26 +179,49 @@ class Resource(Thing):
         ]
     ] = None  # dcterms:creator
     publisher: Union[foaf.Agent, List[foaf.Agent]] = None  # dcterms:publisher
+    issued: datetime = None  # dcterms:issued
+    modified: datetime = None  # dcterms:modified
     contributor: Union[foaf.Agent, List[foaf.Agent]] = None  # dcterms:contributor
     license: Optional[Union[ResourceType, List[ResourceType]]] = None  # dcat:license
     version: str = None  # dcat:version
     identifier: str = None  # dcterms:identifier
     hasPart: Optional[Union[ResourceType, List[ResourceType]]] = Field(default=None, alias='has_part')
     keyword: Optional[Union[str, List[str]]] = None  # dcat:keyword
-    qualifiedAttribution: Optional[Union[ResourceType, Attribution, List[Union[ResourceType, Attribution]]]] = None  # dcterms:qualifiedAttribution
+    hasVersion: Optional[Union[ResourceType, List[ResourceType]]] = Field(default=None,
+                                                                          alias='has_version')  # dcat:hasVersion
+    qualifiedAttribution: Optional[
+        Union[ResourceType, Attribution, List[Union[ResourceType, Attribution]]]] = None  # dcterms:qualifiedAttribution
+    accessRights: Optional[Union[ResourceType, str]] = Field(default=None,
+                                                             alias='access_rights')  # dcterms:accessRights
+    language: Optional[Union[str, ResourceType, List[Union[str, ResourceType]]]] = None  # dcterms:language
+    versionNotes: Optional[Union[LangString, List[LangString]]] = Field(default=None,
+                                                                        alias='version_notes')  # adms:versionNotes
 
-    @model_validator(mode="before")
-    def change_id(self):
-        """Change the id to the downloadURL"""
-        return as_id(self, "identifier")
+    wasGeneratedBy: Optional[Union[ResourceType, prov.Activity,
+    List[Union[ResourceType, prov.Activity]]]] = Field(
+        default=None,
+        alias='was_generated_by'
+    )  # prov:wasGeneratedBy
 
     @field_validator('identifier', mode='before')
     @classmethod
     def _identifier(cls, identifier):
         """parse datetime"""
+        if identifier is None:
+            return None
         if identifier.startswith('http'):
             return str(HttpUrl(identifier))
         return identifier
+
+    @field_validator('license', mode='before')
+    @classmethod
+    def _license(cls, license):
+        """parse license to URL if possible"""
+        if isinstance(license, str):
+            return _parse_license(license)
+        elif isinstance(license, list):
+            return [_parse_license(lic) if isinstance(lic, str) else lic for lic in license]
+        return license
 
 
 @namespaces(dcat="http://www.w3.org/ns/dcat#")
@@ -135,7 +243,7 @@ class DataService(Resource):
          byteSize='dcat:byteSize',
          hasPart='dcterms:hasPart',
          checksum='spdx:checksum',
-         accessService='dcat:distribution'
+         accessService='dcat:accessService'
          )
 class Distribution(Resource):
     """Implementation of dcat:Distribution
@@ -170,49 +278,68 @@ class Distribution(Resource):
 
     def download(self,
                  dest_filename: Union[str, pathlib.Path] = None,
+                 target_folder: Union[str, pathlib.Path] = None,
                  overwrite_existing: bool = False,
                  **kwargs) -> pathlib.Path:
         """Downloads the distribution
         kwargs are passed to the download_file function, which goes to requests.get()"""
-        if dest_filename is not None:
-            if pathlib.Path(dest_filename).is_dir():
-                raise IsADirectoryError(f'Destination filename {dest_filename} is a directory')
-        if "exist_ok" in kwargs:
-            overwrite_existing = kwargs.pop("exist_ok")
 
+        if target_folder is not None and dest_filename is not None:
+            raise ValueError('Either target_folder or dest_filename can be provided, not both')
+
+        downloadURL = str(self.downloadURL)
         if self.download_URL is None:
             raise ValueError('The downloadURL is not defined')
 
-        downloadURL = str(self.downloadURL)
+        def _get_filename():
+            if str(downloadURL).endswith("/content"):
+                filename = str(downloadURL).rsplit("/", 2)[-2]
+            else:
+                filename = os.path.basename(urlparse(str(downloadURL)).path)
+            if filename == '':
+                filename = str(downloadURL).rsplit("#", 1)[-1]
+            return filename
+
+        if target_folder is not None:
+            target_folder = pathlib.Path(str(target_folder))
+            target_folder.mkdir(parents=True, exist_ok=True)
+            dest_filename = target_folder / _get_filename()
+        else:
+            if dest_filename is None:
+                target_folder = pathlib.Path.cwd()
+                dest_filename = target_folder / pathlib.Path(_get_filename())
+            else:
+                dest_filename = pathlib.Path(dest_filename)
+            if dest_filename.is_dir():
+                raise IsADirectoryError(f'Destination filename {dest_filename} is a directory')
+
+        if "exist_ok" in kwargs:
+            overwrite_existing = kwargs.pop("exist_ok")
 
         def _parse_file_url(furl):
             """in windows, we might need to strip the leading slash"""
-            fname = pathlib.Path(furl)
-            if fname.exists():
-                return fname
-            fname = pathlib.Path(self.download_URL.path[1:])
-            if fname.exists():
-                return fname
-            raise FileNotFoundError(f'File {self.download_URL.path} does not exist')
+            # if on windows, lstrip:
+            if os.name == 'nt':
+                return pathlib.Path(urlparse(self.downloadURL.unicode_string()).path.lstrip("/\\"))
+            return pathlib.Path(urlparse(self.downloadURL.unicode_string()).path)
 
         if self.download_URL.scheme == 'file':
+            _src_filename = _parse_file_url(self.download_URL.path)
             if dest_filename is None:
-                return _parse_file_url(self.download_URL.path)
+                return _src_filename
             else:
-                return shutil.copy(_parse_file_url(self.download_URL.path), dest_filename)
-        if dest_filename is None:
-            import os
-            from urllib.parse import urlparse
-            dest_filename = os.path.basename(urlparse(downloadURL).path)
-            if dest_filename == '':
-                dest_filename = downloadURL.rsplit("#", 1)[-1]
+                if _src_filename.resolve() == dest_filename.resolve():
+                    return dest_filename
+                return shutil.copy(_src_filename, dest_filename)
 
-        dest_filename = pathlib.Path(dest_filename)
+        if dest_filename is None:
+            raise ValueError(f"No destination filename provided for download of {self.download_URL}")
         if not dest_filename.suffix.startswith("."):
             raise ValueError('Destination filename must have a valid suffix/extension')
 
         if dest_filename.exists():
             return dest_filename
+
         return download_file(self.download_URL,
                              dest_filename,
                              exist_ok=overwrite_existing,
@@ -229,6 +356,8 @@ class Distribution(Resource):
                 return "https://www.iana.org/assignments/media-types/" + mediaType.split(":", 1)[-1]
             elif re.match('[a-z].*/[a-z].*', mediaType):
                 return "https://www.iana.org/assignments/media-types/" + mediaType
+            else:
+                return "https://www.iana.org/assignments/media-types/" + _parse_media_type(mediaType)
         return mediaType
 
     @field_validator('downloadURL', mode='before')
@@ -236,7 +365,7 @@ class Distribution(Resource):
     def _downloadURL(cls, downloadURL):
         """a pathlib.Path is also allowed but needs to be converted to a URL"""
         if isinstance(downloadURL, pathlib.Path):
-            return FileUrl(f'file://{downloadURL.resolve().absolute()}')
+            return FileUrl(downloadURL.resolve().as_uri())
         return downloadURL
 
 
@@ -244,6 +373,16 @@ class Distribution(Resource):
 @urirefs(DatasetSeries='dcat:DatasetSeries')
 class DatasetSeries(Resource):
     """Pydantic implementation of dcat:DatasetSeries"""
+
+
+@namespaces(dcterms="http://purl.org/dc/terms/",
+            dcat="http://www.w3.org/ns/dcat#")
+@urirefs(startDate='dcat:startDate',
+         endDate='dcat:endDate')
+class PeriodOfTime(Thing):
+    startDate: datetime = Field(default=None, alias='start_date',
+                                description="The start of the period.")  # dcat:startDate
+    endDate: datetime = Field(default=None, alias='end_date', description="The end of the period.")  # dcat:endDate
 
 
 @namespaces(dcat="http://www.w3.org/ns/dcat#",
@@ -256,7 +395,11 @@ class DatasetSeries(Resource):
          modified='dcterms:modified',
          landingPage='dcat:landingPage',
          inSeries='dcat:inSeries',
-         license='dcterms:license', )
+         license='dcterms:license',
+         spatial='dcterms:spatial',  # The geographical area covered by the dataset.
+         spatialResolutionInMeters='dcterms:spatialResolutionInMeters',
+         temporalResolution='dcat:temporalResolution'
+         )
 class Dataset(Resource):
     """Pydantic implementation of dcat:Dataset
 
@@ -274,7 +417,7 @@ class Dataset(Resource):
         Description of the resource (dcterms:description)
     version: str = None
         Version of the resource (dcat:version)
-    identifier: HttpUrl = None
+    identifier: str = None
         Identifier of the resource (dcterms:identifier)
     distribution: List[Distribution] = None
         Distribution of the resource (dcat:Distribution)
@@ -285,13 +428,30 @@ class Dataset(Resource):
     inSeries: DatasetSeries = None
         The series the dataset belongs to (dcat:inSeries)
     """
-    identifier: ResourceType = None  # dcterms:identifier, see https://www.w3.org/TR/vocab-dcat-3/#ex-identifier
+    identifier: Union[
+        str, LangString] = None  # dcterms:identifier, see https://www.w3.org/TR/vocab-dcat-3/#ex-identifier
     # http://www.w3.org/ns/prov#Person, see https://www.w3.org/TR/vocab-dcat-3/#ex-adms-identifier
     distribution: Union[Distribution, List[Distribution]] = None  # dcat:Distribution
     modified: datetime = None  # dcterms:modified
-    landingPage: HttpUrl = Field(default=None, alias='landing_page')  # dcat:landingPage
+    landingPage: HttpUrl = Field(default=None)  # dcat:landingPage
     inSeries: DatasetSeries = Field(default=None, alias='in_series')  # dcat:inSeries
     license: Optional[Union[ResourceType, List[ResourceType]]] = None  # dcat:license
+    spatial: Optional[Union[ResourceType, str,
+    List[Union[ResourceType, str]]]] = None  # dcterms:spatial
+    spatialResolutionInMeters: Optional[Union[float, str]] = Field(
+        default=None,
+        alias='spatial_resolution_in_meters'
+    )  # dcterms:spatialResolutionInMeters
+    temporal: Optional[PeriodOfTime] = Field(
+        default=None,
+        alias='temporal',
+        description="The temporal period that the dataset covers."
+    )  # dcterms:temporal
+    temporalResolution: Optional[Union[float, str]] = Field(
+        default=None,
+        alias='temporal_resolution',
+        description="The temporal resolution of the dataset."
+    )  # dcterms:temporalResolution
 
     @field_validator('modified', mode='before')
     @classmethod

@@ -1,4 +1,3 @@
-import abc
 import warnings
 from datetime import datetime
 from typing import Any
@@ -10,6 +9,7 @@ from pydantic import HttpUrl, field_validator, Field
 from ontolutils import Thing, namespaces, urirefs
 from ontolutils import parse_unit, LangString
 from ontolutils.ex.pimsii import Variable
+from ..prov import Activity
 from ..prov import Organization
 from ..schema import ResearchProject
 
@@ -62,7 +62,7 @@ class NumericalVariable(Variable):
          description='schema:description',
          parameter='m4i:hasParameter')
 class Method(Thing):
-    """Pydantic Model for m4i:M4IProcessingStep
+    """Pydantic Model for m4i:Method
 
     .. note::
 
@@ -101,7 +101,7 @@ class Method(Thing):
          hasParameter='m4i:hasParameter',
          BFO_0000051='obo:BFO_0000051')
 class Tool(Thing):
-    """Pydantic Model for m4i:ProcessingStep
+    """Pydantic Model for m4i:Tool
 
     .. note::
 
@@ -126,6 +126,13 @@ class Tool(Thing):
     def hasPart(self, value):
         self.BFO_0000051 = value
 
+    @field_validator('manufacturer', mode="before")
+    @classmethod
+    def _validate_manufacturer(cls, value):
+        if isinstance(value, str) and value.startswith("http"):
+            return Organization(id=value)
+        return value
+
     def add_numerical_variable(self, numerical_variable: Union[dict, NumericalVariable]):
         """add numerical variable to tool"""
         if isinstance(numerical_variable, dict):
@@ -139,12 +146,9 @@ class Tool(Thing):
                                  numerical_variable]
 
 
+@namespaces(pimsii="http://www.molmod.info/semantics/pims-ii.ttl#", )
 class Assignment(Thing):
     """not yet implemented"""
-
-
-class Activity(Thing, abc.ABC):
-    """m4i:Activity (not intended to use for modeling)"""
 
 
 OneOrMultiThings = Union[Thing, HttpUrl, str, List[Union[Thing, HttpUrl, str]]]

@@ -59,7 +59,7 @@ class Organization(Agent):
     hasRorId: HttpUrl
         A Research Organization Registry identifier, that points to a research organization
     """
-    name: Union[LangString, List[LangString]]  # foaf:name
+    name: Union[LangString, List[LangString]] = None  # foaf:name
     url: Union[str, HttpUrl] = None
     hasRorId: Union[str, HttpUrl] = Field(alias="ror_id", default=None)
 

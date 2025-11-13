@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.22.0
+
+- bugfixes
+- improved DCAT classes
+- add `serialization()` function
+
 ## v0.22.0-rc2
 
 - bugfix mbox

@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.22.0-rc3
+## v0.22.0
 
 - bugfixes
 - improved DCAT classes

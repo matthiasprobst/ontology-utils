@@ -318,13 +318,7 @@ class Distribution(Resource):
 
         def _parse_file_url(furl):
             """in windows, we might need to strip the leading slash"""
-            fname = pathlib.Path(urlparse(self.downloadURL.unicode_string()).path.lstrip("/"))
-            if fname.exists():
-                return fname
-            fname = pathlib.Path(self.download_URL.path[1:])
-            if fname.exists():
-                return fname
-            raise FileNotFoundError(f'File {self.download_URL.path} does not exist')
+            return pathlib.Path(urlparse(self.downloadURL.unicode_string()).path.lstrip("/"))
 
         if self.download_URL.scheme == 'file':
             _src_filename = _parse_file_url(self.download_URL.path)

@@ -1,4 +1,5 @@
 import datetime
+import logging
 import pathlib
 import sys
 import unittest
@@ -12,6 +13,7 @@ from ontolutils.ex.prov import Attribution
 from ontolutils.ex.spdx import Checksum
 from ontolutils.namespacelib.spdx import SPDX
 
+logger = logging.getLogger('ontolutils')
 __this_dir__ = pathlib.Path(__file__).parent
 
 
@@ -245,8 +247,8 @@ class TestDcat(utils.ClassTest):
             try:
                 local_filename = local_dist.download(timeout=60)
                 break
-            except requests.exceptions.HTTPSConnection as e:
-                print(e)
+            except requests.exceptions.RequestException as e:
+                logger.error(e)
                 i += 1
         self.assertTrue(local_filename.exists())
         self.assertEqual(local_filename.name, 'piv_dataset.jsonld')

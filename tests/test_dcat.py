@@ -230,6 +230,7 @@ class TestDcat(utils.ClassTest):
         self.assertEqual(str(distribution1.accessURL), 'https://example.com/distribution')
         self.assertEqual(str(distribution1.downloadURL), 'https://example.com/distribution/download')
 
+        pathlib.Path("piv_dataset.jsonld").unlink(missing_ok=True)
         piv_dist = dcat.Distribution(
             downloadURL=self.test_jsonld_filename
         )

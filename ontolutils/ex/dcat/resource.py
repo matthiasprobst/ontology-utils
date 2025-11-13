@@ -15,7 +15,6 @@ from ontolutils.typing import BlankNodeType, ResourceType
 from ..prov import Attribution
 from ..spdx import Checksum
 
-
 _EXT_MAP = {
     "csv": "text/csv",
     "tsv": "text/tab-separated-values",
@@ -39,6 +38,7 @@ _EXT_MAP = {
 def _parse_media_type(filename_suffix: str) -> str:
     ext = filename_suffix.rsplit('.', 1)[-1].lower()
     return _EXT_MAP.get(ext, "application/octet-stream")
+
 
 def _parse_license(license: str) -> str:
     """
@@ -89,6 +89,7 @@ def _parse_license(license: str) -> str:
     }
 
     return mapping.get(code, code)
+
 
 @namespaces(dcat="http://www.w3.org/ns/dcat#",
             dcterms="http://purl.org/dc/terms/",
@@ -258,22 +259,44 @@ class Distribution(Resource):
 
     def download(self,
                  dest_filename: Union[str, pathlib.Path] = None,
+                 target_folder: Union[str, pathlib.Path] = None,
                  overwrite_existing: bool = False,
                  **kwargs) -> pathlib.Path:
         """Downloads the distribution
         kwargs are passed to the download_file function, which goes to requests.get()"""
-        if dest_filename is not None:
-            dest_filename = pathlib.Path(str(dest_filename))
+
+        if target_folder is not None and dest_filename is not None:
+            raise ValueError('Either target_folder or dest_filename can be provided, not both')
+
+        downloadURL = str(self.downloadURL)
+        if self.download_URL is None:
+            raise ValueError('The downloadURL is not defined')
+
+        def _get_filename():
+            import os
+            from urllib.parse import urlparse
+            if str(downloadURL).endswith("/content"):
+                filename = str(downloadURL).rsplit("/", 2)[-2]
+            else:
+                filename = os.path.basename(urlparse(str(downloadURL)).path)
+            if filename == '':
+                filename = str(downloadURL).rsplit("#", 1)[-1]
+            return filename
+
+        if target_folder is not None:
+            target_folder = pathlib.Path(str(target_folder))
+            target_folder.mkdir(parents=True, exist_ok=True)
+            dest_filename = target_folder / dest_filename
+        else:
+            if dest_filename is None:
+                dest_filename = pathlib.Path(_get_filename())
+            else:
+                dest_filename = pathlib.Path(dest_filename)
             if dest_filename.is_dir():
                 raise IsADirectoryError(f'Destination filename {dest_filename} is a directory')
 
         if "exist_ok" in kwargs:
             overwrite_existing = kwargs.pop("exist_ok")
-
-        if self.download_URL is None:
-            raise ValueError('The downloadURL is not defined')
-
-        downloadURL = str(self.downloadURL)
 
         def _parse_file_url(furl):
             """in windows, we might need to strip the leading slash"""
@@ -286,23 +309,22 @@ class Distribution(Resource):
             raise FileNotFoundError(f'File {self.download_URL.path} does not exist')
 
         if self.download_URL.scheme == 'file':
+            _src_filename = _parse_file_url(self.download_URL.path)
             if dest_filename is None:
-                return _parse_file_url(self.download_URL.path)
+                return _src_filename
             else:
-                return shutil.copy(_parse_file_url(self.download_URL.path), dest_filename)
-        if dest_filename is None:
-            import os
-            from urllib.parse import urlparse
-            dest_filename = os.path.basename(urlparse(downloadURL).path)
-            if dest_filename == '':
-                dest_filename = downloadURL.rsplit("#", 1)[-1]
+                if _src_filename.resolve() == dest_filename.resolve():
+                    return dest_filename
+                return shutil.copy(_src_filename, dest_filename)
 
-        dest_filename = pathlib.Path(dest_filename)
+        if dest_filename is None:
+            raise ValueError(f"No destination filename provided for download of {self.download_URL}")
         if not dest_filename.suffix.startswith("."):
             raise ValueError('Destination filename must have a valid suffix/extension')
 
         if dest_filename.exists():
             return dest_filename
+
         return download_file(self.download_URL,
                              dest_filename,
                              exist_ok=overwrite_existing,

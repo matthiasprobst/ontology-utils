@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.22.0-rc3
+
+- bugfixes
+- improved DCAT classes
+
 ## v0.22.0-rc2
 
 - bugfix mbox

@@ -62,7 +62,7 @@ class NumericalVariable(Variable):
          description='schema:description',
          parameter='m4i:hasParameter')
 class Method(Thing):
-    """Pydantic Model for m4i:M4IProcessingStep
+    """Pydantic Model for m4i:Method
 
     .. note::
 
@@ -101,7 +101,7 @@ class Method(Thing):
          hasParameter='m4i:hasParameter',
          BFO_0000051='obo:BFO_0000051')
 class Tool(Thing):
-    """Pydantic Model for m4i:ProcessingStep
+    """Pydantic Model for m4i:Tool
 
     .. note::
 

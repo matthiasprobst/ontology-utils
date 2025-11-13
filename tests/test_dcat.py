@@ -61,7 +61,7 @@ class TestDcat(utils.ClassTest):
         resource = dcat.Resource(
             title='Resource title',
             description='Resource description',
-            license=license1
+            license="cc-by-4.0"
         )
         self.assertEqual(str(resource.license), license1)
         self.assertEqual("""@prefix dcat: <http://www.w3.org/ns/dcat#> .
@@ -169,6 +169,12 @@ class TestDcat(utils.ClassTest):
             media_type='text/csv'
         )
         self.assertEqual(dist.mediaType, 'https://www.iana.org/assignments/media-types/text/csv')
+
+        dist = dcat.Distribution(
+            title='Distribution title',
+            mediaType="hdf"
+        )
+        self.assertEqual(dist.mediaType, 'https://www.iana.org/assignments/media-types/application/x-hdf')
 
     @unittest.skipIf(condition=9 < get_python_version()[1] < 13,
                      reason="Only testing on min and max python version")

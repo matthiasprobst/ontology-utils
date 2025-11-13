@@ -12,9 +12,83 @@ from ontolutils.classes.utils import download_file
 from ontolutils.ex import foaf
 from ontolutils.ex import prov
 from ontolutils.typing import BlankNodeType, ResourceType
-from ..spdx import Checksum
 from ..prov import Attribution
+from ..spdx import Checksum
 
+
+_EXT_MAP = {
+    "csv": "text/csv",
+    "tsv": "text/tab-separated-values",
+    "json": "application/json",
+    "jsonld": "application/ld+json",
+    "ttl": "text/turtle",
+    "hdf5": "application/x-hdf",
+    "hdf": "application/x-hdf",
+    "h5": "application/x-hdf",
+    "nc": "application/x-netcdf",
+    "zip": "application/zip",
+    "iges": "model/iges",
+    "igs": "model/iges",
+    "md": "text/markdown",
+    "txt": "text/plain",
+    "xml": "application/xml",
+    "rdf": "application/rdf+xml",
+}
+
+
+def _parse_media_type(filename_suffix: str) -> str:
+    ext = filename_suffix.rsplit('.', 1)[-1].lower()
+    return _EXT_MAP.get(ext, "application/octet-stream")
+
+def _parse_license(license: str) -> str:
+    """
+    Convert a short license code (e.g., 'cc-by-4.0') to its official license URL.
+
+    Supports Creative Commons, MIT, Apache, GPL, BSD, MPL, and others.
+    Returns None if no match is found.
+    """
+    if not license:
+        return None
+    license_str = str(license)
+
+    if license_str.startswith("http://") or license_str.startswith("https://"):
+        return license_str
+
+    code = license_str.strip().lower()
+
+    mapping = {
+        # Creative Commons licenses
+        "cc0": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "cc-by": "https://creativecommons.org/licenses/by/4.0/",
+        "cc-by-3.0": "https://creativecommons.org/licenses/by/3.0/",
+        "cc-by-4.0": "https://creativecommons.org/licenses/by/4.0/",
+        "cc-by-sa": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "cc-by-sa-3.0": "https://creativecommons.org/licenses/by-sa/3.0/",
+        "cc-by-sa-4.0": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "cc-by-nd": "https://creativecommons.org/licenses/by-nd/4.0/",
+        "cc-by-nd-4.0": "https://creativecommons.org/licenses/by-nd/4.0/",
+        "cc-by-nc": "https://creativecommons.org/licenses/by-nc/4.0/",
+        "cc-by-nc-4.0": "https://creativecommons.org/licenses/by-nc/4.0/",
+        "cc-by-nc-sa": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "cc-by-nc-sa-4.0": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "cc-by-nc-nd": "https://creativecommons.org/licenses/by-nc-nd/4.0/",
+        "cc-by-nc-nd-4.0": "https://creativecommons.org/licenses/by-nc-nd/4.0/",
+        # Software licenses
+        "mit": "https://opensource.org/licenses/MIT",
+        "apache-2.0": "https://www.apache.org/licenses/LICENSE-2.0",
+        "gpl-2.0": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+        "gpl-3.0": "https://www.gnu.org/licenses/gpl-3.0.html",
+        "lgpl-2.1": "https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html",
+        "lgpl-3.0": "https://www.gnu.org/licenses/lgpl-3.0.html",
+        "bsd-2-clause": "https://opensource.org/licenses/BSD-2-Clause",
+        "bsd-3-clause": "https://opensource.org/licenses/BSD-3-Clause",
+        "mpl-2.0": "https://www.mozilla.org/en-US/MPL/2.0/",
+        "epl-2.0": "https://www.eclipse.org/legal/epl-2.0/",
+        "unlicense": "https://unlicense.org/",
+        "proprietary": "https://en.wikipedia.org/wiki/Proprietary_software",
+    }
+
+    return mapping.get(code, code)
 
 @namespaces(dcat="http://www.w3.org/ns/dcat#",
             dcterms="http://purl.org/dc/terms/",
@@ -31,7 +105,8 @@ from ..prov import Attribution
          identifier='dcterms:identifier',
          hasPart='dcterms:hasPart',
          keyword='dcat:keyword',
-         qualifiedAttribution='prov:qualifiedAttribution'
+         qualifiedAttribution='prov:qualifiedAttribution',
+         accessRights='dcterms:accessRights'
          )
 class Resource(Thing):
     """Pydantic implementation of dcat:Resource
@@ -100,7 +175,10 @@ class Resource(Thing):
     identifier: str = None  # dcterms:identifier
     hasPart: Optional[Union[ResourceType, List[ResourceType]]] = Field(default=None, alias='has_part')
     keyword: Optional[Union[str, List[str]]] = None  # dcat:keyword
-    qualifiedAttribution: Optional[Union[ResourceType, Attribution, List[Union[ResourceType, Attribution]]]] = None  # dcterms:qualifiedAttribution
+    qualifiedAttribution: Optional[
+        Union[ResourceType, Attribution, List[Union[ResourceType, Attribution]]]] = None  # dcterms:qualifiedAttribution
+    accessRights: Optional[Union[ResourceType, str]] = Field(default=None,
+                                                             alias='access_rights')  # dcterms:accessRights
 
     @model_validator(mode="before")
     def change_id(self):
@@ -114,6 +192,16 @@ class Resource(Thing):
         if identifier.startswith('http'):
             return str(HttpUrl(identifier))
         return identifier
+
+    @field_validator('license', mode='before')
+    @classmethod
+    def _license(cls, license):
+        """parse license to URL if possible"""
+        if isinstance(license, str):
+            return _parse_license(license)
+        elif isinstance(license, list):
+            return [_parse_license(lic) if isinstance(lic, str) else lic for lic in license]
+        return license
 
 
 @namespaces(dcat="http://www.w3.org/ns/dcat#")
@@ -175,8 +263,10 @@ class Distribution(Resource):
         """Downloads the distribution
         kwargs are passed to the download_file function, which goes to requests.get()"""
         if dest_filename is not None:
-            if pathlib.Path(dest_filename).is_dir():
+            dest_filename = pathlib.Path(str(dest_filename))
+            if dest_filename.is_dir():
                 raise IsADirectoryError(f'Destination filename {dest_filename} is a directory')
+
         if "exist_ok" in kwargs:
             overwrite_existing = kwargs.pop("exist_ok")
 
@@ -229,6 +319,8 @@ class Distribution(Resource):
                 return "https://www.iana.org/assignments/media-types/" + mediaType.split(":", 1)[-1]
             elif re.match('[a-z].*/[a-z].*', mediaType):
                 return "https://www.iana.org/assignments/media-types/" + mediaType
+            else:
+                return "https://www.iana.org/assignments/media-types/" + _parse_media_type(mediaType)
         return mediaType
 
     @field_validator('downloadURL', mode='before')
@@ -274,7 +366,7 @@ class Dataset(Resource):
         Description of the resource (dcterms:description)
     version: str = None
         Version of the resource (dcat:version)
-    identifier: HttpUrl = None
+    identifier: str = None
         Identifier of the resource (dcterms:identifier)
     distribution: List[Distribution] = None
         Distribution of the resource (dcat:Distribution)
@@ -285,7 +377,8 @@ class Dataset(Resource):
     inSeries: DatasetSeries = None
         The series the dataset belongs to (dcat:inSeries)
     """
-    identifier: ResourceType = None  # dcterms:identifier, see https://www.w3.org/TR/vocab-dcat-3/#ex-identifier
+    identifier: Union[
+        str, LangString] = None  # dcterms:identifier, see https://www.w3.org/TR/vocab-dcat-3/#ex-identifier
     # http://www.w3.org/ns/prov#Person, see https://www.w3.org/TR/vocab-dcat-3/#ex-adms-identifier
     distribution: Union[Distribution, List[Distribution]] = None  # dcat:Distribution
     modified: datetime = None  # dcterms:modified

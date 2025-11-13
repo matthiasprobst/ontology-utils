@@ -1,13 +1,15 @@
+import os
 import pathlib
 import re
 import shutil
 from datetime import datetime
 from typing import Union, List, Optional
+from urllib.parse import urlparse
 
 from dateutil import parser
-from pydantic import HttpUrl, FileUrl, field_validator, Field, model_validator
+from pydantic import HttpUrl, FileUrl, field_validator, Field
 
-from ontolutils import Thing, as_id, urirefs, namespaces, LangString
+from ontolutils import Thing, urirefs, namespaces, LangString
 from ontolutils.classes.utils import download_file
 from ontolutils.ex import foaf
 from ontolutils.ex import prov
@@ -100,6 +102,8 @@ def _parse_license(license: str) -> str:
          description='dcterms:description',
          creator='dcterms:creator',
          publisher='dcterms:publisher',
+         issued='dcterms:issued',
+         modified='dcterms:modified',
          contributor='dcterms:contributor',
          license='dcterms:license',
          version='dcat:version',
@@ -107,7 +111,8 @@ def _parse_license(license: str) -> str:
          hasPart='dcterms:hasPart',
          keyword='dcat:keyword',
          qualifiedAttribution='prov:qualifiedAttribution',
-         accessRights='dcterms:accessRights'
+         accessRights='dcterms:accessRights',
+         language='dcterms:language'
          )
 class Resource(Thing):
     """Pydantic implementation of dcat:Resource
@@ -170,6 +175,8 @@ class Resource(Thing):
         ]
     ] = None  # dcterms:creator
     publisher: Union[foaf.Agent, List[foaf.Agent]] = None  # dcterms:publisher
+    issued: datetime = None  # dcterms:issued
+    modified: datetime = None  # dcterms:modified
     contributor: Union[foaf.Agent, List[foaf.Agent]] = None  # dcterms:contributor
     license: Optional[Union[ResourceType, List[ResourceType]]] = None  # dcat:license
     version: str = None  # dcat:version
@@ -180,16 +187,14 @@ class Resource(Thing):
         Union[ResourceType, Attribution, List[Union[ResourceType, Attribution]]]] = None  # dcterms:qualifiedAttribution
     accessRights: Optional[Union[ResourceType, str]] = Field(default=None,
                                                              alias='access_rights')  # dcterms:accessRights
-
-    @model_validator(mode="before")
-    def change_id(self):
-        """Change the id to the downloadURL"""
-        return as_id(self, "identifier")
+    language: Optional[Union[str, ResourceType, List[Union[str, ResourceType]]]] = None  # dcterms:language
 
     @field_validator('identifier', mode='before')
     @classmethod
     def _identifier(cls, identifier):
         """parse datetime"""
+        if identifier is None:
+            return None
         if identifier.startswith('http'):
             return str(HttpUrl(identifier))
         return identifier
@@ -224,7 +229,7 @@ class DataService(Resource):
          byteSize='dcat:byteSize',
          hasPart='dcterms:hasPart',
          checksum='spdx:checksum',
-         accessService='dcat:distribution'
+         accessService='dcat:accessService'
          )
 class Distribution(Resource):
     """Implementation of dcat:Distribution
@@ -273,8 +278,6 @@ class Distribution(Resource):
             raise ValueError('The downloadURL is not defined')
 
         def _get_filename():
-            import os
-            from urllib.parse import urlparse
             if str(downloadURL).endswith("/content"):
                 filename = str(downloadURL).rsplit("/", 2)[-2]
             else:
@@ -300,7 +303,7 @@ class Distribution(Resource):
 
         def _parse_file_url(furl):
             """in windows, we might need to strip the leading slash"""
-            fname = pathlib.Path(furl)
+            fname = pathlib.Path(urlparse(self.downloadURL.unicode_string()).path.lstrip("/"))
             if fname.exists():
                 return fname
             fname = pathlib.Path(self.download_URL.path[1:])
@@ -350,7 +353,7 @@ class Distribution(Resource):
     def _downloadURL(cls, downloadURL):
         """a pathlib.Path is also allowed but needs to be converted to a URL"""
         if isinstance(downloadURL, pathlib.Path):
-            return FileUrl(f'file://{downloadURL.resolve().absolute()}')
+            return FileUrl(downloadURL.resolve().as_uri())
         return downloadURL
 
 

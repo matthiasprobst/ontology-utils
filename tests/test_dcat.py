@@ -15,6 +15,8 @@ logger = logging.getLogger('ontolutils')
 __this_dir__ = pathlib.Path(__file__).parent
 
 
+TESTING_VERSIONS = (9, 14)
+
 def get_python_version():
     """Get the current Python version as a tuple."""
     return sys.version_info.major, sys.version_info.minor, sys.version_info.micro
@@ -187,7 +189,7 @@ class TestDcat(utils.ClassTest):
         )
         self.assertEqual(dist.mediaType, 'https://www.iana.org/assignments/media-types/application/x-hdf')
 
-    @unittest.skipIf(condition=9 < get_python_version()[1] < 13,
+    @unittest.skipUnless(get_python_version()[1] in TESTING_VERSIONS,
                      reason="Only testing on min and max python version")
     def test_Distribution(self):
         distribution_none_downloadURL = dcat.Distribution(

@@ -306,7 +306,8 @@ class Distribution(Resource):
             dest_filename = target_folder / _get_filename()
         else:
             if dest_filename is None:
-                dest_filename = pathlib.Path(_get_filename())
+                target_folder = pathlib.Path.cwd()
+                dest_filename = target_folder / pathlib.Path(_get_filename())
             else:
                 dest_filename = pathlib.Path(dest_filename)
             if dest_filename.is_dir():

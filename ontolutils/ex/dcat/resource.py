@@ -96,6 +96,7 @@ def _parse_license(license: str) -> str:
 @namespaces(dcat="http://www.w3.org/ns/dcat#",
             dcterms="http://purl.org/dc/terms/",
             prov="http://www.w3.org/ns/prov#",
+            adms="http://www.w3.org/ns/adms#",
             )
 @urirefs(Resource='dcat:Resource',
          title='dcterms:title',
@@ -107,12 +108,14 @@ def _parse_license(license: str) -> str:
          contributor='dcterms:contributor',
          license='dcterms:license',
          version='dcat:version',
+         hasVersion='dcat:hasVersion',
          identifier='dcterms:identifier',
          hasPart='dcterms:hasPart',
          keyword='dcat:keyword',
          qualifiedAttribution='prov:qualifiedAttribution',
          accessRights='dcterms:accessRights',
-         language='dcterms:language'
+         language='dcterms:language',
+         versionNotes='adms:versionNotes',
          )
 class Resource(Thing):
     """Pydantic implementation of dcat:Resource
@@ -183,11 +186,15 @@ class Resource(Thing):
     identifier: str = None  # dcterms:identifier
     hasPart: Optional[Union[ResourceType, List[ResourceType]]] = Field(default=None, alias='has_part')
     keyword: Optional[Union[str, List[str]]] = None  # dcat:keyword
+    hasVersion: Optional[Union[ResourceType, List[ResourceType]]] = Field(default=None,
+                                                                          alias='has_version')  # dcat:hasVersion
     qualifiedAttribution: Optional[
         Union[ResourceType, Attribution, List[Union[ResourceType, Attribution]]]] = None  # dcterms:qualifiedAttribution
     accessRights: Optional[Union[ResourceType, str]] = Field(default=None,
                                                              alias='access_rights')  # dcterms:accessRights
     language: Optional[Union[str, ResourceType, List[Union[str, ResourceType]]]] = None  # dcterms:language
+    versionNotes: Optional[Union[LangString, List[LangString]]] = Field(default=None,
+                                                                        alias='version_notes')  # adms:versionNotes
 
     @field_validator('identifier', mode='before')
     @classmethod

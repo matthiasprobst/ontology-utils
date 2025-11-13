@@ -828,12 +828,52 @@ class Thing(ThingModel):
         """Return the context of the class"""
         return get_namespaces(cls)
 
-
 def _replace_context_url_with_prefix(value: str, context: Dict) -> str:
     for context_key, context_url in context.items():
         if value.startswith(context_url):
             return value.replace(context_url, context_key + ':')
     return value
+
+
+def serialize(thing: Union[Thing, List[Thing]],
+              format: str,
+              context: Optional[Dict] = None,
+              exclude_none: bool = True,
+              resolve_keys: bool = True,
+              base_uri: Optional[Union[str, AnyUrl]] = None,
+              **kwargs):
+    if not isinstance(thing, list):
+        if isinstance(thing, Thing):
+            return thing.serialize(
+                format=format,
+                context=context,
+                exclude_none=exclude_none,
+                resolve_keys=resolve_keys,
+                base_uri=base_uri,
+                **kwargs
+            )
+        else:
+            raise TypeError(f"Cannot serialize object of type {type(thing)}. "
+                            f"Expected a Thing or a list of Things.")
+    serializations = []
+    for t in thing:
+        if not isinstance(t, Thing):
+            raise TypeError(f"Cannot serialize object of type {type(t)}. "
+                            f"Expected a Thing.")
+        serializations.append(
+            t.serialize(
+                format=format,
+                context=context,
+                exclude_none=exclude_none,
+                resolve_keys=resolve_keys,
+                base_uri=base_uri,
+                **kwargs
+            )
+        )
+    graph = rdflib.Graph()
+    for s in serializations:
+        graph.parse(data=s, format=format)
+    return graph.serialize(format=format, **kwargs)
 
 
 def _parse_blank_node(_id, base_uri: Optional[Union[str, AnyUrl]]):

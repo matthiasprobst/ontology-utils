@@ -1,4 +1,3 @@
-import abc
 import warnings
 from datetime import datetime
 from typing import Any
@@ -10,6 +9,7 @@ from pydantic import HttpUrl, field_validator, Field
 from ontolutils import Thing, namespaces, urirefs
 from ontolutils import parse_unit, LangString
 from ontolutils.ex.pimsii import Variable
+from ..prov import Activity
 from ..prov import Organization
 from ..schema import ResearchProject
 
@@ -139,12 +139,9 @@ class Tool(Thing):
                                  numerical_variable]
 
 
+@namespaces(pimsii="http://www.molmod.info/semantics/pims-ii.ttl#",)
 class Assignment(Thing):
     """not yet implemented"""
-
-
-class Activity(Thing, abc.ABC):
-    """m4i:Activity (not intended to use for modeling)"""
 
 
 OneOrMultiThings = Union[Thing, HttpUrl, str, List[Union[Thing, HttpUrl, str]]]

@@ -116,6 +116,7 @@ def _parse_license(license: str) -> str:
          accessRights='dcterms:accessRights',
          language='dcterms:language',
          versionNotes='adms:versionNotes',
+         wasGeneratedBy='prov:wasGeneratedBy',
          )
 class Resource(Thing):
     """Pydantic implementation of dcat:Resource
@@ -195,6 +196,12 @@ class Resource(Thing):
     language: Optional[Union[str, ResourceType, List[Union[str, ResourceType]]]] = None  # dcterms:language
     versionNotes: Optional[Union[LangString, List[LangString]]] = Field(default=None,
                                                                         alias='version_notes')  # adms:versionNotes
+
+    wasGeneratedBy: Optional[Union[ResourceType, prov.Activity,
+    List[Union[ResourceType, prov.Activity]]]] = Field(
+        default=None,
+        alias='was_generated_by'
+    )  # prov:wasGeneratedBy
 
     @field_validator('identifier', mode='before')
     @classmethod
@@ -370,6 +377,16 @@ class DatasetSeries(Resource):
     """Pydantic implementation of dcat:DatasetSeries"""
 
 
+@namespaces(dcterms="http://purl.org/dc/terms/",
+            dcat="http://www.w3.org/ns/dcat#")
+@urirefs(startDate='dcat:startDate',
+         endDate='dcat:endDate')
+class PeriodOfTime(Thing):
+    startDate: datetime = Field(default=None, alias='start_date',
+                                description="The start of the period.")  # dcat:startDate
+    endDate: datetime = Field(default=None, alias='end_date', description="The end of the period.")  # dcat:endDate
+
+
 @namespaces(dcat="http://www.w3.org/ns/dcat#",
             prov="http://www.w3.org/ns/prov#",
             dcterms="http://purl.org/dc/terms/")
@@ -380,7 +397,11 @@ class DatasetSeries(Resource):
          modified='dcterms:modified',
          landingPage='dcat:landingPage',
          inSeries='dcat:inSeries',
-         license='dcterms:license', )
+         license='dcterms:license',
+         spatial='dcterms:spatial',  # The geographical area covered by the dataset.
+         spatialResolutionInMeters='dcterms:spatialResolutionInMeters',
+         temporalResolution='dcat:temporalResolution'
+         )
 class Dataset(Resource):
     """Pydantic implementation of dcat:Dataset
 
@@ -414,9 +435,25 @@ class Dataset(Resource):
     # http://www.w3.org/ns/prov#Person, see https://www.w3.org/TR/vocab-dcat-3/#ex-adms-identifier
     distribution: Union[Distribution, List[Distribution]] = None  # dcat:Distribution
     modified: datetime = None  # dcterms:modified
-    landingPage: HttpUrl = Field(default=None, alias='landing_page')  # dcat:landingPage
+    landingPage: HttpUrl = Field(default=None)  # dcat:landingPage
     inSeries: DatasetSeries = Field(default=None, alias='in_series')  # dcat:inSeries
     license: Optional[Union[ResourceType, List[ResourceType]]] = None  # dcat:license
+    spatial: Optional[Union[ResourceType, str,
+    List[Union[ResourceType, str]]]] = None  # dcterms:spatial
+    spatialResolutionInMeters: Optional[Union[float, str]] = Field(
+        default=None,
+        alias='spatial_resolution_in_meters'
+    )  # dcterms:spatialResolutionInMeters
+    temporal: Optional[PeriodOfTime] = Field(
+        default=None,
+        alias='temporal',
+        description="The temporal period that the dataset covers."
+    )  # dcterms:temporal
+    temporalResolution: Optional[Union[float, str]] = Field(
+        default=None,
+        alias='temporal_resolution',
+        description="The temporal resolution of the dataset."
+    )  # dcterms:temporalResolution
 
     @field_validator('modified', mode='before')
     @classmethod

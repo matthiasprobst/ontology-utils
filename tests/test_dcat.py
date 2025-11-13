@@ -2,6 +2,7 @@ import datetime
 import pathlib
 import sys
 import unittest
+from datetime import timezone
 
 import requests.exceptions
 
@@ -10,7 +11,7 @@ from ontolutils.ex import dcat, prov, foaf
 from ontolutils.ex.prov import Attribution
 from ontolutils.ex.spdx import Checksum
 from ontolutils.namespacelib.spdx import SPDX
-from datetime import timezone
+
 __this_dir__ = pathlib.Path(__file__).parent
 
 
@@ -197,7 +198,6 @@ class TestDcat(utils.ClassTest):
         self.assertEqual(distribution_none_downloadURL.id, '_:b2')
         with self.assertRaises(ValueError):
             distribution_none_downloadURL.download()
-
 
         distribution_wrongfile = dcat.Distribution(
             title='Distribution title',
@@ -396,12 +396,59 @@ class TestDcat(utils.ClassTest):
 
     def test_was_generated_by(self):
         from ontolutils.ex.m4i import ProcessingStep
-        processing_step = ProcessingStep(id='https://example.com/processingstep/1', )
+        processing_step = ProcessingStep(
+            id='https://example.com/processingstep/1',
+            used='http://example.com/resource/1',
+            start_time="2023-01-01T12:00:00Z",
+            startedAtTime="2023-01-01T12:00:00Z",
+        )
+        self.assertEqual(processing_step.serialize("ttl"), """@prefix m4i: <http://w3id.org/nfdi4ing/metadata4ing#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix schema: <https://schema.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://example.com/processingstep/1> a m4i:ProcessingStep ;
+    prov:startedAtTime "2023-01-01T12:00:00+00:00"^^xsd:dateTime ;
+    prov:used <http://example.com/resource/1> ;
+    schema:startTime "2023-01-01T12:00:00+00:00"^^xsd:dateTime .
+
+""")
         dist = dcat.Distribution(
             id='https://example.com/distribution/1',
-            was_generated_by=processing_step
+            label='Distribution 1',
+            creator='https://example.com/creator/1',
+            byteSize=123456
         )
-        print(dist.serialize(format="ttl"))
+        ds = dcat.Dataset(
+            id='https://example.com/dataset/1',
+            title='Dataset 1',
+            distribution=dist,
+            wasGeneratedBy=processing_step,
+        )
+        self.assertEqual(ds.serialize(format="ttl"), """@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix m4i: <http://w3id.org/nfdi4ing/metadata4ing#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <https://schema.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://example.com/dataset/1> a dcat:Dataset ;
+    dcterms:title "Dataset 1" ;
+    dcat:distribution <https://example.com/distribution/1> ;
+    prov:wasGeneratedBy <https://example.com/processingstep/1> .
+
+<https://example.com/distribution/1> a dcat:Distribution ;
+    rdfs:label "Distribution 1" ;
+    dcterms:creator <https://example.com/creator/1> ;
+    dcat:byteSize 123456 .
+
+<https://example.com/processingstep/1> a m4i:ProcessingStep ;
+    prov:startedAtTime "2023-01-01T12:00:00+00:00"^^xsd:dateTime ;
+    prov:used <http://example.com/resource/1> ;
+    schema:startTime "2023-01-01T12:00:00+00:00"^^xsd:dateTime .
+
+""")
 
     def test_dcat_DataService(self):
         data_service = dcat.DataService(

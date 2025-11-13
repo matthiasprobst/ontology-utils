@@ -5,8 +5,6 @@ import sys
 import unittest
 from datetime import timezone
 
-import requests.exceptions
-
 import utils
 from ontolutils.ex import dcat, prov, foaf
 from ontolutils.ex.prov import Attribution
@@ -234,22 +232,14 @@ class TestDcat(utils.ClassTest):
             downloadURL=self.test_jsonld_filename
         )
         filename = piv_dist.download(timeout=10)
-        self.assertTrue(filename.exists())
         self.assertEqual(filename.name, 'piv_dataset.jsonld')
         self.assertIsInstance(filename, pathlib.Path)
+        self.assertTrue(filename.exists())
 
         local_dist = dcat.Distribution(
             downloadURL=filename
         )
-        i = 0
-        i_max = 3
-        while i < i_max:
-            try:
-                local_filename = local_dist.download(timeout=60)
-                break
-            except requests.exceptions.RequestException as e:
-                logger.error(e)
-                i += 1
+        local_filename = local_dist.download(timeout=60)
         self.assertTrue(local_filename.exists())
         self.assertEqual(local_filename.name, 'piv_dataset.jsonld')
         self.assertIsInstance(local_filename, pathlib.Path)

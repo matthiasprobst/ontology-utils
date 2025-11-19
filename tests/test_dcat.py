@@ -418,7 +418,7 @@ class TestDcat(utils.ClassTest):
             id='https://example.com/dataset/1',
             title='Dataset 1',
             distribution=dist,
-            wasGeneratedBy=processing_step,
+            was_generated_by=processing_step,
         )
         self.assertEqual(ds.serialize(format="ttl"), """@prefix dcat: <http://www.w3.org/ns/dcat#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .

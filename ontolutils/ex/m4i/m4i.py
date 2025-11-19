@@ -11,7 +11,9 @@ from ontolutils import parse_unit, LangString
 from ontolutils.ex.pimsii import Variable
 from ..prov import Activity
 from ..prov import Organization
+from ..qudt import Unit
 from ..schema import ResearchProject
+from ...typing import ResourceType
 
 
 @namespaces(m4i="http://w3id.org/nfdi4ing/metadata4ing#")
@@ -39,21 +41,23 @@ class TextVariable(Variable):
          hasNumericalValue='m4i:hasNumericalValue',
          hasMaximumValue='m4i:hasMaximumValue')
 class NumericalVariable(Variable):
-    hasUnit: Optional[str] = Field(alias="has_unit", default=None)
+    hasUnit: Optional[Union[ResourceType, Unit]] = Field(alias="has_unit", default=None)
     hasNumericalValue: Optional[Union[float, List[float]]] = Field(alias="has_numerical_value", default=None)
     hasMaximumValue: Optional[float] = Field(alias="has_maximum_value", default=None)
 
     @field_validator("hasUnit", mode='before')
     @classmethod
     def _parse_unit(cls, unit):
-        if unit.startswith("http"):
+        if isinstance(unit, str):
+            if unit.startswith("http"):
+                return str(unit)
+            try:
+                return parse_unit(unit)
+            except KeyError as e:
+                warnings.warn(f"Unit '{unit}' could not be parsed to QUDT IRI. This is a process based on a dictionary "
+                              f"lookup. Either the unit is wrong or it is not yet included in the dictionary. ")
             return str(unit)
-        try:
-            return parse_unit(unit)
-        except KeyError as e:
-            warnings.warn(f"Unit '{unit}' could not be parsed to QUDT IRI. This is a process based on a dictionary "
-                          f"lookup. Either the unit is wrong or it is not yet included in the dictionary. ")
-        return str(unit)
+        return unit
 
 
 @namespaces(m4i="http://w3id.org/nfdi4ing/metadata4ing#",
@@ -151,7 +155,7 @@ class Assignment(Thing):
     """not yet implemented"""
 
 
-OneOrMultiThings = Union[Thing, HttpUrl, str, List[Union[Thing, HttpUrl, str]]]
+OneOrMultiEntities = Union[Thing, ResourceType, HttpUrl, str, List[Union[Thing, ResourceType, HttpUrl, str]]]
 
 
 @namespaces(m4i="http://w3id.org/nfdi4ing/metadata4ing#",
@@ -188,14 +192,16 @@ class ProcessingStep(Activity):
     RO_0002224: Any = Field(default=None, alias="starts_with")
     RO_0002230: Any = Field(default=None, alias="ends_with")
     hasRuntimeAssignment: Assignment = Field(default=None, alias="runtime_assignment")
-    investigates: Thing = None
+    investigates: Optional[Union[ResourceType, Thing, List[Union[ResourceType, Thing]]]] = None
     usageInstruction: str = Field(default=None, alias="usage_instruction")
     hasEmployedTool: Tool = Field(default=None, alias="has_employed_tool")
     realizesMethod: Union[Method, List[Method]] = Field(default=None, alias="realizes_method")
-    hasInput: Thing = Field(default=None, alias="has_input")
-    hasOutput: OneOrMultiThings = Field(default=None, alias="has_output")
-    partOf: Union[ResearchProject, "ProcessingStep"] = Field(default=None, alias="part_of")
-    precedes: "ProcessingStep" = None
+    hasInput: Optional[Union[ResourceType, Thing, List[Union[ResourceType, Thing]]]] = Field(default=None,
+                                                                                             alias="has_input")
+    hasOutput: OneOrMultiEntities = Field(default=None, alias="has_output")
+    partOf: Union[ResearchProject, "ProcessingStep", List[Union[ResearchProject, "ProcessingStep"]]] = Field(
+        default=None, alias="part_of")
+    precedes: Union["ProcessingStep", List[Union["ProcessingStep"]]] = None
 
     @field_validator('hasOutput', 'hasInput', mode='before')
     @classmethod
@@ -257,3 +263,5 @@ from ..dcat.resource import Distribution
 # add new field to Distribution wasGeneratedBy: ProcessingStep = Field(default=None, alias='was_generated_by'):
 
 Distribution.wasGeneratedBy: ProcessingStep = Field(default=None, alias='was_generated_by')
+
+ProcessingStep.model_rebuild()

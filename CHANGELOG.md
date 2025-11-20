@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.22.1
+
+- bugfix parsing qudt units and quantity kinds
+- add class `QuantityKind` representing QUDT quantity kinds
+
 ## v0.22.0
 
 - bugfixes

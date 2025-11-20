@@ -14,6 +14,7 @@ qudt_lookup = {
     'km': QUDT_UNIT.KiloM,
     # derived units
     # velocity
+    'mm/s': QUDT_UNIT.MilliM_PER_SEC,
     'm/s': QUDT_UNIT.M_PER_SEC,
     'm s-1': QUDT_UNIT.M_PER_SEC,
     'm*s-1': QUDT_UNIT.M_PER_SEC,
@@ -21,6 +22,7 @@ qudt_lookup = {
     'm*s**-1': QUDT_UNIT.M_PER_SEC,
     'm s**-1': QUDT_UNIT.M_PER_SEC,
     # acceleration
+    'mm/s2': QUDT_UNIT.MilliM_PER_SEC2,
     'm/s2': QUDT_UNIT.M_PER_SEC2,
     'm/s^2': QUDT_UNIT.M_PER_SEC2,
     'm/s**2': QUDT_UNIT.M_PER_SEC2,
@@ -240,7 +242,8 @@ qudt_lookup = {
     'mol m-2 s-1 m-1 sr-1': QUDT_UNIT.MOL_PER_M2_SEC_M_SR,
     'm year-1': QUDT_UNIT.M_PER_YR,
     'Pa m s-1': QUDT_UNIT.PA_M_PER_SEC,
-    'Pa m s-2': QUDT_UNIT.PA_M_PER_SEC2
+    'Pa m s-2': QUDT_UNIT.PA_M_PER_SEC2,
+    'mm2/s': QUDT_UNIT.MilliM2_PER_SEC,
 }
 
 

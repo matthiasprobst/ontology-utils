@@ -1,6 +1,9 @@
 import unittest
 
-from ontolutils.ex.m4i import TextVariable, NumericalVariable, Tool
+import pydantic
+
+from ontolutils.ex.m4i import TextVariable, NumericalVariable, Tool, ProcessingStep
+from ontolutils.ex.qudt import Unit
 
 
 class TestM4i(unittest.TestCase):
@@ -21,6 +24,22 @@ class TestM4i(unittest.TestCase):
 
 """)
 
+    def test_ProcessingStep(self):
+        ps1 = ProcessingStep(
+            id='http://example.org/processing_step/1',
+        )
+        ps2 = ProcessingStep(
+            id='http://example.org/processing_step/2',
+            precedes=ps1
+        )
+        self.assertEqual(ps2.precedes.id, 'http://example.org/processing_step/1')
+
+        with self.assertRaises(pydantic.ValidationError):
+            ProcessingStep(
+                id='http://example.org/processing_step/2',
+                precedes=Tool()
+            )
+
     def testTextVariable(self):
         text_variable = TextVariable(
             hasStringValue='String value',
@@ -31,11 +50,21 @@ class TestM4i(unittest.TestCase):
 
     def testNumericalVariableWithoutStandardName(self):
         numerical_variable = NumericalVariable(
-            hasUnit='m/s',
+            hasUnit='mm/s',
             hasNumericalValue=1.0,
             hasMaximumValue=2.0,
             hasVariableDescription='Variable description')
-        self.assertEqual(numerical_variable.hasUnit, 'http://qudt.org/vocab/unit/M-PER-SEC')
+        self.assertEqual(numerical_variable.hasUnit, 'http://qudt.org/vocab/unit/MilliM-PER-SEC')
         self.assertEqual(numerical_variable.hasNumericalValue, 1.0)
         self.assertEqual(numerical_variable.hasMaximumValue, 2.0)
         self.assertEqual(numerical_variable.hasVariableDescription, 'Variable description')
+
+        numerical_variable2 = NumericalVariable(
+            hasUnit=Unit(id='http://qudt.org/vocab/unit/M-PER-SEC', hasQuantityKind='Length'),
+            hasNumericalValue=1.0,
+            hasMaximumValue=2.0,
+            hasVariableDescription='Variable description')
+        self.assertEqual(str(numerical_variable2.hasUnit.id), 'http://qudt.org/vocab/unit/M-PER-SEC')
+        self.assertEqual(numerical_variable2.hasNumericalValue, 1.0)
+        self.assertEqual(numerical_variable2.hasMaximumValue, 2.0)
+        self.assertEqual(numerical_variable2.hasVariableDescription, 'Variable description')

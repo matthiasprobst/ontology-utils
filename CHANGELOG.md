@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.22.2
+
+- hotfix parsing thing IDs
+- Add type `NoneBlankNodeType` allowing to validate none-blanknode ids
+
 ## v0.22.1
 
 - bugfix parsing qudt units and quantity kinds

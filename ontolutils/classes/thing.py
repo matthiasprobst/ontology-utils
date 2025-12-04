@@ -19,7 +19,7 @@ from .decorator import urirefs, namespaces, URIRefManager, NamespaceManager, _is
 from .thingmodel import ThingModel
 from .utils import split_URIRef
 from .. import get_config
-from ..typing import BlankNodeType
+from ..typing import BlankNodeType, IdType
 
 logger = logging.getLogger('ontolutils')
 URL_SCHEMES = {"http", "https", "urn", "doi"}
@@ -297,7 +297,7 @@ class Thing(ThingModel):
     >>> #     For further information visit https://errors.pydantic.dev/2.4/v/string_type
 
     """
-    id: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType, None]] = Field(default_factory=build_blank_id)  # @id
+    id: Optional[IdType] = Field(default_factory=build_blank_id)  # @id
     label: Optional[Union[LangString, List[LangString]]] = None  # rdfs:label
     about: Optional[
         Union[
@@ -336,30 +336,6 @@ class Thing(ThingModel):
         combined_namespaces = {**self.namespaces, **NamespaceManager[other]}
         NamespaceManager.data[other] = combined_namespaces
         return other(**self.model_dump(exclude_none=True))
-
-    @field_validator('id', mode="before")
-    @classmethod
-    def _id(cls, id: Optional[Union[str, HttpUrl, FileUrl, BlankNodeType]]) -> str:
-        if id is None:
-            return build_blank_n3()
-        if isinstance(id, rdflib.URIRef):
-            return id.n3()
-        if isinstance(id, rdflib.BNode):
-            return id.n3()
-        if not isinstance(id, str):
-            raise TypeError(
-                f'The ID must be a string, HttpUrl, FileUrl or BlankNodeType but got {type(id)}.'
-            )
-        if id.startswith('http'):
-            return str(HttpUrl(id))
-        if id.startswith('file'):
-            return str(FileUrl(id))
-        if id.startswith('_:'):
-            return id  # this is a blank node
-        raise ValueError(
-            f'The ID must be a valid IRI or blank node but got "{id}". '
-            'It must start with "_:", "http", "file".'
-        )
 
     @classmethod
     def build(cls, namespace: HttpUrl,
@@ -827,6 +803,7 @@ class Thing(ThingModel):
     def get_context(cls) -> Dict:
         """Return the context of the class"""
         return get_namespaces(cls)
+
 
 def _replace_context_url_with_prefix(value: str, context: Dict) -> str:
     for context_key, context_url in context.items():

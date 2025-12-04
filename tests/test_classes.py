@@ -15,6 +15,7 @@ from rdflib.plugins.shared.jsonld.context import Context
 from typing_extensions import Annotated
 
 import ontolutils
+from ontolutils.typing import NoneBlankNodeType
 from ontolutils import SCHEMA
 from ontolutils import Thing, urirefs, namespaces, build, Property
 from ontolutils import as_id
@@ -120,6 +121,49 @@ class TestNamespaces(unittest.TestCase):
                              ['https://example.com/test#', 'test'])
         self.assertListEqual(split_URIRef(rdflib.URIRef('https://example.com/test:123')),
                              ['https://example.com/', 'test:123'])
+
+    def test_id(self):
+        with self.assertRaises(pydantic.ValidationError):
+            Thing(id="123")
+        with self.assertRaises(pydantic.ValidationError):
+            Thing(id="<https://exmpale.org#123>")
+        with self.assertRaises(pydantic.ValidationError):
+            _ = Thing(id=1, label='Thing 1')
+        with self.assertRaises(pydantic.ValidationError):
+            _ = Thing(id="1", label='Thing 1')
+
+        thing = Thing(id="https://example.com/thing1", label="Thing 1")
+        self.assertEqual("https://example.com/thing1", thing.id)
+        thing = Thing(id=rdflib.URIRef("https://example.com/thing1"), label="Thing 1")
+        self.assertEqual("https://example.com/thing1", thing.id)
+        thing = Thing(id=rdflib.BNode("123"), label="Thing 1")
+        self.assertEqual("_:123", thing.id)
+        thing = Thing(id="_:123", label="Thing 1")
+        self.assertEqual("_:123", thing.id)
+
+        thing_file = Thing(id="file:///path/to/file", label="Thing File")
+        self.assertEqual("file:///path/to/file", thing_file.id)
+
+        urn_thing = Thing(id="urn:isbn:0451450523", label="Thing URN")
+        self.assertEqual("urn:isbn:0451450523", urn_thing.id)
+
+    def test_none_blank_things(self):
+        @namespaces(ex="http://example.com/")
+        @urirefs(MyThing='ex:MyThing')
+        class MyThing(Thing):
+            id: NoneBlankNodeType
+
+        with self.assertRaises(pydantic.ValidationError):
+            MyThing(id="_:123")
+        with self.assertRaises(pydantic.ValidationError):
+            MyThing(id=rdflib.BNode("123"))
+        with self.assertRaises(pydantic.ValidationError):
+            MyThing(id=123)
+        with self.assertRaises(pydantic.ValidationError):
+            MyThing()
+
+        my_thing = MyThing(id="https://example.org/my_thing")
+        self.assertEqual("https://example.org/my_thing", my_thing.id)
 
     def test_thing_custom_prop(self):
         """It is helpful to have the properties equal to the urirefs keys,
@@ -358,11 +402,6 @@ class TestNamespaces(unittest.TestCase):
 """)
 
     def test_thing_get_jsonld_dict(self):
-        with self.assertRaises(TypeError):
-            _ = Thing(id=1, label='Thing 1')
-        with self.assertRaises(pydantic.ValidationError):
-            _ = Thing(id="1", label='Thing 1')
-
         thing = Thing(id='https://example.org/TestThing', label='Test Thing', numerical_value=1.0,
                       dt=datetime.datetime(2021, 1, 1))
         with self.assertRaises(TypeError):

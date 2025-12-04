@@ -1,9 +1,10 @@
 import re
 
-from pydantic import AnyUrl
+from pydantic import AnyUrl, FileUrl, HttpUrl
 from pydantic.functional_validators import WrapValidator
+from rdflib import URIRef, BNode
 from typing_extensions import Annotated
-from rdflib import URIRef
+
 from .classes.thingmodel import ThingModel
 
 
@@ -33,6 +34,49 @@ ResourceType = Annotated[
     object,
     WrapValidator(validate_resource_type)
 ]
+def validate_id(value, handler, info):
+    if isinstance(value, str):
+        if value.startswith('_:'):
+            return value
+        if re.match(r'^https?://', value):
+            return str(HttpUrl(value))
+        # urn:
+        if value.startswith("urn:"):
+            return str(value)
+        # file:
+        if value.startswith("file"):
+            return str(FileUrl(value))
+
+
+    if isinstance(value, BNode):
+        return value.n3()
+    if isinstance(value, AnyUrl):
+        return str(value)
+    if isinstance(value, URIRef):
+        return str(value)
+    if isinstance(value, FileUrl):
+        return str(value)
+    raise ValueError(f"Id must be a HTTP-URL string or a pydantic AnyUrl or a URIRef, not {type(value)}")
+
+
+def validate_none_blank_id(value, handler, info):
+    if isinstance(value, str):
+        if value.startswith('_:'):
+            raise ValueError("Blank nodes are not allowed for this IdType")
+
+        if isinstance(value, BNode):
+            raise ValueError("Blank nodes are not allowed for this IdType")
+
+    return validate_id(value, handler, info)
+
+
+IdType = Annotated[
+    object,
+    WrapValidator(validate_id)
+]
+
+# Alias for IdType for better readability when blank nodes are not allowed
+NoneBlankNodeType = Annotated[object, WrapValidator(validate_none_blank_id)]
 
 
 def __validate_blank_node(value: str, handler, info):

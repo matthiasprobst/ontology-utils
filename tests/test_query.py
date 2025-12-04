@@ -204,7 +204,7 @@ class TestQuery(unittest.TestCase):
                     "@context": {
                         "prov": "https://www.w3.org/ns/prov#",
                         "foaf": "http://xmlns.com/foaf/0.1/",
-                        "local": "http:/local.org/"
+                        "local": "http://local.org/"
                     },
                     "@graph": [
                         {

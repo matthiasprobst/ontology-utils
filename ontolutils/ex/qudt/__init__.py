@@ -21,6 +21,7 @@ from ...typing import ResourceType
          informativeReference='qudt:informativeReference',
          iec61360Code='qudt:iec61360Code',
          omUnit='qudt:omUnit',
+         latexSymbol='qudt:latexSymbol',
          exactMatch='qudt:exactMatch',
          hasQuantityKind='qudt:hasQuantityKind',
          hasReciprocalUnit='qudt:hasReciprocalUnit',
@@ -43,8 +44,10 @@ class Unit(Thing):
                                                                                        alias="exact_match")
     siExactMatch: Union[ResourceType] = Field(default=None, alias="si_exact_match")
     scalingOf: Union[ResourceType, "Unit", List[Union[ResourceType, "Unit"]]] = Field(default=None, alias="scaling_of")
-    hasQuantityKind: Union[ResourceType, "QuantityKind", List[Union[ResourceType, "QuantityKind"]]] = Field(default=None, alias="has_quantity_kind")
+    hasQuantityKind: Union[ResourceType, "QuantityKind", List[Union[ResourceType, "QuantityKind"]]] = Field(
+        default=None, alias="has_quantity_kind")
     hasReciprocalUnit: Union[ResourceType, "Unit"] = Field(default=None, alias="has_reciprocal_unit")
+    latexSymbol: Optional[Union[str, List[str]]] = Field(default=None, alias="latex_symbol")
 
     @field_validator("hasQuantityKind", mode='before')
     @classmethod
@@ -67,6 +70,7 @@ class QuantityValue(Thing):
 @urirefs(QuantityKind='qudt:QuantityKind',
          applicableUnit='qudt:applicableUnit',
          latexDefinition='qudt:latexDefinition',
+         latexSymbol='qudt:latexSymbol',
          hasDimensionVector='qudt:hasDimensionVector',
          informativeReference='qudt:informativeReference',
          symbol='qudt:symbol',
@@ -76,14 +80,19 @@ class QuantityValue(Thing):
          quantityValue='qudt:quantityValue')
 class QuantityKind(Thing):
     """Implementation of qudt:QuantityKind"""
-    applicableUnit: Union[ResourceType, Unit, List[Union[ResourceType, Unit]]] = Field(default=None, alias="applicable_unit")
+    applicableUnit: Union[ResourceType, Unit, List[Union[ResourceType, Unit]]] = Field(default=None,
+                                                                                       alias="applicable_unit")
     quantityValue: Union[ResourceType, QuantityValue] = Field(default=None, alias="quantity_value")
     latexDefinition: Optional[Union[str, List[str]]] = Field(default=None, alias="latex_definition")
-    hasDimensionVector: Optional[Union[ResourceType, List[ResourceType]]] = Field(default=None, alias="has_dimension_vector")
-    informativeReference: Optional[Union[ResourceType, List[ResourceType]]] = Field(default=None, alias="informative_reference")
+    latexSymbol: Optional[Union[str, List[str]]] = Field(default=None, alias="latex_symbol")
+    hasDimensionVector: Optional[Union[ResourceType, List[ResourceType]]] = Field(default=None,
+                                                                                  alias="has_dimension_vector")
+    informativeReference: Optional[Union[ResourceType, List[ResourceType]]] = Field(default=None,
+                                                                                    alias="informative_reference")
     symbol: Optional[Union[str, List[str]]] = Field(default=None, alias="symbol")
     iec61360Code: Optional[Union[str, List[str]]] = Field(default=None, alias="iec61360_code")
     wikidataMatch: Optional[Union[ResourceType, List[ResourceType]]] = Field(default=None, alias="wikidata_match")
     plainTextDescription: Optional[Union[str, List[str]]] = Field(default=None, alias="plain_text_description")
+
 
 Unit.model_rebuild()

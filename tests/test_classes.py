@@ -903,6 +903,9 @@ class TestNamespaces(unittest.TestCase):
         self.assertDictEqual(mt.urirefs,
                              {'Thing': 'owl:Thing', 'closeMatch': 'skos:closeMatch', 'exactMatch': 'skos:exactMatch',
                               'label': 'rdfs:label', 'about': 'schema:about', 'altLabel': 'skos:altLabel',
+                              'description': 'dcterms:description',
+                              'isDefinedBy': 'rdfs:isDefinedBy',
+                              'broader': 'skos:broader',
                               'relation': 'dcterms:relation'})
         self.assertDictEqual(mt.namespaces, get_namespaces(Thing))
         self.assertDictEqual(mt.namespaces, {'owl': 'http://www.w3.org/2002/07/owl#',

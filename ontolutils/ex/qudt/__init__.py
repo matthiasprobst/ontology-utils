@@ -66,11 +66,24 @@ class QuantityValue(Thing):
 @namespaces(qudt="http://qudt.org/schema/qudt/")
 @urirefs(QuantityKind='qudt:QuantityKind',
          applicableUnit='qudt:applicableUnit',
+         latexDefinition='qudt:latexDefinition',
+         hasDimensionVector='qudt:hasDimensionVector',
+         informativeReference='qudt:informativeReference',
+         symbol='qudt:symbol',
+         iec61360Code='qudt:iec61360Code',
+         wikidataMatch='qudt:wikidataMatch',
+         plainTextDescription='qudt:plainTextDescription',
          quantityValue='qudt:quantityValue')
 class QuantityKind(Thing):
     """Implementation of qudt:QuantityKind"""
-    applicableUnit: Union[ResourceType, Unit] = Field(default=None, alias="applicable_unit")
+    applicableUnit: Union[ResourceType, Unit, List[Union[ResourceType, Unit]]] = Field(default=None, alias="applicable_unit")
     quantityValue: Union[ResourceType, QuantityValue] = Field(default=None, alias="quantity_value")
-
+    latexDefinition: Optional[Union[str, List[str]]] = Field(default=None, alias="latex_definition")
+    hasDimensionVector: Optional[Union[ResourceType, List[ResourceType]]] = Field(default=None, alias="has_dimension_vector")
+    informativeReference: Optional[Union[ResourceType, List[ResourceType]]] = Field(default=None, alias="informative_reference")
+    symbol: Optional[Union[str, List[str]]] = Field(default=None, alias="symbol")
+    iec61360Code: Optional[Union[str, List[str]]] = Field(default=None, alias="iec61360_code")
+    wikidataMatch: Optional[Union[ResourceType, List[ResourceType]]] = Field(default=None, alias="wikidata_match")
+    plainTextDescription: Optional[Union[str, List[str]]] = Field(default=None, alias="plain_text_description")
 
 Unit.model_rebuild()

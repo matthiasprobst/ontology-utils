@@ -24,6 +24,8 @@ def process_object(
     """Process the object of a triple."""
     if isinstance(obj, rdflib.Literal):
         logger.debug(f'Object "{obj}" for predicate "{predicate}" is a literal.')
+        if obj.language:
+            return f"{obj}@{obj.language}"
         return str(obj)
 
     if isinstance(obj, rdflib.BNode):

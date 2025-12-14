@@ -19,7 +19,7 @@ from .decorator import urirefs, namespaces, URIRefManager, NamespaceManager, _is
 from .thingmodel import ThingModel
 from .utils import split_URIRef
 from .. import get_config
-from ..typing import BlankNodeType, IdType
+from ..typing import BlankNodeType, IdType, ResourceType
 
 logger = logging.getLogger('ontolutils')
 URL_SCHEMES = {"http", "https", "urn", "doi"}
@@ -248,7 +248,10 @@ def _parse_string_value(value, ctx):
 @urirefs(Thing='owl:Thing',
          label='rdfs:label',
          altLabel='skos:altLabel',
+         description='dcterms:description',
+         broader='skos:broader',
          about='schema:about',
+         isDefinedBy='rdfs:isDefinedBy',
          relation='dcterms:relation',
          closeMatch='skos:closeMatch',
          exactMatch='skos:exactMatch')
@@ -301,6 +304,7 @@ class Thing(ThingModel):
     id: Optional[IdType] = Field(default_factory=build_blank_id)  # @id
     label: Optional[Union[LangString, List[LangString]]] = None  # rdfs:label
     altLabel: Optional[Union[LangString, List[LangString]]] = None  # skos:altLabel
+    broader: Optional[Union[ResourceType, List[ResourceType]]] = None  # skos:broader
     about: Optional[
         Union[
             str, HttpUrl, FileUrl, ThingModel, BlankNodeType, List[Union[HttpUrl, FileUrl, ThingModel, BlankNodeType]]]
@@ -308,6 +312,8 @@ class Thing(ThingModel):
     relation: Optional[Union[HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
     closeMatch: Optional[Union[HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
     exactMatch: Optional[Union[HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
+    description: Optional[Union[LangString, List[LangString]]] = None  # dcterms:description
+    isDefinedBy: Optional[Union[ResourceType, List[ResourceType]]] = None  # rdfs:isDefinedBy
 
     # class Config:
     #     arbitrary_types_allowed = True
@@ -784,7 +790,7 @@ class Thing(ThingModel):
                               'This is a workaround for the schema.org inconsistency.',
                               UserWarning)
                 data = data.replace('http://schema.org/', 'https://schema.org/')
-        return query(cls, source=source, data=data, limit=limit, context=context)
+        return query(cls, source=source, data=data, format="json-ld", limit=limit, context=context)
 
     @classmethod
     def iri(cls, key: str = None, compact: bool = False):

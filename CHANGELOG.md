@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.23.0
+
+- add class methods `from_ttl` and `from_file` to `Thing`
+- add more properties to `qudt:Unit` and `qudt:QuantityKind`
+- additional properties to `Thing`: `skos:broader`, `rdfs:isDefinedBy`, `rdfs:altLabel`
+- instantiating a Thing from RDF will correctly process language tagged strings now
+
 ## v0.22.2
 
 - hotfix parsing thing IDs

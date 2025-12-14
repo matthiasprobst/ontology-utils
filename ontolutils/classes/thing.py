@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 
 import rdflib
 import yaml
-from pydantic import AnyUrl, HttpUrl, FileUrl, BaseModel, Field, field_validator, model_validator
+from pydantic import AnyUrl, HttpUrl, FileUrl, BaseModel, Field, model_validator
 from pydantic import field_serializer
 from pydantic_core import Url
 from rdflib import XSD
@@ -19,7 +19,7 @@ from .decorator import urirefs, namespaces, URIRefManager, NamespaceManager, _is
 from .thingmodel import ThingModel
 from .utils import split_URIRef
 from .. import get_config
-from ..typing import BlankNodeType, IdType
+from ..typing import BlankNodeType, IdType, ResourceType
 
 logger = logging.getLogger('ontolutils')
 URL_SCHEMES = {"http", "https", "urn", "doi"}
@@ -247,7 +247,11 @@ def _parse_string_value(value, ctx):
             )
 @urirefs(Thing='owl:Thing',
          label='rdfs:label',
+         altLabel='skos:altLabel',
+         description='dcterms:description',
+         broader='skos:broader',
          about='schema:about',
+         isDefinedBy='rdfs:isDefinedBy',
          relation='dcterms:relation',
          closeMatch='skos:closeMatch',
          exactMatch='skos:exactMatch')
@@ -299,6 +303,8 @@ class Thing(ThingModel):
     """
     id: Optional[IdType] = Field(default_factory=build_blank_id)  # @id
     label: Optional[Union[LangString, List[LangString]]] = None  # rdfs:label
+    altLabel: Optional[Union[LangString, List[LangString]]] = None  # skos:altLabel
+    broader: Optional[Union[ResourceType, List[ResourceType]]] = None  # skos:broader
     about: Optional[
         Union[
             str, HttpUrl, FileUrl, ThingModel, BlankNodeType, List[Union[HttpUrl, FileUrl, ThingModel, BlankNodeType]]]
@@ -306,6 +312,8 @@ class Thing(ThingModel):
     relation: Optional[Union[HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
     closeMatch: Optional[Union[HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
     exactMatch: Optional[Union[HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
+    description: Optional[Union[LangString, List[LangString]]] = None  # dcterms:description
+    isDefinedBy: Optional[Union[ResourceType, List[ResourceType]]] = None  # rdfs:isDefinedBy
 
     # class Config:
     #     arbitrary_types_allowed = True
@@ -725,6 +733,29 @@ class Thing(ThingModel):
         return self.__repr__()
 
     @classmethod
+    def from_file(cls,
+                  source: Optional[Union[str, pathlib.Path]] = None,
+                  format: Optional[str] = None,
+                  limit: Optional[int] = None,
+                  context: Optional[Dict] = None
+                  ):
+        """Initialize the class from a file"""
+        from . import query
+        return query(cls, source=source, limit=limit, format=format, context=context)
+
+    @classmethod
+    def from_ttl(cls,
+                 source: Optional[Union[str, pathlib.Path]] = None,
+                 data: Optional[Union[str, Dict]] = None,
+                 limit: Optional[int] = None,
+                 context: Optional[Dict] = None
+                 ):
+        """Initialize the class from a Turtle source"""
+        g = rdflib.Graph().parse(source=source, data=data)
+        jld = g.serialize(format='json-ld')
+        return cls.from_jsonld(data=jld, limit=limit, context=context)
+
+    @classmethod
     def from_jsonld(cls,
                     source: Optional[Union[str, pathlib.Path]] = None,
                     data: Optional[Union[str, Dict]] = None,
@@ -759,7 +790,7 @@ class Thing(ThingModel):
                               'This is a workaround for the schema.org inconsistency.',
                               UserWarning)
                 data = data.replace('http://schema.org/', 'https://schema.org/')
-        return query(cls, source=source, data=data, limit=limit, context=context)
+        return query(cls, source=source, data=data, format="json-ld", limit=limit, context=context)
 
     @classmethod
     def iri(cls, key: str = None, compact: bool = False):

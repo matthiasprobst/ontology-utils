@@ -166,3 +166,9 @@ class Attribution(Thing):
             elif "Person" in _type:
                 return Person(**agent)
         return agent
+
+
+@namespaces(prov="http://www.w3.org/ns/prov#")
+@urirefs(SoftwareAgent='prov:SoftwareAgent')
+class SoftwareAgent(Agent):
+    """Pydantic Model for http://www.w3.org/ns/prov#SoftwareAgent"""

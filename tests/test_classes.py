@@ -15,7 +15,6 @@ from rdflib.plugins.shared.jsonld.context import Context
 from typing_extensions import Annotated
 
 import ontolutils
-from ontolutils.typing import NoneBlankNodeType
 from ontolutils import SCHEMA
 from ontolutils import Thing, urirefs, namespaces, build, Property
 from ontolutils import as_id
@@ -24,6 +23,7 @@ from ontolutils import set_logging_level
 from ontolutils.classes import decorator
 from ontolutils.classes.thing import resolve_iri, LangString
 from ontolutils.classes.utils import split_URIRef
+from ontolutils.typing import NoneBlankNodeType
 
 LOG_LEVEL = logging.DEBUG
 
@@ -902,7 +902,11 @@ class TestNamespaces(unittest.TestCase):
         self.assertDictEqual(mt.urirefs, get_urirefs(Thing))
         self.assertDictEqual(mt.urirefs,
                              {'Thing': 'owl:Thing', 'closeMatch': 'skos:closeMatch', 'exactMatch': 'skos:exactMatch',
-                              'label': 'rdfs:label', 'about': 'schema:about', 'relation': 'dcterms:relation'})
+                              'label': 'rdfs:label', 'about': 'schema:about', 'altLabel': 'skos:altLabel',
+                              'description': 'dcterms:description',
+                              'isDefinedBy': 'rdfs:isDefinedBy',
+                              'broader': 'skos:broader',
+                              'relation': 'dcterms:relation'})
         self.assertDictEqual(mt.namespaces, get_namespaces(Thing))
         self.assertDictEqual(mt.namespaces, {'owl': 'http://www.w3.org/2002/07/owl#',
                                              'rdfs': 'http://www.w3.org/2000/01/rdf-schema#',

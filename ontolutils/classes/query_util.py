@@ -2,6 +2,8 @@
 import json
 import logging
 import pathlib
+import re
+from collections.abc import Mapping
 from typing import Union, Dict, List, Optional, Type
 
 import rdflib
@@ -9,9 +11,6 @@ import rdflib
 from .decorator import URIRefManager, NamespaceManager
 from .thing import Thing
 from .utils import split_URIRef
-
-import re
-from collections.abc import Mapping, Iterable
 
 logger = logging.getLogger('ontolutils')
 
@@ -242,6 +241,7 @@ def dquery(subject: str,
 def query(cls: Type[Thing],
           source: Optional[Union[str, pathlib.Path]] = None,
           data: Optional[Union[str, Dict]] = None,
+          format: Optional[str] = None,
           context: Optional[Union[Dict, str]] = None,
           limit: Optional[int] = None) -> Union[Thing, List]:
     """Return a generator of results from the query.
@@ -251,11 +251,13 @@ def query(cls: Type[Thing],
     cls : Thing
         The class to query
     source: Optional[Union[str, pathlib.Path]]
-        The source of the json-ld file. see json.dump() for details
+        The source of the RDF file. see json.dump() for details
     data : Optional[Union[str, Dict]]
-        The data of the json-ld file
+        The data of the RDF file
+    format : Optional[str]
+        The format of the RDF file. see rdflib.Graph.parse() for details
     context : Optional[Union[Dict, str]]
-        The context of the json-ld file
+        The context of the RDF file
     limit: Optional[int]
         The limit of the query. Default is None (no limit).
         If limit equals to 1, the result will be a single obj, not a list.
@@ -291,8 +293,13 @@ def query(cls: Type[Thing],
 
     g.parse(source=source,
             data=data,
-            format='json-ld',
-            context=_context)
+            format=format)
+    # add context namespaces:
+    for k, p in _context.items():
+        if k.startswith('@'):
+            continue
+        if k not in ns_keys:
+            g.bind(k, p)
 
     gquery = prefixes + query_string
 
@@ -313,7 +320,7 @@ def query(cls: Type[Thing],
     # As we have the latter, the inverse dictionary let's us find the model field names.
     # inverse_urirefs = {_v.split(':', 1)[-1]: _k for _k, _v in get_urirefs(cls).items()}
 
-    kwargs = _at_id_to_id(_expand_compact_iris(kwargs,_context))
+    kwargs = _at_id_to_id(_expand_compact_iris(kwargs, _context))
 
     if limit is not None:
         out = []
@@ -328,8 +335,8 @@ def query(cls: Type[Thing],
     return [cls.model_validate({'id': _id, **params}) for _id, params in kwargs.items()]
 
 
-
 _SCHEME_RE = re.compile(r'^[A-Za-z][A-Za-z0-9+.-]*:')
+
 
 def _expand_compact_iris(obj, context, *, transform_keys=False):
     """

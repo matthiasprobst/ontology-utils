@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 
 import rdflib
 import yaml
-from pydantic import AnyUrl, HttpUrl, FileUrl, BaseModel, Field, field_validator, model_validator
+from pydantic import AnyUrl, HttpUrl, FileUrl, BaseModel, Field, model_validator
 from pydantic import field_serializer
 from pydantic_core import Url
 from rdflib import XSD
@@ -247,6 +247,7 @@ def _parse_string_value(value, ctx):
             )
 @urirefs(Thing='owl:Thing',
          label='rdfs:label',
+         altLabel='skos:altLabel',
          about='schema:about',
          relation='dcterms:relation',
          closeMatch='skos:closeMatch',
@@ -299,6 +300,7 @@ class Thing(ThingModel):
     """
     id: Optional[IdType] = Field(default_factory=build_blank_id)  # @id
     label: Optional[Union[LangString, List[LangString]]] = None  # rdfs:label
+    altLabel: Optional[Union[LangString, List[LangString]]] = None  # skos:altLabel
     about: Optional[
         Union[
             str, HttpUrl, FileUrl, ThingModel, BlankNodeType, List[Union[HttpUrl, FileUrl, ThingModel, BlankNodeType]]]
@@ -723,6 +725,29 @@ class Thing(ThingModel):
         # _fields = {k: getattr(self, k) for k in self.model_fields if getattr(self, k) is not None}
         # repr_fields = ", ".join([f"{k}={v}" for k, v in _fields.items()])
         return self.__repr__()
+
+    @classmethod
+    def from_file(cls,
+                  source: Optional[Union[str, pathlib.Path]] = None,
+                  format: Optional[str] = None,
+                  limit: Optional[int] = None,
+                  context: Optional[Dict] = None
+                  ):
+        """Initialize the class from a file"""
+        from . import query
+        return query(cls, source=source, limit=limit, format=format, context=context)
+
+    @classmethod
+    def from_ttl(cls,
+                 source: Optional[Union[str, pathlib.Path]] = None,
+                 data: Optional[Union[str, Dict]] = None,
+                 limit: Optional[int] = None,
+                 context: Optional[Dict] = None
+                 ):
+        """Initialize the class from a Turtle source"""
+        g = rdflib.Graph().parse(source=source, data=data)
+        jld = g.serialize(format='json-ld')
+        return cls.from_jsonld(data=jld, limit=limit, context=context)
 
     @classmethod
     def from_jsonld(cls,

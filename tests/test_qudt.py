@@ -2,6 +2,7 @@ import pathlib
 import unittest
 
 from ontolutils.ex.qudt import Unit
+from ontolutils.ex.qudt.conversion import convert_value_qudt
 from ontolutils.ex.qudt.utils import iri2str
 from ontolutils.namespacelib import QUDT_UNIT
 
@@ -59,6 +60,7 @@ class TestQudt(unittest.TestCase):
         <http://qudt.org/vocab/sou/CGS-GAUSS>,
         <http://qudt.org/vocab/sou/SI> ;
     qudt:conversionMultiplier 1e+00 ;
+    qudt:conversionMultiplierSN 1e+00 ;
     qudt:dbpediaMatch <http://dbpedia.org/resource/Pascal> ;
     qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L-1I0M1H0T-2D0> ;
     qudt:hasQuantityKind <http://qudt.org/vocab/quantitykind/BulkModulus>,
@@ -84,3 +86,62 @@ class TestQudt(unittest.TestCase):
 
 """,
             u_pa.serialize(format="ttl"))
+
+    def test_scaling_cm_to_m_and_back(self):
+        m = Unit(
+            id=QUDT_UNIT.M,
+            conversionMultiplier=1.0,
+            conversionOffset=0.0
+        )
+        cm = Unit(
+            id=QUDT_UNIT.CentiM,
+            scalingOf=m,
+            conversionMultiplier=0.01,
+            conversionOffset=0.0
+        )
+        convert_value_qudt(150, cm, m)
+        self.assertEqual(
+            convert_value_qudt(150, cm, m), 1.5
+        )
+        sec = Unit(
+            id=QUDT_UNIT.SEC,
+            conversionMultiplier=1.0,
+            conversionOffset=0.0
+        )
+        minute = Unit(
+            id=QUDT_UNIT.MIN,
+            scalingOf=sec,
+            conversionMultiplier=60.0,
+            conversionOffset=0.0
+        )
+        self.assertEqual(
+            convert_value_qudt(3, minute, sec), 180.0
+        )
+        self.assertEqual(
+            convert_value_qudt(180, sec, minute), 3.0
+        )
+        kelvin = Unit(
+            id=QUDT_UNIT.K,
+            conversionMultiplier=1.0,
+        )
+        degC = Unit(
+            id=QUDT_UNIT.DEG_C,
+            conversionMultiplier=1.0,
+            conversionOffset=273.15,
+            scalingOf=kelvin,
+        )
+        self.assertEqual(
+            convert_value_qudt(0, degC, kelvin), 273.15
+        )
+        self.assertEqual(
+            convert_value_qudt(273.15, kelvin, degC), 0.0
+        )
+
+        # it should fail for incompatible units, e.g. degC to m
+        with self.assertRaises(ValueError):
+            convert_value_qudt(4.3, degC, m)
+
+        # converting between identical units should return the same value
+        self.assertEqual(
+            convert_value_qudt(42.0, m, m), 42.0
+        )

@@ -6,6 +6,7 @@
 - add more properties to `qudt:Unit` and `qudt:QuantityKind`
 - additional properties to `Thing`: `skos:broader`, `rdfs:isDefinedBy`, `rdfs:altLabel`
 - instantiating a Thing from RDF will correctly process language tagged strings now
+- add utility function to convert values between QUDT units
 
 ## v0.22.2
 

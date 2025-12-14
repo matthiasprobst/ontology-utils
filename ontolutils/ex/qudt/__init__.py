@@ -15,6 +15,7 @@ from ...typing import ResourceType
          wikidataMatch='qudt:wikidataMatch',
          applicableSystem='qudt:applicableSystem',
          conversionMultiplier='qudt:conversionMultiplier',
+         conversionMultiplierSN='qudt:conversionMultiplierSN',
          dbpediaMatch='qudt:dbpediaMatch',
          hasDimensionVector='qudt:hasDimensionVector',
          siExactMatch='qudt:siExactMatch',
@@ -25,6 +26,10 @@ from ...typing import ResourceType
          exactMatch='qudt:exactMatch',
          hasQuantityKind='qudt:hasQuantityKind',
          hasReciprocalUnit='qudt:hasReciprocalUnit',
+         conversionOffset='qudt:conversionOffset',
+         conversionOffsetSN='qudt:conversionOffsetSN',
+         latexDefinition='qudt:latexDefinition',
+         expression='qudt:expression',
          scalingOf='qudt:scalingOf')
 class Unit(Thing):
     """Implementation of qudt:Unit"""
@@ -35,6 +40,7 @@ class Unit(Thing):
     wikidataMatch: Optional[ResourceType] = Field(default=None, alias="wikidata_match ")
     applicableSystem: Optional[Union[ResourceType, List[ResourceType]]] = Field(default=None, alias="applicable_system")
     conversionMultiplier: Optional[float] = Field(default=None, alias="conversion_multiplier")
+    conversionMultiplierSN: Optional[float] = Field(default=None, alias="conversion_multiplier_sn")
     dbpediaMatch: Union[ResourceType] = Field(default=None, alias="dbpedia_match")
     hasDimensionVector: Union[ResourceType] = Field(default=None, alias="has_dimension_vector")
     informativeReference: Union[ResourceType] = Field(default=None, alias="informative_reference")
@@ -43,11 +49,15 @@ class Unit(Thing):
     exactMatch: Union["Unit", ResourceType, List[Union["Unit", ResourceType]]] = Field(default=None,
                                                                                        alias="exact_match")
     siExactMatch: Union[ResourceType] = Field(default=None, alias="si_exact_match")
+    conversionOffset: Union[float] = Field(default=None, alias="conversion_offset")
+    conversionOffsetSN: Union[float] = Field(default=None, alias="conversion_offset_sn")
     scalingOf: Union[ResourceType, "Unit", List[Union[ResourceType, "Unit"]]] = Field(default=None, alias="scaling_of")
     hasQuantityKind: Union[ResourceType, "QuantityKind", List[Union[ResourceType, "QuantityKind"]]] = Field(
         default=None, alias="has_quantity_kind")
     hasReciprocalUnit: Union[ResourceType, "Unit"] = Field(default=None, alias="has_reciprocal_unit")
     latexSymbol: Optional[Union[str, List[str]]] = Field(default=None, alias="latex_symbol")
+    latexDefinition: Optional[Union[str, List[str]]] = Field(default=None, alias="latex_definition")
+    expression: Optional[Union[str, List[str]]] = Field(default=None, alias="expression")
 
     @field_validator("hasQuantityKind", mode='before')
     @classmethod

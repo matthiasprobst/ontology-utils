@@ -13,6 +13,7 @@ from ..prov import Activity
 from ..prov import Organization
 from ..qudt import Unit
 from ..schema import ResearchProject
+from ..sis import MeasurementUncertainty
 from ...typing import ResourceType
 
 
@@ -39,11 +40,19 @@ class TextVariable(Variable):
 @urirefs(NumericalVariable='m4i:NumericalVariable',
          hasUnit='m4i:hasUnit',
          hasNumericalValue='m4i:hasNumericalValue',
-         hasMaximumValue='m4i:hasMaximumValue')
+         hasMaximumValue='m4i:hasMaximumValue',
+         hasMinimumValue='m4i:hasMinimumValue',
+         hasStepSize='m4i:hasStepSize',
+         hasUncertaintyDeclaration='m4i:hasUncertaintyDeclaration')
 class NumericalVariable(Variable):
     hasUnit: Optional[Union[ResourceType, Unit]] = Field(alias="has_unit", default=None)
-    hasNumericalValue: Optional[Union[float, List[float]]] = Field(alias="has_numerical_value", default=None)
-    hasMaximumValue: Optional[float] = Field(alias="has_maximum_value", default=None)
+    hasNumericalValue: Optional[Union[Union[int, float], List[Union[int, float]]]] = Field(alias="has_numerical_value", default=None)
+    hasMaximumValue: Optional[Union[int, float]] = Field(alias="has_maximum_value", default=None)
+    hasMinimumValue: Optional[Union[int, float]] = Field(alias="has_minimum_value", default=None)
+    hasUncertaintyDeclaration: Optional[Union[MeasurementUncertainty, ResourceType]] = Field(
+        alias="has_uncertainty_declaration", default=None
+    )
+    hasStepSize: Optional[Union[int, float]] = Field(alias="has_step_size", default=None)
 
     @field_validator("hasUnit", mode='before')
     @classmethod

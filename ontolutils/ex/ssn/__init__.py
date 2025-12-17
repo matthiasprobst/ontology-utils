@@ -59,7 +59,7 @@ class Condition(Property):
             ssn="http://www.w3.org/ns/ssn/")
 @urirefs(SystemCapability="ssn_system:SystemCapability",
          hasSystemProperty="ssn_system:hasSystemProperty",
-         inConditions="ssn_system:inConditions",
+         inCondition="ssn_system:inCondition",
 forProperty="ssn:forProperty"
          )
 class SystemCapability(Property):
@@ -71,10 +71,10 @@ The capabilities specified here are those that affect the primary purpose of the
         alias="has_system_property",
         description="Relation between a System Capability and an Observable Property that it can observe."
     )
-    inConditions: Union[
+    inCondition: Union[
         ResourceType, Condition, List[Union[ResourceType, Condition]]] = Field(
         default=None,
-        alias="in_conditions",
+        alias="in_condition",
         description="Relation between a System Capability and Conditions that apply to it."
         # example: Used for example to say that a Sensor has a particular accuracy in particular Conditions.
     )
@@ -90,7 +90,7 @@ The capabilities specified here are those that affect the primary purpose of the
             ssn_system="http://www.w3.org/ns/ssn/systems/")
 @urirefs(ObservableProperty="sosa:ObservableProperty",
          isObservedBy="sosa:isObservedBy")
-class ObservableProperty(SystemProperty):
+class ObservableProperty(Property):
     """Observable Property - An observable quality (property, characteristic) of a FeatureOfInterest."""
     isObservedBy: Union[ResourceType, "Sensor", List[Union[ResourceType, "Sensor"]]] = Field(default=None,
                                                                                              alias="is_observed_by")

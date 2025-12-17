@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.24.1
+
+- fix typos in property names of ssn ontology
+
 ## v0.24.0
 
 - add `ssn`, the Semantic Sensor Network Ontology

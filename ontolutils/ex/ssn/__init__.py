@@ -8,7 +8,7 @@ from ..qudt import Unit
 
 
 @namespaces(ssn="http://www.w3.org/ns/ssn/",
-            schema="http://schema.org/")
+            schema="https://schema.org/")
 @urirefs(Property="ssn:Property",
          minValue="schema:minValue",
          maxValue="schema:maxValue",

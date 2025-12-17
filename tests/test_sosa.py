@@ -132,7 +132,7 @@ class TestSosa(unittest.TestCase):
         ttl = sensor.serialize("ttl")
         self.assertEqual(ttl, """@prefix qudt: <http://qudt.org/schema/qudt/> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix schema1: <http://schema.org/> .
+@prefix schema: <https://schema.org/> .
 @prefix sosa: <http://www.w3.org/ns/sosa/> .
 @prefix ssn: <http://www.w3.org/ns/ssn/> .
 @prefix ssn_system: <http://www.w3.org/ns/ssn/systems/> .
@@ -145,24 +145,24 @@ class TestSosa(unittest.TestCase):
         <http://example.org/system_capability/2> .
 
 <http://example.org/accuracy/1> a ssn_system:Accuracy ;
-    schema1:unitCode <http://qudt.org/vocab/unit/PA> ;
-    schema1:value 2.5e+00 ;
-    rdfs:comment "Max error bound (±1%FS) for range 0–250 Pa (FS=250 Pa)."@en .
+    rdfs:comment "Max error bound (±1%FS) for range 0–250 Pa (FS=250 Pa)."@en ;
+    schema:unitCode <http://qudt.org/vocab/unit/PA> ;
+    schema:value 2.5e+00 .
 
 <http://example.org/accuracy/2> a ssn_system:Accuracy ;
-    schema1:unitCode <http://qudt.org/vocab/unit/PA> ;
-    schema1:value 5e+00 ;
-    rdfs:comment "Max error bound (±1%FS) for range 0–500 Pa (FS=500 Pa)."@en .
+    rdfs:comment "Max error bound (±1%FS) for range 0–500 Pa (FS=500 Pa)."@en ;
+    schema:unitCode <http://qudt.org/vocab/unit/PA> ;
+    schema:value 5e+00 .
 
 <http://example.org/measurement_range/1> a ssn_system:MeasurementRange ;
-    schema1:maxValue 2.5e+02 ;
-    schema1:minValue 0e+00 ;
-    schema1:unitCode <http://qudt.org/vocab/unit/PA> .
+    schema:maxValue 2.5e+02 ;
+    schema:minValue 0e+00 ;
+    schema:unitCode <http://qudt.org/vocab/unit/PA> .
 
 <http://example.org/measurement_range/2> a ssn_system:MeasurementRange ;
-    schema1:maxValue 5e+02 ;
-    schema1:minValue 0e+00 ;
-    schema1:unitCode <http://qudt.org/vocab/unit/PA> .
+    schema:maxValue 5e+02 ;
+    schema:minValue 0e+00 ;
+    schema:unitCode <http://qudt.org/vocab/unit/PA> .
 
 <http://example.org/system_capability/1> a ssn_system:SystemCapability ;
     ssn:forProperty <http://example.org/observable_property/1> ;

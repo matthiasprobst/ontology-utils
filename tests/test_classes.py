@@ -433,6 +433,46 @@ class TestNamespaces(unittest.TestCase):
         self.assertFalse(decorator._is_http_url('example.com/'))
         self.assertFalse(decorator._is_http_url('http:invalid.123'))
 
+    def test_overwriting_properties(self):
+        @namespaces(ex="http://example.com/")
+        @urirefs(MyThing='ex:MyThing',
+                 name='ex:name',
+                 comment='ex:comment')
+        class MyThing(Thing):
+            """Pydantic Model for http://xmlns.com/foaf/0.1/Agent
+            Parameters
+            ----------
+            mbox: EmailStr = None
+                Email address (foaf:mbox)
+            """
+            name: str = None
+            comment: int = None
+
+        self.assertTrue(issubclass(MyThing, Thing))  # MyThing is still a Thing subclass
+
+        my_thing = MyThing(
+            label='My Thing 1',
+            name='Thing Name',
+            comment=123,
+            about="https://example.org/about"
+        )
+        self.assertEqual(my_thing.name, 'Thing Name')
+        self.assertEqual(my_thing.comment, 123)
+        self.assertEqual("ex:comment", get_urirefs(MyThing)['comment'])
+        self.assertEqual("dcterms:relation", get_urirefs(MyThing)['relation'])
+        self.assertEqual("""@prefix ex: <http://example.com/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <https://schema.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+[] a ex:MyThing ;
+    rdfs:label "My Thing 1" ;
+    ex:comment 123 ;
+    ex:name "Thing Name" ;
+    schema:about <https://example.org/about> .
+
+""", my_thing.serialize("ttl"))
+
     def test_model_dump_jsonld(self):
         @namespaces(foaf="http://xmlns.com/foaf/0.1/")
         @urirefs(Agent='foaf:Agent',

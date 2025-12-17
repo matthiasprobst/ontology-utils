@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.25.0
+
+- hotfix correct overwriting of properties when subclassing Things
+
 ## v0.24.1
 
 - fix typos in property names of ssn ontology

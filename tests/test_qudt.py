@@ -26,7 +26,6 @@ class TestQudt(unittest.TestCase):
             """@prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix qudt: <http://qudt.org/schema/qudt/> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <http://qudt.org/vocab/unit/PA> a qudt:Unit ;
@@ -62,6 +61,8 @@ class TestQudt(unittest.TestCase):
     qudt:conversionMultiplier 1e+00 ;
     qudt:conversionMultiplierSN 1e+00 ;
     qudt:dbpediaMatch <http://dbpedia.org/resource/Pascal> ;
+    qudt:exactMatch <http://qudt.org/vocab/unit/KiloGM-PER-M-SEC2>,
+        <http://qudt.org/vocab/unit/N-PER-M2> ;
     qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L-1I0M1H0T-2D0> ;
     qudt:hasQuantityKind <http://qudt.org/vocab/quantitykind/BulkModulus>,
         <http://qudt.org/vocab/quantitykind/ForcePerArea>,
@@ -80,9 +81,7 @@ class TestQudt(unittest.TestCase):
     qudt:udunitsCode "Pa" ;
     qudt:uneceCommonCode "PAL" ;
     qudt:wikidataMatch <http://www.wikidata.org/entity/Q44395> ;
-    rdfs:isDefinedBy <http://qudt.org/3.1.8/vocab/unit> ;
-    skos:exactMatch <http://qudt.org/vocab/unit/KiloGM-PER-M-SEC2>,
-        <http://qudt.org/vocab/unit/N-PER-M2> .
+    rdfs:isDefinedBy <http://qudt.org/3.1.8/vocab/unit> .
 
 """,
             u_pa.serialize(format="ttl"))

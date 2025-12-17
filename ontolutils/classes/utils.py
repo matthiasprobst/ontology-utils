@@ -31,10 +31,13 @@ class UNManager:
         if cls not in self.data:
             self.data[cls] = {}
         # there might be subclass to this cls. get those data as well
+        # however we should not overwrite the existing data
         for k, v in self.data.items():
             if k != cls:
                 if issubclass(cls, k):
-                    self.data[cls].update(v)
+                    for key, val in v.items():
+                        if key not in self.data[cls]:
+                            self.data[cls][key] = val
         return self.data[cls]
 
 

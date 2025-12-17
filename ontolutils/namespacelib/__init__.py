@@ -11,6 +11,7 @@ from .qudt_unit import QUDT_UNIT
 from .schema import SCHEMA
 from .hdf5 import HDF5
 from .spdx import SPDX
+from .ssn_system import SSN_SYSTEM
 from ..cache import package_user_dir
 
 sys.path.insert(0, str(package_user_dir))

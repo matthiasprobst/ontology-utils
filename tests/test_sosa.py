@@ -1,5 +1,7 @@
 import unittest
 
+import rdflib
+
 from ontolutils import serialize
 from ontolutils.ex.m4i import Tool
 from ontolutils.ex.qudt import Unit
@@ -177,3 +179,8 @@ class TestSosa(unittest.TestCase):
 <http://qudt.org/vocab/unit/PA> a qudt:Unit .
 
 """)
+
+    def test_ssyn_system(self):
+        from ontolutils.namespacelib import SSN_SYSTEM
+        self.assertEqual(SSN_SYSTEM._NS, "http://www.w3.org/ns/ssn/systems/")
+        self.assertEqual(SSN_SYSTEM.Condition, rdflib.URIRef("http://www.w3.org/ns/ssn/systems/Condition"))

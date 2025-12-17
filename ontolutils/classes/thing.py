@@ -17,7 +17,7 @@ from rdflib.plugins.shared.jsonld.context import Context
 
 from .decorator import urirefs, namespaces, URIRefManager, NamespaceManager, _is_http_url
 from .thingmodel import ThingModel
-from .utils import split_URIRef
+from .utils import split_uri
 from .. import get_config
 from ..typing import BlankNodeType, IdType, ResourceType
 
@@ -251,6 +251,7 @@ def _parse_string_value(value, ctx):
          description='dcterms:description',
          broader='skos:broader',
          about='schema:about',
+         comment='rdfs:comment',
          isDefinedBy='rdfs:isDefinedBy',
          relation='dcterms:relation',
          closeMatch='skos:closeMatch',
@@ -305,6 +306,7 @@ class Thing(ThingModel):
     label: Optional[Union[LangString, List[LangString]]] = None  # rdfs:label
     altLabel: Optional[Union[LangString, List[LangString]]] = None  # skos:altLabel
     broader: Optional[Union[ResourceType, List[ResourceType]]] = None  # skos:broader
+    comment: Optional[Union[LangString, List[LangString]]] = None  # rdfs:comment
     about: Optional[
         Union[
             str, HttpUrl, FileUrl, ThingModel, BlankNodeType, List[Union[HttpUrl, FileUrl, ThingModel, BlankNodeType]]]
@@ -816,7 +818,9 @@ class Thing(ThingModel):
             iri_short = URIRefManager[cls][key]
         if compact:
             return iri_short
-        ns, key = split_URIRef(iri_short)
+        ns, key = split_uri(iri_short)
+        if ns.endswith(":"):
+            ns = ns[:-1]
         ns_iri = NamespaceManager[cls].get(ns, None)
         return f'{ns_iri}{key}'
 

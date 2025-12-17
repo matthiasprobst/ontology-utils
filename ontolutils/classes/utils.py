@@ -1,7 +1,7 @@
 import json
 import logging
 import pathlib
-from typing import Union, List, Dict
+from typing import List, Dict, Tuple
 
 import rdflib
 import requests
@@ -38,8 +38,9 @@ class UNManager:
         return self.data[cls]
 
 
-def split_URIRef(uri: rdflib.URIRef) -> List[Union[str, None]]:
+def split_uri(uri: rdflib.URIRef) -> Tuple[str, str]:
     """Split a URIRef into namespace and key."""
+    return rdflib.namespace.split_uri(uri)
     _uri = str(uri)
     if _uri.startswith('http'):
         if '#' in _uri:

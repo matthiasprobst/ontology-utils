@@ -2,7 +2,7 @@ import pydantic
 from pydantic import HttpUrl
 from typing import Dict, Type
 from . import utils
-from .utils import split_URIRef
+from .utils import split_uri
 
 URIRefManager = utils.UNManager()
 NamespaceManager = utils.UNManager()
@@ -85,7 +85,7 @@ def _decorate_urirefs(cls, **kwargs):
         if not isinstance(v, str):
             raise TypeError(f"{v} must be a string, not {type(v)}")
         if _is_http_url(v):
-            ns, key = split_URIRef(v)
+            ns, key = split_uri(v)
             prefix = _prefix_dict.get(ns, None)
             if prefix is None:
                 URIRefManager[cls][k] = str(v)

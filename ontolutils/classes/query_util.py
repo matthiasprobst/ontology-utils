@@ -10,7 +10,7 @@ import rdflib
 
 from .decorator import URIRefManager, NamespaceManager
 from .thing import Thing
-from .utils import split_URIRef
+from .utils import split_uri
 
 logger = logging.getLogger('ontolutils')
 
@@ -37,7 +37,7 @@ def process_object(
             # logger.debug(s, p, o, obj)
             if str(s) == str(obj):
                 if isinstance(o, rdflib.Literal):
-                    _, key = split_URIRef(p)
+                    _, key = split_uri(p)
                     sub_data[key] = str(o)
                     continue
 
@@ -63,7 +63,7 @@ WHERE {
                     # may point to another blank node:
                     if isinstance(o, rdflib.BNode):
                         logger.debug(f'"{o}" is a blank node. Need to find children of it...')
-                        _, key = split_URIRef(p)
+                        _, key = split_uri(p)
                         if key in sub_data:
                             if isinstance(sub_data[key], list):
                                 sub_data[key].append(process_object(_id, p, o, graph, add_type))
@@ -75,7 +75,7 @@ WHERE {
                         # it might be a IRI which is defined inside the JSON-LD:
                         _sub_data = process_object(_id, p, o, graph, add_type)
                         if _sub_data:
-                            _, key = split_URIRef(p)
+                            _, key = split_uri(p)
                             sub_data[key] = _sub_data
                     else:
                         logger.debug(f'dont know what to do with {p} and {o}')
@@ -127,7 +127,7 @@ def _query_by_id(graph, _id: Union[str, rdflib.URIRef], add_type: bool) -> Dict:
                 out['@type'] = str(obj)
             continue
 
-        _, key = split_URIRef(predicate)
+        _, key = split_uri(predicate)
         if str(_id) == str(obj):
             # would lead to a circular reference. Example for it: "landingPage" and "_id" are the same.
             # in this case, we return the object as a string
@@ -171,7 +171,7 @@ def expand_sparql_res(bindings,
             if add_context:
                 out[_id] = {'@context': {}}
         p = binding['p'].__str__()
-        _, predicate = split_URIRef(p)
+        _, predicate = split_uri(p)
 
         if predicate == 'type':
             if add_type:

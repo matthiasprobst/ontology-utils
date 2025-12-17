@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.24.0
+
+- add `ssn`, the Semantic Sensor Network Ontology
+- add `rdfs:comment` to `Thing`
+- add namespace `ssn-system`
+- housekeeping
+
 ## v0.23.0
 
 - add class methods `from_ttl` and `from_file` to `Thing`

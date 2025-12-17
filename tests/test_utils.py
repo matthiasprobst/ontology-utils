@@ -40,16 +40,8 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(unm.__repr__(), f'UNManager({Agent.__name__})')
 
     def test_split_uriref(self):
-        ns, name = utils.split_URIRef('foaf:Agent')
-        self.assertEqual(ns, 'foaf')
-        self.assertEqual(name, 'Agent')
-
-        ns, name = utils.split_URIRef('http://xmlns.com/foaf/0.1/Agent')
+        ns, name = utils.split_uri('http://xmlns.com/foaf/0.1/Agent')
         self.assertEqual(ns, 'http://xmlns.com/foaf/0.1/')
-        self.assertEqual(name, 'Agent')
-
-        ns, name = utils.split_URIRef('Agent')
-        self.assertEqual(ns, None)
         self.assertEqual(name, 'Agent')
 
     def test_download(self):

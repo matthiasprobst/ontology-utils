@@ -22,7 +22,7 @@ from ontolutils import get_urirefs, get_namespaces, set_config
 from ontolutils import set_logging_level
 from ontolutils.classes import decorator
 from ontolutils.classes.thing import resolve_iri, LangString
-from ontolutils.classes.utils import split_URIRef
+from ontolutils.classes.utils import split_uri
 from ontolutils.typing import NoneBlankNodeType
 
 LOG_LEVEL = logging.DEBUG
@@ -110,17 +110,17 @@ class TestNamespaces(unittest.TestCase):
         ret = resolve_iri('prefix:label', Context(source={}))
         self.assertEqual(ret, None)
 
-    def test_split_URIRef(self):
-        self.assertListEqual(split_URIRef(rdflib.URIRef('https://example.com/')),
-                             ['https://example.com/', ''])
-        self.assertListEqual(split_URIRef(rdflib.URIRef('https://example.com/#test')),
-                             ['https://example.com/#', 'test'])
-        self.assertListEqual(split_URIRef(rdflib.URIRef('https://example.com/test')),
-                             ['https://example.com/', 'test'])
-        self.assertListEqual(split_URIRef(rdflib.URIRef('https://example.com/test#test')),
-                             ['https://example.com/test#', 'test'])
-        self.assertListEqual(split_URIRef(rdflib.URIRef('https://example.com/test:123')),
-                             ['https://example.com/', 'test:123'])
+    def test_split_uri(self):
+        with self.assertRaises(ValueError):
+            split_uri(rdflib.URIRef('https://example.com/'))
+        self.assertTupleEqual(split_uri(rdflib.URIRef('https://example.com/#test')),
+                              ('https://example.com/#', 'test'))
+        self.assertTupleEqual(split_uri(rdflib.URIRef('https://example.com/test')),
+                              ('https://example.com/', 'test'))
+        self.assertTupleEqual(split_uri(rdflib.URIRef('https://example.com/test#test')),
+                              ('https://example.com/test#', 'test'))
+        self.assertTupleEqual(split_uri(rdflib.URIRef('https://example.com/test:123')),
+                              ('https://example.com/test:', '123'))
 
     def test_id(self):
         with self.assertRaises(pydantic.ValidationError):
@@ -904,6 +904,7 @@ class TestNamespaces(unittest.TestCase):
                              {'Thing': 'owl:Thing', 'closeMatch': 'skos:closeMatch', 'exactMatch': 'skos:exactMatch',
                               'label': 'rdfs:label', 'about': 'schema:about', 'altLabel': 'skos:altLabel',
                               'description': 'dcterms:description',
+                              'comment': 'rdfs:comment',
                               'isDefinedBy': 'rdfs:isDefinedBy',
                               'broader': 'skos:broader',
                               'relation': 'dcterms:relation'})

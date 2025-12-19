@@ -1,11 +1,14 @@
 import json
 import logging
 import pathlib
+import random
+import time
 from typing import List, Dict, Tuple
 
 import rdflib
 import requests
 
+RETRY_STATUS = {429, 500, 502, 503, 504}
 logger = logging.getLogger(__package__)
 logger.setLevel('DEBUG')
 
@@ -44,16 +47,6 @@ class UNManager:
 def split_uri(uri: rdflib.URIRef) -> Tuple[str, str]:
     """Split a URIRef into namespace and key."""
     return rdflib.namespace.split_uri(uri)
-    _uri = str(uri)
-    if _uri.startswith('http'):
-        if '#' in _uri:
-            _split = _uri.rsplit('#', 1)
-            return [f'{_split[0]}#', _split[1]]
-        _split = _uri.rsplit('/', 1)
-        return [f'{_split[0]}/', _split[1]]
-    if ':' in _uri:
-        return _uri.rsplit(':', 1)
-    return [None, uri]
 
 
 def merge_jsonld(jsonld_strings: List[str]) -> str:
@@ -81,6 +74,37 @@ def merge_jsonld(jsonld_strings: List[str]) -> str:
             out['@graph'].append(data)
 
     return json.dumps(out, indent=2)
+
+
+def request_with_backoff(method, url, session=None, max_retries=8, timeout=30, **kwargs):
+    s = session or requests.Session()
+    for attempt in range(max_retries + 1):
+        r = s.request(method, url, timeout=timeout, **kwargs)
+
+        if r.status_code not in RETRY_STATUS:
+            return r
+
+        # Prefer server guidance
+        retry_after = r.headers.get("Retry-After")
+        if retry_after is not None:
+            try:
+                sleep_s = float(retry_after)
+            except ValueError:
+                sleep_s = None
+        else:
+            sleep_s = None
+
+        if sleep_s is None:
+            # Exponential backoff with jitter (full jitter)
+            base = min(60.0, 0.5 * (2 ** attempt))
+            sleep_s = random.uniform(0, base)
+
+        if attempt == max_retries:
+            return r
+
+        time.sleep(sleep_s)
+
+    return r
 
 
 def download_file(url,
@@ -118,7 +142,8 @@ def download_file(url,
     from ..cache import get_cache_dir
 
     logger.debug(f'Performing request to {url}')
-    response = requests.get(url, stream=True, **kwargs)
+    response = request_with_backoff('GET', url, **kwargs)
+    # response = requests.get(url, stream=True, **kwargs)
     if not response.ok:
         response.raise_for_status()
 

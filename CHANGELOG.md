@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.25.1
+
+- improved download function
+
 ## v0.25.0
 
 - hotfix correct overwriting of properties when subclassing Things

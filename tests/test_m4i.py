@@ -1,6 +1,5 @@
 import unittest
 
-import matplotlib.pyplot as plt
 import pydantic
 
 from ontolutils.ex.m4i import TextVariable, NumericalVariable, Tool, ProcessingStep
@@ -123,7 +122,7 @@ class TestM4i(unittest.TestCase):
     def test_to_xarray(self):
         numerical_variable = NumericalVariable(
             id='http://example.org/variable/vfr',
-            label=["Volume Flow Rate@en", "Volumenstrom@de", "Débit volumique"],
+            label=["Volume Flow Rate@en", "Volumenstrom@de", "Débit volumiqu"],
             hasUnit='mm/s',
             hasNumericalValue=[1.0, 2.0, 3.0],
             hasVariableDescription='Variable description',

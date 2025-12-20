@@ -1,5 +1,6 @@
 from typing import Tuple, Union, Any, Dict
 
+import pint
 import rdflib
 
 from . import Unit
@@ -78,16 +79,20 @@ def to_pint_unit(unit: Union[Unit, str, rdflib.URIRef], ureg=None, lookup: Dict 
     else:
         unit_iri = unit.id
 
-    found_symbol = None
-    for k, v in _qudt_lookup.items():
-        if str(v) == unit_iri:
-            found_symbol = k
-            break
-
-    if found_symbol is None:
-        raise ValueError(f"Unit {unit_iri} not found in QUDT lookup for pint conversion")
-
     # convert found_symbol into pint-compatible string
     if ureg is None:
         ureg = UnitRegistry(force_ndarray_like=True)
-    return ureg.__getattr__(found_symbol)
+
+    found_pint_unit = None
+    for k, v in _qudt_lookup.items():
+        if str(v) == unit_iri:
+            try:
+                found_pint_unit = ureg.__getattr__(k)
+                break
+            except pint.UndefinedUnitError:
+                pass
+
+    if found_pint_unit is None:
+        raise ValueError(f"Unit {unit_iri} not found in QUDT lookup for pint conversion")
+
+    return found_pint_unit

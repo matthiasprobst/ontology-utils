@@ -17,6 +17,19 @@ from ..schema import ResearchProject
 from ..sis import MeasurementUncertainty
 from ...typing import ResourceType
 
+_UNIT_REGISTRY = None
+
+
+def get_unit_registry():
+    try:
+        import pint
+    except ImportError as e:
+        raise ImportError("pint is required to use unit registry") from e
+    if _UNIT_REGISTRY is None:
+        return pint.UnitRegistry()
+    else:
+        return _UNIT_REGISTRY
+
 
 @namespaces(m4i="http://w3id.org/nfdi4ing/metadata4ing#")
 @urirefs(TextVariable='m4i:TextVariable',
@@ -165,6 +178,10 @@ class NumericalVariable(Variable):
                     fields[key] = value[0]
                 else:
                     fields[key] = value
+        if "units" in fields:
+            ureg = get_unit_registry()
+            unit_str = f'{ureg(fields["units"]).units:~f}'.replace(" ", "")
+            fields["units"] = unit_str
         return cls(hasNumericalValue=data_array.data, **fields)
 
 

@@ -124,6 +124,7 @@ qudt_lookup = {
     # frequency
     'Hz': QUDT_UNIT.HZ,
     'revolution/min': QUDT_UNIT.REV_PER_MIN,
+    '1/min': QUDT_UNIT.PER_MIN,
     # energy
     'joule': QUDT_UNIT.J,
     'Joule': QUDT_UNIT.J,

@@ -151,15 +151,16 @@ class TestQudt(unittest.TestCase):
         u_pint = to_pint_unit(QUDT_UNIT.CentiM)
         self.assertEqual(str(u_pint), "centimeter")
 
-        value = 25.0*u_pint
+        value = 25.0 * u_pint
         self.assertEqual(value.to("m").magnitude, 0.25)
         self.assertEqual(value.to("cm").magnitude, 25.0)
 
-        u_pint_rev_per_min = to_pint_unit(QUDT_UNIT.REV_PER_MIN)
-        self.assertEqual(str(u_pint_rev_per_min), "turn / minute")
+        u_pint_rev_per_min = to_pint_unit(QUDT_UNIT.PER_MIN)
+        self.assertEqual(str(u_pint_rev_per_min), "1 / minute")
 
-        u_pint_rev_per_min_base_units = (1*u_pint_rev_per_min).to_base_units()
-        self.assertEqual(str(u_pint_rev_per_min_base_units.units), "radian / second")
+        u_pint_rev_per_min_base_units = (1 * u_pint_rev_per_min).to_base_units()
+        self.assertEqual(str(u_pint_rev_per_min_base_units.units), "1 / second")
 
-        u_pint_hertz = (1*u_pint_rev_per_min).to("hertz")
+        u_pint_hertz = (600 * u_pint_rev_per_min).to("hertz")
         self.assertEqual(str(u_pint_hertz.units), "hertz")
+        self.assertAlmostEqual(u_pint_hertz.magnitude, 10.0)

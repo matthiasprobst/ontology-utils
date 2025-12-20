@@ -2,7 +2,7 @@ import pathlib
 import unittest
 
 from ontolutils.ex.qudt import Unit
-from ontolutils.ex.qudt.conversion import convert_value_qudt
+from ontolutils.ex.qudt.conversion import convert_value_qudt, to_pint_unit
 from ontolutils.ex.qudt.utils import iri2str
 from ontolutils.namespacelib import QUDT_UNIT
 
@@ -144,3 +144,22 @@ class TestQudt(unittest.TestCase):
         self.assertEqual(
             convert_value_qudt(42.0, m, m), 42.0
         )
+
+    def test_convert_to_pint_unit(self):
+        u_pint = to_pint_unit(QUDT_UNIT.K)
+        self.assertEqual(str(u_pint), "kelvin")
+        u_pint = to_pint_unit(QUDT_UNIT.CentiM)
+        self.assertEqual(str(u_pint), "centimeter")
+
+        value = 25.0*u_pint
+        self.assertEqual(value.to("m").magnitude, 0.25)
+        self.assertEqual(value.to("cm").magnitude, 25.0)
+
+        u_pint_rev_per_min = to_pint_unit(QUDT_UNIT.REV_PER_MIN)
+        self.assertEqual(str(u_pint_rev_per_min), "turn / minute")
+
+        u_pint_rev_per_min_base_units = (1*u_pint_rev_per_min).to_base_units()
+        self.assertEqual(str(u_pint_rev_per_min_base_units.units), "radian / second")
+
+        u_pint_hertz = (1*u_pint_rev_per_min).to("hertz")
+        self.assertEqual(str(u_pint_hertz.units), "hertz")

@@ -1,6 +1,6 @@
 import warnings
 from datetime import datetime
-from typing import Any
+from typing import Any, Dict
 from typing import List, Union
 from typing import Optional
 
@@ -12,6 +12,7 @@ from ontolutils.ex.pimsii import Variable
 from ..prov import Activity
 from ..prov import Organization
 from ..qudt import Unit
+from ..qudt.conversion import to_pint_unit
 from ..schema import ResearchProject
 from ..sis import MeasurementUncertainty
 from ...typing import ResourceType
@@ -45,8 +46,9 @@ class TextVariable(Variable):
          hasStepSize='m4i:hasStepSize',
          hasUncertaintyDeclaration='m4i:hasUncertaintyDeclaration')
 class NumericalVariable(Variable):
-    hasUnit: Optional[Union[ResourceType, Unit]] = Field(alias="has_unit", default=None)
-    hasNumericalValue: Optional[Union[Union[int, float], List[Union[int, float]]]] = Field(alias="has_numerical_value", default=None)
+    hasUnit: Optional[Union[ResourceType, Unit]] = Field(alias="units", default=None)
+    hasNumericalValue: Optional[Union[Union[int, float], List[Union[int, float]]]] = Field(alias="has_numerical_value",
+                                                                                           default=None)
     hasMaximumValue: Optional[Union[int, float]] = Field(alias="has_maximum_value", default=None)
     hasMinimumValue: Optional[Union[int, float]] = Field(alias="has_minimum_value", default=None)
     hasUncertaintyDeclaration: Optional[Union[MeasurementUncertainty, ResourceType]] = Field(
@@ -67,6 +69,103 @@ class NumericalVariable(Variable):
                               f"lookup. Either the unit is wrong or it is not yet included in the dictionary. ")
             return str(unit)
         return unit
+
+    def to_pint(self, ureg=None):
+        """Convert numerical value (not the min/max value!) to pint Quantity"""
+        if self.hasNumericalValue is None or self.hasUnit is None:
+            raise ValueError("Both hasNumericalValue and hasUnit must be set to convert to pint Quantity")
+
+        from ..qudt.conversion import to_pint_unit
+        new_unit = to_pint_unit(self.hasUnit, ureg=ureg)
+
+        return self.hasNumericalValue * new_unit
+
+    def to_xarray(self, language: str = "en"):
+        """Convert numerical value to xarray DataArray"""
+        try:
+            import xarray as xr
+        except ImportError as e:
+            raise ImportError("xarray is required to use to_xarray method") from e
+
+        if self.hasNumericalValue is None:
+            raise ValueError("hasNumericalValue must be set to convert to xarray DataArray")
+
+        model = self.model_dump(exclude_none=True, by_alias=True)
+        data = model.pop("has_numerical_value")
+        if "has_variable_description" in model:
+            desc = model.pop("has_variable_description")
+            desc_with_lang = _xarray_lang_string_to_str("has_variable_description", desc, language)
+            model.update(desc_with_lang)
+        if "units" in model:
+            pint_unit = to_pint_unit(self.hasUnit)
+            model["units"] = f"{pint_unit:~f}".replace(" ", "")
+        if "label" in model:
+            labels = model.pop("label")
+            labels_with_lang = _xarray_lang_string_to_str("label", labels, language, "long_name")
+
+            model.update(labels_with_lang)
+
+        return xr.DataArray(data=data, attrs=model)
+
+    @classmethod
+    def from_pint(cls, quantity: "pint.Quantity", lookup: Dict = None, **kwargs) -> "NumericalVariable":
+        """Create NumericalVariable from pint Quantity.
+
+        The unit of the quantity is formatted to a string using the compact format (e.g. 'm/s^2') and
+        then mapped to a QUDT IRI using a lookup dictionary.
+        An internal lookup dictionary is used by default, which can be extended or overridden
+        by providing an additional lookup dictionary.
+
+        Parameters
+        ----------
+        quantity: pint.Quantity
+            Pint Quantity to convert
+        lookup: Dict, optional
+            Optional additional lookup dictionary to map units to QUDT IRIs
+        kwargs: additional keyword arguments for NumericalVariable
+
+        Returns
+        -------
+        NumericalVariable
+            NumericalVariable instance
+        """
+        from ontolutils.utils.qudt_units import qudt_lookup
+        _qudt_lookup = qudt_lookup.copy()
+        if lookup:
+            _qudt_lookup.update(lookup)
+        try:
+            unit = _qudt_lookup[f"{quantity.units:~f}".replace(" ", "")]
+        except KeyError as e:
+            raise KeyError(f"Unit '{quantity.units}' could not be mapped to QUDT IRI") from e
+        return cls(hasNumericalValue=quantity.magnitude, hasUnit=unit, **kwargs)
+
+    @classmethod
+    def from_xarray(cls, data_array: "xarray.DataArray", **kwargs) -> "NumericalVariable":
+        """Create NumericalVariable from xarray DataArray."""
+        fields = data_array.attrs.copy()
+        fields.update(kwargs)
+        # loop over the fields. if a key ends with @xx (language tag), remove it and convert the value to LangString
+        _language_data = {}
+        for key, values in fields.copy().items():
+            if "@" in key:
+                base_key, lang = key.split("@", 1)
+                if base_key not in _language_data:
+                    _language_data[base_key] = [f"{values}@{lang}", ]
+                else:
+                    _language_data[base_key].append(f"{values}@{lang}")
+                fields.pop(key)
+        for key, value in _language_data.items():
+            if key in fields:
+                if isinstance(value, list):
+                    fields[key] = [fields[key], *value]
+                else:
+                    fields[key] = [fields[key], value]
+            else:
+                if len(value) == 1:
+                    fields[key] = value[0]
+                else:
+                    fields[key] = value
+        return cls(hasNumericalValue=data_array.data, **fields)
 
 
 @namespaces(m4i="http://w3id.org/nfdi4ing/metadata4ing#",
@@ -274,3 +373,25 @@ from ..dcat.resource import Distribution
 Distribution.wasGeneratedBy: ProcessingStep = Field(default=None, alias='was_generated_by')
 
 ProcessingStep.model_rebuild()
+
+
+def _xarray_lang_string_to_str(name: str, data: Union[str, Dict], language: str, use_name: str = None):
+    out = {}
+    if use_name is None:
+        use_name = name
+    if isinstance(data, list):
+        use_label = None
+        for datum in data:
+            if "lang" in datum:
+                _lang = datum['lang']
+                out[f"{name}@{_lang}"] = datum['value']
+                if _lang == language:
+                    use_label = datum['value']
+            else:
+                out[name] = datum["value"]
+        if use_label is None and len(data) > 0:
+            use_label = data[0]['value']
+    else:
+        use_label = data["value"]
+    out[use_name] = use_label
+    return out

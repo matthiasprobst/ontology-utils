@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.26.0
+
+- add helper methods `to_pint()` to `NumericalVariable` to convert to a `pint.Quantity`
+- add helper method `from_pint()` to `NumericalVariable` to create a `NumericalVariable` from a `pint.Quantity`
+- add helper function `to_xarray()` to `NumericalVariable` to convert to an `xarray.DataArray`
+- add helper function `from_xarray()` to `NumericalVariable` to create a `NumericalVariable` from an `xarray.DataArray`
+- add helper function `to_pint_unit()` converting a QUDT unit to a `pint` unit string
+
 ## v0.25.1
 
 - improved download function

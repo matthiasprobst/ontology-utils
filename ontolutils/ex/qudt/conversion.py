@@ -1,4 +1,6 @@
-from typing import Tuple, Union, Any
+from typing import Tuple, Union, Any, Dict
+
+import rdflib
 
 from . import Unit
 
@@ -59,3 +61,33 @@ def convert_value_qudt(value: Union[int, float], from_unit: Unit, to_unit: Unit)
 
     v_base = m_f * float(value) + b_f
     return (v_base - b_t) / m_t
+
+
+def to_pint_unit(unit: Union[Unit, str, rdflib.URIRef], ureg=None, lookup: Dict = None) -> str:
+    from ontolutils.utils.qudt_units import qudt_lookup
+    _qudt_lookup = qudt_lookup.copy()
+    if lookup is not None:
+        _qudt_lookup.update(qudt_lookup)
+
+    try:
+        from pint import UnitRegistry
+    except ImportError:
+        raise ImportError("pint is required for to_pint_unit function. Please install pint package.")
+    if isinstance(unit, (str, rdflib.URIRef)):
+        unit_iri = str(unit)
+    else:
+        unit_iri = unit.id
+
+    found_symbol = None
+    for k, v in _qudt_lookup.items():
+        if str(v) == unit_iri:
+            found_symbol = k
+            break
+
+    if found_symbol is None:
+        raise ValueError(f"Unit {unit_iri} not found in QUDT lookup for pint conversion")
+
+    # convert found_symbol into pint-compatible string
+    if ureg is None:
+        ureg = UnitRegistry(force_ndarray_like=True)
+    return ureg.__getattr__(found_symbol)

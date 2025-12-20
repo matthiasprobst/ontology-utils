@@ -141,3 +141,30 @@ class TestM4i(unittest.TestCase):
         )
         ttl_after_conversions = numerical_variable_from_xarray.serialize("ttl")
         self.assertEqual(ttl_orig, ttl_after_conversions)
+
+    def test_getitem(self):
+        numerical_variable = NumericalVariable(
+            id='http://example.org/variable/vfr',
+            label=["Volume Flow Rate@en", "Volumenstrom@de", "Débit volumiqu"],
+            hasUnit='mm/s',
+            hasNumericalValue=[1.0, 2.0, 3.0],
+            hasVariableDescription='Variable description',
+            hasSymbol='vfr'
+        )
+        numerical_variable0 = numerical_variable[0]
+        self.assertEqual(numerical_variable0.hasNumericalValue, 1.0)
+        self.assertEqual(numerical_variable0.hasUnit, 'http://qudt.org/vocab/unit/MilliM-PER-SEC')
+        self.assertEqual(numerical_variable0.hasSymbol, 'vfr')
+        self.assertEqual(numerical_variable0.hasVariableDescription, 'Variable description')
+
+        numerical_variable1_2 = numerical_variable[1:3]
+        self.assertEqual(numerical_variable1_2.hasNumericalValue, [2.0, 3.0])
+        self.assertEqual(numerical_variable1_2.hasUnit, 'http://qudt.org/vocab/unit/MilliM-PER-SEC')
+        self.assertEqual(numerical_variable1_2.hasSymbol, 'vfr')
+        self.assertEqual(numerical_variable1_2.hasVariableDescription, 'Variable description')
+
+        numerical_variable_last = numerical_variable[-1]
+        self.assertEqual(numerical_variable_last.hasNumericalValue, 3.0)
+        self.assertEqual(numerical_variable_last.hasUnit, 'http://qudt.org/vocab/unit/MilliM-PER-SEC')
+        self.assertEqual(numerical_variable_last.hasSymbol, 'vfr')
+        self.assertEqual(numerical_variable_last.hasVariableDescription, 'Variable description')

@@ -7,6 +7,7 @@
 - add helper function `to_xarray()` to `NumericalVariable` to convert to an `xarray.DataArray`
 - add helper function `from_xarray()` to `NumericalVariable` to create a `NumericalVariable` from an `xarray.DataArray`
 - add helper function `to_pint_unit()` converting a QUDT unit to a `pint` unit string
+- `NumericalVariable` now supports `__get_item__` to access values via indexing
 
 ## v0.25.1
 

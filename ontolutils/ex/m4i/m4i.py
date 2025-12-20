@@ -69,6 +69,16 @@ class NumericalVariable(Variable):
     )
     hasStepSize: Optional[Union[int, float]] = Field(alias="has_step_size", default=None)
 
+    def __getitem__(self, item):
+        hasNumericalValue= self.hasNumericalValue
+        if isinstance(hasNumericalValue, list):
+            import numpy as np
+            selected_values = np.asarray(hasNumericalValue).__getitem__(item)
+            self_copy = self.model_copy()
+            self_copy.hasNumericalValue = selected_values
+            return self_copy
+        raise ValueError("hasNumericalValue is not a array/list")
+
     @field_validator("hasUnit", mode='before')
     @classmethod
     def _parse_unit(cls, unit):

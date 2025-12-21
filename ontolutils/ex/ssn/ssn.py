@@ -154,6 +154,20 @@ class Platform(Thing):
 
 
 @namespaces(sosa="http://www.w3.org/ns/sosa/",
+            ssn="http://www.w3.org/ns/ssn/", )
+@urirefs(FeatureOfInterest="sosa:FeatureOfInterest",
+         hasProperty="ssn:hasProperty"
+         )
+class FeatureOfInterest(Thing):
+    """Feature Of Interest - The thing whose property is being estimated or calculated in the course of an Observation to arrive at a Result, or whose property is being manipulated by an Actuator, or which is being sampled or transformed in an act of Sampling."""
+    hasProperty: Union[ResourceType, Property, List[Union[ResourceType, Property]]] = Field(
+        default=None,
+        alias="has_property",
+        description="The property associated with this feature of interest."
+    )
+
+
+@namespaces(sosa="http://www.w3.org/ns/sosa/",
             m4i="http://w3id.org/nfdi4ing/metadata4ing#")
 @urirefs(Result="sosa:Result",
          hasNumericalVariable="m4i:hasNumericalVariable"
@@ -190,7 +204,7 @@ class Observation(Thing):
         alias="has_result",
         description="The result of the observation."
     )
-    hasFeatureOfInterest: Union[ResourceType, Thing] = Field(
+    hasFeatureOfInterest: Union[ResourceType, FeatureOfInterest] = Field(
         default=None,
         alias="has_feature_of_interest",
         description=" A relation between an Observation and the entity whose quality was observed, or between an Actuation and the entity whose property was modified, or between an act of Sampling and the entity that was sampled."

@@ -6,3 +6,4 @@ pylint >= 3.2.6
 pyyaml
 pint
 xarray
+numpy

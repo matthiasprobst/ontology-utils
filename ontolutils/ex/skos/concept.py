@@ -6,8 +6,10 @@ from pydantic import Field
 from ontolutils import Thing, LangString, namespaces, urirefs
 from ontolutils.typing import ResourceType
 
+_NS = "http://www.w3.org/2004/02/skos/core#"
 
-@namespaces(skos="http://www.w3.org/2004/02/skos/core#",
+
+@namespaces(skos=_NS,
             dcterms="http://purl.org/dc/terms/",
             prov="http://www.w3.org/ns/prov#")
 @urirefs(Note='skos:Note',
@@ -22,7 +24,7 @@ class Note(Thing):
     creator: Optional[Union[ResourceType, List[ResourceType]]] = Field(default=None)
 
 
-@namespaces(skos="http://www.w3.org/2004/02/skos/core#")
+@namespaces(skos=_NS)
 @urirefs(ConceptScheme='skos:ConceptScheme',
          hasTopConcept='skos:hasTopConcept'
          )
@@ -31,7 +33,7 @@ class ConceptScheme(Thing):
     hasTopConcept: Optional[Union['Concept', List['Concept']]] = Field(default=None, alias="has_top_concept")
 
 
-@namespaces(skos="http://www.w3.org/2004/02/skos/core#")
+@namespaces(skos=_NS)
 @urirefs(Concept='skos:Concept',
          prefLabel='skos:prefLabel',
          altLabel='skos:altLabel',

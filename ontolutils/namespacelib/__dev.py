@@ -425,7 +425,7 @@ def build_namespace_files():
     #     f.write('"""Auto-generated file. Do not edit!"""\n')
     # f.write('from ._version import __version__\n')
 
-    # m4i()
+    m4i()
     #
     # obo()
     #
@@ -438,7 +438,7 @@ def build_namespace_files():
     # schema()
 
     # hdf5()
-    spdx()
+    # spdx()
     # with open(__package_dir__ / '__init__.py', 'a') as f:
     # f.write('from .m4i import M4I\n')
     # f.write('from .obo import OBO\n')

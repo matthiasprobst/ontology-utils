@@ -22,10 +22,11 @@ def is_hdf5_root_path(path: str, handler):
 HDF5Path = Annotated[str, WrapValidator(is_internal_hdf5_path)]
 HDF5RootPath = Annotated[str, WrapValidator(is_internal_hdf5_path)]
 
+__version__ = "REC/2024/12"
+_NS = "http://purl.allotrope.org/ontologies/hdf5/1.8#"
 
-@namespaces(
-    hdf5="http://purl.allotrope.org/ontologies/hdf5/1.8#"
-)
+
+@namespaces(hdf5=_NS)
 @urirefs(Dataset='hdf5:Dataset',
          name='hdf5:name')
 class Dataset(Thing):
@@ -33,7 +34,7 @@ class Dataset(Thing):
     name: HDF5Path
 
 
-@namespaces(hdf5="http://purl.allotrope.org/ontologies/hdf5/1.8#")
+@namespaces(hdf5=_NS)
 @urirefs(Group='hdf5:Group',
          member='hdf5:member',
          name='hdf5:name')
@@ -55,7 +56,7 @@ class Group(Thing):
         return group_or_dataset
 
 
-@namespaces(hdf5="http://purl.allotrope.org/ontologies/hdf5/1.8#")
+@namespaces(hdf5=_NS)
 @urirefs(File='hdf5:File',
          rootGroup='hdf5:rootGroup')
 class File(Thing):

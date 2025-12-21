@@ -5,8 +5,11 @@ from pydantic import Field, field_validator
 from ontolutils import Thing, namespaces, urirefs
 from ...typing import ResourceType
 
+__version__ = "3.1.9"
+_NS = "http://qudt.org/schema/qudt/"
 
-@namespaces(qudt="http://qudt.org/schema/qudt/")
+
+@namespaces(qudt=_NS)
 @urirefs(Unit='qudt:Unit',
          symbol='qudt:symbol',
          ucumCode='qudt:ucumCode',
@@ -70,13 +73,13 @@ class Unit(Thing):
         return qkind
 
 
-@namespaces(qudt="http://qudt.org/schema/qudt/")
+@namespaces(qudt=_NS)
 @urirefs(QuantityValue='qudt:QuantityValue')
 class QuantityValue(Thing):
     """Implementation of qudt:QuantityValue"""
 
 
-@namespaces(qudt="http://qudt.org/schema/qudt/")
+@namespaces(qudt=_NS)
 @urirefs(QuantityKind='qudt:QuantityKind',
          applicableUnit='qudt:applicableUnit',
          latexDefinition='qudt:latexDefinition',

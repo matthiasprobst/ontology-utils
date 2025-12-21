@@ -2,8 +2,10 @@ from ontolutils import urirefs, namespaces, Thing, as_id
 from ontolutils.typing import ResourceType
 from pydantic import EmailStr, AnyUrl, Field, model_validator
 
+__version__ = "0.1"
+_NS = "http://xmlns.com/foaf/0.1/"
 
-@namespaces(foaf="http://xmlns.com/foaf/0.1/")
+@namespaces(foaf=_NS)
 @urirefs(
     Agent="foaf:Agent",
     name="foaf:name",
@@ -110,7 +112,7 @@ class Agent(Thing):
         return as_id(self, "openid")
 
 
-@namespaces(foaf="http://xmlns.com/foaf/0.1/")
+@namespaces(foaf=_NS)
 @urirefs(Person="foaf:Person",
          firstName="foaf:firstName",
          familyName="foaf:familyName",
@@ -182,7 +184,7 @@ class Person(Agent):
     workplaceHomepage: AnyUrl = Field(default=None, alias="workplace_homepage")
 
 
-@namespaces(foaf="http://xmlns.com/foaf/0.1/")
+@namespaces(foaf=_NS)
 @urirefs(Organization='foaf:Organization',
          name='foaf:name')
 class Organization(Agent):

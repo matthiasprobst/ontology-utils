@@ -7,6 +7,7 @@ from datetime import datetime
 from typing import Dict, Union, Optional, Any, List, Type
 from urllib.parse import urlparse
 
+import numpy as np
 import rdflib
 import yaml
 from pydantic import AnyUrl, HttpUrl, FileUrl, BaseModel, Field, model_validator
@@ -516,6 +517,8 @@ class Thing(ThingModel):
                                 serialized_fields[extra_field_name] = f"{extra_field_value.prefix}:{extra_field_name}"
                 for k in obj.model_dump(exclude_none=_exclude_none):
                     value = getattr(obj, k)
+                    if isinstance(value, np.ndarray):
+                        value = value.tolist()
                     if isinstance(value, str):
                         value = _replace_context_url_with_prefix(value, at_context)
                     if value is not None and k not in ('id', '@id'):

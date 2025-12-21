@@ -8,6 +8,8 @@
 - add helper function `from_xarray()` to `NumericalVariable` to create a `NumericalVariable` from an `xarray.DataArray`
 - add helper function `to_pint_unit()` converting a QUDT unit to a `pint` unit string
 - `NumericalVariable` now supports `__get_item__` to access values via indexing
+- add `__version__` to each "ex"-module to allow checking the version of the ontology module
+- `NumericalVariable` supports numpy arrays
 
 ## v0.25.1
 

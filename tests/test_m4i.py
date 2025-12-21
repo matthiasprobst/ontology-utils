@@ -1,12 +1,18 @@
 import unittest
 
+import numpy as np
 import pydantic
 
+from ontolutils.ex import m4i
 from ontolutils.ex.m4i import TextVariable, NumericalVariable, Tool, ProcessingStep
 from ontolutils.ex.qudt import Unit
 
 
 class TestM4i(unittest.TestCase):
+
+    def test_version(self):
+        m4i_version = m4i.__version__
+        self.assertEqual("1.4.0", m4i_version)
 
     def test_tool(self):
         tool = Tool(
@@ -104,7 +110,7 @@ class TestM4i(unittest.TestCase):
             numerical_variable_from_pint.hasUnit,
             'http://qudt.org/vocab/unit/MilliM-PER-SEC'
         )
-        self.assertEqual(numerical_variable_from_pint.hasNumericalValue, [1.0, 2.0, 3.0])
+        self.assertEqual(numerical_variable_from_pint.hasNumericalValue.tolist(), [1.0, 2.0, 3.0])
         self.assertEqual(numerical_variable_from_pint.hasSymbol, 'vfr')
         ttl = numerical_variable_from_pint.serialize("ttl")
         self.assertEqual(ttl, """@prefix m4i: <http://w3id.org/nfdi4ing/metadata4ing#> .
@@ -122,13 +128,14 @@ class TestM4i(unittest.TestCase):
     def test_to_xarray(self):
         numerical_variable = NumericalVariable(
             id='http://example.org/variable/vfr',
-            label=["Volume Flow Rate@en", "Volumenstrom@de", "Débit volumiqu"],
+            label=["Volume Flow Rate@en", "Volumenstrom@de", "Débit volumique"],
             hasUnit='mm/s',
             hasNumericalValue=[1.0, 2.0, 3.0],
             hasVariableDescription='Variable description',
             hasSymbol='vfr'
         )
         ttl_orig = numerical_variable.serialize("ttl")
+        print(ttl_orig)
         xarray_dataarray = numerical_variable.to_xarray(language="de")
         self.assertEqual(xarray_dataarray.has_symbol, 'vfr')
         self.assertEqual(xarray_dataarray.attrs['has_variable_description'], 'Variable description')
@@ -140,12 +147,13 @@ class TestM4i(unittest.TestCase):
             xarray_dataarray
         )
         ttl_after_conversions = numerical_variable_from_xarray.serialize("ttl")
+        print(ttl_after_conversions)
         self.assertEqual(ttl_orig, ttl_after_conversions)
 
     def test_getitem(self):
         numerical_variable = NumericalVariable(
             id='http://example.org/variable/vfr',
-            label=["Volume Flow Rate@en", "Volumenstrom@de", "Débit volumiqu"],
+            label=["Volume Flow Rate@en", "Volumenstrom@de", "Débit volumique"],
             hasUnit='mm/s',
             hasNumericalValue=[1.0, 2.0, 3.0],
             hasVariableDescription='Variable description',
@@ -158,7 +166,7 @@ class TestM4i(unittest.TestCase):
         self.assertEqual(numerical_variable0.hasVariableDescription, 'Variable description')
 
         numerical_variable1_2 = numerical_variable[1:3]
-        self.assertEqual(numerical_variable1_2.hasNumericalValue, [2.0, 3.0])
+        self.assertEqual(numerical_variable1_2.hasNumericalValue.tolist(), [2.0, 3.0])
         self.assertEqual(numerical_variable1_2.hasUnit, 'http://qudt.org/vocab/unit/MilliM-PER-SEC')
         self.assertEqual(numerical_variable1_2.hasSymbol, 'vfr')
         self.assertEqual(numerical_variable1_2.hasVariableDescription, 'Variable description')
@@ -168,3 +176,31 @@ class TestM4i(unittest.TestCase):
         self.assertEqual(numerical_variable_last.hasUnit, 'http://qudt.org/vocab/unit/MilliM-PER-SEC')
         self.assertEqual(numerical_variable_last.hasSymbol, 'vfr')
         self.assertEqual(numerical_variable_last.hasVariableDescription, 'Variable description')
+
+    def test_size(self):
+        numerical_variable = NumericalVariable(
+            id='http://example.org/variable/vfr',
+            label=["Volume Flow Rate@en", "Volumenstrom@de", "Débit volumique"],
+            hasUnit='mm/s',
+            hasNumericalValue=[1.0, 2.0, 3.0, 4.0],
+            hasVariableDescription='Variable description',
+            hasSymbol='vfr'
+        )
+        self.assertEqual(numerical_variable.size, 4)
+        self.assertEqual(len(numerical_variable), 4)
+        self.assertEqual(numerical_variable.ndim, 1)
+
+        # 3d numpy array:
+        np_arr = np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
+        numerical_variable_3d = NumericalVariable(
+            id='http://example.org/variable/vfr',
+            label=["Volume Flow Rate@en", "Volumenstrom@de", "Débit volumique"],
+            hasUnit='mm/s',
+            hasNumericalValue=np_arr,
+            hasVariableDescription='Variable description',
+            hasSymbol='vfr'
+        )
+        self.assertEqual(numerical_variable_3d.size, np_arr.size)
+        self.assertEqual(numerical_variable_3d.ndim, np_arr.ndim)
+
+        print(numerical_variable_3d.serialize("ttl"))

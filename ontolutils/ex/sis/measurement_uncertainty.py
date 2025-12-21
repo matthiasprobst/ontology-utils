@@ -4,8 +4,11 @@ from pydantic import Field
 
 from ontolutils import Thing, namespaces, urirefs
 
+__version__ = "0.2.1"
+_NS = "https://ptb.de/sis/"
 
-@namespaces(sis="https://ptb.de/sis/")
+
+@namespaces(sis=_NS)
 @urirefs(MeasurementUncertainty="sis:MeasurementUncertainty"
          )
 class MeasurementUncertainty(Thing):
@@ -13,13 +16,13 @@ class MeasurementUncertainty(Thing):
     hasStatisticalDistribution: Optional[str] = Field(default=None, alias="has_statistical_distribution")
 
 
-@namespaces(sis="https://ptb.de/sis/")
+@namespaces(sis=_NS)
 @urirefs(StandardMU="sis:StandardMU")
 class StandardMU(MeasurementUncertainty):
     """Definition of standard measurement uncertainty data."""
 
 
-@namespaces(sis="https://ptb.de/sis/")
+@namespaces(sis=_NS)
 @urirefs(StandardMU="sis:StandardMU",
          hasValueStandardMU="sis:hasValueStandardMU")
 class StandardMU(StandardMU):
@@ -27,7 +30,7 @@ class StandardMU(StandardMU):
     hasValueStandardMU: Optional[float] = Field(default=None, alias="has_standard_uncertainty")
 
 
-@namespaces(sis="https://ptb.de/sis/")
+@namespaces(sis=_NS)
 @urirefs(CoverageIntervalMU="sis:CoverageIntervalMU",
          hasCoverageProbability="sis:hasCoverageProbability",
          hasIntervalMax="sis:hasIntervalMax",
@@ -42,7 +45,7 @@ class CoverageIntervalMU(StandardMU):
     hasValueStandardMU: Optional[float] = Field(default=None, alias="has_standard_uncertainty")
 
 
-@namespaces(sis="https://ptb.de/sis/")
+@namespaces(sis=_NS)
 @urirefs(ExpandedMU="sis:ExpandedMU",
          hasCoverageFactor="sis:hasCoverageFactor",
          hasCoverageProbability="sis:hasCoverageProbability",

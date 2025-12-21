@@ -17,6 +17,9 @@ from ontolutils.typing import BlankNodeType, ResourceType
 from ..prov import Attribution
 from ..spdx import Checksum
 
+__version__ = "3.0"
+_NS = "http://www.w3.org/ns/dcat#"
+
 _EXT_MAP = {
     "csv": "text/csv",
     "tsv": "text/tab-separated-values",
@@ -93,7 +96,7 @@ def _parse_license(license: str) -> str:
     return mapping.get(code, code)
 
 
-@namespaces(dcat="http://www.w3.org/ns/dcat#",
+@namespaces(dcat=_NS,
             dcterms="http://purl.org/dc/terms/",
             prov="http://www.w3.org/ns/prov#",
             adms="http://www.w3.org/ns/adms#",
@@ -224,7 +227,7 @@ class Resource(Thing):
         return license
 
 
-@namespaces(dcat="http://www.w3.org/ns/dcat#")
+@namespaces(dcat=_NS)
 @urirefs(DataService='dcat:DataService',
          endpointURL='dcat:endpointURL',
          servesDataset='dcat:servesDataset')
@@ -233,7 +236,7 @@ class DataService(Resource):
     servesDataset: "Dataset" = Field(alias='serves_dataset', default=None)  # dcat:servesDataset
 
 
-@namespaces(dcat="http://www.w3.org/ns/dcat#",
+@namespaces(dcat=_NS,
             prov="http://www.w3.org/ns/prov#",
             dcterms="http://purl.org/dc/terms/")
 @urirefs(Distribution='dcat:Distribution',
@@ -369,14 +372,14 @@ class Distribution(Resource):
         return downloadURL
 
 
-@namespaces(dcat="http://www.w3.org/ns/dcat#")
+@namespaces(dcat=_NS)
 @urirefs(DatasetSeries='dcat:DatasetSeries')
 class DatasetSeries(Resource):
     """Pydantic implementation of dcat:DatasetSeries"""
 
 
 @namespaces(dcterms="http://purl.org/dc/terms/",
-            dcat="http://www.w3.org/ns/dcat#")
+            dcat=_NS)
 @urirefs(startDate='dcat:startDate',
          endDate='dcat:endDate')
 class PeriodOfTime(Thing):
@@ -385,7 +388,7 @@ class PeriodOfTime(Thing):
     endDate: datetime = Field(default=None, alias='end_date', description="The end of the period.")  # dcat:endDate
 
 
-@namespaces(dcat="http://www.w3.org/ns/dcat#",
+@namespaces(dcat=_NS,
             prov="http://www.w3.org/ns/prov#",
             dcterms="http://purl.org/dc/terms/")
 @urirefs(Dataset='dcat:Dataset',

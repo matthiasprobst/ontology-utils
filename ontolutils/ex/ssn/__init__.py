@@ -6,8 +6,11 @@ from ontolutils import Thing, urirefs, namespaces
 from ontolutils.typing import ResourceType
 from ..qudt import Unit
 
+_NS = "http://www.w3.org/ns/ssn/"
+__version__ = "2917.10.19"
 
-@namespaces(ssn="http://www.w3.org/ns/ssn/",
+
+@namespaces(ssn=_NS,
             schema="https://schema.org/")
 @urirefs(Property="ssn:Property",
          minValue="schema:minValue",
@@ -56,11 +59,11 @@ class Condition(Property):
 
 
 @namespaces(ssn_system="http://www.w3.org/ns/ssn/systems/",
-            ssn="http://www.w3.org/ns/ssn/")
+            ssn=_NS)
 @urirefs(SystemCapability="ssn_system:SystemCapability",
          hasSystemProperty="ssn_system:hasSystemProperty",
          inCondition="ssn_system:inCondition",
-forProperty="ssn:forProperty"
+         forProperty="ssn:forProperty"
          )
 class SystemCapability(Property):
     """Describes normal measurement, actuation, sampling properties such as accuracy, range, precision, etc. of a System under some specified Conditions such as a temperature range.
@@ -102,7 +105,7 @@ class Actuator(Thing):
     """Actuator - A device that is used by, or implements, an (Actuation) Procedure that changes the state of the world."""
 
 
-@namespaces(ssn="http://www.w3.org/ns/ssn/",
+@namespaces(ssn=_NS,
             ssn_system="http://www.w3.org/ns/ssn/systems/")
 @urirefs(System="ssn:System",
          hasSystemCapability="ssn_system:hasSystemCapability")

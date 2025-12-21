@@ -4,7 +4,7 @@ from typing import Any, Dict
 from typing import List, Union
 from typing import Optional
 
-from pydantic import HttpUrl, field_validator, Field
+from pydantic import HttpUrl, field_validator, Field, ConfigDict, field_serializer
 
 from ontolutils import Thing, namespaces, urirefs
 from ontolutils import parse_unit, LangString
@@ -17,6 +17,13 @@ from ..schema import ResearchProject
 from ..sis import MeasurementUncertainty
 from ...typing import ResourceType
 
+try:
+    import numpy as np
+except ImportError as e:
+    raise ImportError("numpy is required in m4i") from e
+
+__version__ = "1.4.0"
+_NS = "http://w3id.org/nfdi4ing/metadata4ing#"
 _UNIT_REGISTRY = None
 
 
@@ -31,7 +38,7 @@ def get_unit_registry():
         return _UNIT_REGISTRY
 
 
-@namespaces(m4i="http://w3id.org/nfdi4ing/metadata4ing#")
+@namespaces(m4i=_NS)
 @urirefs(TextVariable='m4i:TextVariable',
          hasStringValue='m4i:hasStringValue')
 class TextVariable(Variable):
@@ -50,7 +57,7 @@ class TextVariable(Variable):
     hasStringValue: Optional[LangString] = Field(alias="has_string_value", default=None)
 
 
-@namespaces(m4i="http://w3id.org/nfdi4ing/metadata4ing#")
+@namespaces(m4i=_NS)
 @urirefs(NumericalVariable='m4i:NumericalVariable',
          hasUnit='m4i:hasUnit',
          hasNumericalValue='m4i:hasNumericalValue',
@@ -59,9 +66,15 @@ class TextVariable(Variable):
          hasStepSize='m4i:hasStepSize',
          hasUncertaintyDeclaration='m4i:hasUncertaintyDeclaration')
 class NumericalVariable(Variable):
+    model_config = ConfigDict(
+        arbitrary_types_allowed=True,
+        serialize_numpy_as_list=True
+    )
+
     hasUnit: Optional[Union[ResourceType, Unit]] = Field(alias="units", default=None)
-    hasNumericalValue: Optional[Union[Union[int, float], List[Union[int, float]]]] = Field(alias="has_numerical_value",
-                                                                                           default=None)
+    hasNumericalValue: Optional[Union[Union[int, float], List[Union[int, float]], np.ndarray]] = Field(
+        alias="has_numerical_value",
+        default=None)
     hasMaximumValue: Optional[Union[int, float]] = Field(alias="has_maximum_value", default=None)
     hasMinimumValue: Optional[Union[int, float]] = Field(alias="has_minimum_value", default=None)
     hasUncertaintyDeclaration: Optional[Union[MeasurementUncertainty, ResourceType]] = Field(
@@ -70,14 +83,52 @@ class NumericalVariable(Variable):
     hasStepSize: Optional[Union[int, float]] = Field(alias="has_step_size", default=None)
 
     def __getitem__(self, item):
-        hasNumericalValue= self.hasNumericalValue
+        hasNumericalValue = self.hasNumericalValue
         if isinstance(hasNumericalValue, list):
-            import numpy as np
             selected_values = np.asarray(hasNumericalValue).__getitem__(item)
             self_copy = self.model_copy()
             self_copy.hasNumericalValue = selected_values
             return self_copy
         raise ValueError("hasNumericalValue is not a array/list")
+
+    def __len__(self):
+        return self.size
+
+    @field_validator("hasNumericalValue", mode='before')
+    @classmethod
+    def _parse_numerical_data(cls, data):
+        if isinstance(data, np.ndarray):
+            return data
+        return data
+
+    @field_serializer("hasNumericalValue")
+    def _serialize_has_numerical_value(self, data, info):
+        if isinstance(data, np.ndarray):
+            as_list = self.model_config.get("serialize_numpy_as_list")
+            return data.tolist() if as_list else data
+        return data
+
+    @property
+    def size(self) -> Optional[int]:
+        data = self.hasNumericalValue
+        if isinstance(data, list):
+            return len(data)
+        if isinstance(data, np.ndarray):
+            return data.size
+        if isinstance(data, (int, float)):
+            return 1
+        return None
+
+    @property
+    def ndim(self):
+        data = self.hasNumericalValue
+        if isinstance(data, np.ndarray):
+            return data.ndim
+        if isinstance(data, list):
+            return 1
+        if isinstance(data, (int, float)):
+            return 0
+        return None
 
     @field_validator("hasUnit", mode='before')
     @classmethod
@@ -195,7 +246,7 @@ class NumericalVariable(Variable):
         return cls(hasNumericalValue=data_array.data, **fields)
 
 
-@namespaces(m4i="http://w3id.org/nfdi4ing/metadata4ing#",
+@namespaces(m4i=_NS,
             schema="https://schema.org/")
 @urirefs(Method='m4i:Method',
          description='schema:description',
@@ -232,7 +283,7 @@ class Method(Thing):
             self.parameter = [self.parameter, numerical_variable]
 
 
-@namespaces(m4i="http://w3id.org/nfdi4ing/metadata4ing#",
+@namespaces(m4i=_NS,
             pivmeta="https://matthiasprobst.github.io/pivmeta#",
             obo="http://purl.obolibrary.org/obo/")
 @urirefs(Tool='m4i:Tool',
@@ -293,7 +344,7 @@ class Assignment(Thing):
 OneOrMultiEntities = Union[Thing, ResourceType, HttpUrl, str, List[Union[Thing, ResourceType, HttpUrl, str]]]
 
 
-@namespaces(m4i="http://w3id.org/nfdi4ing/metadata4ing#",
+@namespaces(m4i=_NS,
             schema="https://schema.org/",
             obo="http://purl.obolibrary.org/obo/")
 @urirefs(ProcessingStep='m4i:ProcessingStep',

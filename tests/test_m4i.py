@@ -177,6 +177,21 @@ class TestM4i(unittest.TestCase):
         self.assertEqual(numerical_variable_last.hasSymbol, 'vfr')
         self.assertEqual(numerical_variable_last.hasVariableDescription, 'Variable description')
 
+        nv_array = NumericalVariable(
+            id='http://example.org/variable/vfr',
+            has_numerical_value=np.array([[1.0, 2.0], [3.0, 4.0]]),
+            hasUnit='mm/s'
+        )
+        nv_array_0 = nv_array[0, :]
+        self.assertTrue(isinstance(nv_array_0, NumericalVariable))
+        self.assertEqual(nv_array_0.has_numerical_value.tolist(), [1.0, 2.0])
+        self.assertEqual(nv_array_0.hasUnit, 'http://qudt.org/vocab/unit/MilliM-PER-SEC')
+
+        nv_array_1_1 = nv_array[1, 1]
+        self.assertTrue(isinstance(nv_array_1_1, NumericalVariable))
+        self.assertEqual(nv_array_1_1.has_numerical_value, 4.0)
+        self.assertEqual(nv_array_1_1.hasUnit, 'http://qudt.org/vocab/unit/MilliM-PER-SEC')
+
     def test_size(self):
         numerical_variable = NumericalVariable(
             id='http://example.org/variable/vfr',

@@ -89,7 +89,15 @@ class NumericalVariable(Variable):
             self_copy = self.model_copy()
             self_copy.hasNumericalValue = selected_values
             return self_copy
-        raise ValueError("hasNumericalValue is not a array/list")
+        if isinstance(hasNumericalValue, (float, int)):
+            if item == 0 or item == -1:
+                return self
+            else:
+                raise IndexError("NumericalVariable with single numerical value can only be indexed with 0 or -1")
+        selected_values = hasNumericalValue.__getitem__(item)
+        self_copy = self.model_copy()
+        self_copy.hasNumericalValue = selected_values
+        return self_copy
 
     def __len__(self):
         return self.size

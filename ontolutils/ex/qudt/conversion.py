@@ -1,9 +1,21 @@
+from functools import lru_cache
 from typing import Tuple, Union, Any, Dict
 
 import pint
 import rdflib
 
+from ontolutils.utils.qudt_units import qudt_lookup
 from . import Unit
+
+try:
+    from pint import UnitRegistry
+except ImportError:
+    raise ImportError("pint is required for to_pint_unit function. Please install pint package.")
+
+
+@lru_cache(maxsize=1)
+def _get_ureg():
+    return UnitRegistry(force_ndarray_like=True)
 
 
 def _pick_one_scaling_of(scaling_of: Any) -> Any:
@@ -65,15 +77,6 @@ def convert_value_qudt(value: Union[int, float], from_unit: Unit, to_unit: Unit)
 
 
 def to_pint_unit(unit: Union[Unit, str, rdflib.URIRef], ureg=None, lookup: Dict = None) -> str:
-    from ontolutils.utils.qudt_units import qudt_lookup
-    _qudt_lookup = qudt_lookup.copy()
-    if lookup is not None:
-        _qudt_lookup.update(qudt_lookup)
-
-    try:
-        from pint import UnitRegistry
-    except ImportError:
-        raise ImportError("pint is required for to_pint_unit function. Please install pint package.")
     if isinstance(unit, (str, rdflib.URIRef)):
         unit_iri = str(unit)
     else:
@@ -81,16 +84,24 @@ def to_pint_unit(unit: Union[Unit, str, rdflib.URIRef], ureg=None, lookup: Dict 
 
     # convert found_symbol into pint-compatible string
     if ureg is None:
-        ureg = UnitRegistry(force_ndarray_like=True)
+        ureg = _get_ureg()
 
     found_pint_unit = None
-    for k, v in _qudt_lookup.items():
+    for k, v in qudt_lookup.items():
         if str(v) == unit_iri:
             try:
                 found_pint_unit = ureg.__getattr__(k)
                 break
             except pint.UndefinedUnitError:
                 pass
+    if found_pint_unit is None:
+        for k, v in lookup.items():
+            if str(v) == unit_iri:
+                try:
+                    found_pint_unit = ureg.__getattr__(k)
+                    break
+                except pint.UndefinedUnitError:
+                    pass
 
     if found_pint_unit is None:
         raise ValueError(f"Unit {unit_iri} not found in QUDT lookup for pint conversion")

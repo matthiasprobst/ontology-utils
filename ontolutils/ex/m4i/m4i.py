@@ -4,7 +4,7 @@ from typing import Any, Dict
 from typing import List, Union
 from typing import Optional
 
-from pydantic import HttpUrl, field_validator, Field, ConfigDict, field_serializer
+from pydantic import HttpUrl, field_validator, Field, ConfigDict, field_serializer, AnyUrl
 
 from ontolutils import Thing, namespaces, urirefs
 from ontolutils import parse_unit, LangString
@@ -12,7 +12,6 @@ from ontolutils.ex.pimsii import Variable
 from ..prov import Activity
 from ..prov import Organization
 from ..qudt import Unit
-from ..qudt.conversion import to_pint_unit
 from ..schema import ResearchProject
 from ..sis import MeasurementUncertainty
 from ...typing import ResourceType
@@ -21,6 +20,20 @@ try:
     import numpy as np
 except ImportError as e:
     raise ImportError("numpy is required in m4i") from e
+
+from functools import lru_cache
+
+
+@lru_cache(maxsize=1)
+def _get_xarray():
+    try:
+        import xarray as xr
+        return xr
+    except ImportError as e:
+        raise ImportError(
+            "xarray is required but not installed"
+        ) from e
+
 
 __version__ = "1.4.0"
 _NS = "http://w3id.org/nfdi4ing/metadata4ing#"
@@ -66,9 +79,16 @@ class TextVariable(Variable):
          hasStepSize='m4i:hasStepSize',
          hasUncertaintyDeclaration='m4i:hasUncertaintyDeclaration')
 class NumericalVariable(Variable):
+    """Pydantic Model for m4i:NumericalVariable
+
+    **Note**, that hasNumericalValue can be a single numerical value (int or float), a list of numerical values,
+    or a numpy ndarray. The ontology definition does not explicitly support multiple values, but this implementation
+    allows it for convenience. However, when serializing to RDF, multiple values will be split into multiple
+    NumericalVariable instances, while the IDs will be suffixed with an index (e.g., /0, /1, ...).
+    """
     model_config = ConfigDict(
         arbitrary_types_allowed=True,
-        serialize_numpy_as_list=True
+        serialize_numpy_as_list=True,
     )
 
     hasUnit: Optional[Union[ResourceType, Unit]] = Field(alias="units", default=None)
@@ -106,6 +126,8 @@ class NumericalVariable(Variable):
     @classmethod
     def _parse_numerical_data(cls, data):
         if isinstance(data, np.ndarray):
+            if data.ndim > 1:
+                raise ValueError("Only 1D numpy arrays are supported for hasNumericalValue")
             return data
         return data
 
@@ -164,10 +186,8 @@ class NumericalVariable(Variable):
 
     def to_xarray(self, language: str = "en"):
         """Convert numerical value to xarray DataArray"""
-        try:
-            import xarray as xr
-        except ImportError as e:
-            raise ImportError("xarray is required to use to_xarray method") from e
+
+        xr = _get_xarray()
 
         if self.hasNumericalValue is None:
             raise ValueError("hasNumericalValue must be set to convert to xarray DataArray")
@@ -179,6 +199,8 @@ class NumericalVariable(Variable):
             desc_with_lang = _xarray_lang_string_to_str("has_variable_description", desc, language)
             model.update(desc_with_lang)
         if "units" in model:
+            # lazy import to avoid heavy top-level import cost
+            from ..qudt.conversion import to_pint_unit
             pint_unit = to_pint_unit(self.hasUnit)
             model["units"] = f"{pint_unit:~f}".replace(" ", "")
         if "label" in model:
@@ -252,6 +274,36 @@ class NumericalVariable(Variable):
             unit_str = f'{ureg(fields["units"]).units:~f}'.replace(" ", "")
             fields["units"] = unit_str
         return cls(hasNumericalValue=data_array.data, **fields)
+
+    def serialize(self,
+                  format: str,
+                  context: Optional[Dict] = None,
+                  exclude_none: bool = True,
+                  resolve_keys: bool = True,
+                  base_uri: Optional[Union[str, AnyUrl]] = None,
+                  **kwargs) -> str:
+        """Serialize NumericalVariable to RDF format."""
+        # if hasNumericalValue is not a float or int, we need to unpack it to n variables
+        if isinstance(self.hasNumericalValue, (int, float)):
+            return super().serialize(
+                format=format,
+                context=context,
+                exclude_none=exclude_none,
+                resolve_keys=resolve_keys,
+                base_uri=base_uri,
+                **kwargs
+            )
+        entities = [self.__class__(
+            **{**self.model_dump(exclude={'has_numerical_value', 'id'}),
+               "has_numerical_value": v, "id": f"{self.id}/{i}"}
+        ) for i, v in enumerate(self.hasNumericalValue)]
+        from ... import serialize
+        return serialize(entities,
+                         format=format,
+                         context=context,
+                         exclude_none=exclude_none,
+                         resolve_keys=resolve_keys,
+                         base_uri=base_uri, **kwargs)
 
 
 @namespaces(m4i=_NS,

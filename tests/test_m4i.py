@@ -116,10 +116,18 @@ class TestM4i(unittest.TestCase):
         self.assertEqual(ttl, """@prefix m4i: <http://w3id.org/nfdi4ing/metadata4ing#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<http://example.org/variable/vfr> a m4i:NumericalVariable ;
-    m4i:hasNumericalValue 1e+00,
-        2e+00,
-        3e+00 ;
+<http://example.org/variable/vfr/0> a m4i:NumericalVariable ;
+    m4i:hasNumericalValue 1e+00 ;
+    m4i:hasSymbol "vfr" ;
+    m4i:hasUnit <http://qudt.org/vocab/unit/MilliM-PER-SEC> .
+
+<http://example.org/variable/vfr/1> a m4i:NumericalVariable ;
+    m4i:hasNumericalValue 2e+00 ;
+    m4i:hasSymbol "vfr" ;
+    m4i:hasUnit <http://qudt.org/vocab/unit/MilliM-PER-SEC> .
+
+<http://example.org/variable/vfr/2> a m4i:NumericalVariable ;
+    m4i:hasNumericalValue 3e+00 ;
     m4i:hasSymbol "vfr" ;
     m4i:hasUnit <http://qudt.org/vocab/unit/MilliM-PER-SEC> .
 

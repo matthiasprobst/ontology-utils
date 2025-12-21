@@ -2,11 +2,12 @@ import unittest
 
 import rdflib
 
-from ontolutils import serialize
-from ontolutils.ex.m4i import Tool
+from ontolutils import serialize, Thing
+from ontolutils.ex.m4i import Tool, NumericalVariable
 from ontolutils.ex.qudt import Unit
-from ontolutils.ex.sosa import ObservableProperty, Sensor, Platform
+from ontolutils.ex.sosa import Sensor, Platform, Observation, Result
 from ontolutils.ex.ssn import Accuracy, SystemCapability, MeasurementRange
+from ontolutils.ex.ssn.ssn import ObservableProperty
 
 
 class TestSosa(unittest.TestCase):
@@ -184,3 +185,37 @@ class TestSosa(unittest.TestCase):
         from ontolutils.namespacelib import SSN_SYSTEM
         self.assertEqual(SSN_SYSTEM._NS, "http://www.w3.org/ns/ssn/systems/")
         self.assertEqual(SSN_SYSTEM.Condition, rdflib.URIRef("http://www.w3.org/ns/ssn/systems/Condition"))
+
+    def test_observation(self):
+        vfr = NumericalVariable(
+            id="http://example.org/variable/1",
+            hasNumericalValue=0.1,
+            hasUnit="m**3/s"
+        )
+        dp = NumericalVariable(
+            id="http://example.org/variable/2",
+            hasNumericalValue=35.3,
+            hasUnit="Pa"
+        )
+        result1 = Result(
+            id="http://example.org/result/1",
+            has_numerical_variable=vfr
+        )
+        result2 = Result(
+            id="http://example.org/result/2",
+            has_numerical_variable=dp
+        )
+
+        feature_of_interest = Thing(
+            id="http://example.org/feature_of_interest/1",
+            label="Operation Point"
+        )
+        observation = Observation(
+            id="http://example.org/observation/1",
+            label="Operation Point",
+            has_feature_of_interest=feature_of_interest,
+            hasResult=[result1, result2],
+            madeBySensor="http://example.org/sensor/1",
+            observes="http://example.org/observable_property/1"
+        )
+        print(observation.serialize("ttl"))

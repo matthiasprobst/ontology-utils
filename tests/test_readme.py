@@ -101,6 +101,29 @@ class TestReadmeCode(unittest.TestCase):
 """
         self.assertEqual(ttl, expected)
 
+        Event.add_property(
+            name="location",
+            property_type=Union[Thing, List[Thing]],
+            default=None,
+            namespace="https://schema.org/",
+            namespace_prefix="schema"
+        )
+        conference = Event(
+            label="my conference",
+            location=Thing(label="The location")
+        )
+        ttl = conference.serialize(format="ttl")
+        self.assertEqual(ttl, """@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <https://schema.org/> .
+
+[] a schema:Event ;
+    rdfs:label "my conference" ;
+    schema:location [ a owl:Thing ;
+            rdfs:label "The location" ] .
+
+""")
+
     def test_person_with_base_uri(self):
         @namespaces(prov="http://www.w3.org/ns/prov#",
                     foaf="http://xmlns.com/foaf/0.1/")

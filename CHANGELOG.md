@@ -10,6 +10,8 @@
 - `NumericalVariable` now supports `__get_item__` to access values via indexing
 - add `__version__` to each "ex"-module to allow checking the version of the ontology module
 - `NumericalVariable` supports numpy arrays
+- update `prov`-ontology
+- adding properties at runtime is now supported by `add_property()` class method
 
 ## v0.25.1
 

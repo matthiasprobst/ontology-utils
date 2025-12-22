@@ -123,6 +123,40 @@ The serialization in turtle format looks like this:
     schema:about [ a owl:Thing ;
             rdfs:label "The thing it is about" ] .
 ```
+
+### Add a property at runtime
+
+Say, we forgot to add the location to the above Event class. No problem, we can add it at runtime:
+
+```python
+Event.add_property(
+    name="location",
+    property_type=Union[Thing, List[Thing]],
+    default=None,
+    namespace="https://schema.org/",
+    namespace_prefix="schema"
+)
+conference = Event(
+    label="my conference",
+    location=Thing(label="The location")
+)
+ttl = conference.serialize(format="ttl")
+```
+
+The above fives us this Turtle serialization:
+
+```turtle
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <https://schema.org/> .
+
+[] a schema:Event ;
+    rdfs:label "my conference" ;
+    schema:location [ a owl:Thing ;
+            rdfs:label "The location" ] .
+```
+
+
 ## Documentation
 
 Please visit the [documentation](https://ontology-utils.readthedocs.io/en/latest/) for more information.

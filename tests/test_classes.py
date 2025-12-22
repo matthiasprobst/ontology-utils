@@ -222,6 +222,66 @@ class TestNamespaces(unittest.TestCase):
         with self.assertRaises(AttributeError):  # height is not defined!
             p183_from_jsonld.height
 
+        ttl = p.serialize("ttl")
+        self.assertEqual(ttl, """@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix prov1: <https://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+[] a prov1:Person ;
+    foaf:age 23 ;
+    foaf:firstName "John" ;
+    foaf:lastName "Doe" .
+
+""")
+
+        p.add_property(
+            name='weight',
+            property_type=Optional[float],
+            default=None,
+            namespace="https://example.com/",
+            namespace_prefix="ex"
+        )
+
+        p.weight = 80.3
+
+        ttl = p.serialize("ttl")
+        print(ttl)
+
+        self.assertEqual(ttl, """@prefix ex: <https://example.com/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix prov1: <https://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+[] a prov1:Person ;
+    foaf:age 23 ;
+    foaf:firstName "John" ;
+    foaf:lastName "Doe" ;
+    ex:weight 8.03e+01 .
+
+""")
+
+        @namespaces(prov='https://www.w3.org/ns/prov#',
+                    foaf='http://xmlns.com/foaf/0.1/')
+        @urirefs(Child='prov:Child',
+                 favoritePet='foaf:favoritePet')
+        class Child(Person):
+            favoritePet: str = None
+
+        child = Child(first_name='Jane', lastName='Doe', age=10, favoritePet='Fluffy', weight=14)
+        self.assertEqual(child.serialize("ttl"), """@prefix ex: <https://example.com/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix prov1: <https://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+[] a prov1:Child ;
+    foaf:age 10 ;
+    foaf:favoritePet "Fluffy" ;
+    foaf:firstName "Jane" ;
+    foaf:lastName "Doe" ;
+    ex:weight 14 .
+
+""")
+
     def test_from_jsonld_for_nested_objects(self):
         @namespaces(prov='https://www.w3.org/ns/prov#')
         @urirefs(A='prov:A',

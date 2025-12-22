@@ -31,7 +31,7 @@ class Property:
     name: str
     property_type: Any
     default: Optional[Any] = None
-    namespace: Optional[HttpUrl] = None
+    namespace: Optional[Union[HttpUrl, str]] = None
     namespace_prefix: Optional[str] = None
 
     def __post_init__(self):
@@ -39,6 +39,8 @@ class Property:
             raise ValueError("If namespace_prefix is given, then namespace must be given as well.")
         if self.namespace_prefix is None and self.namespace is not None:
             raise ValueError("If namespace is given, then namespace_prefix must be given as well.")
+        if self.namespace:
+            self.namespace = str(HttpUrl(self.namespace))
 
 
 def resolve_iri(key_or_iri: str, context: Context) -> Optional[str]:
@@ -841,6 +843,34 @@ class Thing(ThingModel):
     def get_context(cls) -> Dict:
         """Return the context of the class"""
         return get_namespaces(cls)
+
+    @classmethod
+    def add_property(cls,
+                     *,
+                     name: str,
+                     property_type: Any,
+                     namespace: Optional[Union[HttpUrl, str]],
+                     namespace_prefix: Optional[str],
+                     default: Optional[Any] = None,
+                     ):
+        """Add a property to the class"""
+        prop = Property(
+            name=name,
+            property_type=property_type,
+            default=default,
+            namespace=namespace,
+            namespace_prefix=namespace_prefix
+        )
+        if not isinstance(prop, Property):
+            raise TypeError(f"Cannot add property of type {type(prop)}. "
+                            f"Expected a Property.")
+        uri_ref_manager = URIRefManager.get(cls, {})
+        uri_ref_manager[prop.name] = f"{prop.namespace_prefix}:{prop.name}"
+        URIRefManager.data[cls] = uri_ref_manager
+
+        namespace_manager = NamespaceManager.get(cls, {})
+        namespace_manager[prop.namespace_prefix] = prop.namespace
+        NamespaceManager.data[cls] = namespace_manager
 
 
 def _replace_context_url_with_prefix(value: str, context: Dict) -> str:

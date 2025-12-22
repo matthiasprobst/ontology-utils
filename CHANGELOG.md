@@ -12,6 +12,7 @@
 - `NumericalVariable` supports numpy arrays
 - update `prov`-ontology
 - adding properties at runtime is now supported by `add_property()` class method
+- QUDT has `get` classmethod to retrieve units from vocabulary, e.g. `Unit.get("http://qudt.org/vocab/unit/PA")`
 
 ## v0.25.1
 

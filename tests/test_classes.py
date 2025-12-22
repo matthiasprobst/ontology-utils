@@ -65,6 +65,9 @@ class TestNamespaces(unittest.TestCase):
                 assert value == "special_string", f"Special field must be 'special_string' not {value}"
                 return value
 
+        with self.assertRaises(ValueError):
+            Agent(id="agent-1")
+
         agent = Agent(name='John Doe', age=23)
         self.assertEqual(agent.name, 'John Doe')
         self.assertEqual(agent.age, 23)

@@ -1,5 +1,6 @@
 from typing import Union, List, Optional
 
+import rdflib
 from pydantic import Field, field_validator
 
 from ontolutils import Thing, namespaces, urirefs
@@ -71,6 +72,11 @@ class Unit(Thing):
             # assumes that the string is a quantity kind is short form of the QUDT IRI
             return "https://https://qudt.org/vocab/quantitykind/" + qkind
         return qkind
+
+    @classmethod
+    def get(cls, uri: Union[str, rdflib.URIRef]):
+        from .utils import get_unit_by_uri
+        return get_unit_by_uri(uri)
 
 
 @namespaces(qudt=_NS)

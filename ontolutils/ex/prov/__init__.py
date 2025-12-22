@@ -181,15 +181,16 @@ class SoftwareAgent(Agent):
 
 @namespaces(prov="http://www.w3.org/ns/prov#")
 @urirefs(Entity='prov:Entity',
-            wasGeneratedBy='prov:wasGeneratedBy',
-            wasDerivedFrom='prov:wasDerivedFrom',
-            wasAttributedTo='prov:wasAttributedTo',
-            qualifiedAttribution='prov:qualifiedAttribution'
+         wasGeneratedBy='prov:wasGeneratedBy',
+         wasDerivedFrom='prov:wasDerivedFrom',
+         wasAttributedTo='prov:wasAttributedTo',
+         qualifiedAttribution='prov:qualifiedAttribution'
          )
 class Entity(Thing):
     """Implementation of prov:Entity"""
     wasGeneratedBy: Union[ResourceType, "Activity"] = Field(default=None, alias="was_generated_by")
-    wasDerivedFrom: Union[ResourceType, "Entity", List[Union[ResourceType, "Entity"]]] = Field(default=None, alias="was_derived_from")
+    wasDerivedFrom: Union[ResourceType, "Entity", List[Union[ResourceType, "Entity"]]] = Field(default=None,
+                                                                                               alias="was_derived_from")
     wasAttributedTo: Union[ResourceType, Agent, List[Union[Agent, ResourceType]]] = Field(default=None,
                                                                                           alias="was_attributed_to")
     qualifiedAttribution: Union[ResourceType, List[Attribution]] = Field(default=None, alias="qualified_attribution")
@@ -210,8 +211,10 @@ class Activity(Thing):
     endedAtTime: datetime = Field(default=None, alias="endedAtTime")
     used: Union[ResourceType, List[Union[ResourceType, Entity]], Entity] = Field(default=None, alias="used")
     generated: Union[ResourceType, List[Union[ResourceType, Entity]], Entity] = Field(default=None, alias="generated")
-    wasStartedBy: Union[ResourceType, List[Union[ResourceType, Entity]], Entity] = Field(default=None, alias="was_started_by")
-    wasEndedBy: Union[ResourceType, List[Union[ResourceType, Entity]], Entity] = Field(default=None, alias="was_ended_by")
+    wasStartedBy: Union[ResourceType, List[Union[ResourceType, Entity]], Entity] = Field(default=None,
+                                                                                         alias="was_started_by")
+    wasEndedBy: Union[ResourceType, List[Union[ResourceType, Entity]], Entity] = Field(default=None,
+                                                                                       alias="was_ended_by")
 
 
 Entity.model_rebuild()

@@ -3,7 +3,7 @@ import unittest
 
 from ontolutils.ex.qudt import Unit
 from ontolutils.ex.qudt.conversion import convert_value_qudt, to_pint_unit
-from ontolutils.ex.qudt.utils import iri2str
+from ontolutils.ex.qudt.utils import iri2str, get_unit_by_uri
 from ontolutils.namespacelib import QUDT_UNIT
 
 __this_dir__ = pathlib.Path(__file__).parent.resolve()
@@ -164,3 +164,10 @@ class TestQudt(unittest.TestCase):
         u_pint_hertz = (600 * u_pint_rev_per_min).to("hertz")
         self.assertEqual(str(u_pint_hertz.units), "hertz")
         self.assertAlmostEqual(u_pint_hertz.magnitude, 10.0)
+
+    def test_get_unit_by_uri(self):
+        unit = Unit.get("http://qudt.org/vocab/unit/PA")
+        self.assertEqual(unit.symbol, "Pa")
+        unit_ms = Unit.get(QUDT_UNIT.M_PER_SEC)
+        self.assertEqual(unit_ms.symbol, "m/s")
+

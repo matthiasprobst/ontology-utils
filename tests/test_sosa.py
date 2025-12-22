@@ -6,8 +6,7 @@ from ontolutils import serialize, Thing
 from ontolutils.ex.m4i import Tool, NumericalVariable
 from ontolutils.ex.qudt import Unit
 from ontolutils.ex.sosa import Sensor, Platform, Observation, Result
-from ontolutils.ex.ssn import Accuracy, SystemCapability, MeasurementRange
-from ontolutils.ex.ssn.ssn import ObservableProperty
+from ontolutils.ex.ssn import Accuracy, SystemCapability, MeasurementRange, ObservableProperty
 
 
 class TestSosa(unittest.TestCase):

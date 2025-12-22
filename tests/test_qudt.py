@@ -171,3 +171,7 @@ class TestQudt(unittest.TestCase):
         unit_ms = Unit.get(QUDT_UNIT.M_PER_SEC)
         self.assertEqual(unit_ms.symbol, "m/s")
 
+
+        unit_ms2 = Unit(id=QUDT_UNIT.M_PER_SEC).expand()
+        self.assertEqual(unit_ms2.symbol, "m/s")
+

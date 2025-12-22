@@ -78,6 +78,10 @@ class Unit(Thing):
         from .utils import get_unit_by_uri
         return get_unit_by_uri(uri)
 
+    def expand(self):
+        from .utils import get_unit_by_uri
+        return get_unit_by_uri(self.id)
+
 
 @namespaces(qudt=_NS)
 @urirefs(QuantityValue='qudt:QuantityValue')

@@ -3,6 +3,7 @@
 ## v0.26.1
 
 - remove invalid property from `Result`
+- add catalog class to dcat ontology
 - fix documentation
 
 ## v0.26.0

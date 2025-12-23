@@ -120,6 +120,10 @@ def _parse_license(license: str) -> str:
          language='dcterms:language',
          versionNotes='adms:versionNotes',
          wasGeneratedBy='prov:wasGeneratedBy',
+         first='dcat:first',
+         last='dcat:last',
+         prev='dcat:prev',
+         previousVersion='dcat:previousVersion'
          )
 class Resource(Thing):
     """Pydantic implementation of dcat:Resource
@@ -187,6 +191,8 @@ class Resource(Thing):
     contributor: Union[foaf.Agent, List[foaf.Agent]] = None  # dcterms:contributor
     license: Optional[Union[ResourceType, List[ResourceType]]] = None  # dcat:license
     version: str = None  # dcat:version
+    versionNote: Optional[Union[LangString, List[LangString]]] = Field(default=None,
+                                                                       alias='version_note')  # adms:versionNote
     identifier: str = None  # dcterms:identifier
     hasPart: Optional[Union[ResourceType, List[ResourceType]]] = Field(default=None, alias='has_part')
     keyword: Optional[Union[str, List[str]]] = None  # dcat:keyword
@@ -205,6 +211,10 @@ class Resource(Thing):
         default=None,
         alias='was_generated_by'
     )  # prov:wasGeneratedBy
+    first: Optional[ResourceType] = None  # dcat:first
+    last: Optional[ResourceType] = None  # dcat:last
+    prev: Optional[ResourceType] = Field(default=None, alias='prev')  # dcat:prev
+    previousVersion: Optional[ResourceType] = Field(default=None, alias='previous_version')  # dcat:previousVersion
 
     @field_validator('identifier', mode='before')
     @classmethod
@@ -246,7 +256,8 @@ class DataService(Resource):
          byteSize='dcat:byteSize',
          hasPart='dcterms:hasPart',
          checksum='spdx:checksum',
-         accessService='dcat:accessService'
+         accessService='dcat:accessService',
+         conformsTo='dcterms:conformsTo'
          )
 class Distribution(Resource):
     """Implementation of dcat:Distribution
@@ -272,6 +283,7 @@ class Distribution(Resource):
     hasPart: Union[Thing, List[Thing]] = Field(default=None, alias='has_part')  # dcterms:hasPart
     checksum: Union[ResourceType, Checksum] = None  # spdx:checksum
     accessService: DataService = Field(default=None, alias='access_service')  # dcat:accessService
+    conformsTo: ResourceType = Field(default=None, alias='conforms_to')  # dcterms:conformsTo
 
     def _repr_html_(self):
         """Returns the HTML representation of the class"""
@@ -465,4 +477,26 @@ class Dataset(Resource):
         return modified
 
 
+@namespaces(dcat=_NS,
+            prov="http://www.w3.org/ns/prov#",
+            dcterms="http://purl.org/dc/terms/",
+            foaf="http://xmlns.com/foaf/0.1/",
+            )
+@urirefs(Catalog='dcat:Catalog',
+         dataset='dcat:dataset',
+         primaryTopic='foaf:primaryTopic',
+         )
+class Catalog(Dataset):
+    """A curated collection of metadata about resources."""
+    dataset: Union[Dataset, List[Dataset]] = None  # dcat:dataset
+    primaryTopic: Union[ResourceType, List[ResourceType]] = None  # dcterms:primaryTopic
+    catalogRecord: Union[ResourceType, List[ResourceType]] = None  # dcterms:catalogRecord
+    resource: Union[Resource,ResourceType, List[Union[Resource, ResourceType]]] = None  # dcterms:resource
+    service: Union[DataService, ResourceType, List[Union[DataService, ResourceType]]] = None  # dcterms:service
+    homepage: Union[ResourceType, List[ResourceType]] = None  # foaf:homepage
+    catalog: "Catalog" = None  # dcat:catalog
+    themes: Union[ResourceType, List[ResourceType]] = None  # dcat:theme
+
+
 DataService.model_rebuild()
+Catalog.model_rebuild()

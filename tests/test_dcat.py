@@ -14,8 +14,8 @@ from ontolutils.namespacelib.spdx import SPDX
 logger = logging.getLogger('ontolutils')
 __this_dir__ = pathlib.Path(__file__).parent
 
-
 TESTING_VERSIONS = (9, 14)
+
 
 def get_python_version():
     """Get the current Python version as a tuple."""
@@ -190,7 +190,7 @@ class TestDcat(utils.ClassTest):
         self.assertEqual(dist.mediaType, 'https://www.iana.org/assignments/media-types/application/x-hdf')
 
     @unittest.skipUnless(get_python_version()[1] in TESTING_VERSIONS,
-                     reason="Only testing on min and max python version")
+                         reason="Only testing on min and max python version")
     def test_Distribution(self):
         distribution_none_downloadURL = dcat.Distribution(
             id='_:b2',
@@ -479,3 +479,48 @@ class TestDcat(utils.ClassTest):
     dcat:mediaType <https://www.iana.org/assignments/media-types/application/vnd.sqlite3> .
 
 """)
+
+    def test_catalog(self):
+        catalog = dcat.Catalog(
+            id="http://example.com/catalog/1",
+            title="Example Catalog",
+            description="An example DCAT catalog",
+            dataset=[
+                dcat.Dataset(
+                    id="http://example.com/dataset/1",
+                    title="Dataset 1",
+                    description="The first dataset",
+                    identifier="ds1"
+                ),
+                dcat.Dataset(
+                    id="http://example.com/dataset/2",
+                    title="Dataset 2",
+                    description="The second dataset",
+                    identifier="ds2"
+                )
+            ]
+        )
+        self.assertEqual(catalog.id, "http://example.com/catalog/1")
+        self.assertEqual(len(catalog.dataset), 2)
+        self.assertEqual(catalog.dataset[0].identifier, "ds1")
+        self.assertEqual(catalog.dataset[1].identifier, "ds2")
+        self.assertEqual("""@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+<http://example.com/catalog/1> a dcat:Catalog ;
+    dcterms:description "An example DCAT catalog" ;
+    dcterms:title "Example Catalog" ;
+    dcat:dataset <http://example.com/dataset/1>,
+        <http://example.com/dataset/2> .
+
+<http://example.com/dataset/1> a dcat:Dataset ;
+    dcterms:description "The first dataset" ;
+    dcterms:identifier "ds1" ;
+    dcterms:title "Dataset 1" .
+
+<http://example.com/dataset/2> a dcat:Dataset ;
+    dcterms:description "The second dataset" ;
+    dcterms:identifier "ds2" ;
+    dcterms:title "Dataset 2" .
+
+""", catalog.serialize("ttl"))

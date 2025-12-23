@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.26.1
+
+- remove invalid property from `Result`
+- fix documentation
+
 ## v0.26.0
 
 - add helper methods `to_pint()` to `NumericalVariable` to convert to a `pint.Quantity`

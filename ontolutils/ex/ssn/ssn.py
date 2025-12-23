@@ -4,7 +4,6 @@ from pydantic import Field
 
 from ontolutils import Thing, urirefs, namespaces
 from ontolutils.typing import ResourceType
-from ..m4i import NumericalVariable
 from ..qudt import Unit
 
 __version__ = "2917.10.19"
@@ -167,18 +166,10 @@ class FeatureOfInterest(Thing):
     )
 
 
-@namespaces(sosa="http://www.w3.org/ns/sosa/",
-            m4i="http://w3id.org/nfdi4ing/metadata4ing#")
-@urirefs(Result="sosa:Result",
-         hasNumericalVariable="m4i:hasNumericalVariable"
-         )
+@namespaces(sosa="http://www.w3.org/ns/sosa/")
+@urirefs(Result="sosa:Result")
 class Result(Thing):
     """Result - The output of an Observation."""
-    hasNumericalVariable: Union[ResourceType, NumericalVariable, List[Union[ResourceType, NumericalVariable]]] = Field(
-        default=None,
-        alias="has_numerical_variable",
-        description="The numerical variable associated with this result."
-    )
 
 
 @namespaces(sosa="http://www.w3.org/ns/sosa/")

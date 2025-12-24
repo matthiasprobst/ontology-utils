@@ -485,17 +485,24 @@ class Dataset(Resource):
 @urirefs(Catalog='dcat:Catalog',
          dataset='dcat:dataset',
          primaryTopic='foaf:primaryTopic',
+         record='dcterms:record',
+         resource='dcat:resource',
+         service='dcat:service',
+         homepage='foaf:homepage',
+         catalog='dcat:catalog',
+         themeTaxonomy='dcat:themeTaxonomy'
          )
 class Catalog(Dataset):
     """A curated collection of metadata about resources."""
     dataset: Union[Dataset, List[Dataset]] = None  # dcat:dataset
     primaryTopic: Union[ResourceType, List[ResourceType]] = None  # dcterms:primaryTopic
-    catalogRecord: Union[ResourceType, List[ResourceType]] = None  # dcterms:catalogRecord
-    resource: Union[Resource,ResourceType, List[Union[Resource, ResourceType]]] = None  # dcterms:resource
+    record: Union[ResourceType, List[ResourceType]] = Field(default=None,
+                                                            alias='catalog_record')  # dcterms:catalogRecord
+    resource: Union[Resource, ResourceType, List[Union[Resource, ResourceType]]] = None  # dcterms:resource
     service: Union[DataService, ResourceType, List[Union[DataService, ResourceType]]] = None  # dcterms:service
     homepage: Union[ResourceType, List[ResourceType]] = None  # foaf:homepage
     catalog: "Catalog" = None  # dcat:catalog
-    themes: Union[ResourceType, List[ResourceType]] = None  # dcat:theme
+    themeTaxonomy: Union[ResourceType, List[ResourceType]] = Field(default=None, alias='theme')  # dcat:themeTaxonomy
 
 
 DataService.model_rebuild()

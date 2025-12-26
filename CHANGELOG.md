@@ -5,6 +5,8 @@
 - remove invalid property from `Result`
 - add catalog class to dcat ontology
 - fix documentation
+- `Thing`s now have a validation method `validate()`, which uses SHACL shapes to validate the instance against the
+  ontology schema
 
 ## v0.26.0
 

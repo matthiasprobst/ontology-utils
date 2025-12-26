@@ -119,6 +119,7 @@ def _parse_license(license: str) -> str:
          accessRights='dcterms:accessRights',
          language='dcterms:language',
          versionNotes='adms:versionNotes',
+         hasCurrentVersion='dcat:hasCurrentVersion',
          wasGeneratedBy='prov:wasGeneratedBy',
          first='dcat:first',
          last='dcat:last',
@@ -215,6 +216,8 @@ class Resource(Thing):
     last: Optional[ResourceType] = None  # dcat:last
     prev: Optional[ResourceType] = Field(default=None, alias='prev')  # dcat:prev
     previousVersion: Optional[ResourceType] = Field(default=None, alias='previous_version')  # dcat:previousVersion
+    hasCurrentVersion: Optional[ResourceType] = Field(default=None,
+                                                      alias='has_current_version')  # dcat:hasCurrentVersion
 
     @field_validator('identifier', mode='before')
     @classmethod

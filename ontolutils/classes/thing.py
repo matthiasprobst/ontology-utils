@@ -4,6 +4,7 @@ import pathlib
 import warnings
 from dataclasses import dataclass
 from datetime import datetime
+from functools import lru_cache
 from typing import Dict, Union, Optional, Any, List, Type
 from urllib.parse import urlparse
 
@@ -24,6 +25,28 @@ from ..typing import BlankNodeType, IdType, ResourceType
 
 logger = logging.getLogger('ontolutils')
 URL_SCHEMES = {"http", "https", "urn", "doi"}
+
+
+@lru_cache(maxsize=1)
+def _get_pyshacl():
+    try:
+        import pyshacl as sh
+        return sh
+    except ImportError as e:
+        raise ImportError(
+            "pyshacl is required but not installed"
+        ) from e
+
+
+@dataclass
+class ValidationResult:
+    conforms: bool
+    results_graph: rdflib.Graph
+    results_text: str
+
+
+    def __bool__(self):
+        return self.conforms
 
 
 @dataclass
@@ -871,6 +894,44 @@ class Thing(ThingModel):
         namespace_manager = NamespaceManager.get(cls, {})
         namespace_manager[prop.namespace_prefix] = prop.namespace
         NamespaceManager.data[cls] = namespace_manager
+
+    def validate(self,
+                 shacl_source: Union[str, pathlib.Path] = None,
+                 shacl_data: Union[str, rdflib.Graph] = None,
+                 raise_on_error=True,
+                 inference: str = 'rdfs',
+                 abort_on_first: bool = False,
+                 meta_shacl: bool = False,
+                 advanced: bool = True,
+                 ) -> ValidationResult:
+        if shacl_source is not None and shacl_data is not None:
+            raise ValueError("Cannot provide both shacl_source and shacl_data.")
+        sh = _get_pyshacl()
+        this_graph = rdflib.Graph()
+        this_graph.parse(data=self.serialize("ttl"), format="ttl")  # TODO there should be a .to_graph() method
+
+        if shacl_data is not None:
+            if isinstance(shacl_data, rdflib.Graph):
+                shacl_graph = shacl_data
+            else:
+                shacl_graph = rdflib.Graph()
+                shacl_graph.parse(data=shacl_data, format="ttl")
+        else:
+            shacl_graph = rdflib.Graph()
+            shacl_graph.parse(source=shacl_source)
+
+        results = sh.validate(
+            data_graph=this_graph,
+            shacl_graph=shacl_graph,
+            inference=inference,
+            abort_on_first=abort_on_first,
+            meta_shacl=meta_shacl,
+            advanced=advanced,
+        )
+        conforms, results_graph, results_text = results
+        if not conforms and raise_on_error:
+            raise ValueError(f"SHACL validation failed:\n{results_text}")
+        return ValidationResult(conforms, results_graph, results_text)
 
 
 def _replace_context_url_with_prefix(value: str, context: Dict) -> str:

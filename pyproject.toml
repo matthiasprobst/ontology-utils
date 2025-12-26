@@ -1,6 +1,52 @@
 [build-system]
-requires = [
-    "setuptools>=78.1.1",
-    "wheel"
-]
+requires = ["setuptools>=78.1.1", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "ontolutils"
+version = "0.26.1"
+description = "Utility library for the work with ontologies."
+readme = "README.md"
+license = "MIT"
+authors = [
+    {name = "Matthias Probst", email = "matthias.probst@kit.edu"}
+]
+classifiers = [
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Operating System :: OS Independent",
+    "Development Status :: 4 - Beta"
+]
+requires-python = ">=3.9, <3.15"
+dependencies = [
+    "rdflib>=7.0.0",
+    "pydantic[email]>=2.8.2",
+    "python-dateutil>=2.9.0",
+    "requests>=2.32.3",
+    "appdirs>=1.4.4",
+    "PyYAML>=6.0"
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=8.3.2",
+    "pytest-cov>=5.0.0",
+    "pylint>=3.2.6",
+    "pyyaml",
+    "pint",
+    "xarray",
+    "numpy",
+    "pyshacl"
+]
+complete = ["ontolutils[test]"]
+
+[tool.setuptools.packages.find]
+include = ["ontolutils*"]
+
+[tool.pytest.ini_options]
+python_files = "test_*.py"
+testpaths = ["tests"]

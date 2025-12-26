@@ -343,6 +343,8 @@ class Distribution(Resource):
 
         if self.download_URL.scheme == 'file':
             _src_filename = _parse_file_url(self.download_URL.path)
+            if not _src_filename.exists():
+                raise FileNotFoundError(f"Source file '{_src_filename}' does not exist")
             if dest_filename is None:
                 return _src_filename
             else:

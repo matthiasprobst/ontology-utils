@@ -1408,3 +1408,26 @@ agents:123 a foaf:Agent ;
     schema:about schema:about .
 
 """)
+
+    def test_sparql_find_query(self):
+        thing = Thing(
+            id="http://example.org/things/123",
+            label="My Thing",
+        )
+        thing2 = Thing(
+            id="http://example.org/things/456",
+            label="Another Thing",
+            about=thing.id
+        )
+        ttl = ontolutils.serialize([thing, thing2], format="ttl")
+        print(ttl)
+        q = Thing.sparql_find_query(select_vars=["?s", "?label", "?about"], include_label=True, limit=10)
+        g = rdflib.Graph()
+        g.parse(data=ttl, format="turtle")
+        results = g.query(q)
+        print(q)
+        self.assertEqual(len(results), 2)
+        for row in results:
+            print(row)
+            # self.assertEqual(str(row.label), "My Thing")
+            # self.assertEqual(str(row.s), "http://example.org/things/123")

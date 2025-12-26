@@ -44,7 +44,6 @@ class ValidationResult:
     results_graph: rdflib.Graph
     results_text: str
 
-
     def __bool__(self):
         return self.conforms
 
@@ -333,9 +332,7 @@ class Thing(ThingModel):
     altLabel: Optional[Union[LangString, List[LangString]]] = None  # skos:altLabel
     broader: Optional[Union[ResourceType, List[ResourceType]]] = None  # skos:broader
     comment: Optional[Union[LangString, List[LangString]]] = None  # rdfs:comment
-    about: Optional[
-        Union[
-            str, HttpUrl, FileUrl, ThingModel, BlankNodeType, List[Union[HttpUrl, FileUrl, ThingModel, BlankNodeType]]]
+    about: Optional[Union[ResourceType, str, BlankNodeType, List[Union[ResourceType, str, BlankNodeType]]]
     ] = None  # schema:about
     relation: Optional[Union[HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
     closeMatch: Optional[Union[HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
@@ -894,6 +891,42 @@ class Thing(ThingModel):
         namespace_manager = NamespaceManager.get(cls, {})
         namespace_manager[prop.namespace_prefix] = prop.namespace
         NamespaceManager.data[cls] = namespace_manager
+
+    @classmethod
+    def sparql_find_query(cls,
+                          select_vars: Optional[List[str]] = None,
+                          include_label: bool = False,
+                          limit: Optional[int] = None,
+                          distinct: bool = True) -> str:
+        """Generate a SPARQL query to find instances of this Thing subclass.
+
+        - `select_vars`: list of variable names (including leading `?`) to select; defaults to `['?s']`.
+        - `include_label`: add optional rdfs:label to results as `?label`.
+        - `limit`: optional integer limit.
+        - `distinct`: use `DISTINCT` in SELECT when True.
+        """
+        subj = "?s"
+        if isinstance(select_vars, str):
+            select_vars = [select_vars]
+        vars_to_select = list(select_vars) if select_vars else [subj]
+        if include_label and "?label" not in vars_to_select:
+            vars_to_select.append("?label")
+        distinct_str = "DISTINCT " if distinct else ""
+        select_clause = f"SELECT {distinct_str}{' '.join(vars_to_select)}"
+
+        class_iri = cls.iri(compact=False)
+        rdf_type = str(rdflib.RDF.type)
+        rdfs_label = "http://www.w3.org/2000/01/rdf-schema#label"
+
+        where_lines = [f"{subj} <{rdf_type}> <{class_iri}> ."]
+        if include_label:
+            where_lines.append(f"OPTIONAL {{ {subj} <{rdfs_label}> ?label . }}")
+
+        where_clause = "\n  ".join(where_lines)
+        query = f"{select_clause}\nWHERE {{\n  {where_clause}\n}}"
+        if limit is not None:
+            query += f"\nLIMIT {int(limit)}"
+        return query
 
     def validate(self,
                  shacl_source: Union[str, pathlib.Path] = None,

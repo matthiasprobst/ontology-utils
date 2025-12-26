@@ -9,6 +9,8 @@
   ontology schema
 - updated package setup (removed requirements.txt, following standard practices for python packages and use
   pyproject.toml)
+- add `sparql_query` to `Thing` to generating SPARQL queries over the RDF representation based on the properties set in
+  the Thing object
 
 ## v0.26.0
 

@@ -57,3 +57,9 @@ class TestPROV(unittest.TestCase):
 
 """,
                          a.serialize("ttl"))
+
+    def test_person_from_jsonld(self):
+        person = prov.Person.from_jsonld(__this_dir__ / "data/prov_person.jsonld")
+        self.assertEqual(1, len(person))
+        self.assertEqual(person[0].mbox, "john.doe@mail.de")
+        self.assertEqual(person[0].orcidId, "https://orcid.org/1234-1234-1234-1234")

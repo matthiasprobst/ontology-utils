@@ -1409,10 +1409,10 @@ agents:123 a foaf:Agent ;
 
 """)
 
-    def test_sparql_find_query(self):
+    def test_sparql_query(self):
         thing = Thing(
             id="http://example.org/things/123",
-            label="My Thing",
+            label="Thing1",
         )
         thing2 = Thing(
             id="http://example.org/things/456",
@@ -1420,14 +1420,34 @@ agents:123 a foaf:Agent ;
             about=thing.id
         )
         ttl = ontolutils.serialize([thing, thing2], format="ttl")
-        print(ttl)
-        q = Thing.sparql_find_query(select_vars=["?s", "?label", "?about"], include_label=True, limit=10)
+        # q = Thing.sparql_query(select_vars=["?self", "?label", "?about"], include_label=True, limit=10)
+        q = Thing.sparql_query(select_vars=None, limit=10)
         g = rdflib.Graph()
         g.parse(data=ttl, format="turtle")
         results = g.query(q)
-        print(q)
+        self.assertEqual(q, """SELECT ?id ?label ?altLabel ?description ?broader ?about ?comment ?isDefinedBy ?relation ?closeMatch ?exactMatch
+WHERE {
+  ?id <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+  OPTIONAL { ?id <http://www.w3.org/2000/01/rdf-schema#label> ?label . }
+  OPTIONAL { ?id <http://www.w3.org/2004/02/skos/core#altLabel> ?altLabel . }
+  OPTIONAL { ?id <http://purl.org/dc/terms/description> ?description . }
+  OPTIONAL { ?id <http://www.w3.org/2004/02/skos/core#broader> ?broader . }
+  OPTIONAL { ?id <https://schema.org/about> ?about . }
+  OPTIONAL { ?id <http://www.w3.org/2000/01/rdf-schema#comment> ?comment . }
+  OPTIONAL { ?id <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> ?isDefinedBy . }
+  OPTIONAL { ?id <http://purl.org/dc/terms/relation> ?relation . }
+  OPTIONAL { ?id <http://www.w3.org/2004/02/skos/core#closeMatch> ?closeMatch . }
+  OPTIONAL { ?id <http://www.w3.org/2004/02/skos/core#exactMatch> ?exactMatch . }
+}
+LIMIT 10""")
         self.assertEqual(len(results), 2)
+
         for row in results:
-            print(row)
-            # self.assertEqual(str(row.label), "My Thing")
-            # self.assertEqual(str(row.s), "http://example.org/things/123")
+            if str(row.label) == "Thing1":
+                self.assertEqual(str(row.id), "http://example.org/things/123")
+                self.assertEqual(str(row.about), "None")
+            elif str(row.label) == "Another Thing":
+                self.assertEqual(str(row.id), "http://example.org/things/456")
+                self.assertEqual(str(row.about), "http://example.org/things/123")
+            else:
+                self.fail(f"Unexpected label: {row.label}")

@@ -453,7 +453,7 @@ class Dataset(Resource):
     # http://www.w3.org/ns/prov#Person, see https://www.w3.org/TR/vocab-dcat-3/#ex-adms-identifier
     distribution: Union[Distribution, List[Distribution]] = None  # dcat:Distribution
     modified: datetime = None  # dcterms:modified
-    landingPage: HttpUrl = Field(default=None)  # dcat:landingPage
+    landingPage: HttpUrl = Field(default=None, alias="landing_page")  # dcat:landingPage
     inSeries: DatasetSeries = Field(default=None, alias='in_series')  # dcat:inSeries
     license: Optional[Union[ResourceType, List[ResourceType]]] = None  # dcat:license
     spatial: Optional[Union[ResourceType, str,

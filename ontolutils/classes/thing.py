@@ -893,34 +893,55 @@ class Thing(ThingModel):
         NamespaceManager.data[cls] = namespace_manager
 
     @classmethod
-    def sparql_find_query(cls,
-                          select_vars: Optional[List[str]] = None,
-                          include_label: bool = False,
-                          limit: Optional[int] = None,
-                          distinct: bool = True) -> str:
+    def sparql_query(cls,
+                     select_vars: Optional[List[str]] = None,
+                     limit: Optional[int] = None,
+                     distinct: bool = False) -> str:
         """Generate a SPARQL query to find instances of this Thing subclass.
 
         - `select_vars`: list of variable names (including leading `?`) to select; defaults to `['?s']`.
-        - `include_label`: add optional rdfs:label to results as `?label`.
         - `limit`: optional integer limit.
         - `distinct`: use `DISTINCT` in SELECT when True.
         """
-        subj = "?s"
+        subj = "?id"
+
+        if select_vars is None:
+            _all_uris = get_urirefs(cls).copy()
+            _all_uris.pop(cls.__name__)
+            select_vars = [f"?{k}" for k in _all_uris.keys()]
+
         if isinstance(select_vars, str):
             select_vars = [select_vars]
+
+        select_vars = [subj, *select_vars] if select_vars and subj not in select_vars else select_vars
         vars_to_select = list(select_vars) if select_vars else [subj]
-        if include_label and "?label" not in vars_to_select:
-            vars_to_select.append("?label")
+        # if include_label and "?label" not in vars_to_select:
+        #     vars_to_select.append("?label")
         distinct_str = "DISTINCT " if distinct else ""
         select_clause = f"SELECT {distinct_str}{' '.join(vars_to_select)}"
 
         class_iri = cls.iri(compact=False)
         rdf_type = str(rdflib.RDF.type)
-        rdfs_label = "http://www.w3.org/2000/01/rdf-schema#label"
+        # rdfs_label = "http://www.w3.org/2000/01/rdf-schema#label"
 
         where_lines = [f"{subj} <{rdf_type}> <{class_iri}> ."]
-        if include_label:
-            where_lines.append(f"OPTIONAL {{ {subj} <{rdfs_label}> ?label . }}")
+        # if include_label:
+        #     where_lines.append(f"OPTIONAL {{ {subj} <{rdfs_label}> ?label . }}")
+
+        # Add OPTIONAL patterns for any selected var that maps to a class property IRI.
+        for var in vars_to_select:
+            if not isinstance(var, str) or not var.startswith('?'):
+                continue
+            if var in (subj, ):
+                continue
+            key = var[1:]
+            iri = None
+            try:
+                iri = cls.iri(key, compact=False)
+            except Exception:
+                iri = None
+            if iri:
+                where_lines.append(f"OPTIONAL {{ {subj} <{iri}> {var} . }}")
 
         where_clause = "\n  ".join(where_lines)
         query = f"{select_clause}\nWHERE {{\n  {where_clause}\n}}"

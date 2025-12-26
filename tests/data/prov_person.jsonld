@@ -1,0 +1,15 @@
+{
+    "@context": {
+        "@import": "https://w3id.org/nfdi4ing/metadata4ing/m4i_context.jsonld"
+    },
+    "prov:qualifiedAttribution": {
+        "@type": "prov:Attribution",
+        "prov:agent": {
+            "@id": "https://orcid.org/1234-1234-1234-1234",
+            "@type": "prov:Person",
+            "personal mailbox": "john.doe@mail.de",
+            "has ORCID ID": "https://orcid.org/1234-1234-1234-1234"
+        },
+            "dcat:hadRole": "http://w3id.org/nfdi4ing/metadata4ing#ContactPerson"
+        }
+}

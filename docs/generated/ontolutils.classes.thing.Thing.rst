@@ -47,6 +47,7 @@
       ~Thing.schema
       ~Thing.schema_json
       ~Thing.serialize
+      ~Thing.sparql_query
       ~Thing.update_forward_refs
       ~Thing.validate
    

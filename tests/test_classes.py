@@ -1550,3 +1550,10 @@ LIMIT 10""")
         self.assertEqual(1, len(results))
         for row in results:
             self.assertEqual(str(row.label), "Thing1")
+
+    def test_get_iri(self):
+        iri = Thing.get_iri("label")
+        self.assertEqual(iri, "http://www.w3.org/2000/01/rdf-schema#label")
+
+        with self.assertRaises(KeyError):
+            Thing.get_iri("label123")

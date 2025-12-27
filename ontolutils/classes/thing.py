@@ -232,6 +232,24 @@ class LangString(BaseModel):
             return str(self) == other or self.value == other
         raise TypeError(f"Cannot compare LangString with {type(other)}")
 
+    def startswith(self, *args, **kwargs) -> bool:
+        return self.value.startswith(*args, **kwargs)
+
+    def endswith(self, *args, **kwargs) -> bool:
+        return self.value.endswith(*args, **kwargs)
+
+    def __len__(self):
+        return len(self.value)
+
+    def __getitem__(self, item):
+        return self.value.__getitem__(item)
+
+    def split(self, *args, **kwargs):
+        return self.value.split(*args, **kwargs)
+
+    def strip(self, *args, **kwargs):
+        return self.value.strip(*args, **kwargs)
+
 
 def langstring_representer(dumper, data):
     return dumper.represent_scalar('tag:yaml.org,2002:str', str(data))
@@ -333,12 +351,12 @@ class Thing(ThingModel):
     altLabel: Optional[Union[LangString, List[LangString]]] = Field(default=None, alias="alt_label")  # skos:altLabel
     broader: Optional[AnyThingOrList] = Field(default=None)  # skos:broader
     comment: Optional[Union[LangString, List[LangString]]] = None  # rdfs:comment
-    about: Optional[AnyThingOrList]= Field(default=None)  # schema:about
-    relation: Optional[AnyThingOrList]= Field(default=None)
-    closeMatch: Optional[AnyThingOrList]= Field(default=None, alias='close_match')
-    exactMatch: Optional[AnyThingOrList]= Field(default=None, alias='exact_match')
+    about: Optional[AnyThingOrList] = Field(default=None)  # schema:about
+    relation: Optional[AnyThingOrList] = Field(default=None)
+    closeMatch: Optional[AnyThingOrList] = Field(default=None, alias='close_match')
+    exactMatch: Optional[AnyThingOrList] = Field(default=None, alias='exact_match')
     description: Optional[Union[LangString, List[LangString]]] = None  # dcterms:description
-    isDefinedBy: Optional[AnyThingOrList]= Field(default=None, alias="is_defined_by")  # rdfs:isDefinedBy
+    isDefinedBy: Optional[AnyThingOrList] = Field(default=None, alias="is_defined_by")  # rdfs:isDefinedBy
 
     # class Config:
     #     arbitrary_types_allowed = True
@@ -384,6 +402,9 @@ class Thing(ThingModel):
             cls
         )
 
+    # @classmethod
+    # def __getattr__(self, item):
+    #     urirefs =
     def __lt__(self, other: ThingModel) -> bool:
         """Less than comparison. Useful to sort Thing objects.
         Comparison can only be done with other Thing objects and if an ID is given.
@@ -927,6 +948,17 @@ class Thing(ThingModel):
         namespace_manager = NamespaceManager.get(cls, {})
         namespace_manager[prop.namespace_prefix] = prop.namespace
         NamespaceManager.data[cls] = namespace_manager
+
+    @classmethod
+    def get_iri(cls, item):
+        ns = get_namespaces(cls)
+        uris = get_urirefs(cls)
+        if item in uris:
+            compact_uri = uris[item]
+            prefix, name = compact_uri.split(':')
+            namespace = ns[prefix]
+            return f"{namespace}{name}"
+        raise KeyError(f"Item {item} not found in urirefs of class {cls.__name__}.")
 
     @classmethod
     def create_query(cls,

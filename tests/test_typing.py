@@ -7,12 +7,41 @@ from pydantic import HttpUrl, ValidationError
 from ontolutils import Thing, urirefs, namespaces
 from ontolutils import set_logging_level
 from ontolutils import typing
-from ontolutils.typing import OptionalResourceTypeOrListOf
+from ontolutils.typing import AnyThing, ResourceType
 
 set_logging_level('WARNING')
 
 
 class TestTypeing(unittest.TestCase):
+
+    def test_deprected_resource_type(self):
+        @namespaces(dcterms="http://purl.org/dc/terms/",
+                    ex="http://www.example.org#")
+        @urirefs(Test='ex:Test',
+                 hasVersion='dcterms:hasVersion')
+        class Test(Thing):
+            hasVersion: ResourceType
+
+        with self.assertRaises(ValidationError):
+            Test(
+                label="Test ds@en",
+                hasVersion="v1.0"
+            )
+        test = Test(
+            label="Test ds@en",
+            hasVersion="http://example.org/resource/version/v1.0"
+        )
+        self.assertEqual(test.hasVersion, "http://example.org/resource/version/v1.0")
+        test2 = Test(
+            label="Test ds@en",
+            hasVersion=rdflib.URIRef("http://example.org/resource/version/v1.0")
+        )
+        self.assertEqual(test2.hasVersion, "http://example.org/resource/version/v1.0")
+        test3 = Test(
+            label="Test ds@en",
+            hasVersion=test2
+        )
+        self.assertEqual(test3.hasVersion, test2)
 
     def test_blank_node(self):
         class MyModel(pydantic.BaseModel):
@@ -35,7 +64,7 @@ class TestTypeing(unittest.TestCase):
             """
             A dataset class.
             """
-            hasVersion: OptionalResourceTypeOrListOf
+            hasVersion: AnyThing
 
         with self.assertRaises(ValidationError):
             Dataset(

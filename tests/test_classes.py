@@ -23,7 +23,7 @@ from ontolutils import set_logging_level
 from ontolutils.classes import decorator
 from ontolutils.classes.thing import resolve_iri, LangString
 from ontolutils.classes.utils import split_uri
-from ontolutils.typing import NoneBlankNodeType
+from ontolutils.typing import NoneBlankNodeType, AnyIriOf
 
 LOG_LEVEL = logging.DEBUG
 
@@ -92,6 +92,77 @@ class TestNamespaces(unittest.TestCase):
 
         agent.special_field = "special_string"
         self.assertEqual(agent.special_field, "special_string")
+
+    def test_class_with_AnyIriOr(self):
+        @namespaces(foaf="http://xmlns.com/foaf/0.1/")
+        @urirefs(Interest='foaf:Interest')
+        class Interest(Thing):
+            pass
+
+        @namespaces(foaf="http://xmlns.com/foaf/0.1/")
+        @urirefs(Hobby='foaf:Hobby')
+        class Hobby(Interest):
+            pass
+
+        @namespaces(foaf="http://xmlns.com/foaf/0.1/")
+        @urirefs(Agent='foaf:Agent',
+                 name='foaf:lastName',
+                 likes='foaf:likes')
+        class Agent(Thing):
+            name: str = Field(default=None, alias="lastName")  # name is synonymous to lastName
+            likes: Optional[AnyIriOf[Interest]] = None
+
+        a1 = Agent(
+            name='John Doe',
+            likes=Interest(label='A thing', id='https://example.com/thing1')
+        )
+        self.assertEqual(a1.likes.id, 'https://example.com/thing1')
+
+        a2 = Agent(
+            name='John Doe',
+            likes='https://example.com/thing1'
+        )
+        self.assertEqual(a2.likes, 'https://example.com/thing1')
+
+        a3 = Agent(
+            name='John Doe',
+            likes='_:thing1'
+        )
+        self.assertEqual(a3.likes, '_:thing1')
+
+        with self.assertRaises(ValidationError):
+            Agent(
+                name='John Doe',
+                likes=a3
+            )
+        with self.assertRaises(ValidationError):
+            Agent(
+                name='John Doe',
+                likes=123
+            )
+
+        a4 = Agent(
+            name='John Doe',
+            likes=Hobby(id="https://example.com/hobby1", label="A hobby")
+        )
+        self.assertEqual(a4.likes.id, 'https://example.com/hobby1')
+
+        @namespaces(foaf="http://xmlns.com/foaf/0.1/")
+        @urirefs(Person='foaf:Person',
+                 name='foaf:lastName',
+                 likes='foaf:likes')
+        class Person(Thing):
+            name: str = Field(default=None, alias="lastName")  # name is synonymous to lastName
+            likes: Optional[AnyIriOf[str]] = None
+
+        with self.assertRaises(ValidationError):
+            Person(name="Jane Doe", likes=123)
+
+        with self.assertRaises(ValidationError):
+            Person(name="Jane Doe", likes=a1)
+
+        with self.assertRaises(ValidationError):
+            p = Person(name="Jane Doe", likes=a1)
 
     def test_resolve_iri(self):
         ret = resolve_iri('foaf:age', context=Context(source={'foaf': 'http://xmlns.com/foaf/0.1/'}))

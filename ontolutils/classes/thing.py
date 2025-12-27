@@ -11,7 +11,7 @@ from urllib.parse import urlparse
 import numpy as np
 import rdflib
 import yaml
-from pydantic import AnyUrl, HttpUrl, FileUrl, BaseModel, Field, model_validator, ValidationError
+from pydantic import AnyUrl, HttpUrl, BaseModel, Field, model_validator, ValidationError
 from pydantic import field_serializer
 from pydantic_core import Url
 from rdflib import XSD
@@ -22,7 +22,7 @@ from .decorator import urirefs, namespaces, URIRefManager, NamespaceManager, _is
 from .thingmodel import ThingModel
 from .utils import split_uri
 from .. import get_config
-from ..typing import BlankNodeType, IdType, ResourceType
+from ..typing import IdType, AnyThingOrList
 
 logger = logging.getLogger('ontolutils')
 URL_SCHEMES = {"http", "https", "urn", "doi"}
@@ -329,17 +329,16 @@ class Thing(ThingModel):
 
     """
     id: Optional[IdType] = Field(default_factory=build_blank_id)  # @id
-    label: Optional[Union[LangString, List[LangString]]] = None  # rdfs:label
-    altLabel: Optional[Union[LangString, List[LangString]]] = None  # skos:altLabel
-    broader: Optional[Union[ResourceType, List[ResourceType]]] = None  # skos:broader
+    label: Optional[Union[LangString, List[LangString]]] = Field(default=None)  # rdfs:label
+    altLabel: Optional[Union[LangString, List[LangString]]] = Field(default=None, alias="alt_label")  # skos:altLabel
+    broader: Optional[AnyThingOrList] = Field(default=None)  # skos:broader
     comment: Optional[Union[LangString, List[LangString]]] = None  # rdfs:comment
-    about: Optional[Union[ResourceType, str, BlankNodeType, List[Union[ResourceType, str, BlankNodeType]]]
-    ] = None  # schema:about
-    relation: Optional[Union[HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
-    closeMatch: Optional[Union[HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
-    exactMatch: Optional[Union[HttpUrl, FileUrl, BlankNodeType, ThingModel]] = None
+    about: Optional[AnyThingOrList]= Field(default=None)  # schema:about
+    relation: Optional[AnyThingOrList]= Field(default=None)
+    closeMatch: Optional[AnyThingOrList]= Field(default=None, alias='close_match')
+    exactMatch: Optional[AnyThingOrList]= Field(default=None, alias='exact_match')
     description: Optional[Union[LangString, List[LangString]]] = None  # dcterms:description
-    isDefinedBy: Optional[Union[ResourceType, List[ResourceType]]] = None  # rdfs:isDefinedBy
+    isDefinedBy: Optional[AnyThingOrList]= Field(default=None, alias="is_defined_by")  # rdfs:isDefinedBy
 
     # class Config:
     #     arbitrary_types_allowed = True

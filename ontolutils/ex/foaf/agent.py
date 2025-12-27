@@ -1,9 +1,11 @@
-from ontolutils import urirefs, namespaces, Thing, as_id
-from ontolutils.typing import ResourceType
 from pydantic import EmailStr, AnyUrl, Field, model_validator
+
+from ontolutils import urirefs, namespaces, Thing, as_id
+from ontolutils.typing import AnyIri
 
 __version__ = "0.1"
 _NS = "http://xmlns.com/foaf/0.1/"
+
 
 @namespaces(foaf=_NS)
 @urirefs(
@@ -80,7 +82,7 @@ class Agent(Thing):
         Account-Inhaber-URL (foaf:holdsAccount)
     weblog: AnyUrl = None
         Weblog-URL (foaf:weblog)
-    homepage: ResourceType = None
+    homepage: AnyIri = None
         Homepage (foaf:homepage)
     """
     name: str = Field(default=None, alias="name")
@@ -104,7 +106,7 @@ class Agent(Thing):
     openid: AnyUrl = Field(default=None, alias="open_id")  # foaf:openid
     holdsAccount: AnyUrl = Field(default=None, alias="holds_account")  # foaf:holdsAccount
     weblog: AnyUrl = Field(default=None, alias="weblog")  # foaf:weblog
-    homepage: ResourceType = Field(default=None, alias="homepage")  # foaf:homepage
+    homepage: AnyIri = Field(default=None, alias="homepage")  # foaf:homepage
 
     @model_validator(mode="before")
     def change_id(self):

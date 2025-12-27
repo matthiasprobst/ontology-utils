@@ -13,7 +13,8 @@ from ontolutils import Thing, urirefs, namespaces, LangString
 from ontolutils.classes.utils import download_file
 from ontolutils.ex import foaf
 from ontolutils.ex import prov
-from ontolutils.typing import BlankNodeType, ResourceType, OptionalTypeOrListOf, UnionResourceType, OptionalResourceTypeOrListOf
+from ontolutils.typing import AnyThing, AnyIriOf, AnyIri, AnyIriOrListOf, IriList, AnyThingOf, \
+    AnyThingOrList
 from ..prov import Attribution
 from ..spdx import Checksum
 
@@ -164,58 +165,37 @@ class Resource(Thing):
     """
     title: Optional[Union[LangString, List[LangString]]] = None  # dcterms:title
     description: Optional[Union[LangString, List[LangString]]] = None  # dcterms:description
-    creator: Union[
-        foaf.Agent,
-        foaf.Organization,
-        foaf.Person,
-        prov.Person,
-        prov.Agent,
-        prov.Organization,
-        ResourceType,
-        BlankNodeType,
-        List[
-            Union[
-                foaf.Agent,
-                foaf.Organization,
-                foaf.Person,
-                prov.Person,
-                prov.Agent,
-                prov.Organization,
-                ResourceType,
-                BlankNodeType
-            ]
-        ]
-    ] = None  # dcterms:creator
-    publisher: OptionalTypeOrListOf[foaf.Agent] = None  # dcterms:publisher
+    creator: AnyThingOrList = None  # dcterms:creator
+    publisher: AnyIriOrListOf[foaf.Agent] = None  # dcterms:publisher
     issued: datetime = None  # dcterms:issued
     modified: datetime = None  # dcterms:modified
-    contributor: OptionalTypeOrListOf[foaf.Agent] = None  # dcterms:contributor
-    license: Optional[Union[ResourceType, List[ResourceType]]] = None  # dcat:license
+    contributor: AnyIriOrListOf[foaf.Agent] = None  # dcterms:contributor
+    license: Optional[IriList] = None  # dcat:license
     version: str = None  # dcat:version
     versionNote: Optional[Union[LangString, List[LangString]]] = Field(default=None,
                                                                        alias='version_note')  # adms:versionNote
     identifier: str = None  # dcterms:identifier
-    hasPart: Optional[Union[ResourceType, List[ResourceType]]] = Field(default=None, alias='has_part')
+    hasPart: Optional[AnyThingOrList] = Field(default=None, alias='has_part')
     keyword: Optional[Union[str, List[str]]] = None  # dcat:keyword
-    hasVersion: Optional[Union[ResourceType, List[ResourceType]]] = Field(default=None,
-                                                                          alias='has_version')  # dcat:hasVersion
-    qualifiedAttribution: OptionalTypeOrListOf[Attribution] = None  # dcterms:qualifiedAttribution
-    accessRights: OptionalTypeOrListOf[str] = Field(default=None,
-                                                    alias='access_rights')  # dcterms:accessRights
-    language: OptionalTypeOrListOf[str] = None  # dcterms:language
+    hasVersion: Optional[IriList] = Field(default=None,
+                                          alias='has_version')  # dcat:hasVersion
+    qualifiedAttribution: AnyIriOf[Attribution] = None  # dcterms:qualifiedAttribution
+    accessRights: AnyIriOf[str] = Field(default=None,
+                                        alias='access_rights')  # dcterms:accessRights
+    language: AnyIriOf[str] = None  # dcterms:language
     versionNotes: Optional[Union[LangString, List[LangString]]] = Field(default=None,
                                                                         alias='version_notes')  # adms:versionNotes
 
-    wasGeneratedBy: OptionalTypeOrListOf[prov.Activity] = Field(
+    wasGeneratedBy: AnyIriOf[prov.Activity] = Field(
         default=None,
         alias='was_generated_by'
     )  # prov:wasGeneratedBy
-    first: Optional[ResourceType] = None  # dcat:first
-    last: Optional[ResourceType] = None  # dcat:last
-    prev: Optional[ResourceType] = Field(default=None, alias='prev')  # dcat:prev
-    previousVersion: Optional[ResourceType] = Field(default=None, alias='previous_version')  # dcat:previousVersion
-    hasCurrentVersion: Optional[ResourceType] = Field(default=None,
-                                                      alias='has_current_version')  # dcat:hasCurrentVersion
+    first: Optional[AnyThing] = None  # dcat:first
+    last: Optional[AnyThing] = None  # dcat:last
+    prev: Optional[AnyThing] = Field(default=None, alias='prev')  # dcat:prev
+    previousVersion: Optional[AnyThing] = Field(default=None, alias='previous_version')  # dcat:previousVersion
+    hasCurrentVersion: Optional[AnyThing] = Field(default=None,
+                                                  alias='has_current_version')  # dcat:hasCurrentVersion
 
     @field_validator('identifier', mode='before')
     @classmethod
@@ -279,12 +259,12 @@ class Distribution(Resource):
     """
     downloadURL: Union[HttpUrl, FileUrl, pathlib.Path] = Field(default=None, alias='download_URL')
     accessURL: Union[HttpUrl, FileUrl, pathlib.Path] = Field(default=None, alias='access_URL')
-    mediaType: UnionResourceType[str] = Field(default=None, alias='media_type')  # dcat:mediaType
+    mediaType: Optional[AnyThingOf[str]] = Field(default=None, alias='media_type')  # dcat:mediaType
     byteSize: int = Field(default=None, alias='byte_size')  # dcat:byteSize
-    hasPart: OptionalResourceTypeOrListOf = Field(default=None, alias='has_part')  # dcterms:hasPart
-    checksum: Union[ResourceType, Checksum] = None  # spdx:checksum
-    accessService: UnionResourceType[DataService] = Field(default=None, alias='access_service')  # dcat:accessService
-    conformsTo: ResourceType = Field(default=None, alias='conforms_to')  # dcterms:conformsTo
+    hasPart: Optional[AnyThing] = Field(default=None, alias='has_part')  # dcterms:hasPart
+    checksum: Optional[AnyIriOf[Checksum]] = None  # spdx:checksum
+    accessService: Optional[AnyIriOf[DataService]] = Field(default=None, alias='access_service')  # dcat:accessService
+    conformsTo: Optional[AnyThing] = Field(default=None, alias='conforms_to')  # dcterms:conformsTo
 
     def _repr_html_(self):
         """Returns the HTML representation of the class"""
@@ -449,13 +429,12 @@ class Dataset(Resource):
     identifier: Union[
         str, LangString] = None  # dcterms:identifier, see https://www.w3.org/TR/vocab-dcat-3/#ex-identifier
     # http://www.w3.org/ns/prov#Person, see https://www.w3.org/TR/vocab-dcat-3/#ex-adms-identifier
-    distribution: Union[Distribution, ResourceType, List[Union[Distribution, ResourceType]]] = None  # dcat:Distribution
-    modified: datetime = None  # dcterms:modified
+    distribution: Optional[AnyIriOrListOf[Distribution]] = Field(default=None)  # dcat:Distribution
+    modified: datetime = Field(default=None)  # dcterms:modified
     landingPage: HttpUrl = Field(default=None, alias="landing_page")  # dcat:landingPage
     inSeries: DatasetSeries = Field(default=None, alias='in_series')  # dcat:inSeries
-    license: Optional[Union[ResourceType, List[ResourceType]]] = None  # dcat:license
-    spatial: Optional[Union[ResourceType, str,
-    List[Union[ResourceType, str]]]] = None  # dcterms:spatial
+    license: Optional[IriList] = Field(default=None)  # dcat:license
+    spatial: Optional[AnyIriOrListOf[str]] = Field(default=None)  # dcterms:spatial
     spatialResolutionInMeters: Optional[Union[float, str]] = Field(
         default=None,
         alias='spatial_resolution_in_meters'
@@ -497,16 +476,15 @@ class Dataset(Resource):
          )
 class Catalog(Dataset):
     """A curated collection of metadata about resources."""
-    dataset: Union[Dataset, List[Dataset]] = None  # dcat:dataset
-    primaryTopic: OptionalResourceTypeOrListOf = None  # dcterms:primaryTopic
-    record: OptionalResourceTypeOrListOf = Field(default=None,
-                                                            alias='catalog_record')  # dcterms:catalogRecord
-    resource: Union[Resource, ResourceType, List[Union[Resource, ResourceType]]] = None  # dcterms:resource
-    service: Union[DataService, ResourceType, List[Union[DataService, ResourceType]]] = None  # dcterms:service
-    homepage: OptionalResourceTypeOrListOf = None  # foaf:homepage
+    dataset: AnyIriOrListOf[Dataset] = None  # dcat:dataset
+    primaryTopic: AnyThingOrList = None  # dcterms:primaryTopic
+    record: AnyThingOrList = Field(default=None, alias='catalog_record')  # dcterms:catalogRecord
+    resource: Optional[AnyIriOrListOf[Resource]] = None  # dcterms:resource
+    service: Optional[AnyIriOrListOf[DataService]] = None  # dcterms:service
+    homepage: Optional[AnyIri] = None  # foaf:homepage
     catalog: "Catalog" = None  # dcat:catalog
-    themeTaxonomy: OptionalResourceTypeOrListOf = Field(default=None, alias='theme')  # dcat:themeTaxonomy
+    themeTaxonomy: Optional[AnyThingOrList] = Field(default=None, alias='theme')  # dcat:themeTaxonomy
 
 
 DataService.model_rebuild()
-Catalog.model_rebuild()
+Catalog.model_rebuild(force=True)

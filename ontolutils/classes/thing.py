@@ -893,8 +893,9 @@ class Thing(ThingModel):
         NamespaceManager.data[cls] = namespace_manager
 
     @classmethod
-    def sparql_query(cls,
+    def create_query(cls,
                      select_vars: Optional[List[str]] = None,
+                     subject: Union[str, rdflib.URIRef]=None,
                      limit: Optional[int] = None,
                      distinct: bool = False) -> str:
         """Generate a SPARQL query to find instances of this Thing subclass.
@@ -903,18 +904,34 @@ class Thing(ThingModel):
         - `limit`: optional integer limit.
         - `distinct`: use `DISTINCT` in SELECT when True.
         """
-        subj = "?id"
+        if subject is not None:
+            if isinstance(subject, str):
+                subj = f"<{subject}>"
+            else:
+                raise TypeError(f"Subject must be a str or rdflib.URIRef, not {type(subject)}")
+        else:
+            subj = "?id"
 
         if select_vars is None:
             _all_uris = get_urirefs(cls).copy()
-            _all_uris.pop(cls.__name__)
+            # _all_uris.pop(cls.__name__)
+            _mros = cls.__mro__
+            for mro in _mros:
+                # remove all class names until Thing
+                _all_uris.pop(mro.__name__)
+                if mro == Thing:
+                    break
             select_vars = [f"?{k}" for k in _all_uris.keys()]
 
         if isinstance(select_vars, str):
             select_vars = [select_vars]
 
-        select_vars = [subj, *select_vars] if select_vars and subj not in select_vars else select_vars
-        vars_to_select = list(select_vars) if select_vars else [subj]
+        if subject is None:
+            select_vars = [subj, *select_vars] if select_vars and subj not in select_vars else select_vars
+            vars_to_select = list(select_vars) if select_vars else [subj]
+        else:
+            vars_to_select = list(select_vars) if select_vars else []
+
         # if include_label and "?label" not in vars_to_select:
         #     vars_to_select.append("?label")
         distinct_str = "DISTINCT " if distinct else ""

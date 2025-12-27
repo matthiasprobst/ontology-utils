@@ -5,8 +5,11 @@ import sys
 import unittest
 from datetime import timezone
 
+import rdflib
+
 import utils
 from ontolutils.ex import dcat, prov, foaf
+from ontolutils.ex.dcat import Dataset
 from ontolutils.ex.prov import Attribution
 from ontolutils.ex.spdx import Checksum
 from ontolutils.namespacelib.spdx import SPDX
@@ -524,3 +527,15 @@ class TestDcat(utils.ClassTest):
     dcterms:title "Dataset 2" .
 
 """, catalog.serialize("ttl"))
+
+    def test_query_dataset_based_on_constructing_query_from_itself(self):
+        q = Dataset.create_query()
+        print(q)
+        from pprint import pprint
+        g = rdflib.Graph()
+        g.parse(__this_dir__ / "data/catalog.ttl")
+        res = g.query(q)
+        for row in res:
+            print(row.distribution)
+            pprint({k:row[v] for k, v in row.labels.items() if row[v] is not None})
+            print("\n---\n")

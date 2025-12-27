@@ -1,5 +1,5 @@
 import re
-from typing import TypeVar, Union, List
+from typing import TypeVar, Union, List, Optional
 
 from pydantic import AnyUrl, FileUrl, HttpUrl
 from pydantic.functional_validators import WrapValidator
@@ -95,3 +95,6 @@ BlankNodeType = Annotated[str, WrapValidator(__validate_blank_node)]
 
 T = TypeVar("T")
 TypeOrListOf: TypeAlias = Union[T, ResourceType, List[Union[T, ResourceType]]]
+OptionalTypeOrListOf: TypeAlias = Optional[Union[T, ResourceType, List[Union[T, ResourceType]]]]
+
+UnionResourceType: TypeAlias = Union[T, ResourceType]

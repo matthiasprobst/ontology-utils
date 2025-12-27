@@ -13,7 +13,7 @@ from ontolutils import Thing, urirefs, namespaces, LangString
 from ontolutils.classes.utils import download_file
 from ontolutils.ex import foaf
 from ontolutils.ex import prov
-from ontolutils.typing import BlankNodeType, ResourceType, TypeOrListOf
+from ontolutils.typing import BlankNodeType, ResourceType, OptionalTypeOrListOf, UnionResourceType
 from ..prov import Attribution
 from ..spdx import Checksum
 
@@ -186,10 +186,10 @@ class Resource(Thing):
             ]
         ]
     ] = None  # dcterms:creator
-    publisher: TypeOrListOf[foaf.Agent] = None  # dcterms:publisher
+    publisher: OptionalTypeOrListOf[foaf.Agent] = None  # dcterms:publisher
     issued: datetime = None  # dcterms:issued
     modified: datetime = None  # dcterms:modified
-    contributor: Union[foaf.Agent, ResourceType, List[Union[foaf.Agent, ResourceType]]] = None  # dcterms:contributor
+    contributor: OptionalTypeOrListOf[foaf.Agent] = None  # dcterms:contributor
     license: Optional[Union[ResourceType, List[ResourceType]]] = None  # dcat:license
     version: str = None  # dcat:version
     versionNote: Optional[Union[LangString, List[LangString]]] = Field(default=None,
@@ -199,16 +199,14 @@ class Resource(Thing):
     keyword: Optional[Union[str, List[str]]] = None  # dcat:keyword
     hasVersion: Optional[Union[ResourceType, List[ResourceType]]] = Field(default=None,
                                                                           alias='has_version')  # dcat:hasVersion
-    qualifiedAttribution: Optional[
-        Union[ResourceType, Attribution, List[Union[ResourceType, Attribution]]]] = None  # dcterms:qualifiedAttribution
-    accessRights: Optional[Union[ResourceType, str]] = Field(default=None,
-                                                             alias='access_rights')  # dcterms:accessRights
-    language: Optional[Union[str, ResourceType, List[Union[str, ResourceType]]]] = None  # dcterms:language
+    qualifiedAttribution: OptionalTypeOrListOf[Attribution] = None  # dcterms:qualifiedAttribution
+    accessRights: OptionalTypeOrListOf[str] = Field(default=None,
+                                                    alias='access_rights')  # dcterms:accessRights
+    language: OptionalTypeOrListOf[str] = None  # dcterms:language
     versionNotes: Optional[Union[LangString, List[LangString]]] = Field(default=None,
                                                                         alias='version_notes')  # adms:versionNotes
 
-    wasGeneratedBy: Optional[Union[ResourceType, prov.Activity,
-    List[Union[ResourceType, prov.Activity]]]] = Field(
+    wasGeneratedBy: OptionalTypeOrListOf[prov.Activity] = Field(
         default=None,
         alias='was_generated_by'
     )  # prov:wasGeneratedBy
@@ -281,11 +279,11 @@ class Distribution(Resource):
     """
     downloadURL: Union[HttpUrl, FileUrl, pathlib.Path] = Field(default=None, alias='download_URL')
     accessURL: Union[HttpUrl, FileUrl, pathlib.Path] = Field(default=None, alias='access_URL')
-    mediaType: Union[str, ResourceType] = Field(default=None, alias='media_type')  # dcat:mediaType
+    mediaType: UnionResourceType[str] = Field(default=None, alias='media_type')  # dcat:mediaType
     byteSize: int = Field(default=None, alias='byte_size')  # dcat:byteSize
-    hasPart: Union[Thing, List[Thing]] = Field(default=None, alias='has_part')  # dcterms:hasPart
+    hasPart: Union[ResourceType, List[ResourceType]] = Field(default=None, alias='has_part')  # dcterms:hasPart
     checksum: Union[ResourceType, Checksum] = None  # spdx:checksum
-    accessService: DataService = Field(default=None, alias='access_service')  # dcat:accessService
+    accessService: UnionResourceType[DataService] = Field(default=None, alias='access_service')  # dcat:accessService
     conformsTo: ResourceType = Field(default=None, alias='conforms_to')  # dcterms:conformsTo
 
     def _repr_html_(self):

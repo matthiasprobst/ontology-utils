@@ -12,8 +12,10 @@
 - add `sparql_query` to `Thing` to generating SPARQL queries over the RDF representation based on the properties set in
   the Thing object
 - add `from_sparql` classmethod to `Thing to instantiate Thing objects from SPARQL query results
-- add type alias `TypeOrListOf`, to simplify type hints from cases like "Union[foaf.Agent, List[foaf.Agent]]" to "
+- add type alias `TypeOrListOf` and `OptionalTypeOrListOf`, to simplify type hints from cases like "Union[foaf.Agent, ResourceType, List[Union[foaf.Agent, ResourceType]]]" to "
   TypeOrListOf[foaf.Agent]"
+- add type alias `UnionResourceType` to simplify type hints from cases like "Union[ResourceType, Thing]" to "
+  UnionResourceType[Thing]"
 
 ## v0.26.0
 

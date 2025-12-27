@@ -5,8 +5,11 @@ import sys
 import unittest
 from datetime import timezone
 
+import rdflib
+
 import utils
 from ontolutils.ex import dcat, prov, foaf
+from ontolutils.ex.dcat import Dataset
 from ontolutils.ex.prov import Attribution
 from ontolutils.ex.spdx import Checksum
 from ontolutils.namespacelib.spdx import SPDX
@@ -524,3 +527,71 @@ class TestDcat(utils.ClassTest):
     dcterms:title "Dataset 2" .
 
 """, catalog.serialize("ttl"))
+
+    def test_query_dataset_based_on_constructing_query_from_itself(self):
+        q = Dataset.create_query()
+        self.assertEqual(q, """SELECT ?id ?label ?altLabel ?description ?broader ?about ?comment ?isDefinedBy ?relation ?closeMatch ?exactMatch ?title ?creator ?publisher ?issued ?modified ?contributor ?license ?version ?hasVersion ?identifier ?hasPart ?keyword ?qualifiedAttribution ?accessRights ?language ?versionNotes ?hasCurrentVersion ?wasGeneratedBy ?first ?last ?prev ?previousVersion ?distribution ?landingPage ?inSeries ?spatial ?spatialResolutionInMeters ?temporalResolution
+WHERE {
+  ?id <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/dcat#Dataset> .
+  OPTIONAL { ?id <http://www.w3.org/2000/01/rdf-schema#label> ?label . }
+  OPTIONAL { ?id <http://www.w3.org/2004/02/skos/core#altLabel> ?altLabel . }
+  OPTIONAL { ?id <http://purl.org/dc/terms/description> ?description . }
+  OPTIONAL { ?id <http://www.w3.org/2004/02/skos/core#broader> ?broader . }
+  OPTIONAL { ?id <https://schema.org/about> ?about . }
+  OPTIONAL { ?id <http://www.w3.org/2000/01/rdf-schema#comment> ?comment . }
+  OPTIONAL { ?id <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> ?isDefinedBy . }
+  OPTIONAL { ?id <http://purl.org/dc/terms/relation> ?relation . }
+  OPTIONAL { ?id <http://www.w3.org/2004/02/skos/core#closeMatch> ?closeMatch . }
+  OPTIONAL { ?id <http://www.w3.org/2004/02/skos/core#exactMatch> ?exactMatch . }
+  OPTIONAL { ?id <http://purl.org/dc/terms/title> ?title . }
+  OPTIONAL { ?id <http://purl.org/dc/terms/creator> ?creator . }
+  OPTIONAL { ?id <http://purl.org/dc/terms/publisher> ?publisher . }
+  OPTIONAL { ?id <http://purl.org/dc/terms/issued> ?issued . }
+  OPTIONAL { ?id <http://purl.org/dc/terms/modified> ?modified . }
+  OPTIONAL { ?id <http://purl.org/dc/terms/contributor> ?contributor . }
+  OPTIONAL { ?id <http://purl.org/dc/terms/license> ?license . }
+  OPTIONAL { ?id <http://www.w3.org/ns/dcat#version> ?version . }
+  OPTIONAL { ?id <http://www.w3.org/ns/dcat#hasVersion> ?hasVersion . }
+  OPTIONAL { ?id <http://purl.org/dc/terms/identifier> ?identifier . }
+  OPTIONAL { ?id <http://purl.org/dc/terms/hasPart> ?hasPart . }
+  OPTIONAL { ?id <http://www.w3.org/ns/dcat#keyword> ?keyword . }
+  OPTIONAL { ?id <http://www.w3.org/ns/prov#qualifiedAttribution> ?qualifiedAttribution . }
+  OPTIONAL { ?id <http://purl.org/dc/terms/accessRights> ?accessRights . }
+  OPTIONAL { ?id <http://purl.org/dc/terms/language> ?language . }
+  OPTIONAL { ?id <http://www.w3.org/ns/adms#versionNotes> ?versionNotes . }
+  OPTIONAL { ?id <http://www.w3.org/ns/dcat#hasCurrentVersion> ?hasCurrentVersion . }
+  OPTIONAL { ?id <http://www.w3.org/ns/prov#wasGeneratedBy> ?wasGeneratedBy . }
+  OPTIONAL { ?id <http://www.w3.org/ns/dcat#first> ?first . }
+  OPTIONAL { ?id <http://www.w3.org/ns/dcat#last> ?last . }
+  OPTIONAL { ?id <http://www.w3.org/ns/dcat#prev> ?prev . }
+  OPTIONAL { ?id <http://www.w3.org/ns/dcat#previousVersion> ?previousVersion . }
+  OPTIONAL { ?id <http://www.w3.org/ns/dcat#distribution> ?distribution . }
+  OPTIONAL { ?id <http://www.w3.org/ns/dcat#landingPage> ?landingPage . }
+  OPTIONAL { ?id <http://www.w3.org/ns/dcat#inSeries> ?inSeries . }
+  OPTIONAL { ?id <http://purl.org/dc/terms/spatial> ?spatial . }
+  OPTIONAL { ?id <http://purl.org/dc/terms/spatialResolutionInMeters> ?spatialResolutionInMeters . }
+  OPTIONAL { ?id <http://www.w3.org/ns/dcat#temporalResolution> ?temporalResolution . }
+}""")
+        g = rdflib.Graph()
+        g.parse(__this_dir__ / "data/catalog.ttl")
+
+        datasets = Dataset.from_sparql(g.query(q))
+        self.assertEqual(len(datasets), 11)
+        for ds in datasets:
+            if str(ds.id) == "https://doi.org/10.5281/zenodo.17871736":
+                self.assertEqual(4, len(ds.keyword))
+                self.assertListEqual(["CAD", "centrifugal fan", "open centrifugal fan database",
+                                      "opencefadb"], ds.keyword)
+                self.assertEqual(2, len(ds.distribution))
+                self.assertListEqual(
+                    ["https://zenodo.org/api/records/17871736/files/cefa_asm_v1.igs/content",
+                     "https://zenodo.org/api/records/17871736/files/metadata.ttl/content"],
+                    [str(dist) for dist in ds.distribution]
+                )
+
+
+def sparql_result_to_dict(bindings, exclude_none=True):
+    """Convert a SPARQL query result row to a dictionary."""
+    if exclude_none:
+        return {k: bindings[v] for k, v in bindings.labels.items() if bindings[v] is not None}
+    return {k: bindings[v] for k, v in bindings.labels.items() if bindings[v]}

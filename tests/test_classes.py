@@ -1420,8 +1420,7 @@ agents:123 a foaf:Agent ;
             about=thing.id
         )
         ttl = ontolutils.serialize([thing, thing2], format="ttl")
-        # q = Thing.sparql_query(select_vars=["?self", "?label", "?about"], include_label=True, limit=10)
-        q = Thing.sparql_query(select_vars=None, limit=10)
+        q = Thing.create_query(select_vars=None, limit=10)
         g = rdflib.Graph()
         g.parse(data=ttl, format="turtle")
         results = g.query(q)
@@ -1451,3 +1450,32 @@ LIMIT 10""")
                 self.assertEqual(str(row.about), "http://example.org/things/123")
             else:
                 self.fail(f"Unexpected label: {row.label}")
+
+    def test_sparql_query_specific_entitiy(self):
+        thing = Thing(
+            id="http://example.org/things/123",
+            label="Thing1",
+        )
+        thing2 = Thing(
+            id="http://example.org/things/456",
+            label="Another Thing",
+            about=thing.id
+        )
+        ttl = ontolutils.serialize([thing, thing2], format="ttl")
+
+        q = Thing.create_query(select_vars=["?label"],
+                               subject=rdflib.URIRef("http://example.org/things/123"),
+                               limit=10)
+        self.assertEqual(q,
+                         """SELECT ?label
+WHERE {
+  <http://example.org/things/123> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+  OPTIONAL { <http://example.org/things/123> <http://www.w3.org/2000/01/rdf-schema#label> ?label . }
+}
+LIMIT 10""")
+        g = rdflib.Graph()
+        g.parse(data=ttl, format="turtle")
+        results = g.query(q)
+        self.assertEqual(1, len(results))
+        for row in results:
+            self.assertEqual(str(row.label), "Thing1")

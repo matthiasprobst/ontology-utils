@@ -1,9 +1,10 @@
 import re
+from typing import TypeVar, Union, List, Optional
 
 from pydantic import AnyUrl, FileUrl, HttpUrl
 from pydantic.functional_validators import WrapValidator
 from rdflib import URIRef, BNode
-from typing_extensions import Annotated
+from typing_extensions import Annotated, TypeAlias
 
 from .classes.thingmodel import ThingModel
 
@@ -17,6 +18,8 @@ def validate_resource_type(value, handler, info):
         if isinstance(item, ThingModel):
             return item
         if isinstance(item, URIRef):
+            return str(item)
+        if isinstance(item, BNode):
             return str(item)
         field_name = getattr(info, "field_name", None)
         if field_name is not None:
@@ -34,6 +37,8 @@ ResourceType = Annotated[
     object,
     WrapValidator(validate_resource_type)
 ]
+
+
 def validate_id(value, handler, info):
     if isinstance(value, str):
         if value.startswith('_:'):
@@ -46,7 +51,6 @@ def validate_id(value, handler, info):
         # file:
         if value.startswith("file"):
             return str(FileUrl(value))
-
 
     if isinstance(value, BNode):
         return value.n3()
@@ -88,3 +92,12 @@ def __validate_blank_node(value: str, handler, info):
 
 
 BlankNodeType = Annotated[str, WrapValidator(__validate_blank_node)]
+
+T = TypeVar("T")
+TypeOrListOf: TypeAlias = Union[T, ResourceType, List[Union[T, ResourceType]]]
+OptionalTypeOrListOf: TypeAlias = Optional[Union[T, ResourceType, List[Union[T, ResourceType]]]]
+
+UnionResourceType: TypeAlias = Union[T, ResourceType]
+
+ResourceTypeOrListOf: TypeAlias = Union[ResourceType, List[ResourceType]]
+OptionalResourceTypeOrListOf: TypeAlias = Optional[Union[ResourceType, List[ResourceType]]]

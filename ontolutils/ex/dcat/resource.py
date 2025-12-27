@@ -13,7 +13,7 @@ from ontolutils import Thing, urirefs, namespaces, LangString
 from ontolutils.classes.utils import download_file
 from ontolutils.ex import foaf
 from ontolutils.ex import prov
-from ontolutils.typing import BlankNodeType, ResourceType, OptionalTypeOrListOf, UnionResourceType
+from ontolutils.typing import BlankNodeType, ResourceType, OptionalTypeOrListOf, UnionResourceType, OptionalResourceTypeOrListOf
 from ..prov import Attribution
 from ..spdx import Checksum
 
@@ -281,7 +281,7 @@ class Distribution(Resource):
     accessURL: Union[HttpUrl, FileUrl, pathlib.Path] = Field(default=None, alias='access_URL')
     mediaType: UnionResourceType[str] = Field(default=None, alias='media_type')  # dcat:mediaType
     byteSize: int = Field(default=None, alias='byte_size')  # dcat:byteSize
-    hasPart: Union[ResourceType, List[ResourceType]] = Field(default=None, alias='has_part')  # dcterms:hasPart
+    hasPart: OptionalResourceTypeOrListOf = Field(default=None, alias='has_part')  # dcterms:hasPart
     checksum: Union[ResourceType, Checksum] = None  # spdx:checksum
     accessService: UnionResourceType[DataService] = Field(default=None, alias='access_service')  # dcat:accessService
     conformsTo: ResourceType = Field(default=None, alias='conforms_to')  # dcterms:conformsTo
@@ -498,14 +498,14 @@ class Dataset(Resource):
 class Catalog(Dataset):
     """A curated collection of metadata about resources."""
     dataset: Union[Dataset, List[Dataset]] = None  # dcat:dataset
-    primaryTopic: Union[ResourceType, List[ResourceType]] = None  # dcterms:primaryTopic
-    record: Union[ResourceType, List[ResourceType]] = Field(default=None,
+    primaryTopic: OptionalResourceTypeOrListOf = None  # dcterms:primaryTopic
+    record: OptionalResourceTypeOrListOf = Field(default=None,
                                                             alias='catalog_record')  # dcterms:catalogRecord
     resource: Union[Resource, ResourceType, List[Union[Resource, ResourceType]]] = None  # dcterms:resource
     service: Union[DataService, ResourceType, List[Union[DataService, ResourceType]]] = None  # dcterms:service
-    homepage: Union[ResourceType, List[ResourceType]] = None  # foaf:homepage
+    homepage: OptionalResourceTypeOrListOf = None  # foaf:homepage
     catalog: "Catalog" = None  # dcat:catalog
-    themeTaxonomy: Union[ResourceType, List[ResourceType]] = Field(default=None, alias='theme')  # dcat:themeTaxonomy
+    themeTaxonomy: OptionalResourceTypeOrListOf = Field(default=None, alias='theme')  # dcat:themeTaxonomy
 
 
 DataService.model_rebuild()

@@ -1,5 +1,4 @@
 import unittest
-from typing import List, Union
 
 import pydantic
 import rdflib
@@ -8,7 +7,7 @@ from pydantic import HttpUrl, ValidationError
 from ontolutils import Thing, urirefs, namespaces
 from ontolutils import set_logging_level
 from ontolutils import typing
-from ontolutils.typing import ResourceType
+from ontolutils.typing import OptionalResourceTypeOrListOf
 
 set_logging_level('WARNING')
 
@@ -36,7 +35,7 @@ class TestTypeing(unittest.TestCase):
             """
             A dataset class.
             """
-            hasVersion: Union[ResourceType, List[ResourceType]]
+            hasVersion: OptionalResourceTypeOrListOf
 
         with self.assertRaises(ValidationError):
             Dataset(

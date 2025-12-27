@@ -16,6 +16,8 @@
   TypeOrListOf[foaf.Agent]"
 - add type alias `UnionResourceType` to simplify type hints from cases like "Union[ResourceType, Thing]" to "
   UnionResourceType[Thing]"
+- add type alias `ResourceTypeOrListOf` and `OptionalResourceTypeOrListOf` to simplify type hints from cases like "Union[ResourceType, List[ResourceType]]" to "
+  OptionalResourceTypeOrListOf"
 
 ## v0.26.0
 

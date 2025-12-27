@@ -11,3 +11,4 @@ which are needed to identify entities in ontologies.
    classes
    configuration
    namespacelib
+   typing

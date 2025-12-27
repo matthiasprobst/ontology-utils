@@ -1,9 +1,9 @@
-from typing import Union, List
+from typing import Union, List, Optional
 
 from pydantic import Field
 
 from ontolutils import Thing, urirefs, namespaces
-from ontolutils.typing import ResourceType
+from ontolutils.typing import AnyIriOf, AnyThing
 from ..qudt import Unit
 
 __version__ = "2917.10.19"
@@ -32,7 +32,7 @@ class Property(Thing):
         alias="value",
         description="The value of the system property.")
 
-    unitCode: Union[Unit, ResourceType] = Field(
+    unitCode: Optional[AnyIriOf[Unit]] = Field(
         default=None,
         alias="unit_code",
         description="The unit of measurement for the property value."
@@ -62,20 +62,20 @@ class SystemCapability(Property):
     """Describes normal measurement, actuation, sampling properties such as accuracy, range, precision, etc. of a System under some specified Conditions such as a temperature range.
 The capabilities specified here are those that affect the primary purpose of the System, while those in OperatingRange represent the system's normal operating environment, including Conditions that don't affect the Observations or the Actuations."""
     hasSystemProperty: Union[
-        ResourceType, SystemProperty, List[Union[ResourceType, SystemProperty]]] = Field(
+        AnyThing, SystemProperty, List[Union[AnyThing, SystemProperty]]] = Field(
         default=None,
         alias="has_system_property",
         description="Relation between a System Capability and an Observable Property that it can observe."
     )
     inCondition: Union[
-        ResourceType, Condition, List[Union[ResourceType, Condition]]] = Field(
+        AnyThing, Condition, List[Union[AnyThing, Condition]]] = Field(
         default=None,
         alias="in_condition",
         description="Relation between a System Capability and Conditions that apply to it."
         # example: Used for example to say that a Sensor has a particular accuracy in particular Conditions.
     )
     forProperty: Union[
-        ResourceType, "ObservableProperty", List[Union[ResourceType, "ObservableProperty"]]] = Field(
+        AnyThing, "ObservableProperty", List[Union[AnyThing, "ObservableProperty"]]] = Field(
         default=None,
         alias="for_property",
         description="Relation between a System Capability and an Observable Property that it can observe."
@@ -88,7 +88,7 @@ The capabilities specified here are those that affect the primary purpose of the
          hasSystemCapability="ssn_system:hasSystemCapability")
 class System(Thing):
     """ System is a unit of abstraction for pieces of infrastructure that implement Procedures. A System may have components, its subsystems, which are other Systems."""
-    hasSystemCapability: Union[ResourceType, SystemCapability, List[Union[ResourceType, SystemCapability]]] = Field(
+    hasSystemCapability: Union[AnyThing, SystemCapability, List[Union[AnyThing, SystemCapability]]] = Field(
         default=None,
         alias="has_system_capability",
         description="Relation between an Observable Property and a System Capability that can observe it."
@@ -101,8 +101,8 @@ class System(Thing):
          isObservedBy="sosa:isObservedBy")
 class ObservableProperty(Property):
     """Observable Property - An observable quality (property, characteristic) of a FeatureOfInterest."""
-    isObservedBy: Union[ResourceType, "Sensor", List[Union[ResourceType, "Sensor"]]] = Field(default=None,
-                                                                                             alias="is_observed_by")
+    isObservedBy: Union[AnyThing, "Sensor", List[Union[AnyThing, "Sensor"]]] = Field(default=None,
+                                                                                     alias="is_observed_by")
 
 
 @namespaces(sosa="http://www.w3.org/ns/sosa/")
@@ -121,13 +121,13 @@ class Sensor(System):
     """Sensor -  Device, agent (including humans), or software (simulation) involved in, or implementing, a Procedure.
     Sensors respond to a Stimulus, e.g., a change in the environment, or Input data composed from the Results of prior
     Observations, and generate a Result. Sensors can be hosted by Platforms."""
-    observes: Union[ObservableProperty, ResourceType, List[Union[ObservableProperty, ResourceType]]]
-    isHostedBy: Union[ResourceType, "Platform", List[Union[ResourceType, "Platform"]]] = Field(
+    observes: Union[ObservableProperty, AnyThing, List[Union[ObservableProperty, AnyThing]]]
+    isHostedBy: Union[AnyThing, "Platform", List[Union[AnyThing, "Platform"]]] = Field(
         default=None,
         alias="is_hosted_by",
         description="Relation between a Sensor and a Platform that hosts or mounts it."
     )
-    madeObservation: Union["Observation", ResourceType, List[Union["Observation", ResourceType]]] = Field(
+    madeObservation: Union["Observation", AnyThing, List[Union["Observation", AnyThing]]] = Field(
         default=None,
         alias="made_observation",
         description="The observations made by this sensor."
@@ -159,7 +159,7 @@ class Platform(Thing):
          )
 class FeatureOfInterest(Thing):
     """Feature Of Interest - The thing whose property is being estimated or calculated in the course of an Observation to arrive at a Result, or whose property is being manipulated by an Actuator, or which is being sampled or transformed in an act of Sampling."""
-    hasProperty: Union[ResourceType, Property, List[Union[ResourceType, Property]]] = Field(
+    hasProperty: Union[AnyThing, Property, List[Union[AnyThing, Property]]] = Field(
         default=None,
         alias="has_property",
         description="The property associated with this feature of interest."
@@ -180,22 +180,22 @@ class Result(Thing):
          hasFeatureOfInterest="sosa:hasFeatureOfInterest",
          )
 class Observation(Thing):
-    madeBySensor: Union[ResourceType, Sensor] = Field(
+    madeBySensor: Union[AnyThing, Sensor] = Field(
         default=None,
         alias="made_by_sensor",
         description="The sensor that made the observation."
     )
-    observedProperty: Union[ResourceType, ObservableProperty] = Field(
+    observedProperty: Union[AnyThing, ObservableProperty] = Field(
         default=None,
         alias="observed_property",
         description="The property that was observed."
     )
-    hasResult: Union[ResourceType, Result, List[Union[ResourceType, "Result"]]] = Field(
+    hasResult: Union[AnyThing, Result, List[Union[AnyThing, "Result"]]] = Field(
         default=...,
         alias="has_result",
         description="The result of the observation."
     )
-    hasFeatureOfInterest: Union[ResourceType, FeatureOfInterest] = Field(
+    hasFeatureOfInterest: Union[AnyThing, FeatureOfInterest] = Field(
         default=None,
         alias="has_feature_of_interest",
         description=" A relation between an Observation and the entity whose quality was observed, or between an Actuation and the entity whose property was modified, or between an act of Sampling and the entity that was sampled."

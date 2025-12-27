@@ -14,7 +14,7 @@ from ..prov import Organization
 from ..qudt import Unit
 from ..schema import ResearchProject
 from ..sis import MeasurementUncertainty
-from ...typing import ResourceType
+from ...typing import AnyIriOf, AnyIri, AnyThingOrList
 
 try:
     import numpy as np
@@ -91,13 +91,13 @@ class NumericalVariable(Variable):
         serialize_numpy_as_list=True,
     )
 
-    hasUnit: Optional[Union[ResourceType, Unit]] = Field(alias="units", default=None)
+    hasUnit: Optional[AnyIriOf[Unit]] = Field(alias="units", default=None)
     hasNumericalValue: Optional[Union[Union[int, float], List[Union[int, float]], np.ndarray]] = Field(
         alias="has_numerical_value",
         default=None)
     hasMaximumValue: Optional[Union[int, float]] = Field(alias="has_maximum_value", default=None)
     hasMinimumValue: Optional[Union[int, float]] = Field(alias="has_minimum_value", default=None)
-    hasUncertaintyDeclaration: Optional[Union[MeasurementUncertainty, ResourceType]] = Field(
+    hasUncertaintyDeclaration: Optional[AnyIriOf[MeasurementUncertainty]] = Field(
         alias="has_uncertainty_declaration", default=None
     )
     hasStepSize: Optional[Union[int, float]] = Field(alias="has_step_size", default=None)
@@ -327,7 +327,7 @@ class Method(Thing):
         Variable(s) used in the method
     """
     description: str = None
-    parameter: Union[Variable, List[Variable], NumericalVariable, List[NumericalVariable]] = None
+    parameter: Union[AnyIri, Variable, NumericalVariable, List[Union[Variable, NumericalVariable, AnyIri]]] = None
 
     def add_numerical_variable(self, numerical_variable: Union[dict, "NumericalVariable"]):
         """add numerical variable to tool"""
@@ -401,9 +401,6 @@ class Assignment(Thing):
     """not yet implemented"""
 
 
-OneOrMultiEntities = Union[Thing, ResourceType, HttpUrl, str, List[Union[Thing, ResourceType, HttpUrl, str]]]
-
-
 @namespaces(m4i=_NS,
             schema="https://schema.org/",
             obo="http://purl.obolibrary.org/obo/")
@@ -438,13 +435,13 @@ class ProcessingStep(Activity):
     RO_0002224: Any = Field(default=None, alias="starts_with")
     RO_0002230: Any = Field(default=None, alias="ends_with")
     hasRuntimeAssignment: Assignment = Field(default=None, alias="runtime_assignment")
-    investigates: Optional[Union[ResourceType, Thing, List[Union[ResourceType, Thing]]]] = None
+    investigates: AnyThingOrList = None
     usageInstruction: str = Field(default=None, alias="usage_instruction")
     hasEmployedTool: Tool = Field(default=None, alias="has_employed_tool")
     realizesMethod: Union[Method, List[Method]] = Field(default=None, alias="realizes_method")
-    hasInput: Optional[Union[ResourceType, Thing, List[Union[ResourceType, Thing]]]] = Field(default=None,
-                                                                                             alias="has_input")
-    hasOutput: OneOrMultiEntities = Field(default=None, alias="has_output")
+    hasInput: AnyThingOrList = Field(default=None,
+                                     alias="has_input")
+    hasOutput: AnyThingOrList = Field(default=None, alias="has_output")
     partOf: Union[ResearchProject, "ProcessingStep", List[Union[ResearchProject, "ProcessingStep"]]] = Field(
         default=None, alias="part_of")
     precedes: Union["ProcessingStep", List[Union["ProcessingStep"]]] = None

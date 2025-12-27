@@ -4,7 +4,7 @@ from typing import Optional, List, Union
 from pydantic import Field
 
 from ontolutils import Thing, LangString, namespaces, urirefs
-from ontolutils.typing import ResourceType
+from ontolutils.typing import AnyThingOrList
 
 _NS = "http://www.w3.org/2004/02/skos/core#"
 
@@ -21,7 +21,7 @@ class Note(Thing):
     value: LangString = Field(...)
     created: Optional[datetime] = Field(default=None)
     wasRevisionOf: Optional[Thing] = Field(default=None, alias="wasRevisionOf")
-    creator: Optional[Union[ResourceType, List[ResourceType]]] = Field(default=None)
+    creator: Optional[AnyThingOrList] = Field(default=None)
 
 
 @namespaces(skos=_NS)

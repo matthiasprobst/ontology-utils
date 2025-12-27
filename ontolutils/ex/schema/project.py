@@ -5,7 +5,7 @@ from pydantic import model_validator
 
 from ontolutils import Thing, namespaces, urirefs, as_id, LangString
 from ontolutils.ex.prov import Organization, Person
-from ontolutils.typing import ResourceType
+from ontolutils.typing import AnyThing
 
 
 @namespaces(schema="https://schema.org/")
@@ -18,7 +18,7 @@ from ontolutils.typing import ResourceType
 class Project(Thing):
     """Implementation of schema:Project"""
     name: Optional[Union[LangString, List[LangString]]] = Field(default=None)
-    identifier: Optional[ResourceType] = Field(default=None)
+    identifier: Optional[AnyThing] = Field(default=None)
     funder: Optional[Union[Person, Organization]] = Field(default=None)
 
     @model_validator(mode="before")

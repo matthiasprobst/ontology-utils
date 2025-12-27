@@ -7,7 +7,7 @@ from ontolutils import LangString
 from ontolutils import Thing, as_id
 from ontolutils import urirefs, namespaces
 from ontolutils.ex.skos import Concept
-from ontolutils.typing import ResourceType
+from ontolutils.typing import AnyThing
 
 __version__ = "2013.19.05"
 
@@ -156,9 +156,9 @@ class Attribution(Thing):
     hadRole: Role
         Role of the agent
     """
-    agent: Union[ResourceType, Person, List[Person], ResourceType, Organization, List[Organization], List[
+    agent: Union[AnyThing, Person, List[Person], AnyThing, Organization, List[Organization], List[
         Union[Person, Organization]]]
-    hadRole: Union[str, ResourceType, Role, List[Union[str, ResourceType, Role]]] = Field(alias="had_role",
+    hadRole: Union[str, AnyThing, Role, List[Union[str, AnyThing, Role]]] = Field(alias="had_role",
                                                                                           default=None)
 
     @field_validator('agent', mode='before')
@@ -188,12 +188,12 @@ class SoftwareAgent(Agent):
          )
 class Entity(Thing):
     """Implementation of prov:Entity"""
-    wasGeneratedBy: Union[ResourceType, "Activity"] = Field(default=None, alias="was_generated_by")
-    wasDerivedFrom: Union[ResourceType, "Entity", List[Union[ResourceType, "Entity"]]] = Field(default=None,
+    wasGeneratedBy: Union[AnyThing, "Activity"] = Field(default=None, alias="was_generated_by")
+    wasDerivedFrom: Union[AnyThing, "Entity", List[Union[AnyThing, "Entity"]]] = Field(default=None,
                                                                                                alias="was_derived_from")
-    wasAttributedTo: Union[ResourceType, Agent, List[Union[Agent, ResourceType]]] = Field(default=None,
+    wasAttributedTo: Union[AnyThing, Agent, List[Union[Agent, AnyThing]]] = Field(default=None,
                                                                                           alias="was_attributed_to")
-    qualifiedAttribution: Union[ResourceType, List[Attribution]] = Field(default=None, alias="qualified_attribution")
+    qualifiedAttribution: Union[AnyThing, List[Attribution]] = Field(default=None, alias="qualified_attribution")
 
 
 @namespaces(prov="http://www.w3.org/ns/prov#")
@@ -209,11 +209,11 @@ class Activity(Thing):
     """Pydantic Model for http://www.w3.org/ns/prov#Activity"""
     startedAtTime: datetime = Field(default=None, alias="startedAtTime")
     endedAtTime: datetime = Field(default=None, alias="endedAtTime")
-    used: Union[ResourceType, List[Union[ResourceType, Entity]], Entity] = Field(default=None, alias="used")
-    generated: Union[ResourceType, List[Union[ResourceType, Entity]], Entity] = Field(default=None, alias="generated")
-    wasStartedBy: Union[ResourceType, List[Union[ResourceType, Entity]], Entity] = Field(default=None,
+    used: Union[AnyThing, List[Union[AnyThing, Entity]], Entity] = Field(default=None, alias="used")
+    generated: Union[AnyThing, List[Union[AnyThing, Entity]], Entity] = Field(default=None, alias="generated")
+    wasStartedBy: Union[AnyThing, List[Union[AnyThing, Entity]], Entity] = Field(default=None,
                                                                                          alias="was_started_by")
-    wasEndedBy: Union[ResourceType, List[Union[ResourceType, Entity]], Entity] = Field(default=None,
+    wasEndedBy: Union[AnyThing, List[Union[AnyThing, Entity]], Entity] = Field(default=None,
                                                                                        alias="was_ended_by")
 
 

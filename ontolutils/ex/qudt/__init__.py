@@ -4,7 +4,7 @@ import rdflib
 from pydantic import Field, field_validator
 
 from ontolutils import Thing, namespaces, urirefs
-from ...typing import ResourceType
+from ...typing import AnyThing, AnyIri, AnyThingOrList
 
 __version__ = "3.1.9"
 _NS = "http://qudt.org/schema/qudt/"
@@ -41,24 +41,24 @@ class Unit(Thing):
     ucumCode: Optional[str] = Field(default=None, alias="ucum_code")
     udunitsCode: Optional[str] = Field(default=None, alias="udunits_code")
     uneceCommonCode: Optional[str] = Field(default=None, alias="unece_common_code")
-    wikidataMatch: Optional[ResourceType] = Field(default=None, alias="wikidata_match ")
-    applicableSystem: Optional[Union[ResourceType, List[ResourceType]]] = Field(default=None, alias="applicable_system")
+    wikidataMatch: Optional[AnyIri] = Field(default=None, alias="wikidata_match ")
+    applicableSystem: Optional[AnyThingOrList] = Field(default=None, alias="applicable_system")
     conversionMultiplier: Optional[float] = Field(default=None, alias="conversion_multiplier")
     conversionMultiplierSN: Optional[float] = Field(default=None, alias="conversion_multiplier_sn")
-    dbpediaMatch: Union[ResourceType] = Field(default=None, alias="dbpedia_match")
-    hasDimensionVector: Union[ResourceType] = Field(default=None, alias="has_dimension_vector")
-    informativeReference: Union[ResourceType] = Field(default=None, alias="informative_reference")
+    dbpediaMatch: Union[AnyThing] = Field(default=None, alias="dbpedia_match")
+    hasDimensionVector: Union[AnyThing] = Field(default=None, alias="has_dimension_vector")
+    informativeReference: Union[AnyThing] = Field(default=None, alias="informative_reference")
     iec61360Code: Union[str] = Field(default=None, alias="iec61360_code")
-    omUnit: Union[ResourceType] = Field(default=None, alias="om_unit")
-    exactMatch: Union["Unit", ResourceType, List[Union["Unit", ResourceType]]] = Field(default=None,
+    omUnit: Union[AnyThing] = Field(default=None, alias="om_unit")
+    exactMatch: Union["Unit", AnyThing, List[Union["Unit", AnyThing]]] = Field(default=None,
                                                                                        alias="exact_match")
-    siExactMatch: Union[ResourceType] = Field(default=None, alias="si_exact_match")
+    siExactMatch: Union[AnyThing] = Field(default=None, alias="si_exact_match")
     conversionOffset: Union[float] = Field(default=None, alias="conversion_offset")
     conversionOffsetSN: Union[float] = Field(default=None, alias="conversion_offset_sn")
-    scalingOf: Union[ResourceType, "Unit", List[Union[ResourceType, "Unit"]]] = Field(default=None, alias="scaling_of")
-    hasQuantityKind: Union[ResourceType, "QuantityKind", List[Union[ResourceType, "QuantityKind"]]] = Field(
+    scalingOf: Union[AnyThing, "Unit", List[Union[AnyThing, "Unit"]]] = Field(default=None, alias="scaling_of")
+    hasQuantityKind: Union[AnyThing, "QuantityKind", List[Union[AnyThing, "QuantityKind"]]] = Field(
         default=None, alias="has_quantity_kind")
-    hasReciprocalUnit: Union[ResourceType, "Unit"] = Field(default=None, alias="has_reciprocal_unit")
+    hasReciprocalUnit: Union[AnyThing, "Unit"] = Field(default=None, alias="has_reciprocal_unit")
     latexSymbol: Optional[Union[str, List[str]]] = Field(default=None, alias="latex_symbol")
     latexDefinition: Optional[Union[str, List[str]]] = Field(default=None, alias="latex_definition")
     expression: Optional[Union[str, List[str]]] = Field(default=None, alias="expression")
@@ -103,18 +103,18 @@ class QuantityValue(Thing):
          quantityValue='qudt:quantityValue')
 class QuantityKind(Thing):
     """Implementation of qudt:QuantityKind"""
-    applicableUnit: Union[ResourceType, Unit, List[Union[ResourceType, Unit]]] = Field(default=None,
+    applicableUnit: Union[AnyThing, Unit, List[Union[AnyThing, Unit]]] = Field(default=None,
                                                                                        alias="applicable_unit")
-    quantityValue: Union[ResourceType, QuantityValue] = Field(default=None, alias="quantity_value")
+    quantityValue: Union[AnyThing, QuantityValue] = Field(default=None, alias="quantity_value")
     latexDefinition: Optional[Union[str, List[str]]] = Field(default=None, alias="latex_definition")
     latexSymbol: Optional[Union[str, List[str]]] = Field(default=None, alias="latex_symbol")
-    hasDimensionVector: Optional[Union[ResourceType, List[ResourceType]]] = Field(default=None,
+    hasDimensionVector: Optional[Union[AnyThing, List[AnyThing]]] = Field(default=None,
                                                                                   alias="has_dimension_vector")
-    informativeReference: Optional[Union[ResourceType, List[ResourceType]]] = Field(default=None,
+    informativeReference: Optional[Union[AnyThing, List[AnyThing]]] = Field(default=None,
                                                                                     alias="informative_reference")
     symbol: Optional[Union[str, List[str]]] = Field(default=None, alias="symbol")
     iec61360Code: Optional[Union[str, List[str]]] = Field(default=None, alias="iec61360_code")
-    wikidataMatch: Optional[Union[ResourceType, List[ResourceType]]] = Field(default=None, alias="wikidata_match")
+    wikidataMatch: Optional[Union[AnyThing, List[AnyThing]]] = Field(default=None, alias="wikidata_match")
     plainTextDescription: Optional[Union[str, List[str]]] = Field(default=None, alias="plain_text_description")
 
 

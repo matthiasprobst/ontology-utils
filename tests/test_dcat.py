@@ -507,6 +507,7 @@ class TestDcat(utils.ClassTest):
         self.assertEqual(len(catalog.dataset), 2)
         self.assertEqual(catalog.dataset[0].identifier, "ds1")
         self.assertEqual(catalog.dataset[1].identifier, "ds2")
+        ttl = catalog.serialize("ttl")
         self.assertEqual("""@prefix dcat: <http://www.w3.org/ns/dcat#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
 
@@ -526,7 +527,14 @@ class TestDcat(utils.ClassTest):
     dcterms:identifier "ds2" ;
     dcterms:title "Dataset 2" .
 
-""", catalog.serialize("ttl"))
+""", ttl)
+
+        catalog_loaded = dcat.Catalog.from_ttl(data=ttl)
+        self.assertEqual(catalog_loaded[0].id, catalog.id)
+        print(catalog_loaded[0].dataset)
+
+        shacl_ttl = __this_dir__ / "data/catalog_shacl.ttl"
+        self.assertFalse(catalog.validate(shacl_source=shacl_ttl, raise_on_error=False))
 
     def test_query_dataset_based_on_constructing_query_from_itself(self):
         q = Dataset.create_query()
@@ -588,6 +596,13 @@ WHERE {
                      "https://zenodo.org/api/records/17871736/files/metadata.ttl/content"],
                     [str(dist) for dist in ds.distribution]
                 )
+
+    def test_catalog_from_ttl(self):
+        cat = dcat.Catalog.from_ttl(__this_dir__ / "data/small_catalog.ttl")
+        self.assertEqual(1, len(cat))
+
+        shacl_ttl = __this_dir__ / "data/catalog_shacl.ttl"
+        self.assertTrue(cat[0].validate(shacl_source=shacl_ttl, raise_on_error=False))
 
 
 def sparql_result_to_dict(bindings, exclude_none=True):

@@ -5,7 +5,7 @@ from pydantic import Field, field_validator
 
 from ontolutils import Thing, urirefs, namespaces
 from ontolutils.namespacelib.spdx import SPDX
-from ontolutils.typing import ResourceType
+from ontolutils.typing import AnyThing
 
 
 @namespaces(spdx="http://spdx.org/rdf/terms#")
@@ -22,12 +22,12 @@ class Checksum(Thing):
     checksumValue: str
         The checksum value
     """
-    algorithm: Optional[ResourceType] = Field(default="None")  # dcat:algorithm
+    algorithm: Optional[AnyThing] = Field(default="None")  # dcat:algorithm
     checksumValue: str = Field(alias="value")  # dcat:value
 
     @field_validator("algorithm", mode="before")
     @classmethod
-    def validate_algorithm(cls, algorithm_value: Union[str, ResourceType]) -> Union[str, ResourceType]:
+    def validate_algorithm(cls, algorithm_value: Union[str, AnyThing]) -> Union[str, AnyThing]:
         if isinstance(algorithm_value, rdflib.URIRef):
             return str(algorithm_value)
         if isinstance(algorithm_value, str) and str(algorithm_value).startswith("http"):

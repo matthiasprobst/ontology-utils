@@ -2,6 +2,9 @@
 
 ## v0.27.0
 
+- Refactored ResourceType into more specific classes.
+- **Note:** Use more specific types instead of ResourceType where possible. ResourceType is deprecated and will be
+  removed in future versions.
 - remove invalid property from `Result`
 - add catalog class to dcat ontology
 - fix documentation
@@ -12,15 +15,6 @@
 - add `sparql_query` to `Thing` to generating SPARQL queries over the RDF representation based on the properties set in
   the Thing object
 - add `from_sparql` classmethod to `Thing to instantiate Thing objects from SPARQL query results
-- add type alias `TypeOrListOf` and `OptionalTypeOrListOf`, to simplify type hints from cases like "Union[foaf.Agent,
-  ResourceType, List[Union[foaf.Agent, ResourceType]]]" to "
-  TypeOrListOf[foaf.Agent]"
-- add type alias `OptionalUnionResourceType` and `UnionResourceType` to simplify type hints from cases like "
-  Union[ResourceType, Thing]" to "
-  UnionResourceType[Thing]"
-- add type alias `ResourceTypeOrListOf` and `OptionalResourceTypeOrListOf` to simplify type hints from cases like "
-  Union[ResourceType, List[ResourceType]]" to "
-  OptionalResourceTypeOrListOf"
 - upgrade to pure pyproject.toml build system
 
 ## v0.26.0

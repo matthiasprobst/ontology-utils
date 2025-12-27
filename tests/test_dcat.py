@@ -531,11 +531,17 @@ class TestDcat(utils.ClassTest):
     def test_query_dataset_based_on_constructing_query_from_itself(self):
         q = Dataset.create_query()
         print(q)
-        from pprint import pprint
         g = rdflib.Graph()
         g.parse(__this_dir__ / "data/catalog.ttl")
         res = g.query(q)
         for row in res:
-            print(row.distribution)
-            pprint({k:row[v] for k, v in row.labels.items() if row[v] is not None})
-            print("\n---\n")
+            print(sparql_result_to_dict(row))
+            # pprint({k: row[v] for k, v in row.labels.items() if row[v] is not None})
+            # print("\n---\n")
+
+
+def sparql_result_to_dict(bindings, exclude_none=True):
+    """Convert a SPARQL query result row to a dictionary."""
+    if exclude_none:
+        return {k: bindings[v] for k, v in bindings.labels.items() if bindings[v] is not None}
+    return {k: bindings[v] for k, v in bindings.labels.items() if bindings[v]}

@@ -98,6 +98,7 @@ TypeOrListOf: TypeAlias = Union[T, ResourceType, List[Union[T, ResourceType]]]
 OptionalTypeOrListOf: TypeAlias = Optional[Union[T, ResourceType, List[Union[T, ResourceType]]]]
 
 UnionResourceType: TypeAlias = Union[T, ResourceType]
+OptionalUnionResourceType: TypeAlias = Optional[Union[T, ResourceType]]
 
 ResourceTypeOrListOf: TypeAlias = Union[ResourceType, List[ResourceType]]
 OptionalResourceTypeOrListOf: TypeAlias = Optional[Union[ResourceType, List[ResourceType]]]

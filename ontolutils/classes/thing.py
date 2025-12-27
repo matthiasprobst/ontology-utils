@@ -11,11 +11,12 @@ from urllib.parse import urlparse
 import numpy as np
 import rdflib
 import yaml
-from pydantic import AnyUrl, HttpUrl, FileUrl, BaseModel, Field, model_validator
+from pydantic import AnyUrl, HttpUrl, FileUrl, BaseModel, Field, model_validator, ValidationError
 from pydantic import field_serializer
 from pydantic_core import Url
 from rdflib import XSD
 from rdflib.plugins.shared.jsonld.context import Context
+from rdflib.query import Result
 
 from .decorator import urirefs, namespaces, URIRefManager, NamespaceManager, _is_http_url
 from .thingmodel import ThingModel
@@ -865,6 +866,42 @@ class Thing(ThingModel):
         return get_namespaces(cls)
 
     @classmethod
+    def from_sparql(cls,
+                    sparql_result: Result,
+                    raise_on_error=True):
+        """Initialize the class from a SPARQL result"""
+        # sparql_result_dict = _sparql_result_to_dict(sparql_result)
+        # first cluster by subject. a subject can be identified by type property
+        subjects: Dict[str, Dict[str, Any]] = {}
+        for row in sparql_result:
+            row_dict = _sparql_result_to_dict(row)
+            _id = row_dict.pop("id")
+            if _id in subjects:
+                for k, v in row_dict.items():
+                    if k in subjects[_id]:
+                        # already exists, make it a list
+                        if v not in subjects[_id][k]:
+                            if not isinstance(subjects[_id][k], list):
+                                subjects[_id][k] = [subjects[_id][k]]
+                            subjects[_id][k].append(v)
+                    else:
+                        subjects[_id][k] = v
+            else:
+                subjects[_id] = row_dict
+        instances = []
+        for k, v in subjects.items():
+            try:
+                i = cls.model_validate({"id": k, **v})
+            except ValidationError as e:
+                if raise_on_error:
+                    raise e
+                logger.error(f"Could not validate {v} to {cls.__name__}: {e}")
+                continue
+            instances.append(i)
+        # instances = [cls.model_validate(v) for k, v in subjects.items()]
+        return instances
+
+    @classmethod
     def add_property(cls,
                      *,
                      name: str,
@@ -895,7 +932,7 @@ class Thing(ThingModel):
     @classmethod
     def create_query(cls,
                      select_vars: Optional[List[str]] = None,
-                     subject: Union[str, rdflib.URIRef]=None,
+                     subject: Union[str, rdflib.URIRef] = None,
                      limit: Optional[int] = None,
                      distinct: bool = False) -> str:
         """Generate a SPARQL query to find instances of this Thing subclass.
@@ -949,7 +986,7 @@ class Thing(ThingModel):
         for var in vars_to_select:
             if not isinstance(var, str) or not var.startswith('?'):
                 continue
-            if var in (subj, ):
+            if var in (subj,):
                 continue
             key = var[1:]
             iri = None
@@ -1155,3 +1192,10 @@ def is_semantically_equal(thing1, thing2) -> bool:
     if isinstance(thing1, Thing) and isinstance(thing2, Thing):
         return thing1.uri == thing2.uri
     return thing1 == thing2
+
+
+def _sparql_result_to_dict(bindings, exclude_none=True):
+    """Convert a SPARQL query result row to a dictionary."""
+    if exclude_none:
+        return {k: bindings[v] for k, v in bindings.labels.items() if bindings[v] is not None}
+    return {k: bindings[v] for k, v in bindings.labels.items() if bindings[v]}

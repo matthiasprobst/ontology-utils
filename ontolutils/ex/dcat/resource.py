@@ -13,7 +13,7 @@ from ontolutils import Thing, urirefs, namespaces, LangString
 from ontolutils.classes.utils import download_file
 from ontolutils.ex import foaf
 from ontolutils.ex import prov
-from ontolutils.typing import BlankNodeType, ResourceType
+from ontolutils.typing import BlankNodeType, ResourceType, TypeOrListOf
 from ..prov import Attribution
 from ..spdx import Checksum
 
@@ -186,10 +186,10 @@ class Resource(Thing):
             ]
         ]
     ] = None  # dcterms:creator
-    publisher: Union[foaf.Agent, List[foaf.Agent]] = None  # dcterms:publisher
+    publisher: TypeOrListOf[foaf.Agent] = None  # dcterms:publisher
     issued: datetime = None  # dcterms:issued
     modified: datetime = None  # dcterms:modified
-    contributor: Union[foaf.Agent, List[foaf.Agent]] = None  # dcterms:contributor
+    contributor: Union[foaf.Agent, ResourceType, List[Union[foaf.Agent, ResourceType]]] = None  # dcterms:contributor
     license: Optional[Union[ResourceType, List[ResourceType]]] = None  # dcat:license
     version: str = None  # dcat:version
     versionNote: Optional[Union[LangString, List[LangString]]] = Field(default=None,
@@ -451,7 +451,7 @@ class Dataset(Resource):
     identifier: Union[
         str, LangString] = None  # dcterms:identifier, see https://www.w3.org/TR/vocab-dcat-3/#ex-identifier
     # http://www.w3.org/ns/prov#Person, see https://www.w3.org/TR/vocab-dcat-3/#ex-adms-identifier
-    distribution: Union[Distribution, List[Distribution]] = None  # dcat:Distribution
+    distribution: Union[Distribution, ResourceType, List[Union[Distribution, ResourceType]]] = None  # dcat:Distribution
     modified: datetime = None  # dcterms:modified
     landingPage: HttpUrl = Field(default=None, alias="landing_page")  # dcat:landingPage
     inSeries: DatasetSeries = Field(default=None, alias='in_series')  # dcat:inSeries

@@ -11,6 +11,9 @@
   pyproject.toml)
 - add `sparql_query` to `Thing` to generating SPARQL queries over the RDF representation based on the properties set in
   the Thing object
+- add `from_sparql` classmethod to `Thing to instantiate Thing objects from SPARQL query results
+- add type alias `TypeOrListOf`, to simplify type hints from cases like "Union[foaf.Agent, List[foaf.Agent]]" to "
+  TypeOrListOf[foaf.Agent]"
 
 ## v0.26.0
 

@@ -49,4 +49,4 @@ class TestExVersions(unittest.TestCase):
 
     def test_ssn(self):
         from ontolutils.ex.ssn import __version__
-        self.assertEqual("2917.10.19", __version__)
+        self.assertEqual("2017.10.19", __version__)

@@ -6,7 +6,7 @@ from ontolutils import Thing, urirefs, namespaces
 from ontolutils.typing import AnyIriOf, AnyThing
 from ..qudt import Unit
 
-__version__ = "2917.10.19"
+__version__ = "2017.10.19"
 
 
 @namespaces(ssn="http://www.w3.org/ns/ssn/",

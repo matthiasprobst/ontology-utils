@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.27.2
+
+- typos
+- improve getting qudt.Unit
+
 ## v0.27.1
 
 - fix query with subject

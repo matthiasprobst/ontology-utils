@@ -7,6 +7,7 @@ import requests
 from ontolutils import QUDT_UNIT
 from ontolutils.ex.qudt import Unit
 
+
 def term_to_python(t):
     """Convert RDFLib terms to Python-native structures."""
     if isinstance(t, URIRef):
@@ -238,6 +239,7 @@ def bindings_to_kv_compact_keys(bindings):
 
     return {k: (v[0] if len(v) == 1 else v) for k, v in grouped.items()}
 
+
 @lru_cache()
 def get_unit_by_uri(uri: Union[str, rdflib.URIRef]) -> Unit:
     """Get the string representation of a unit given its QUDT URI.
@@ -247,10 +249,4 @@ def get_unit_by_uri(uri: Union[str, rdflib.URIRef]) -> Unit:
     """
     # download the ontology:
     g = _get_qudt_unit_graph()
-
-    # perform sparql query to check if unit exists
-    results = g.query(_prepare_query(uri))
-    if len(results) == 0:
-        raise ValueError(f"Unit URI {uri} not found in QUDT ontology")
-    kv = bindings_to_kv_compact_keys(results.bindings)
-    return Unit.model_validate(kv)
+    return Unit.from_graph(g, subject=uri)[0]

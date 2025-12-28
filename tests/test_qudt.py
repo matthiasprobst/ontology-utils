@@ -3,7 +3,7 @@ import unittest
 
 from ontolutils.ex.qudt import Unit
 from ontolutils.ex.qudt.conversion import convert_value_qudt, to_pint_unit
-from ontolutils.ex.qudt.utils import iri2str, get_unit_by_uri
+from ontolutils.ex.qudt.utils import iri2str
 from ontolutils.namespacelib import QUDT_UNIT
 
 __this_dir__ = pathlib.Path(__file__).parent.resolve()
@@ -167,11 +167,10 @@ class TestQudt(unittest.TestCase):
 
     def test_get_unit_by_uri(self):
         unit = Unit.get("http://qudt.org/vocab/unit/PA")
+        self.assertEqual(unit.id, str(QUDT_UNIT.PA))
         self.assertEqual(unit.symbol, "Pa")
         unit_ms = Unit.get(QUDT_UNIT.M_PER_SEC)
         self.assertEqual(unit_ms.symbol, "m/s")
 
-
         unit_ms2 = Unit(id=QUDT_UNIT.M_PER_SEC).expand()
         self.assertEqual(unit_ms2.symbol, "m/s")
-

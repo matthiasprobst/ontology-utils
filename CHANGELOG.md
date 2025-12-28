@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.27.1
+
+- fix query with subject
+- fix creator type in `dcat.Resource`
+
 ## v0.27.0
 
 - Refactored ResourceType into more specific classes.

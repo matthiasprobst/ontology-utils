@@ -968,24 +968,37 @@ class Thing(ThingModel):
                      distinct: bool = False) -> str:
         """Generate a SPARQL query to find instances of this Thing subclass.
 
-        - `select_vars`: list of variable names (including leading `?`) to select; defaults to `['?s']`.
+        - `select_vars`: list of variable names (including leading `?`) to select; defaults to `['?id', ...]`.
         - `limit`: optional integer limit.
         - `distinct`: use `DISTINCT` in SELECT when True.
+
+        This implementation always exposes the subject as the variable `?id`. If a concrete
+        subject IRI is provided it is bound into the WHERE clause using `BIND(... AS ?id)` so
+        the subject appears in the result rows.
         """
+        # Always expose the subject as ?id
+        subj_var = "?id"
+        bind_line = None
+
+        # If a concrete subject was provided, bind it to ?id
         if subject is not None:
-            if isinstance(subject, str):
-                subj = f"<{subject}>"
+            if isinstance(subject, rdflib.URIRef):
+                subject_str = str(subject)
+            elif isinstance(subject, str):
+                subject_str = subject
             else:
                 raise TypeError(f"Subject must be a str or rdflib.URIRef, not {type(subject)}")
-        else:
-            subj = "?id"
+            # ensure angle brackets around the IRI
+            if not (subject_str.startswith("<") and subject_str.endswith(">")):
+                subject_iri = f"<{subject_str}>"
+            else:
+                subject_iri = subject_str
+            bind_line = f"BIND({subject_iri} AS {subj_var}) ."
 
+        # Build default select_vars from class urirefs if not provided
         if select_vars is None:
             _all_uris = get_urirefs(cls).copy()
-            # _all_uris.pop(cls.__name__)
-            _mros = cls.__mro__
-            for mro in _mros:
-                # remove all class names until Thing
+            for mro in cls.__mro__:
                 _all_uris.pop(mro.__name__)
                 if mro == Thing:
                     break
@@ -994,30 +1007,28 @@ class Thing(ThingModel):
         if isinstance(select_vars, str):
             select_vars = [select_vars]
 
-        if subject is None:
-            select_vars = [subj, *select_vars] if select_vars and subj not in select_vars else select_vars
-            vars_to_select = list(select_vars) if select_vars else [subj]
-        else:
-            vars_to_select = list(select_vars) if select_vars else []
+        # Ensure the subject variable is part of the selected variables and keep order
+        vars_to_select = list(select_vars) if select_vars else []
+        if subj_var not in vars_to_select:
+            vars_to_select = [subj_var] + vars_to_select
 
-        # if include_label and "?label" not in vars_to_select:
-        #     vars_to_select.append("?label")
         distinct_str = "DISTINCT " if distinct else ""
         select_clause = f"SELECT {distinct_str}{' '.join(vars_to_select)}"
 
         class_iri = cls.iri(compact=False)
         rdf_type = str(rdflib.RDF.type)
-        # rdfs_label = "http://www.w3.org/2000/01/rdf-schema#label"
 
-        where_lines = [f"{subj} <{rdf_type}> <{class_iri}> ."]
-        # if include_label:
-        #     where_lines.append(f"OPTIONAL {{ {subj} <{rdfs_label}> ?label . }}")
+        # Build WHERE clause: include bind if needed, then require the subject to have the class type
+        where_lines = []
+        if bind_line:
+            where_lines.append(bind_line)
+        where_lines.append(f"{subj_var} <{rdf_type}> <{class_iri}> .")
 
         # Add OPTIONAL patterns for any selected var that maps to a class property IRI.
         for var in vars_to_select:
             if not isinstance(var, str) or not var.startswith('?'):
                 continue
-            if var in (subj,):
+            if var == subj_var:
                 continue
             key = var[1:]
             iri = None
@@ -1026,13 +1037,30 @@ class Thing(ThingModel):
             except Exception:
                 iri = None
             if iri:
-                where_lines.append(f"OPTIONAL {{ {subj} <{iri}> {var} . }}")
+                where_lines.append(f"OPTIONAL {{ {subj_var} <{iri}> {var} . }}")
 
         where_clause = "\n  ".join(where_lines)
         query = f"{select_clause}\nWHERE {{\n  {where_clause}\n}}"
         if limit is not None:
             query += f"\nLIMIT {int(limit)}"
         return query
+
+    @classmethod
+    def from_graph(
+            cls,
+            graph: rdflib.Graph,
+            subject: Union[str, rdflib.URIRef]=None,
+            limit: Optional[int] = None,
+            distinct: bool = False) -> List["Dataset"]:
+        """Initialize the class from an rdflib Graph for a given subject."""
+        # 1. generate query:
+        query = cls.create_query(subject=subject, limit=limit, distinct=distinct)
+        # 2. run query:
+        res = graph.query(query)
+        instances = cls.from_sparql(res)
+        if not instances:
+            return []
+        return instances
 
     def validate(self,
                  shacl_source: Union[str, pathlib.Path] = None,

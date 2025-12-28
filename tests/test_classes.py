@@ -1538,10 +1538,11 @@ LIMIT 10""")
                                subject=rdflib.URIRef("http://example.org/things/123"),
                                limit=10)
         self.assertEqual(q,
-                         """SELECT ?label
+                         """SELECT ?id ?label
 WHERE {
-  <http://example.org/things/123> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
-  OPTIONAL { <http://example.org/things/123> <http://www.w3.org/2000/01/rdf-schema#label> ?label . }
+  BIND(<http://example.org/things/123> AS ?id) .
+  ?id <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+  OPTIONAL { ?id <http://www.w3.org/2000/01/rdf-schema#label> ?label . }
 }
 LIMIT 10""")
         g = rdflib.Graph()

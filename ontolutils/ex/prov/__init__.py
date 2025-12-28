@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Union, List
+from typing import Union, List, Optional
 
 from pydantic import EmailStr, HttpUrl, Field, field_validator, model_validator
 
@@ -7,7 +7,7 @@ from ontolutils import LangString
 from ontolutils import Thing, as_id
 from ontolutils import urirefs, namespaces
 from ontolutils.ex.skos import Concept
-from ontolutils.typing import AnyThing
+from ontolutils.typing import AnyThing, AnyIriOrListOf
 
 __version__ = "2013.19.05"
 
@@ -114,7 +114,7 @@ class Person(Agent):
     firstName: str = Field(default=None, alias="first_name")  # foaf:firstName
     lastName: str = Field(default=None, alias="last_name")  # foaf:last_name
     orcidId: str = Field(default=None, alias="orcid_id")  # m4i:orcidId
-    affiliation: Organization = Field(default=None)  # schema:affiliation
+    affiliation: Optional[AnyIriOrListOf[Organization]] = Field(default=None)  # schema:affiliation
 
     @model_validator(mode="before")
     def _change_id(self):
@@ -159,7 +159,7 @@ class Attribution(Thing):
     agent: Union[AnyThing, Person, List[Person], AnyThing, Organization, List[Organization], List[
         Union[Person, Organization]]]
     hadRole: Union[str, AnyThing, Role, List[Union[str, AnyThing, Role]]] = Field(alias="had_role",
-                                                                                          default=None)
+                                                                                  default=None)
 
     @field_validator('agent', mode='before')
     @classmethod
@@ -190,9 +190,9 @@ class Entity(Thing):
     """Implementation of prov:Entity"""
     wasGeneratedBy: Union[AnyThing, "Activity"] = Field(default=None, alias="was_generated_by")
     wasDerivedFrom: Union[AnyThing, "Entity", List[Union[AnyThing, "Entity"]]] = Field(default=None,
-                                                                                               alias="was_derived_from")
+                                                                                       alias="was_derived_from")
     wasAttributedTo: Union[AnyThing, Agent, List[Union[Agent, AnyThing]]] = Field(default=None,
-                                                                                          alias="was_attributed_to")
+                                                                                  alias="was_attributed_to")
     qualifiedAttribution: Union[AnyThing, List[Attribution]] = Field(default=None, alias="qualified_attribution")
 
 
@@ -212,9 +212,9 @@ class Activity(Thing):
     used: Union[AnyThing, List[Union[AnyThing, Entity]], Entity] = Field(default=None, alias="used")
     generated: Union[AnyThing, List[Union[AnyThing, Entity]], Entity] = Field(default=None, alias="generated")
     wasStartedBy: Union[AnyThing, List[Union[AnyThing, Entity]], Entity] = Field(default=None,
-                                                                                         alias="was_started_by")
+                                                                                 alias="was_started_by")
     wasEndedBy: Union[AnyThing, List[Union[AnyThing, Entity]], Entity] = Field(default=None,
-                                                                                       alias="was_ended_by")
+                                                                               alias="was_ended_by")
 
 
 Entity.model_rebuild()

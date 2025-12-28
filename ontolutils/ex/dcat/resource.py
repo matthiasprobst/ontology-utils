@@ -165,7 +165,8 @@ class Resource(Thing):
     """
     title: Optional[Union[LangString, List[LangString]]] = None  # dcterms:title
     description: Optional[Union[LangString, List[LangString]]] = None  # dcterms:description
-    creator: AnyThingOrList = None  # dcterms:creator
+    creator: Optional[Union[AnyIri, prov.Person, foaf.Person, prov.Organization, foaf.Organization, List[
+        Union[AnyIri, prov.Person, foaf.Person, prov.Organization, foaf.Organization]]]] = None  # dcterms:creator
     publisher: AnyIriOrListOf[foaf.Agent] = None  # dcterms:publisher
     issued: datetime = None  # dcterms:issued
     modified: datetime = None  # dcterms:modified
@@ -476,7 +477,7 @@ class Dataset(Resource):
          )
 class Catalog(Dataset):
     """A curated collection of metadata about resources."""
-    dataset: AnyIriOrListOf[Dataset] = None  # dcat:dataset
+    dataset: Optional[AnyIriOrListOf[Dataset]] = Field(default=None, alias="dataset")  # dcat:dataset
     primaryTopic: AnyThingOrList = None  # dcterms:primaryTopic
     record: AnyThingOrList = Field(default=None, alias='catalog_record')  # dcterms:catalogRecord
     resource: Optional[AnyIriOrListOf[Resource]] = None  # dcterms:resource

@@ -1,31 +1,31 @@
 from typing import Optional
 
-from pydantic import Field
-
 from ontolutils import Thing, namespaces, urirefs
+from pydantic import Field
 
 __version__ = "0.2.1"
 _NS = "https://ptb.de/sis/"
 
 
 @namespaces(sis=_NS)
-@urirefs(MeasurementUncertainty="sis:MeasurementUncertainty"
+@urirefs(MeasurementUncertainty="sis:MeasurementUncertainty",
+         hasDistribution="sis:hasDistribution"
          )
 class MeasurementUncertainty(Thing):
     """A class to represent measurement uncertainty metadata."""
-    hasStatisticalDistribution: Optional[str] = Field(default=None, alias="has_statistical_distribution")
+    hasDistribution: Optional[str] = Field(default=None, alias="has_distribution")
 
 
 @namespaces(sis=_NS)
-@urirefs(StandardMU="sis:StandardMU")
-class StandardMU(MeasurementUncertainty):
+@urirefs(MeasurementUncertaintyUnivariate="sis:MeasurementUncertaintyUnivariate")
+class MeasurementUncertaintyUnivariate(MeasurementUncertainty):
     """Definition of standard measurement uncertainty data."""
 
 
 @namespaces(sis=_NS)
 @urirefs(StandardMU="sis:StandardMU",
          hasValueStandardMU="sis:hasValueStandardMU")
-class StandardMU(StandardMU):
+class StandardMU(MeasurementUncertaintyUnivariate):
     """Definition of standard measurement uncertainty data."""
     hasValueStandardMU: Optional[float] = Field(default=None, alias="has_standard_uncertainty")
 

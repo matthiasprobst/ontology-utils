@@ -132,6 +132,28 @@ class TestM4i(unittest.TestCase):
 
 """)
 
+    def test_serialization_of_non_value_numerical_variable(self):
+        numerical_variable = NumericalVariable(
+            id='http://example.org/variable/vfr',
+            label=["Volume Flow Rate@en", "Volumenstrom@de", "Débit volumique"],
+            hasUnit='mm/s',
+            hasVariableDescription='Variable description',
+            hasSymbol='vfr'
+        )
+        ttl = numerical_variable.serialize("ttl")
+        self.assertEqual(ttl, """@prefix m4i: <http://w3id.org/nfdi4ing/metadata4ing#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<http://example.org/variable/vfr> a m4i:NumericalVariable ;
+    rdfs:label "Débit volumique",
+        "Volumenstrom"@de,
+        "Volume Flow Rate"@en ;
+    m4i:hasSymbol "vfr" ;
+    m4i:hasUnit <http://qudt.org/vocab/unit/MilliM-PER-SEC> ;
+    m4i:hasVariableDescription "Variable description" .
+
+""")
+
     def test_to_xarray(self):
         numerical_variable = NumericalVariable(
             id='http://example.org/variable/vfr',

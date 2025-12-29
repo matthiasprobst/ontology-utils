@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.27.3
+
+- bugfix serializing m4i.NumericalVariable without value
+- bugfix measurement uncertainty classes
+
 ## v0.27.2
 
 - typos

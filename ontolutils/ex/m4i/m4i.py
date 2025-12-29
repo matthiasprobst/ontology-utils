@@ -284,6 +284,15 @@ class NumericalVariable(Variable):
                   **kwargs) -> str:
         """Serialize NumericalVariable to RDF format."""
         # if hasNumericalValue is not a float or int, we need to unpack it to n variables
+        if self.hasNumericalValue is None:
+            return super().serialize(
+                format=format,
+                context=context,
+                exclude_none=exclude_none,
+                resolve_keys=resolve_keys,
+                base_uri=base_uri,
+                **kwargs
+            )
         if isinstance(self.hasNumericalValue, (int, float)):
             return super().serialize(
                 format=format,
@@ -293,10 +302,16 @@ class NumericalVariable(Variable):
                 base_uri=base_uri,
                 **kwargs
             )
-        entities = [self.__class__(
-            **{**self.model_dump(exclude={'has_numerical_value', 'id'}),
-               "has_numerical_value": v, "id": f"{self.id}/{i}"}
-        ) for i, v in enumerate(self.hasNumericalValue)]
+        if self.hasNumericalValue is not None:
+            entities = [self.__class__(
+                **{
+                    **self.model_dump(
+                        exclude={'has_numerical_value', 'id'}
+                    ),
+                    "has_numerical_value": v,
+                    "id": f"{self.id}/{i}"
+                }
+            ) for i, v in enumerate(self.hasNumericalValue)]
         from ... import serialize
         return serialize(entities,
                          format=format,
@@ -304,7 +319,6 @@ class NumericalVariable(Variable):
                          exclude_none=exclude_none,
                          resolve_keys=resolve_keys,
                          base_uri=base_uri, **kwargs)
-
 
 @namespaces(m4i=_NS,
             schema="https://schema.org/")

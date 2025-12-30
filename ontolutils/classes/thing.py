@@ -5,13 +5,13 @@ import warnings
 from dataclasses import dataclass
 from datetime import datetime
 from functools import lru_cache
-from typing import Dict, Union, Optional, Any, List, Type
+from typing import Dict, Union, Optional, Any, List, Type, Tuple, Set
 from urllib.parse import urlparse
 
 import numpy as np
 import rdflib
 import yaml
-from pydantic import AnyUrl, HttpUrl, BaseModel, Field, model_validator, ValidationError
+from pydantic import AnyUrl, HttpUrl, BaseModel, Field, model_validator, ValidationError, field_validator
 from pydantic import field_serializer
 from pydantic_core import Url
 from rdflib import XSD
@@ -22,10 +22,23 @@ from .decorator import urirefs, namespaces, URIRefManager, NamespaceManager, _is
 from .thingmodel import ThingModel
 from .utils import split_uri
 from .. import get_config
-from ..typing import IdType, AnyThingOrList
+from ..typing import IdType, AnyThingOrList, LangStringTypeOrList
 
 logger = logging.getLogger('ontolutils')
 URL_SCHEMES = {"http", "https", "urn", "doi"}
+
+
+def _validate_lang_string(value):
+    def _validate_label_item(item):
+        if isinstance(item, str):
+            return LangString.model_validate(item)
+        if isinstance(item, Dict):
+            return LangString.model_validate(item)
+        return item
+
+    if isinstance(value, (Set, Tuple, List)):
+        return [_validate_label_item(item) for item in value]
+    return _validate_label_item(value)
 
 
 @lru_cache(maxsize=1)
@@ -347,19 +360,22 @@ class Thing(ThingModel):
 
     """
     id: Optional[IdType] = Field(default_factory=build_blank_id)  # @id
-    label: Optional[Union[LangString, List[LangString]]] = Field(default=None)  # rdfs:label
-    altLabel: Optional[Union[LangString, List[LangString]]] = Field(default=None, alias="alt_label")  # skos:altLabel
+    label: Optional[LangStringTypeOrList] = Field(default=None)  # rdfs:label
+    altLabel: Optional[LangStringTypeOrList] = Field(default=None, alias="alt_label")  # skos:altLabel
     broader: Optional[AnyThingOrList] = Field(default=None)  # skos:broader
-    comment: Optional[Union[LangString, List[LangString]]] = None  # rdfs:comment
+    comment: Optional[LangStringTypeOrList] = None  # rdfs:comment
     about: Optional[AnyThingOrList] = Field(default=None)  # schema:about
     relation: Optional[AnyThingOrList] = Field(default=None)
     closeMatch: Optional[AnyThingOrList] = Field(default=None, alias='close_match')
     exactMatch: Optional[AnyThingOrList] = Field(default=None, alias='exact_match')
-    description: Optional[Union[LangString, List[LangString]]] = None  # dcterms:description
+    description: Optional[LangStringTypeOrList] = None  # dcterms:description
     isDefinedBy: Optional[AnyThingOrList] = Field(default=None, alias="is_defined_by")  # rdfs:isDefinedBy
 
     # class Config:
     #     arbitrary_types_allowed = True
+
+    def __hash__(self):
+        return hash(self.id)
 
     @property
     def namespace(self) -> str:
@@ -780,6 +796,21 @@ class Thing(ThingModel):
         # repr_fields = ", ".join([f"{k}={v}" for k, v in _fields.items()])
         return self.__repr__()
 
+    @field_validator('label', mode='before')
+    @classmethod
+    def _validate_label(cls, label):
+        return _validate_lang_string(label)
+
+    @field_validator('altLabel', mode='before')
+    @classmethod
+    def _validate_alt_label(cls, alt_label):
+        return _validate_lang_string(alt_label)
+
+    @field_validator('comment', mode='before')
+    @classmethod
+    def _validate_comment(cls, comment):
+        return _validate_lang_string(comment)
+
     @classmethod
     def from_file(cls,
                   source: Optional[Union[str, pathlib.Path]] = None,
@@ -1049,7 +1080,7 @@ class Thing(ThingModel):
     def from_graph(
             cls,
             graph: rdflib.Graph,
-            subject: Union[str, rdflib.URIRef]=None,
+            subject: Union[str, rdflib.URIRef] = None,
             limit: Optional[int] = None,
             distinct: bool = False) -> List["Dataset"]:
         """Initialize the class from an rdflib Graph for a given subject."""

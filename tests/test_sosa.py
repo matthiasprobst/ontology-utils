@@ -7,6 +7,7 @@ from ontolutils.ex.m4i import Tool, NumericalVariable
 from ontolutils.ex.qudt import Unit
 from ontolutils.ex.sosa import Sensor, Platform, Observation, Result
 from ontolutils.ex.ssn import Accuracy, SystemCapability, MeasurementRange, ObservableProperty
+from ontolutils.namespacelib import QUDT_KIND, QUDT_UNIT
 
 
 class TestSosa(unittest.TestCase):
@@ -200,6 +201,10 @@ class TestSosa(unittest.TestCase):
             id="http://example.org/result/1",
             has_numerical_variable=vfr
         )
+        self.assertEqual(
+            result1.hasNumericalVariable,
+            vfr
+        )
         result2 = Result(
             id="http://example.org/result/2",
             has_numerical_variable=dp
@@ -217,4 +222,68 @@ class TestSosa(unittest.TestCase):
             madeBySensor="http://example.org/sensor/1",
             observes="http://example.org/observable_property/1"
         )
-        print(observation.serialize("ttl"))
+        self.assertEqual("""@prefix m4i: <http://w3id.org/nfdi4ing/metadata4ing#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sosa: <http://www.w3.org/ns/sosa/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://example.org/observation/1> a sosa:Observation ;
+    rdfs:label "Operation Point" ;
+    sosa:hasFeatureOfInterest <http://example.org/feature_of_interest/1> ;
+    sosa:hasResult <http://example.org/result/1>,
+        <http://example.org/result/2> ;
+    sosa:madeBySensor <http://example.org/sensor/1> .
+
+<http://example.org/feature_of_interest/1> a owl:Thing ;
+    rdfs:label "Operation Point" .
+
+<http://example.org/result/1> a sosa:Result ;
+    m4i:hasNumericalVariable <http://example.org/variable/1> .
+
+<http://example.org/result/2> a sosa:Result ;
+    m4i:hasNumericalVariable <http://example.org/variable/2> .
+
+<http://example.org/variable/1> a m4i:NumericalVariable ;
+    m4i:hasNumericalValue 1e-01 ;
+    m4i:hasUnit <http://qudt.org/vocab/unit/M3-PER-SEC> .
+
+<http://example.org/variable/2> a m4i:NumericalVariable ;
+    m4i:hasNumericalValue 3.53e+01 ;
+    m4i:hasUnit <http://qudt.org/vocab/unit/PA> .
+
+""",
+                         observation.serialize("ttl"))
+
+    def test_get_by_qkind(self):
+        op = Observation(
+            id="https://example.org/observation/1",
+            has_result=[
+                Result(
+                    id="https://example.org/result/vfr1",
+                    hasNumericalVariable=NumericalVariable(
+                        id="https://example.org/numvar/1",
+                        hasUnit=QUDT_UNIT.M3_PER_HR,
+                    )
+                ),
+                Result(
+                    id="https://example.org/result/dp1",
+                    has_numerical_variable=NumericalVariable(
+                        id="https://example.org/numvar/2",
+                        hasUnit=QUDT_UNIT.PA
+                    )
+                ),
+                Result(
+                    id="https://example.org/result/n1",
+                    has_numerical_variable=NumericalVariable(
+                        id="https://example.org/numvar/3",
+                        hasUnit=QUDT_UNIT.PER_MIN
+                    )
+                ),
+            ],
+        )
+        vfr = op.get_numerical_variable_by_kind_of_quantity(
+            QUDT_KIND.VolumeFlowRate
+        )
+        self.assertEqual(1, len(vfr))
+        self.assertEqual(vfr[0].hasUnit, op.hasResult[0].hasNumericalVariable.hasUnit)

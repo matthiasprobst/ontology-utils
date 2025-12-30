@@ -17,7 +17,7 @@ from rdflib import Graph, BNode
 from rdflib import OWL, RDF, RDFS
 
 from ontolutils import __version__
-
+import rdflib
 __this_dir__ = pathlib.Path(__file__).parent
 __package_dir__ = __this_dir__.parent / 'namespacelib'
 
@@ -25,6 +25,37 @@ FORCE_DOWNLOAD = True
 
 FORBIDDEN_PROPERTIES = ["and", "or", "type", "yield", "True", "False", "in", "not", "is", "as", "if", "else", "elif", ]
 
+
+def generate_qudt_kind(namespace: str,
+                                     source: str,
+                                     ns: str,
+                                     is_owl: bool = False,
+                                     target_dir: Optional[Union[str, pathlib.Path]] = None,
+                                     fail=True):
+    """Generate M4I_NAMESPACE.py file from m4i_context.jsonld
+    """
+
+    g = Graph()
+    g.parse(source)
+    g.namespace_manager.bind(namespace, ns)
+    if target_dir is None:
+        target_dir = __this_dir__
+    else:
+        target_dir = pathlib.Path(target_dir)
+
+    with open(target_dir / f'{namespace}.py', 'w',
+              encoding='UTF8') as f:
+        f.write('from rdflib.namespace import DefinedNamespace, Namespace\n')
+        f.write('from rdflib.term import URIRef\n\n\n')
+        f.write(f'class {namespace.upper()}(DefinedNamespace):')
+        f.write(f'\n    # Generated with ontolutils version {__version__}')
+        f.write(f'\n    _fail = {fail}')
+
+        for qkind in g.subjects(RDF.type, rdflib.URIRef("http://qudt.org/schema/qudt/QuantityKind")):
+            label = str(qkind).rsplit("/", 1)[-1]
+            f.write(f'\n    {label.replace("-", "_")} = URIRef("{qkind}")')
+
+        f.write(f'\n\n    _NS = Namespace("{ns}")')
 
 def generate_namespace_file_from_ttl(namespace: str,
                                      source: str,
@@ -397,7 +428,7 @@ def hdf5():
 
 
 def qudt_quantitykind():
-    generate_namespace_file_from_ttl(
+    generate_qudt_kind(
         namespace='qudt_kind',
         source='http://qudt.org/vocab/quantitykind/',
         ns='http://qudt.org/vocab/quantitykind/',
@@ -425,7 +456,7 @@ def build_namespace_files():
     #     f.write('"""Auto-generated file. Do not edit!"""\n')
     # f.write('from ._version import __version__\n')
 
-    m4i()
+    # m4i()
     #
     # obo()
     #

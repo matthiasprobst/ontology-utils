@@ -21,8 +21,8 @@ class TestHDF5(unittest.TestCase):
                  name='hdf:name',
                  datatype='hdf:datatype')
         class Dataset(Thing):
-            name: str = Field(..., description="Name of the dataset")
-            datatype: HttpUrl = Field(..., description="Datatype of the dataset")
+            name: str = Field(None, description="Name of the dataset")
+            datatype: HttpUrl = Field(None, description="Datatype of the dataset")
 
         ds = Dataset(name="test", datatype=HDF5.H5T_INTEGER)
         serialization = ds.serialize(format="ttl")

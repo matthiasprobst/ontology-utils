@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.27.4
+
+- update QUDT Namespace
+- add `is_kind_of_quantity()` to `m4i.NumericalVariable` module
+- add `get_quantity_kind` to `qudt:QuantityKind`
+- add `expand` to `qudt:QuantityKind`
+- add `hasQuantityKind` to `m4i:NumericalVariable`
+- improve typing hints for `LangString`
+- add `hasNumericalVariable` to `sosa:Result`
+
 ## v0.27.3
 
 - bugfix serializing m4i.NumericalVariable without value

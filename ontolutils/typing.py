@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 import warnings
-from typing import TYPE_CHECKING, Union, List, Optional, Any
+from typing import TYPE_CHECKING, Union, List, Optional
 from typing import TypeVar
 
 from pydantic import AnyUrl, FileUrl, HttpUrl
@@ -13,6 +13,7 @@ from typing_extensions import Annotated, TypeAlias
 # Only import Thing for static type checkers — avoids runtime circular import
 if TYPE_CHECKING:
     from .classes import Thing  # pragma: no cover
+    from .classes import LangString
 
 
 def validate_iri_type(value, handler, info):
@@ -111,6 +112,10 @@ AnyThingOrList: TypeAlias = Union[AnyThing, List[AnyThing]]  # a Thing instance,
 AnyIriOf: TypeAlias = Union[T, AnyIri]  # an IRI or the specified type T
 # Generic alias: an IRI, a T, or a list containing T or IRIs.
 AnyIriOrListOf: TypeAlias = Union[AnyIri, T, List[Union[T, AnyIri]]]
+
+LangStringType: TypeAlias = Union[str, "LangString"]  # a plain string or a language-tagged string dict
+LangStringTypeOrList: TypeAlias = Union[LangStringType, List[LangStringType]]  # a LangStringType or a list of those
+
 
 # A runtime factory that helps avoid leaving an unbound TypeVar `T` in runtime
 # constructs. Use `make_type_or_list(SomeClass)` to get a typing object that

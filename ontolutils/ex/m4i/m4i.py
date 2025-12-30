@@ -1,20 +1,17 @@
 import warnings
 from datetime import datetime
-from typing import Any, Dict
-from typing import List, Union
-from typing import Optional
+from typing import Any, Dict, List, Union, Optional
 
-from pydantic import HttpUrl, field_validator, Field, ConfigDict, field_serializer, AnyUrl
+from pydantic import HttpUrl, field_validator, Field, ConfigDict, field_serializer, AnyUrl, AliasChoices
 
-from ontolutils import Thing, namespaces, urirefs
-from ontolutils import parse_unit, LangString
+from ontolutils import Thing, namespaces, urirefs, parse_unit, LangString
 from ontolutils.ex.pimsii import Variable
-from ..prov import Activity
-from ..prov import Organization
-from ..qudt import Unit
+from ..prov import Activity, Organization
+from ..qudt import Unit, QuantityKind
+from ..qudt.utils import get_unit, get_quantity_kind
 from ..schema import ResearchProject
 from ..sis import MeasurementUncertainty
-from ...typing import AnyIriOf, AnyIri, AnyThingOrList
+from ...typing import AnyIriOf, AnyIri, AnyThingOrList, AnyIriOrListOf
 
 try:
     import numpy as np
@@ -73,6 +70,7 @@ class TextVariable(Variable):
 @namespaces(m4i=_NS)
 @urirefs(NumericalVariable='m4i:NumericalVariable',
          hasUnit='m4i:hasUnit',
+         hasKindOfQuantity='m4i:hasKindOfQuantity',
          hasNumericalValue='m4i:hasNumericalValue',
          hasMaximumValue='m4i:hasMaximumValue',
          hasMinimumValue='m4i:hasMinimumValue',
@@ -91,7 +89,18 @@ class NumericalVariable(Variable):
         serialize_numpy_as_list=True,
     )
 
-    hasUnit: Optional[AnyIriOf[Unit]] = Field(alias="units", default=None)
+    hasUnit: Optional[AnyIriOf[Unit]] = Field(
+        alias="has_unit",
+        validation_alias=AliasChoices(
+            "hasUnit",  # camelCase
+            "has_unit",  # snake_case
+            "units"  # alternative name
+        ),
+        serialization_alias="hasUnit",  # optional, controls output name
+        default=None)
+    hasKindOfQuantity: Optional[AnyIriOrListOf[QuantityKind]] = Field(
+        alias="has_kind_of_quantity", default=None
+    )
     hasNumericalValue: Optional[Union[Union[int, float], List[Union[int, float]], np.ndarray]] = Field(
         alias="has_numerical_value",
         default=None)
@@ -320,6 +329,54 @@ class NumericalVariable(Variable):
                          resolve_keys=resolve_keys,
                          base_uri=base_uri, **kwargs)
 
+    def is_kind_of_quantity(self, kind_of_quantity: Union[str, AnyUrl, QuantityKind]) -> bool:
+        """Check if the NumericalVariable has the given quantity kind.
+
+        Parameters
+        ----------
+        kind_of_quantity: Union[str, AnyUrl]
+            Quantity kind URI to check against
+
+        Returns
+        -------
+        bool
+            True if the NumericalVariable has the given quantity kind, False otherwise
+        """
+        this_qkind = self.hasKindOfQuantity
+        if this_qkind is None:
+            if self.hasUnit is None:
+                return False
+            else:
+                # get unit
+                this_unit = self.hasUnit
+                if isinstance(this_unit, str):
+                    this_unit = get_unit(this_unit)
+                if this_unit.hasQuantityKind is None:
+                    this_unit = this_unit.expand()
+                this_qkind = this_unit.hasQuantityKind
+        else:
+            if isinstance(this_qkind, str):
+                this_qkind = get_quantity_kind(this_qkind)
+            else:
+                this_qkind = self.hasKindOfQuantity
+
+        if isinstance(this_qkind, list):
+
+            for qk in this_qkind:
+                if isinstance(qk, QuantityKind):
+                    if str(qk.id) == str(kind_of_quantity):
+                        return True
+                else:
+                    if qk == str(kind_of_quantity):
+                        return True
+            return False
+        if isinstance(this_qkind, QuantityKind):
+            return this_qkind.id == kind_of_quantity.id
+        elif isinstance(this_qkind, str):
+            return str(this_qkind) == str(kind_of_quantity)
+        raise TypeError("kind_of_quantity must be of type str, AnyUrl, or QuantityKind")
+
+
 @namespaces(m4i=_NS,
             schema="https://schema.org/")
 @urirefs(Method='m4i:Method',
@@ -377,8 +434,8 @@ class Tool(Thing):
     hasParameter: TextVariable or NumericalVariable or list of them
         Text or numerical variable
     """
-    hasParameter: Union["TextVariable", "NumericalVariable",
-    List[Union["TextVariable", "NumericalVariable"]]] = Field(default=None, alias="parameter")
+    hasParameter: Union[AnyIri, "TextVariable", "NumericalVariable",
+    List[Union[AnyIri, "TextVariable", "NumericalVariable"]]] = Field(default=None, alias="parameter")
     manufacturer: Organization = Field(default=None)
     BFO_0000051: Optional[Union[Thing, List[Thing]]] = Field(alias="has_part", default=None)
 

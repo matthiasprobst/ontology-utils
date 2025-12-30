@@ -4,7 +4,7 @@ import rdflib
 from pydantic import Field, field_validator
 
 from ontolutils import Thing, namespaces, urirefs
-from ...typing import AnyThing, AnyIri, AnyThingOrList
+from ...typing import AnyThing, AnyIri, AnyThingOrList, AnyIriOrListOf
 
 __version__ = "3.1.9"
 _NS = "http://qudt.org/schema/qudt/"
@@ -51,7 +51,7 @@ class Unit(Thing):
     iec61360Code: Union[str] = Field(default=None, alias="iec61360_code")
     omUnit: Union[AnyThing] = Field(default=None, alias="om_unit")
     exactMatch: Union["Unit", AnyThing, List[Union["Unit", AnyThing]]] = Field(default=None,
-                                                                                       alias="exact_match")
+                                                                               alias="exact_match")
     siExactMatch: Union[AnyThing] = Field(default=None, alias="si_exact_match")
     conversionOffset: Union[float] = Field(default=None, alias="conversion_offset")
     conversionOffsetSN: Union[float] = Field(default=None, alias="conversion_offset_sn")
@@ -75,12 +75,12 @@ class Unit(Thing):
 
     @classmethod
     def get(cls, uri: Union[str, rdflib.URIRef]):
-        from .utils import get_unit_by_uri
-        return get_unit_by_uri(uri)
+        from .utils import get_unit
+        return get_unit(uri)
 
     def expand(self):
-        from .utils import get_unit_by_uri
-        return get_unit_by_uri(self.id)
+        from .utils import get_unit
+        return get_unit(self.id)
 
 
 @namespaces(qudt=_NS)
@@ -100,22 +100,27 @@ class QuantityValue(Thing):
          iec61360Code='qudt:iec61360Code',
          wikidataMatch='qudt:wikidataMatch',
          plainTextDescription='qudt:plainTextDescription',
-         quantityValue='qudt:quantityValue')
+         quantityValue='qudt:quantityValue'
+         )
 class QuantityKind(Thing):
     """Implementation of qudt:QuantityKind"""
-    applicableUnit: Union[AnyThing, Unit, List[Union[AnyThing, Unit]]] = Field(default=None,
-                                                                                       alias="applicable_unit")
+    applicableUnit: Union[AnyIriOrListOf[Unit]] = Field(default=None,
+                                                        alias="applicable_unit")
     quantityValue: Union[AnyThing, QuantityValue] = Field(default=None, alias="quantity_value")
     latexDefinition: Optional[Union[str, List[str]]] = Field(default=None, alias="latex_definition")
     latexSymbol: Optional[Union[str, List[str]]] = Field(default=None, alias="latex_symbol")
     hasDimensionVector: Optional[Union[AnyThing, List[AnyThing]]] = Field(default=None,
-                                                                                  alias="has_dimension_vector")
+                                                                          alias="has_dimension_vector")
     informativeReference: Optional[Union[AnyThing, List[AnyThing]]] = Field(default=None,
-                                                                                    alias="informative_reference")
+                                                                            alias="informative_reference")
     symbol: Optional[Union[str, List[str]]] = Field(default=None, alias="symbol")
     iec61360Code: Optional[Union[str, List[str]]] = Field(default=None, alias="iec61360_code")
     wikidataMatch: Optional[Union[AnyThing, List[AnyThing]]] = Field(default=None, alias="wikidata_match")
     plainTextDescription: Optional[Union[str, List[str]]] = Field(default=None, alias="plain_text_description")
+
+    def expand(self):
+        from .utils import get_quantity_kind
+        return get_quantity_kind(self.id)
 
 
 Unit.model_rebuild()

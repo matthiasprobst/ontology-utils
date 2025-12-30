@@ -1,51 +1,14 @@
+import warnings
+from collections import defaultdict
 from functools import lru_cache
 from typing import Union
 
 import rdflib
 import requests
+from rdflib import URIRef, Literal
 
 from ontolutils import QUDT_UNIT
-from ontolutils.ex.qudt import Unit
-
-
-def term_to_python(t):
-    """Convert RDFLib terms to Python-native structures."""
-    if isinstance(t, URIRef):
-        return str(t)
-    if isinstance(t, Literal):
-        out = {"value": str(t)}
-        if t.language:
-            out["lang"] = t.language
-        if t.datatype:
-            out["datatype"] = str(t.datatype)
-        # If it's a plain literal with no lang/datatype, return just the string
-        return out if len(out) > 1 else out["value"]
-    # BNodes etc.
-    return str(t)
-
-
-def bindings_to_kv(bindings):
-    """
-    bindings: iterable of dicts like {Variable('property'): URIRef(...), Variable('value'): ...}
-    returns: dict[property_uri -> value or [values]]
-    """
-    grouped = defaultdict(list)
-
-    for b in bindings:
-        prop = b.get("property")  # RDFLib lets you access by string key too
-        val = b.get("value")
-        if prop is None or val is None:
-            continue
-
-        prop_key = str(prop)
-        grouped[prop_key].append(term_to_python(val))
-
-    # Collapse single-item lists
-    result = {}
-    for k, vals in grouped.items():
-        result[k] = vals[0] if len(vals) == 1 else vals
-    return result
-
+from ontolutils.ex.qudt import Unit, QuantityKind
 
 iri2str = {str(v): k for k, v in {
     's': QUDT_UNIT.SEC,  # time
@@ -186,10 +149,60 @@ iri2str = {str(v): k for k, v in {
 }.items()}
 
 
+def term_to_python(t):
+    """Convert RDFLib terms to Python-native structures."""
+    if isinstance(t, URIRef):
+        return str(t)
+    if isinstance(t, Literal):
+        out = {"value": str(t)}
+        if t.language:
+            out["lang"] = t.language
+        if t.datatype:
+            out["datatype"] = str(t.datatype)
+        # If it's a plain literal with no lang/datatype, return just the string
+        return out if len(out) > 1 else out["value"]
+    # BNodes etc.
+    return str(t)
+
+
+def bindings_to_kv(bindings):
+    """
+    bindings: iterable of dicts like {Variable('property'): URIRef(...), Variable('value'): ...}
+    returns: dict[property_uri -> value or [values]]
+    """
+    grouped = defaultdict(list)
+
+    for b in bindings:
+        prop = b.get("property")  # RDFLib lets you access by string key too
+        val = b.get("value")
+        if prop is None or val is None:
+            continue
+
+        prop_key = str(prop)
+        grouped[prop_key].append(term_to_python(val))
+
+    # Collapse single-item lists
+    result = {}
+    for k, vals in grouped.items():
+        result[k] = vals[0] if len(vals) == 1 else vals
+    return result
+
+
 @lru_cache()
 def _get_qudt_unit_graph() -> rdflib.Graph:
     """Retrieve the QUDT unit ontology as an RDFLib Graph."""
     ontology_uri = "https://qudt.org/vocab/unit/"
+    res = requests.get(ontology_uri)
+    res.raise_for_status()
+    g = rdflib.Graph()
+    g.parse(data=res.text, format="turtle")
+    return g
+
+
+@lru_cache()
+def _get_qudt_kind_graph() -> rdflib.Graph:
+    """Retrieve the QUDT quantity kind ontology as an RDFLib Graph."""
+    ontology_uri = "https://qudt.org/vocab/quantitykind/"
     res = requests.get(ontology_uri)
     res.raise_for_status()
     g = rdflib.Graph()
@@ -204,10 +217,6 @@ PREFIX qudt: <http://qudt.org/vocab/unit#>
 SELECT ?property ?value WHERE {{
     <{uri}> ?property ?value .
 }}"""
-
-
-from collections import defaultdict
-from rdflib import URIRef, Literal
 
 
 def iri_to_field_name(iri: str) -> str:
@@ -241,12 +250,46 @@ def bindings_to_kv_compact_keys(bindings):
 
 
 @lru_cache()
-def get_unit_by_uri(uri: Union[str, rdflib.URIRef]) -> Unit:
+def get_unit(value: Union[str, rdflib.URIRef, Unit]) -> Unit:
     """Get the string representation of a unit given its QUDT URI.
 
     - Downloads the ontology if not already cached.
     - Looks up the unit in a predefined mapping.
     """
     # download the ontology:
+    if isinstance(value, Unit):
+        uri = value.id
+    else:
+        uri = value
     g = _get_qudt_unit_graph()
     return Unit.from_graph(g, subject=uri)[0]
+
+
+def get_unit_by_uri(uri):
+    warnings.warn("get_unit_by_uri is deprecated, use get_unit instead", DeprecationWarning, stacklevel=2)
+    return get_unit(uri)
+
+
+@lru_cache()
+def get_quantity_kind(value: Union[str, rdflib.URIRef, Unit]) -> QuantityKind:
+    """Get the string representation of a quantity kind given its QUDT URI. Alternatively,
+     pass a Unit to get its quantity kind.
+
+    - Downloads the ontology if not already cached.
+    - Looks up the quantity kind in a predefined mapping.
+    """
+    # download the ontology:
+    if isinstance(value, Unit):
+        # get the first quantity kind of the unit
+        qkinds = value.hasQuantityKind
+        if not qkinds:
+            value = qkinds.id
+        else:
+            if isinstance(qkinds, (str, rdflib.URIRef)):
+                value = str(qkinds)
+            elif isinstance(qkinds, list):
+                value = str(qkinds[0].id)
+            else:
+                value = str(qkinds.id)
+    g = _get_qudt_kind_graph()
+    return QuantityKind.from_graph(g, subject=value)[0]

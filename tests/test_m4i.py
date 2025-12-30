@@ -2,9 +2,11 @@ import unittest
 
 import pydantic
 
+from ontolutils import LangString
 from ontolutils.ex import m4i
 from ontolutils.ex.m4i import TextVariable, NumericalVariable, Tool, ProcessingStep
 from ontolutils.ex.qudt import Unit
+from ontolutils.namespacelib import QUDT_KIND
 
 
 class TestM4i(unittest.TestCase):
@@ -53,6 +55,42 @@ class TestM4i(unittest.TestCase):
         self.assertEqual(text_variable.hasStringValue, 'String value')
         self.assertEqual(text_variable.hasVariableDescription, 'Variable description')
 
+    def test_various_unit_inputs(self):
+        expected_ttl = """@prefix m4i: <http://w3id.org/nfdi4ing/metadata4ing#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+[] a m4i:NumericalVariable ;
+    m4i:hasNumericalValue 1e+00 ;
+    m4i:hasUnit <http://qudt.org/vocab/unit/MilliM-PER-SEC> .
+
+"""
+        
+        numerical_variable1 = NumericalVariable(
+            units='mm/s',
+            hasNumericalValue=1.0
+        )
+        self.assertEqual(
+            "http://qudt.org/vocab/unit/MilliM-PER-SEC", numerical_variable1.hasUnit
+        )
+        self.assertEqual(numerical_variable1.serialize("ttl"), expected_ttl)
+
+        numerical_variable1 = NumericalVariable(
+            has_unit='mm/s',
+            hasNumericalValue=1.0
+        )
+        self.assertEqual(
+            "http://qudt.org/vocab/unit/MilliM-PER-SEC", numerical_variable1.hasUnit
+        )
+        self.assertEqual(numerical_variable1.serialize("ttl"), expected_ttl)
+
+        numerical_variable1 = NumericalVariable(
+            hasUnit='mm/s',
+            hasNumericalValue=1.0
+        )
+        self.assertEqual(
+            "http://qudt.org/vocab/unit/MilliM-PER-SEC", numerical_variable1.hasUnit
+        )
+        self.assertEqual(numerical_variable1.serialize("ttl"), expected_ttl)
     def testNumericalVariableWithoutStandardName(self):
         numerical_variable = NumericalVariable(
             hasUnit='mm/s',
@@ -218,3 +256,19 @@ class TestM4i(unittest.TestCase):
         self.assertEqual(numerical_variable.size, 4)
         self.assertEqual(len(numerical_variable), 4)
         self.assertEqual(numerical_variable.ndim, 1)
+
+    def test_is_qkind(self):
+        numerical_variable = NumericalVariable(
+            id='http://example.org/variable/vfr',
+            label=["Volume Flow Rate@en", "Volumenstrom@de", "Débit volumique"],
+            hasUnit='mm/s',
+            hasNumericalValue=[1.0, 2.0, 3.0, 4.0],
+            hasVariableDescription='Variable description',
+            hasSymbol='vfr'
+        )
+        self.assertEqual(numerical_variable.label[0], LangString(value="Volume Flow Rate", lang="en"))
+        self.assertFalse(numerical_variable.is_kind_of_quantity('http://qudt.org/vocab/quantitykind/Length'))
+        self.assertFalse(numerical_variable.is_kind_of_quantity('http://qudt.org/vocab/quantitykind/Mass'))
+        self.assertTrue(numerical_variable.is_kind_of_quantity('http://qudt.org/vocab/quantitykind/Velocity'))
+        self.assertTrue(numerical_variable.is_kind_of_quantity(QUDT_KIND.Velocity))
+        self.assertTrue(numerical_variable.is_kind_of_quantity(QUDT_KIND.LinearVelocity))  # alias

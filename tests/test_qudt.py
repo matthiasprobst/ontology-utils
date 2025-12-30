@@ -1,8 +1,9 @@
 import pathlib
 import unittest
 
-from ontolutils.ex.qudt import Unit
+from ontolutils.ex.qudt import Unit, QuantityKind
 from ontolutils.ex.qudt.conversion import convert_value_qudt, to_pint_unit
+from ontolutils.ex.qudt.utils import get_quantity_kind
 from ontolutils.ex.qudt.utils import iri2str
 from ontolutils.namespacelib import QUDT_UNIT
 
@@ -165,7 +166,7 @@ class TestQudt(unittest.TestCase):
         self.assertEqual(str(u_pint_hertz.units), "hertz")
         self.assertAlmostEqual(u_pint_hertz.magnitude, 10.0)
 
-    def test_get_unit_by_uri(self):
+    def test_get_unit(self):
         unit = Unit.get("http://qudt.org/vocab/unit/PA")
         self.assertEqual(unit.id, str(QUDT_UNIT.PA))
         self.assertEqual(unit.symbol, "Pa")
@@ -174,3 +175,33 @@ class TestQudt(unittest.TestCase):
 
         unit_ms2 = Unit(id=QUDT_UNIT.M_PER_SEC).expand()
         self.assertEqual(unit_ms2.symbol, "m/s")
+
+    def test_get_kind_by_uri(self):
+        qkind = get_quantity_kind("http://qudt.org/vocab/quantitykind/Force")
+        self.assertEqual(qkind.id, "http://qudt.org/vocab/quantitykind/Force")
+        self.assertIn("force", [l.value for l in qkind.label])
+
+        unit = Unit(id=QUDT_UNIT.N).expand()
+        self.assertEqual(unit.hasQuantityKind, "http://qudt.org/vocab/quantitykind/Force")
+
+        qkind = get_quantity_kind(unit)
+        self.assertEqual(qkind.id, "http://qudt.org/vocab/quantitykind/Force")
+        self.assertIn("force", [l.value for l in qkind.label])
+
+        unit = Unit(
+            id=QUDT_UNIT.M3_PER_HR,
+            has_quantity_kind="http://qudt.org/vocab/quantitykind/VolumeFlowRate"
+        )
+        qkind = get_quantity_kind(unit)
+        self.assertEqual(qkind.id, "http://qudt.org/vocab/quantitykind/VolumeFlowRate")
+        if isinstance(qkind.label, list):
+            labels = [l.value.lower() for l in qkind.label]
+        else:
+            labels = [qkind.label.value.lower()]
+        self.assertIn("volume flow rate", labels)
+
+    def test_qkind_expand(self):
+        qkind = QuantityKind(id="http://qudt.org/vocab/quantitykind/Force")
+        qkind_expanded = qkind.expand()
+        self.assertEqual(qkind_expanded.id, "http://qudt.org/vocab/quantitykind/Force")
+        self.assertIn("force", [l.value for l in qkind_expanded.label])

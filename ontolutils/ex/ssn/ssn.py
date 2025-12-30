@@ -1,9 +1,11 @@
-from typing import Union, List, Optional
+from typing import Union, List, Optional, Tuple
 
 from pydantic import Field
 
 from ontolutils import Thing, urirefs, namespaces
 from ontolutils.typing import AnyIriOf, AnyThing
+from .. import qudt
+from ..m4i import NumericalVariable
 from ..qudt import Unit
 
 __version__ = "2017.10.19"
@@ -166,10 +168,6 @@ class FeatureOfInterest(Thing):
     )
 
 
-@namespaces(sosa="http://www.w3.org/ns/sosa/")
-@urirefs(Result="sosa:Result")
-class Result(Thing):
-    """Result - The output of an Observation."""
 
 
 @namespaces(sosa="http://www.w3.org/ns/sosa/")
@@ -190,8 +188,8 @@ class Observation(Thing):
         alias="observed_property",
         description="The property that was observed."
     )
-    hasResult: Union[AnyThing, Result, List[Union[AnyThing, "Result"]]] = Field(
-        default=...,
+    hasResult: Union[AnyThing, "Result", List[Union[AnyThing, "Result"]]] = Field(
+        default=None,
         alias="has_result",
         description="The result of the observation."
     )
@@ -201,10 +199,17 @@ class Observation(Thing):
         description=" A relation between an Observation and the entity whose quality was observed, or between an Actuation and the entity whose property was modified, or between an act of Sampling and the entity that was sampled."
     )
 
-
-ObservableProperty.model_rebuild()
-Platform.model_rebuild()
-Sensor.model_rebuild()
+    def get_numerical_variable_by_kind_of_quantity(
+            self,
+            qkind: Union[str, qudt.QuantityKind]
+    ) -> Tuple[NumericalVariable]:
+        """Get all numerical variables in the observation by their quantity kind."""
+        result = []
+        for res in self.hasResult:
+            nv = res.hasNumericalVariable
+            if nv is not None and nv.is_kind_of_quantity(qkind):
+                result.append(nv)
+        return tuple(result)
 
 
 @namespaces(ssn_system="http://www.w3.org/ns/ssn/systems/")
@@ -220,4 +225,22 @@ class Accuracy(SystemProperty):
     and the true value of the observed ObservableProperty (resp. of the acted on ActuatableProperty) under the defined Conditions."""
 
 
+@namespaces(
+    sosa="http://www.w3.org/ns/sosa/",
+    m4i="http://w3id.org/nfdi4ing/metadata4ing#"
+)
+@urirefs(Result="sosa:Result",
+         hasNumericalVariable="m4i:hasNumericalVariable")
+class Result(Thing):
+    """Result - The output of an Observation."""
+    hasNumericalVariable: Optional[AnyIriOf[NumericalVariable]] = Field(
+        default=None,
+        alias="has_numerical_variable"
+    )
+
+ObservableProperty.model_rebuild()
+Platform.model_rebuild()
+Sensor.model_rebuild()
 SystemCapability.model_rebuild()
+Observation.model_rebuild()
+Result.model_rebuild()

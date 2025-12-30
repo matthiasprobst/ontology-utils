@@ -96,7 +96,7 @@ class NumericalVariable(Variable):
             "has_unit",  # snake_case
             "units"  # alternative name
         ),
-        serialization_alias="hasUnit",  # optional, controls output name
+        serialization_alias="units",  # optional, controls output name
         default=None)
     hasKindOfQuantity: Optional[AnyIriOrListOf[QuantityKind]] = Field(
         alias="has_kind_of_quantity", default=None

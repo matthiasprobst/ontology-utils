@@ -11,6 +11,20 @@ from ..qudt import Unit
 __version__ = "2017.10.19"
 
 
+
+@namespaces(
+    sosa="http://www.w3.org/ns/sosa/",
+    m4i="http://w3id.org/nfdi4ing/metadata4ing#"
+)
+@urirefs(Result="sosa:Result",
+         hasNumericalVariable="m4i:hasNumericalVariable")
+class Result(Thing):
+    """Result - The output of an Observation."""
+    hasNumericalVariable: Optional[AnyIriOf[NumericalVariable]] = Field(
+        default=None,
+        alias="has_numerical_variable"
+    )
+
 @namespaces(ssn="http://www.w3.org/ns/ssn/",
             schema="https://schema.org/")
 @urirefs(Property="ssn:Property",
@@ -188,7 +202,7 @@ class Observation(Thing):
         alias="observed_property",
         description="The property that was observed."
     )
-    hasResult: Union[AnyThing, "Result", List[Union[AnyThing, "Result"]]] = Field(
+    hasResult: Union[AnyThing, Result, List[Union[AnyThing, Result]]] = Field(
         default=None,
         alias="has_result",
         description="The result of the observation."
@@ -225,22 +239,9 @@ class Accuracy(SystemProperty):
     and the true value of the observed ObservableProperty (resp. of the acted on ActuatableProperty) under the defined Conditions."""
 
 
-@namespaces(
-    sosa="http://www.w3.org/ns/sosa/",
-    m4i="http://w3id.org/nfdi4ing/metadata4ing#"
-)
-@urirefs(Result="sosa:Result",
-         hasNumericalVariable="m4i:hasNumericalVariable")
-class Result(Thing):
-    """Result - The output of an Observation."""
-    hasNumericalVariable: Optional[AnyIriOf[NumericalVariable]] = Field(
-        default=None,
-        alias="has_numerical_variable"
-    )
 
 ObservableProperty.model_rebuild()
 Platform.model_rebuild()
 Sensor.model_rebuild()
 SystemCapability.model_rebuild()
 Observation.model_rebuild()
-Result.model_rebuild()

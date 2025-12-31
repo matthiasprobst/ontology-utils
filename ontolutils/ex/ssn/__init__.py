@@ -3,6 +3,8 @@ from .ssn import (Property, Accuracy, SystemCapability,
                   System, ObservableProperty, Observation,
                   Actuator, Sensor, Sampler,
                   Platform, FeatureOfInterest, Result,
+                  Procedure, Input, Output, Stimulus,
+                  ObservationCollection,
                   __version__)
 
 __all__ = [
@@ -21,5 +23,10 @@ __all__ = [
     "Observation",
     "MeasurementRange",
     "Accuracy",
+    "Procedure",
+    "Input",
+    "Output",
+    "Stimulus",
+    "ObservationCollection",
     "__version__",
 ]

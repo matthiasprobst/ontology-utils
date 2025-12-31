@@ -64,7 +64,7 @@ class TestM4i(unittest.TestCase):
     m4i:hasUnit <http://qudt.org/vocab/unit/MilliM-PER-SEC> .
 
 """
-        
+
         numerical_variable1 = NumericalVariable(
             units='mm/s',
             hasNumericalValue=1.0
@@ -91,6 +91,7 @@ class TestM4i(unittest.TestCase):
             "http://qudt.org/vocab/unit/MilliM-PER-SEC", numerical_variable1.hasUnit
         )
         self.assertEqual(numerical_variable1.serialize("ttl"), expected_ttl)
+
     def testNumericalVariableWithoutStandardName(self):
         numerical_variable = NumericalVariable(
             hasUnit='mm/s',
@@ -202,7 +203,6 @@ class TestM4i(unittest.TestCase):
             hasSymbol='vfr'
         )
         ttl_orig = numerical_variable.serialize("ttl")
-        print(ttl_orig)
         xarray_dataarray = numerical_variable.to_xarray(language="de")
         self.assertEqual(xarray_dataarray.has_symbol, 'vfr')
         self.assertEqual(xarray_dataarray.attrs['has_variable_description'], 'Variable description')
@@ -214,7 +214,6 @@ class TestM4i(unittest.TestCase):
             xarray_dataarray
         )
         ttl_after_conversions = numerical_variable_from_xarray.serialize("ttl")
-        print(ttl_after_conversions)
         self.assertEqual(ttl_orig, ttl_after_conversions)
 
     def test_getitem(self):

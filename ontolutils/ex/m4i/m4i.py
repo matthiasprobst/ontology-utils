@@ -334,7 +334,7 @@ class NumericalVariable(Variable):
 
         Parameters
         ----------
-        kind_of_quantity: Union[str, AnyUrl]
+        kind_of_quantity: Union[str, AnyUrl, QuantityKind]
             Quantity kind URI to check against
 
         Returns
@@ -342,6 +342,10 @@ class NumericalVariable(Variable):
         bool
             True if the NumericalVariable has the given quantity kind, False otherwise
         """
+        if isinstance(kind_of_quantity, QuantityKind):
+            kind_of_quantity_iri = str(kind_of_quantity.id)
+        else:
+            kind_of_quantity_iri = str(QuantityKind(id=str(kind_of_quantity)).id)
         this_qkind = self.hasKindOfQuantity
         if this_qkind is None:
             if self.hasUnit is None:
@@ -364,16 +368,16 @@ class NumericalVariable(Variable):
 
             for qk in this_qkind:
                 if isinstance(qk, QuantityKind):
-                    if str(qk.id) == str(kind_of_quantity):
+                    if str(qk.id) == str(kind_of_quantity_iri):
                         return True
                 else:
-                    if qk == str(kind_of_quantity):
+                    if qk == str(kind_of_quantity_iri):
                         return True
             return False
         if isinstance(this_qkind, QuantityKind):
-            return this_qkind.id == kind_of_quantity.id
+            return str(this_qkind.id) == kind_of_quantity_iri
         elif isinstance(this_qkind, str):
-            return str(this_qkind) == str(kind_of_quantity)
+            return str(this_qkind) == kind_of_quantity_iri
         raise TypeError("kind_of_quantity must be of type str, AnyUrl, or QuantityKind")
 
 

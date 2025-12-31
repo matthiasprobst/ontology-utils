@@ -3,7 +3,9 @@ import unittest
 import rdflib
 
 from ontolutils import serialize, Thing
+from ontolutils.ex.hdf5 import File
 from ontolutils.ex.m4i import Tool, NumericalVariable
+from ontolutils.ex.prov import Activity
 from ontolutils.ex.qudt import Unit
 from ontolutils.ex.sosa import Sensor, Platform, Observation, Result
 from ontolutils.ex.ssn import Accuracy, SystemCapability, MeasurementRange, ObservableProperty
@@ -12,7 +14,7 @@ from ontolutils.namespacelib import QUDT_KIND, QUDT_UNIT
 
 class TestSosa(unittest.TestCase):
 
-    def test_obervable_property(self):
+    def test_observable_property(self):
         oprop = ObservableProperty(
             id="http://example.org/observable_property/1",
             isObservedBy="http://example.org/sensor/1"
@@ -24,6 +26,41 @@ class TestSosa(unittest.TestCase):
     sosa:isObservedBy <http://example.org/sensor/1> .
 
 """)
+
+    def test_sensor_as_an_agent_and_entity(self):
+        s = Sensor(
+            id="http://example.org/sensor/1",
+            label="Test Sensor@en",
+            observes="http://example.org/observable_property/1",
+            name="Sensor XYZ",
+            description="A sensor for testing purposes.@en",
+            was_generated_by=Activity(
+                id="http://example.org/activity/1",
+            ),
+            had_primary_source=File(
+                id="http://example.org/file/1",
+            )
+        )
+        self.assertEqual("""@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix hdf5: <http://purl.allotrope.org/ontologies/hdf5/1.8#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sosa: <http://www.w3.org/ns/sosa/> .
+
+<http://example.org/sensor/1> a sosa:Sensor ;
+    rdfs:label "Test Sensor"@en ;
+    dcterms:description "A sensor for testing purposes.@en" ;
+    prov:hadPrimarySource <http://example.org/file/1> ;
+    prov:wasGeneratedBy <http://example.org/activity/1> ;
+    sosa:observes <http://example.org/observable_property/1> ;
+    foaf:name "Sensor XYZ" .
+
+<http://example.org/activity/1> a prov:Activity .
+
+<http://example.org/file/1> a hdf5:File .
+
+""", s.serialize("ttl"))
 
     def test_platform(self):
         oprop = ObservableProperty(

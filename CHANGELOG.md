@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.27.5
+
+- improved, extended and refine `sosa` module
+
 ## v0.27.4
 
 - update QUDT Namespace

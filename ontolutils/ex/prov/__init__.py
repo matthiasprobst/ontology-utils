@@ -21,21 +21,14 @@ class Role(Concept):
 @namespaces(prov="http://www.w3.org/ns/prov#",
             foaf="http://xmlns.com/foaf/0.1/")
 @urirefs(Agent='prov:Agent',
-         mbox='foaf:mbox')
+         mbox='foaf:mbox',
+         name='foaf:name'
+         )
 class Agent(Thing):
     """Pydantic Model for http://www.w3.org/ns/prov#Agent
-
-    .. note::
-
-        More than the below parameters are possible but not explicitly defined here.
-
-
-    Parameters
-    ----------
-    mbox: EmailStr = None
-        Email address (foaf:mbox)
     """
     mbox: EmailStr = Field(default=None, alias="personal mailbox")  # foaf:mbox
+    name: Union[LangString, List[LangString]] = None  # foaf:name
 
 
 @namespaces(schema='https://schema.org/',
@@ -184,7 +177,8 @@ class SoftwareAgent(Agent):
          wasGeneratedBy='prov:wasGeneratedBy',
          wasDerivedFrom='prov:wasDerivedFrom',
          wasAttributedTo='prov:wasAttributedTo',
-         qualifiedAttribution='prov:qualifiedAttribution'
+         qualifiedAttribution='prov:qualifiedAttribution',
+         hadPrimarySource='prov:hadPrimarySource'
          )
 class Entity(Thing):
     """Implementation of prov:Entity"""
@@ -194,6 +188,8 @@ class Entity(Thing):
     wasAttributedTo: Union[AnyThing, Agent, List[Union[Agent, AnyThing]]] = Field(default=None,
                                                                                   alias="was_attributed_to")
     qualifiedAttribution: Union[AnyThing, List[Attribution]] = Field(default=None, alias="qualified_attribution")
+    hadPrimarySource: Union[AnyThing, "Entity", List[Union[AnyThing, "Entity"]]] = Field(default=None,
+                                                                                         alias="had_primary_source")
 
 
 @namespaces(prov="http://www.w3.org/ns/prov#")
@@ -213,8 +209,13 @@ class Activity(Thing):
     generated: Union[AnyThing, List[Union[AnyThing, Entity]], Entity] = Field(default=None, alias="generated")
     wasStartedBy: Union[AnyThing, List[Union[AnyThing, Entity]], Entity] = Field(default=None,
                                                                                  alias="was_started_by")
-    wasEndedBy: Union[AnyThing, List[Union[AnyThing, Entity]], Entity] = Field(default=None,
-                                                                               alias="was_ended_by")
+    wasEndedBy: Union[AnyThing, List[Union[AnyThing, Entity]], Entity] = Field(default=None, alias="was_ended_by")
+
+
+@namespaces(prov="http://www.w3.org/ns/prov#")
+@urirefs(Plan='prov:Plan', )
+class Plan(Thing):
+    """Pydantic Model for http://www.w3.org/ns/prov#Plan"""
 
 
 Entity.model_rebuild()
@@ -228,5 +229,6 @@ __all__ = [
     "Activity",
     "Entity",
     "Role",
+    "Plan",
     "__version__"
 ]

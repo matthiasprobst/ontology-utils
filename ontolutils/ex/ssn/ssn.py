@@ -3,13 +3,38 @@ from typing import Union, List, Optional, Tuple
 from pydantic import Field
 
 from ontolutils import Thing, urirefs, namespaces
-from ontolutils.typing import AnyIriOf, AnyThing
+from ontolutils.typing import AnyIriOf, AnyThing, AnyIriOrListOf
 from .. import qudt
 from ..m4i import NumericalVariable
+from ..prov import Entity, Activity, Agent, Plan
 from ..qudt import Unit
 
 __version__ = "2017.10.19"
 
+
+@namespaces(ssn="http://www.w3.org/ns/ssn/")
+@urirefs(Input="ssn:Input")
+class Input(Thing):
+    """Input - Any information that is provided to a Procedure for its use."""
+
+
+@namespaces(ssn="http://www.w3.org/ns/ssn/")
+@urirefs(Output="ssn:Output")
+class Output(Thing):
+    """has Output - Relation between a Procedure and an Output of it."""
+
+
+@namespaces(sosa="http://www.w3.org/ns/sosa/",
+            ssn="http://www.w3.org/ns/ssn/")
+@urirefs(Procedure="sosa:Procedure",
+         hasInput="ssn:hasInput",
+         hasOutput="ssn:hasOutput",
+         implementedBy="ssn:implementedBy"
+         )
+class Procedure(Plan):
+    hasInput: Optional[AnyIriOrListOf[Input]] = Field(default=None, alias="has_input")
+    hasOutput: Optional[AnyIriOrListOf[Output]] = Field(default=None, alias="has_output")
+    implementedBy: Optional[AnyThing] = Field(default=None, alias="implemented_by")
 
 
 @namespaces(
@@ -18,12 +43,13 @@ __version__ = "2017.10.19"
 )
 @urirefs(Result="sosa:Result",
          hasNumericalVariable="m4i:hasNumericalVariable")
-class Result(Thing):
+class Result(Entity):
     """Result - The output of an Observation."""
     hasNumericalVariable: Optional[AnyIriOf[NumericalVariable]] = Field(
         default=None,
         alias="has_numerical_variable"
     )
+
 
 @namespaces(ssn="http://www.w3.org/ns/ssn/",
             schema="https://schema.org/")
@@ -115,7 +141,7 @@ class System(Thing):
             ssn_system="http://www.w3.org/ns/ssn/systems/")
 @urirefs(ObservableProperty="sosa:ObservableProperty",
          isObservedBy="sosa:isObservedBy")
-class ObservableProperty(Property):
+class ObservableProperty(Property, Entity):
     """Observable Property - An observable quality (property, characteristic) of a FeatureOfInterest."""
     isObservedBy: Union[AnyThing, "Sensor", List[Union[AnyThing, "Sensor"]]] = Field(default=None,
                                                                                      alias="is_observed_by")
@@ -123,7 +149,7 @@ class ObservableProperty(Property):
 
 @namespaces(sosa="http://www.w3.org/ns/sosa/")
 @urirefs(Actuator="sosa:Actuator")
-class Actuator(Thing):
+class Actuator(Agent, Entity):
     """Actuator - A device that is used by, or implements, an (Actuation) Procedure that changes the state of the world."""
 
 
@@ -133,7 +159,7 @@ class Actuator(Thing):
          isHostedBy="sosa:isHostedBy",
          madeObservation="sosa:madeObservation"
          )
-class Sensor(System):
+class Sensor(System, Agent, Entity):
     """Sensor -  Device, agent (including humans), or software (simulation) involved in, or implementing, a Procedure.
     Sensors respond to a Stimulus, e.g., a change in the environment, or Input data composed from the Results of prior
     Observations, and generate a Result. Sensors can be hosted by Platforms."""
@@ -152,7 +178,7 @@ class Sensor(System):
 
 @namespaces(sosa="http://www.w3.org/ns/sosa/")
 @urirefs(Sampler="sosa:Sampler")
-class Sampler(Thing):
+class Sampler(Agent, Entity):
     """Sampler - A device that is used by, or implements, an (Actuation) Procedure that changes the state of the world."""
 
 
@@ -173,7 +199,7 @@ class Platform(Thing):
 @urirefs(FeatureOfInterest="sosa:FeatureOfInterest",
          hasProperty="ssn:hasProperty"
          )
-class FeatureOfInterest(Thing):
+class FeatureOfInterest(Entity):
     """Feature Of Interest - The thing whose property is being estimated or calculated in the course of an Observation to arrive at a Result, or whose property is being manipulated by an Actuator, or which is being sampled or transformed in an act of Sampling."""
     hasProperty: Union[AnyThing, Property, List[Union[AnyThing, Property]]] = Field(
         default=None,
@@ -182,16 +208,14 @@ class FeatureOfInterest(Thing):
     )
 
 
-
-
 @namespaces(sosa="http://www.w3.org/ns/sosa/")
 @urirefs(Observation="sosa:Observation",
          madeBySensor="sosa:madeBySensor",
          observedProperty="sosa:observedProperty",
          hasResult="sosa:hasResult",
-         hasFeatureOfInterest="sosa:hasFeatureOfInterest",
+         hasFeatureOfInterest="sosa:hasFeatureOfInterest"
          )
-class Observation(Thing):
+class Observation(Activity):
     madeBySensor: Union[AnyThing, Sensor] = Field(
         default=None,
         alias="made_by_sensor",
@@ -238,6 +262,83 @@ class Accuracy(SystemProperty):
     """The closeness of agreement between the Result of an Observation (resp. the command of an Actuation)
     and the true value of the observed ObservableProperty (resp. of the acted on ActuatableProperty) under the defined Conditions."""
 
+
+@namespaces(ssn="http://www.w3.org/ns/ssn/")
+@urirefs(Stimulus="ssn:Stimulus")
+class Stimulus(Thing):
+    """Stimulus - An event in the real world that 'triggers' the Sensor. The properties associated to the Stimulus may be different to the eventual observed ObservableProperty. It is the event, not the object, that triggers the Sensor."""
+
+
+@namespaces(sosa="http://www.w3.org/ns/sosa/",
+            ssn="http://www.w3.org/ns/ssn/")
+@urirefs(ObservationCollection="sosa:ObservationCollection",
+         madeBySensor="sosa:madeBySensor",
+         observedProperty="sosa:observedProperty",
+         hasFeatureOfInterest="sosa:hasFeatureOfInterest",
+         hasUltimateFeatureOfInterest="sosa:hasUltimateFeatureOfInterest",
+         usedProcedure="sosa:usedProcedure",
+         wasOriginatedBy="ssn:wasOriginatedBy",
+         phenomenonTime="sosa:phenomenonTime",
+         resultTime="sosa:resultTime",
+         hasMember="sosa:hasMember",
+         )
+class ObservationCollection(Thing):
+    # maxCardinality 1 -> single-valued (optional)
+    madeBySensor: Union[AnyIriOf[Sensor]] = Field(
+        default=None,
+        alias="made_by_sensor",
+        description="The sensor that made the observations (max 1)."
+    )
+
+    observedProperty: Union[AnyIriOf[ObservableProperty]] = Field(
+        default=None,
+        alias="observed_property",
+        description="The property that was observed for the collection (max 1)."
+    )
+
+    usedProcedure: Union[AnyIriOf[Procedure]] = Field(
+        default=None,
+        alias="used_procedure",
+        description="Procedure used for the observations in the collection (max 1)."
+    )
+
+    wasOriginatedBy: Union[AnyIriOf[Stimulus]] = Field(
+        default=None,
+        alias="was_originated_by",
+        description="Stimulus that originated the observations (ssn:wasOriginatedBy)."
+    )
+
+    phenomenonTime: Union[AnyThing, str] = Field(
+        default=None,
+        alias="phenomenon_time",
+        description="Time when the phenomenon was (single value)."
+    )
+
+    resultTime: Union[AnyThing, str] = Field(
+        default=None,
+        alias="result_time",
+        description="Time when the result was generated (single value)."
+    )
+
+    # hasFeatureOfInterest / hasUltimateFeatureOfInterest are single-valued (max 1)
+    hasFeatureOfInterest: Union[AnyIriOf[FeatureOfInterest]] = Field(
+        default=None,
+        alias="has_feature_of_interest",
+        description="Relation to the feature of interest (max 1)."
+    )
+
+    hasUltimateFeatureOfInterest: Union[AnyIriOf[FeatureOfInterest]] = Field(
+        default=None,
+        alias="has_ultimate_feature_of_interest",
+        description="Ultimate feature of interest for the collection (max 1)."
+    )
+
+    # minCardinality 1 -> required (non-empty) list of members
+    hasMember: AnyIriOrListOf[Observation] = Field(
+        default=None,
+        alias="has_member",
+        description="Members of the collection (min 1)."
+    )
 
 
 ObservableProperty.model_rebuild()

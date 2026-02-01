@@ -1,6 +1,7 @@
+from datetime import datetime, date
 from typing import Union, List, Optional, Tuple
 
-from pydantic import Field
+from pydantic import Field, field_validator
 
 from ontolutils import Thing, urirefs, namespaces
 from ontolutils.typing import AnyIriOf, AnyThing, AnyIriOrListOf
@@ -10,6 +11,8 @@ from ..prov import Entity, Activity, Agent, Plan
 from ..qudt import Unit
 
 __version__ = "2017.10.19"
+
+from ..time import TemporalEntity, Instant, Interval
 
 
 @namespaces(ssn="http://www.w3.org/ns/ssn/")
@@ -213,9 +216,17 @@ class FeatureOfInterest(Entity):
          madeBySensor="sosa:madeBySensor",
          observedProperty="sosa:observedProperty",
          hasResult="sosa:hasResult",
-         hasFeatureOfInterest="sosa:hasFeatureOfInterest"
+         hasFeatureOfInterest="sosa:hasFeatureOfInterest",
+         resultTime="sosa:resultTime",
+         phenomenonTime="sosa:phenomenonTime",
+         usedProcedure="sosa:usedProcedure",
          )
 class Observation(Activity):
+    usedProcedure: AnyIriOrListOf[Procedure] = Field(
+        default=None,
+        alias="used_procedure",
+        description="A relation to link to a re-usable Procedure used in making an Observation, typically through a Sensor, Actuator or Sampler."
+    )
     madeBySensor: Union[AnyThing, Sensor] = Field(
         default=None,
         alias="made_by_sensor",
@@ -236,6 +247,44 @@ class Observation(Activity):
         alias="has_feature_of_interest",
         description=" A relation between an Observation and the entity whose quality was observed, or between an Actuation and the entity whose property was modified, or between an act of Sampling and the entity that was sampled."
     )
+    resultTime: Optional[datetime] = Field(
+        default=None,
+        alias="result_time",
+        description="the instant of time when the observation act was completed (e.g. when the acquisition software finished computing and storing the operating‑point values)"
+    )
+    phenomenonTime: Union[AnyThing, str, datetime, TemporalEntity] = Field(
+        default=None,
+        alias="phenomenon_time",
+        description="the time that the result applies to the feature of interest"
+    )
+
+    @field_validator('phenomenonTime')
+    @classmethod
+    def _validate_phenomenon_time(cls, value):
+        if isinstance(value, str):
+            try:
+                return Instant(datetime=datetime.fromisoformat(value))
+            except ValueError:
+                return value  # keep as string if not ISO format
+        if isinstance(value, datetime):
+            return Instant(datetime=value)
+        if isinstance(value, date):
+            return Instant(date=value)
+        if isinstance(value, tuple):
+            if len(value) == 2:
+                start, end = value
+                if isinstance(start, str):
+                    try:
+                        start = datetime.fromisoformat(start)
+                    except ValueError:
+                        pass
+                if isinstance(end, str):
+                    try:
+                        end = datetime.fromisoformat(end)
+                    except ValueError:
+                        pass
+                return Interval(has_beginning=start, has_end=end)
+        return value
 
     def get_numerical_variable_by_kind_of_quantity(
             self,
@@ -248,6 +297,62 @@ class Observation(Activity):
             if nv is not None and nv.is_kind_of_quantity(qkind):
                 result.append(nv)
         return tuple(result)
+
+    def to_xarray(self, pref_lang: Optional[str] = "en", dimensions: Optional[List[str]] = "result"):
+        """Returns an xarray DataArray"""
+        import xarray as xr
+
+        dataset_attrs = self.model_dump(exclude_none=True, exclude={"hasResult"}, by_alias=True)
+        name = self.get_label(pref_lang=pref_lang) or self.get_alt_label(pref_lang=pref_lang)
+        if name is not None:
+            dataset_attrs['name'] = name
+        dataset_attrs["type"] = "Observation"
+        data = []
+        if not isinstance(self.hasResult, list):
+            has_results = [self.hasResult]
+        else:
+            has_results = self.hasResult
+        for result in has_results:
+            nv = result.hasNumericalVariable
+            if nv is not None:
+                data.append(nv.to_numpy())
+            else:
+                data.append(None)
+        da = xr.DataArray(
+            data=data,
+            dims=dimensions,
+            attrs=dataset_attrs
+        )
+        return da
+
+    # def to_xarray(self, coord_label: Optional[str] = None, pref_lang: Optional[str] = "en"):
+    #     import xarray as xr
+    #     data_vars = {}
+    #
+    #     coord_key = None
+    #     for result in self.hasResult:
+    #         nv = result.hasNumericalVariable
+    #         if nv is not None:
+    #             var_name = nv.get_label(pref_lang=pref_lang)
+    #             if isinstance(var_name, LangString):
+    #                 var_name = var_name.get_preferred_string(pref_lang=pref_lang)
+    #             if var_name is None:
+    #                 var_name = nv.id
+    #             # initialize container
+    #             if var_name not in data_vars:
+    #                 data_vars[var_name] = []
+    #             data_vars[var_name].append(nv.to_numpy())
+    #     xr_data = {}
+    #     for var_name, values in data_vars.items():
+    #         # skip the chosen coordinate variable as a data_var (it will be set as coord)
+    #         if var_name == coord_key:
+    #             continue
+    #         xr_data[var_name] = (("observation",), values)
+    #     coords = None
+    #     if coord_key is not None:
+    #         coords = {coord_label: (("observation",), data_vars[coord_key])}
+    #     ds = xr.Dataset(data_vars=xr_data, coords=coords)
+    #     return ds
 
 
 @namespaces(ssn_system="http://www.w3.org/ns/ssn/systems/")
@@ -334,7 +439,7 @@ class ObservationCollection(Thing):
     )
 
     # minCardinality 1 -> required (non-empty) list of members
-    hasMember: AnyIriOrListOf[Observation] = Field(
+    hasMember: AnyIriOrListOf[Union[Observation, "ObservationCollection"]] = Field(
         default=None,
         alias="has_member",
         description="Members of the collection (min 1)."

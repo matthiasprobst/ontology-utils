@@ -324,3 +324,76 @@ class TestSosa(unittest.TestCase):
         )
         self.assertEqual(1, len(vfr))
         self.assertEqual(vfr[0].hasUnit, op.hasResult[0].hasNumericalVariable.hasUnit)
+
+    def test_observation_collection(self):
+        obs1 = Observation(
+            id="http://example.org/observation/1",
+            label="Observation 1"
+        )
+        obs2 = Observation(
+            id="http://example.org/observation/2",
+            label="Observation 2"
+        )
+        from ontolutils.ex.sosa import ObservationCollection
+        obs_collection = ObservationCollection(
+            id="http://example.org/observation_collection/1",
+            has_member=[obs1, obs2]
+        )
+        parent_collection = ObservationCollection(
+            has_member=obs_collection
+        )
+        self.assertEqual(
+            parent_collection.hasMember.hasMember[1].label, "Observation 2"
+        )
+        ttl = parent_collection.serialize("ttl")
+        self.assertEqual(ttl, """@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sosa: <http://www.w3.org/ns/sosa/> .
+
+<http://example.org/observation/1> a sosa:Observation ;
+    rdfs:label "Observation 1" .
+
+<http://example.org/observation/2> a sosa:Observation ;
+    rdfs:label "Observation 2" .
+
+<http://example.org/observation_collection/1> a sosa:ObservationCollection ;
+    sosa:hasMember <http://example.org/observation/1>,
+        <http://example.org/observation/2> .
+
+[] a sosa:ObservationCollection ;
+    sosa:hasMember <http://example.org/observation_collection/1> .
+
+""")
+
+    def test_observation_to_xarray(self):
+        observation1 = Observation(
+            label="observation1",
+            has_result=[
+                Result(
+                    has_numerical_variable=NumericalVariable(
+                        label=["pressure@en", "Druck@de"],
+                        has_numerical_value=100,
+                        has_unit=QUDT_UNIT.PA,
+                        has_kind_of_quantity=QUDT_KIND.StaticPressure,
+                    )
+                )
+            ]
+        )
+        # print(observation1.serialize("ttl"))
+        da = observation1.to_xarray()
+        # self.assertIsInstance(da, xr.DataArray)
+        print(da)
+        # da.pressure.plot.scatter()
+
+    def test_observation_collection_to_xarray(self):
+
+        observation2 = Observation(
+            label="observation2",
+            has_result=Result(
+                has_numerical_variable=NumericalVariable(
+                    label="vfr",
+                    has_numerical_value=500,
+                    has_unit=QUDT_UNIT.M3_PER_SEC,
+                    has_kind_of_quantity=QUDT_KIND.VolumeFlowRate,
+                )
+            )
+        )

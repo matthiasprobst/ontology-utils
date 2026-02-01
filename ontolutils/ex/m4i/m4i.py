@@ -193,6 +193,14 @@ class NumericalVariable(Variable):
 
         return self.hasNumericalValue * new_unit
 
+    def to_numpy(self):
+        """Convert numerical value to numpy ndarray"""
+        if self.hasNumericalValue is None:
+            raise ValueError("hasNumericalValue must be set to convert to numpy ndarray")
+        if isinstance(self.hasNumericalValue, np.ndarray):
+            return self.hasNumericalValue
+        return np.asarray(self.hasNumericalValue)
+
     def to_xarray(self, language: str = "en"):
         """Convert numerical value to xarray DataArray"""
 

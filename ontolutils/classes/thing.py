@@ -243,6 +243,8 @@ class LangString(BaseModel):
             return self.value == other.value and self.lang == other.lang
         if isinstance(other, str):
             return str(self) == other or self.value == other
+        if other is None:
+            return False
         raise TypeError(f"Cannot compare LangString with {type(other)}")
 
     def startswith(self, *args, **kwargs) -> bool:
@@ -430,6 +432,40 @@ class Thing(ThingModel):
         if self.id is None or other.id is None:
             return False
         return self.id <= other.id
+
+    def get_label(self, pref_lang: Optional[str]="en"):
+        if self.label is None:
+            return None
+        if isinstance(self.label, str):
+            return self.label
+        if isinstance(self.label, LangString):
+            if self.label.lang == pref_lang or pref_lang is None:
+                return self.label.value
+            return self.label.value
+        if isinstance(self.label, list):
+            for lbl in self.label:
+                if isinstance(lbl, LangString):
+                    if lbl.lang == pref_lang:
+                        return lbl.value
+            return str(self.label[0])
+        return str(self.label)
+
+    def get_alt_label(self, pref_lang: Optional[str]="en"):
+        if self.altLabel is None:
+            return None
+        if isinstance(self.altLabel, str):
+            return self.altLabel
+        if isinstance(self.altLabel, LangString):
+            if self.altLabel.lang == pref_lang or pref_lang is None:
+                return self.altLabel.value
+            return self.altLabel.value
+        if isinstance(self.altLabel, list):
+            for lbl in self.altLabel:
+                if isinstance(lbl, LangString):
+                    if lbl.lang == pref_lang:
+                        return lbl.value
+            return str(self.altLabel[0])
+        return str(self.altLabel)
 
     def get_jsonld_dict(self,
                         base_uri: Optional[Union[str, AnyUrl]] = None,

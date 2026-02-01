@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.27.6
+
+- update allotrope hdf5 ontology
+- add time ontology
+
 ## v0.27.5
 
 - improved, extended and refine `sosa` module

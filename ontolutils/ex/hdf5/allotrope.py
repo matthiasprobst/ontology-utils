@@ -1,4 +1,4 @@
-from typing import Optional, List, Tuple, Any, Union
+from typing import Optional, List, Tuple, Any
 
 from pydantic import Field, field_validator
 from pydantic.functional_validators import WrapValidator

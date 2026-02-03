@@ -42,16 +42,10 @@ class Procedure(Plan):
 
 @namespaces(
     sosa="http://www.w3.org/ns/sosa/",
-    m4i="http://w3id.org/nfdi4ing/metadata4ing#"
 )
-@urirefs(Result="sosa:Result",
-         hasNumericalVariable="m4i:hasNumericalVariable")
+@urirefs(Result="sosa:Result")
 class Result(Entity):
     """Result - The output of an Observation."""
-    hasNumericalVariable: Optional[AnyIriOf[NumericalVariable]] = Field(
-        default=None,
-        alias="has_numerical_variable"
-    )
 
 
 @namespaces(ssn="http://www.w3.org/ns/ssn/",
@@ -291,12 +285,11 @@ class Observation(Activity):
             qkind: Union[str, qudt.QuantityKind]
     ) -> Tuple[NumericalVariable]:
         """Get all numerical variables in the observation by their quantity kind."""
-        result = []
-        for res in self.hasResult:
-            nv = res.hasNumericalVariable
-            if nv is not None and nv.is_kind_of_quantity(qkind):
-                result.append(nv)
-        return tuple(result)
+        results = []
+        for result in self.hasResult:
+            if result is not None and result.is_kind_of_quantity(qkind):
+                results.append(result)
+        return tuple(results)
 
     def to_xarray(self, pref_lang: Optional[str] = "en", dimensions: Optional[List[str]] = "result"):
         """Returns an xarray DataArray"""
@@ -313,9 +306,8 @@ class Observation(Activity):
         else:
             has_results = self.hasResult
         for result in has_results:
-            nv = result.hasNumericalVariable
-            if nv is not None:
-                data.append(nv.to_numpy())
+            if result is not None:
+                data.append(result.to_numpy())
             else:
                 data.append(None)
         da = xr.DataArray(

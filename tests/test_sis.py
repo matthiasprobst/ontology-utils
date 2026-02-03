@@ -63,7 +63,8 @@ class TestSis(unittest.TestCase):
             label="PT100 Temperature Sensor Accuracy@en",
             hasCoverageFactor="2",
             hasCoverageProbability="0.95",
-            hasValueExpandedMU="0.25")  # °C
+            hasValueExpandedMU="0.25"
+        )  # °C
         ttl = pt100_accuracy.serialize("ttl")
         print(ttl)
 

@@ -234,18 +234,6 @@ class TestSosa(unittest.TestCase):
             hasNumericalValue=35.3,
             hasUnit="Pa"
         )
-        result1 = Result(
-            id="http://example.org/result/1",
-            has_numerical_variable=vfr
-        )
-        self.assertEqual(
-            result1.hasNumericalVariable,
-            vfr
-        )
-        result2 = Result(
-            id="http://example.org/result/2",
-            has_numerical_variable=dp
-        )
 
         feature_of_interest = Thing(
             id="http://example.org/feature_of_interest/1",
@@ -255,10 +243,12 @@ class TestSosa(unittest.TestCase):
             id="http://example.org/observation/1",
             label="Operation Point",
             has_feature_of_interest=feature_of_interest,
-            hasResult=[result1, result2],
+            hasResult=[vfr, dp],
             madeBySensor="http://example.org/sensor/1",
             observes="http://example.org/observable_property/1"
         )
+        ttl = observation.serialize("ttl")
+        print(ttl)
         self.assertEqual("""@prefix m4i: <http://w3id.org/nfdi4ing/metadata4ing#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -268,18 +258,12 @@ class TestSosa(unittest.TestCase):
 <http://example.org/observation/1> a sosa:Observation ;
     rdfs:label "Operation Point" ;
     sosa:hasFeatureOfInterest <http://example.org/feature_of_interest/1> ;
-    sosa:hasResult <http://example.org/result/1>,
-        <http://example.org/result/2> ;
+    sosa:hasResult <http://example.org/variable/1>,
+        <http://example.org/variable/2> ;
     sosa:madeBySensor <http://example.org/sensor/1> .
 
 <http://example.org/feature_of_interest/1> a owl:Thing ;
     rdfs:label "Operation Point" .
-
-<http://example.org/result/1> a sosa:Result ;
-    m4i:hasNumericalVariable <http://example.org/variable/1> .
-
-<http://example.org/result/2> a sosa:Result ;
-    m4i:hasNumericalVariable <http://example.org/variable/2> .
 
 <http://example.org/variable/1> a m4i:NumericalVariable ;
     m4i:hasNumericalValue 1e-01 ;
@@ -290,32 +274,23 @@ class TestSosa(unittest.TestCase):
     m4i:hasUnit <http://qudt.org/vocab/unit/PA> .
 
 """,
-                         observation.serialize("ttl"))
+                         ttl)
 
     def test_get_by_qkind(self):
         op = Observation(
             id="https://example.org/observation/1",
             has_result=[
-                Result(
-                    id="https://example.org/result/vfr1",
-                    hasNumericalVariable=NumericalVariable(
-                        id="https://example.org/numvar/1",
-                        hasUnit=QUDT_UNIT.M3_PER_HR,
-                    )
+                NumericalVariable(
+                    id="https://example.org/numvar/1",
+                    hasUnit=QUDT_UNIT.M3_PER_HR,
                 ),
-                Result(
-                    id="https://example.org/result/dp1",
-                    has_numerical_variable=NumericalVariable(
-                        id="https://example.org/numvar/2",
-                        hasUnit=QUDT_UNIT.PA
-                    )
+                NumericalVariable(
+                    id="https://example.org/numvar/2",
+                    hasUnit=QUDT_UNIT.PA
                 ),
-                Result(
-                    id="https://example.org/result/n1",
-                    has_numerical_variable=NumericalVariable(
-                        id="https://example.org/numvar/3",
-                        hasUnit=QUDT_UNIT.PER_MIN
-                    )
+                NumericalVariable(
+                    id="https://example.org/numvar/3",
+                    hasUnit=QUDT_UNIT.PER_MIN
                 ),
             ],
         )
@@ -323,7 +298,7 @@ class TestSosa(unittest.TestCase):
             QUDT_KIND.VolumeFlowRate
         )
         self.assertEqual(1, len(vfr))
-        self.assertEqual(vfr[0].hasUnit, op.hasResult[0].hasNumericalVariable.hasUnit)
+        self.assertEqual(vfr[0].hasUnit, op.hasResult[0].hasUnit)
 
     def test_observation_collection(self):
         obs1 = Observation(
@@ -368,13 +343,11 @@ class TestSosa(unittest.TestCase):
         observation1 = Observation(
             label="observation1",
             has_result=[
-                Result(
-                    has_numerical_variable=NumericalVariable(
-                        label=["pressure@en", "Druck@de"],
-                        has_numerical_value=100,
-                        has_unit=QUDT_UNIT.PA,
-                        has_kind_of_quantity=QUDT_KIND.StaticPressure,
-                    )
+                NumericalVariable(
+                    label=["pressure@en", "Druck@de"],
+                    has_numerical_value=100,
+                    has_unit=QUDT_UNIT.PA,
+                    has_kind_of_quantity=QUDT_KIND.StaticPressure,
                 )
             ]
         )
@@ -383,17 +356,3 @@ class TestSosa(unittest.TestCase):
         # self.assertIsInstance(da, xr.DataArray)
         print(da)
         # da.pressure.plot.scatter()
-
-    def test_observation_collection_to_xarray(self):
-
-        observation2 = Observation(
-            label="observation2",
-            has_result=Result(
-                has_numerical_variable=NumericalVariable(
-                    label="vfr",
-                    has_numerical_value=500,
-                    has_unit=QUDT_UNIT.M3_PER_SEC,
-                    has_kind_of_quantity=QUDT_KIND.VolumeFlowRate,
-                )
-            )
-        )

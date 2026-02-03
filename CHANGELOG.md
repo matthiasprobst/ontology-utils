@@ -1,8 +1,9 @@
 # Changelog
 
-## v0.28.0
+## v0.27.7
 
 - Removed the incorrectly assigned `m4i:hasNumericalVariable` property from `sosa:Result`.
+
 ## v0.27.6
 
 - update allotrope hdf5 ontology

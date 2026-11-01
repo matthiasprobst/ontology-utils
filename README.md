@@ -161,4 +161,8 @@ The above fives us this Turtle serialization:
 
 Please visit the [documentation](https://ontology-utils.readthedocs.io/en/latest/) for more information.
 
+## Local work tracking
 
+Use `.work/` for local work items and investigation notes. Its contents are
+ignored by Git and must not be committed or force-added. Keep accepted project
+documentation in the regular documentation files.

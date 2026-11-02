@@ -1,0 +1,38 @@
+= Map fields to ontology terms
+
+Use `@namespaces` above `@urirefs` on a `Thing` subclass. Map the Python class
+name to its RDF type, and each Python field name to its predicate.
+
+[source,python]
+----
+from typing import Optional
+from pydantic import Field, ValidationError
+from ontolutils import Thing, namespaces, urirefs
+
+@namespaces(ex="https://example.org/vocab/")
+@urirefs(Measurement="ex:Measurement", value="ex:value", note="ex:note")
+class Measurement(Thing):
+    value: float = Field(ge=0, alias="measured_value")
+    note: Optional[str] = None
+
+measurement = Measurement(
+    id="https://example.org/measurements/1",
+    measured_value=1.5,
+    label="Velocity magnitude",
+)
+assert measurement.value == 1.5
+----
+
+The example vocabulary is illustrative. Substitute the exact IRIs used by your
+community: HTTP and HTTPS are different RDF names.
+
+[source,python]
+----
+assert Measurement.iri() == "https://example.org/vocab/Measurement"
+assert Measurement.iri("value") == "https://example.org/vocab/value"
+assert measurement.urirefs["value"] == "ex:value"
+----
+
+Mappings and namespaces are inherited. A subclass can add fields and mappings.
+Extra Python fields are allowed, but unmapped values may be absent from RDF.
+Declare and map fields explicitly when their values must be exchanged.

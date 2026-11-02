@@ -1,0 +1,26 @@
+= Create a class at runtime
+
+Use `build` when a configuration determines the fields. It returns a new
+`Thing` subclass with Pydantic field validation and RDF mappings.
+
+[source,python]
+----
+from ontolutils import Property, build
+
+Run = build(
+    namespace="https://example.org/vocab/",
+    namespace_prefix="ex",
+    class_name="Run",
+    properties=[Property(name="sample_count", property_type=int, default=0)],
+)
+run = Run(sample_count=3)
+assert run.sample_count == 3
+----
+
+Each `Property` maps its Python name to the same RDF local name, here
+`ex:sample_count`. Set both `namespace` and `namespace_prefix` on a property
+when it belongs to another vocabulary.
+
+`Thing.add_property` registers an RDF mapping only. Its `property_type` and
+`default` arguments do not add a Pydantic field or validate extra values.
+Create a new class or subclass when you need another validated field.

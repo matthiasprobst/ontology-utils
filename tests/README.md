@@ -79,6 +79,13 @@ resolver enforce the consumers' own stricter dependency bounds. These two model
 contracts complement each consumer's full test suite; they do not establish
 compatibility for every consumer feature or Python version.
 
+## Documentation examples
+
+`python -m pytest tests/test_documentation.py -q` executes the README and Antora
+Python blocks and the tutorial notebook in temporary directories. The Sphinx
+guide uses `.. testcode::` blocks checked by the doctest build. See
+`docs/README.md` for its command, dependencies, and the editing workflow.
+
 ## Test coverage
 
 To check the test coverage, you can run the following command in the terminal (from the root directory of the package):

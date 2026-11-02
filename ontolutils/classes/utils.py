@@ -188,6 +188,13 @@ def download_file(url,
 
 
 def as_id(obj, field_name):
+    """Use a raw input property's value as id in a before-model validator.
+
+    Pass the input dictionary and the key as supplied by the caller.
+    An explicit non-None id is preserved. A property starting with HTTP(S)
+    or ``_:`` supplies a missing id; other values leave the dictionary
+    unchanged. Pydantic aliases have not yet been resolved at this stage.
+    """
     if isinstance(obj, dict):
         return as_id_before(obj, field_name)
     raise ValueError(f"You must use mode='before' for as_id")

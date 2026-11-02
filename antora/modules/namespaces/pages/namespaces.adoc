@@ -1,0 +1,33 @@
+= Namespace IRIs and units
+
+[source,python]
+----
+from ontolutils import QUDT_UNIT, QUDT_KIND, SCHEMA, parse_unit
+
+assert str(QUDT_UNIT.M_PER_SEC) == "http://qudt.org/vocab/unit/M-PER-SEC"
+assert parse_unit("m/s") == QUDT_UNIT.M_PER_SEC
+assert str(SCHEMA.Person) == "https://schema.org/Person"
+----
+
+Available exports include `QUDT_UNIT`, `QUDT_KIND`, `SCHEMA`, `CODEMETA`, `M4I`,
+`HDF5`, `SPDX`, `OBO`, `SSN_SYSTEM`, and `IANA`. Use RDFLib for PROV, FOAF,
+DCAT, and SKOS namespaces:
+
+[source,python]
+----
+from rdflib import Namespace
+from rdflib.namespace import PROV, FOAF
+
+assert str(PROV.Person) == "http://www.w3.org/ns/prov#Person"
+laboratory = Namespace("https://example.org/vocab/")
+assert str(laboratory["yield"]) == "https://example.org/vocab/yield"
+----
+
+The unit names are `QUDT_UNIT.M`, `QUDT_UNIT.SEC`, and `QUDT_UNIT.M_PER_SEC`;
+`METER` and `Second` are not exported unit names. `parse_unit("m/s")` is an
+exact lookup of supported spellings, not a general unit parser.
+
+Unknown terms in generated namespaces raise `AttributeError`. Bracket syntax
+does not add missing terms. For a term absent from the snapshot, construct an
+RDFLib namespace/IRI after checking the vocabulary. IANA tables may be fetched
+and cached when media types are looked up.

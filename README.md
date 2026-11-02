@@ -1,177 +1,64 @@
-# Ontolutils - Object-oriented "Things"
+# Ontolutils: validated scientific metadata in RDF
 
-![Tests Status](https://github.com/matthiasprobst/ontology-utils/actions/workflows/tests.yml/badge.svg)
-[![codecov](https://codecov.io/gh/matthiasprobst/ontology-utils/graph/badge.svg?token=KKZ3PTO73T)](https://codecov.io/gh/matthiasprobst/ontology-utils)
-[![Documentation Status](https://readthedocs.org/projects/ontology-utils/badge/?version=latest)](https://ontology-utils.readthedocs.io/en/latest/)
-![pyvers Status](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue)
+![Tests](https://github.com/matthiasprobst/ontology-utils/actions/workflows/tests.yml/badge.svg)
+[![Documentation](https://readthedocs.org/projects/ontology-utils/badge/?version=latest)](https://ontology-utils.readthedocs.io/en/latest/)
 
-This package helps you in generating ontology-related objects and lets you easily create JSON-LD files.
+Describe people, datasets, instruments, and measurements as Python objects;
+validate their fields with Pydantic; export JSON-LD or Turtle with RDFLib.
+Use the included ontology models or map your own fields to RDF terms.
 
-## Quickstart
+## Install
 
-### Installation
-
-Install the package:
+Requires Python **3.9–3.14**, Pydantic **2.x**, and RDFLib **7.x**.
 
 ```bash
-pip install ontolutils
+python -m pip install ontolutils
 ```
 
-### Usage
-
-Imagine you want to describe a `prov:Person` with a first name, last name and an email address but writing
-the JSON-LD file yourself is too cumbersome *and* you want validation of the parsed parameters. The package
-lets you design classes, which describe ontology classes like this:
+## Create, save, and reload metadata
 
 ```python
-import rdflib
-from pydantic import EmailStr, Field
-from pydantic import HttpUrl, model_validator
+from pathlib import Path
+from ontolutils.ex.prov import Person
 
-from ontolutils import Thing, urirefs, namespaces, as_id
-
-
-@namespaces(prov="https://www.w3.org/ns/prov#",
-            foaf="https://xmlns.com/foaf/0.1/",
-            m4i='http://w3id.org/nfdi4ing/metadata4ing#')
-@urirefs(Person='prov:Person',
-         firstName='foaf:firstName',
-         lastName='foaf:lastName',
-         mbox='foaf:mbox',
-         orcidId='m4i:orcidId')
-class Person(Thing):
-    firstName: str
-    lastName: str = Field(default=None, alias="last_name")  # you may provide an alias
-    mbox: EmailStr = Field(default=None, alias="email")
-    orcidId: HttpUrl = Field(default=None, alias="orcid_id")
-
-    # the following will ensure, that if orcidId is set, it will be used as the id
-    @model_validator(mode="before")
-    def _change_id(self):
-        return as_id(self, "orcidId")
-
-
-p = Person(
-    id="https://orcid.org/0000-0001-8729-0482",
-    label=rdflib.Literal("The creator of this package", lang="en"),
-    firstName='Matthias',
-    last_name='Probst'
+researcher = Person(
+    id="https://example.org/people/ada",
+    first_name="Ada",
+    last_name="Lovelace",
 )
-# as we have set an alias, we can also use "lastName":
-p = Person(
-    id="https://orcid.org/0000-0001-8729-0482",
-    label=rdflib.Literal("The creator of this package", lang="en"),
-    firstName='Matthias',
-    lastName='Probst'
-)
-# The jsonld representation of the object will be the same in both cases:
-json_ld_serialization = p.model_dump_jsonld()
-# Alternatively use
-serialized_str = p.serialize(format="json-ld")  # or "ttl", "n3", "nt", "xml"
+Path("researcher.jsonld").write_text(researcher.model_dump_jsonld(), encoding="utf-8")
+restored = Person.from_jsonld(source="researcher.jsonld", limit=1)
+assert restored.firstName == "Ada"
+print(researcher.serialize("ttl"))
 ```
 
-The result of the serialization is shown below:
+`first_name` is an input alias for `firstName`, mapped to `foaf:firstName`.
+`model_dump_jsonld()` returns a **string**; `get_jsonld_dict()` returns a dictionary.
+Loading normally returns a list; `limit=1` returns one matching object, or `[]`
+if none match. Assign stable `id` values when sharing metadata.
 
-```json
-{
-  "@context": {
-    "owl": "http://www.w3.org/2002/07/owl#",
-    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
-    "schema": "http://schema.org/",
-    "prov": "https://www.w3.org/ns/prov#",
-    "foaf": "https://xmlns.com/foaf/0.1/",
-    "m4i": "http://w3id.org/nfdi4ing/metadata4ing#"
-  },
-  "@id": "https://orcid.org/0000-0001-8729-0482",
-  "@type": "prov:Person",
-  "foaf:firstName": "Matthias",
-  "foaf:lastName": "Probst"
-}
-```
+Python field validation checks the model's declared types and constraints.
+Use SHACL for additional rules on the RDF graph; ontology conformance is not
+automatically guaranteed by creating a Python object.
 
-### Define an ontology class dynamically:
+## Learn by task
 
-If you cannot define the class statically as above, you can also define it dynamically:
+- [Define and validate your own model](https://ontology-utils.readthedocs.io/en/latest/userguide/classes.html)
+- [Save, load, combine, and query RDF](https://ontology-utils.readthedocs.io/en/latest/userguide/serialization.html)
+- [Use built-in models and numerical variables](https://ontology-utils.readthedocs.io/en/latest/userguide/models.html)
+- [Validate RDF with SHACL](https://ontology-utils.readthedocs.io/en/latest/userguide/validation.html)
+- [Work through the notebook](tutorials/Classes.ipynb)
+- [API reference](https://ontology-utils.readthedocs.io/en/latest/api.html)
 
-```python
-from typing import List, Union
+The base installation supports core models and RDF serialization. Install
+`numpy` for `ontolutils.ex.m4i`, `pint` for its unit conversions, `xarray` for
+DataArray conversion, or `pyshacl` for RDF validation as needed.
 
-from ontolutils import build, Property, Thing
+## Development
 
-Event = build(
-    namespace="https://schema.org/",
-    namespace_prefix="schema",
-    class_name="Event",
-    properties=[Property(
-        name="about",
-        default=None,
-        property_type=Union[Thing, List[Thing]]
-    )]
-)
-conference = Event(label="my conference", about=[Thing(label='The thing it is about')])
-ttl = conference.serialize(format="ttl")
-```
+See [test instructions](tests/README.md) and [documentation build instructions](docs/README.md).
+Compatibility checks must use a fresh install so installed metadata matches the
+checkout. Validate model and RDF contracts before changing dependency bounds.
 
-The serialization in turtle format looks like this:
-```turtle
-@prefix owl: <http://www.w3.org/2002/07/owl#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix schema: <https://schema.org/> .
-
-[] a schema:Event ;
-    rdfs:label "my conference" ;
-    schema:about [ a owl:Thing ;
-            rdfs:label "The thing it is about" ] .
-```
-
-### Add a property at runtime
-
-Say, we forgot to add the location to the above Event class. No problem, we can add it at runtime:
-
-```python
-Event.add_property(
-    name="location",
-    property_type=Union[Thing, List[Thing]],
-    default=None,
-    namespace="https://schema.org/",
-    namespace_prefix="schema"
-)
-conference = Event(
-    label="my conference",
-    location=Thing(label="The location")
-)
-ttl = conference.serialize(format="ttl")
-```
-
-The above fives us this Turtle serialization:
-
-```turtle
-@prefix owl: <http://www.w3.org/2002/07/owl#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix schema: <https://schema.org/> .
-
-[] a schema:Event ;
-    rdfs:label "my conference" ;
-    schema:location [ a owl:Thing ;
-            rdfs:label "The location" ] .
-```
-
-
-## Documentation
-
-Please visit the [documentation](https://ontology-utils.readthedocs.io/en/latest/) for more information.
-
-## Local work tracking
-
-Use `.work/` for local work items and investigation notes. Its contents are
-ignored by Git and must not be committed or force-added. Keep accepted project
-documentation in the regular documentation files.
-
-## Compatibility and feature dependencies
-
-The supported semantic dependency families are Pydantic 2.x and RDFLib 7.x.
-Upgrade those major versions only after validating JSON-LD and model contracts.
-
-Dependency metadata is checked by `tests/test_dependency_contracts.py`. Run it
-from a fresh install of this checkout so its installed metadata matches the
-source; an older editable installation can otherwise report stale requirements.
+Keep local investigations in `.work/`. Its contents are ignored by Git and must
+not be committed or force-added; accepted guidance belongs in regular docs.

@@ -34,56 +34,13 @@ _NS = "http://xmlns.com/foaf/0.1/"
     homepage="foaf:homepage"
 )
 class Agent(Thing):
-    """Pydantic Modell für http://www.w3.org/ns/prov#Agent
+    """A foaf:Agent with selected personal and account metadata.
 
-    .. Hinweis::
-
-        Mehr als die unten aufgeführten Parameter sind möglich, aber hier nicht explizit definiert.
-
-    Parameter
-    ---------
-    gender: str = None
-        Geschlecht (foaf:gender)
-    yahooChatID: str = None
-        Yahoo Chat-ID (foaf:yahooChatID)
-    account: AnyUrl = None
-        Account-URL (foaf:account)
-    birthday: str = None
-        Geburtstag (foaf:birthday)
-    icqChatID: str = None
-        ICQ Chat-ID (foaf:icqChatID)
-    aimChatID: str = None
-        AIM Chat-ID (foaf:aimChatID)
-    jabberID: str = None
-        Jabber-ID (foaf:jabberID)
-    made: AnyUrl = None
-        Erstellt-URL (foaf:made)
-    mbox: EmailStr = None
-        E-Mail-Adresse (foaf:mbox)
-    interest: AnyUrl = None
-        Interessens-URL (foaf:interest)
-    tipjar: AnyUrl = None
-        Tipjar-URL (foaf:tipjar)
-    skypeID: str = None
-        Skype-ID (foaf:skypeID)
-    topic_interest: AnyUrl = None
-        Themeninteresse-URL (foaf:topic_interest)
-    age: int = None
-        Alter (foaf:age)
-    mbox_sha1sum: str = None
-        SHA1-Summe der E-Mail (foaf:mbox_sha1sum)
-    status: str = None
-        Status (foaf:status)
-    msnChatID: str = None
-        MSN Chat-ID (foaf:msnChatID)
-    openid: AnyUrl = None
-        OpenID-URL (foaf:openid)
-    holdsAccount: AnyUrl = None
-        Account-Inhaber-URL (foaf:holdsAccount)
-    weblog: AnyUrl = None
-        Weblog-URL (foaf:weblog)
-    homepage: AnyIri = None
-        Homepage (foaf:homepage)
+        Common fields include ``name``, ``mbox`` (alias ``email``), ``homepage``,
+        and ``age``. An ``openid`` value can supply the resource ID through
+        the model's before-validator. Inspect ``model_fields`` for all declared
+        fields and aliases; extra Python fields are not automatically mapped
+        to FOAF predicates.
     """
     name: str = Field(default=None, alias="name")
     gender: str = Field(default=None, alias="gender")  # foaf:gender
@@ -110,7 +67,9 @@ class Agent(Thing):
 
     @model_validator(mode="before")
     def change_id(self):
-        """Change the id to the downloadURL"""
+        """Use openid as the resource ID when no explicit id was supplied.
+
+        """
         return as_id(self, "openid")
 
 
@@ -131,44 +90,11 @@ class Agent(Thing):
          img="foaf:img",
          workplaceHomepage="foaf:workplaceHomepage")
 class Person(Agent):
-    """Pydantic Model für http://www.w3.org/ns/prov#Person
+    """A foaf:Person extending Agent with name, project, and profile fields.
 
-    .. note::
-
-        Mehr als die unten aufgeführten Parameter sind möglich, aber hier nicht explizit definiert.
-
-    Parameter
-    ---------
-    firstName: str
-        Vorname (foaf:firstName)
-    familyName: str
-        Familienname (foaf:familyName)
-    lastName: str
-        Nachname (foaf:lastName)
-    family_name: str
-        Familienname (foaf:family_name)
-    plan: str
-        Plan (foaf:plan)
-    surname: str
-        Nachname (foaf:surname)
-    geekcode: str
-        Geekcode (foaf:geekcode)
-    pastProject: str
-        Vergangenes Projekt (foaf:pastProject)
-    publications: str
-        Publikationen (foaf:publications)
-    currentProject: str
-        Aktuelles Projekt (foaf:currentProject)
-    workInfoHomepage: AnyUrl
-        Arbeitsinfo-Homepage (foaf:workInfoHomepage)
-    myersBriggs: str
-        Myers-Briggs Typ (foaf:myersBriggs)
-    schoolHomepage: AnyUrl
-        Schul-Homepage (foaf:schoolHomepage)
-    img: AnyUrl
-        Bild-URL (foaf:img)
-    workplaceHomepage: AnyUrl
-        Arbeitsplatz-Homepage (foaf:workplaceHomepage)
+        Fields include ``firstName``, ``familyName``, and ``lastName``; see
+        ``model_fields`` for their input aliases. This model uses
+        ``http://xmlns.com/foaf/0.1/Person``, not the PROV Person class.
     """
     firstName: str = Field(default=None, alias="first_name")
     familyName: str = Field(default=None, alias="family_name")

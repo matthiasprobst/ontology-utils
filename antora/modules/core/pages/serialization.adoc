@@ -1,0 +1,83 @@
+= Save, load, and query RDF
+
+== Save JSON-LD or Turtle
+
+[source,python]
+----
+from pathlib import Path
+from ontolutils.ex.prov import Person
+
+person = Person(id="https://example.org/people/ada", first_name="Ada")
+document = person.model_dump_jsonld()
+Path("person.jsonld").write_text(document, encoding="utf-8")
+Path("person.ttl").write_text(person.serialize("ttl"), encoding="utf-8")
+assert isinstance(document, str)
+----
+
+`model_dump_jsonld()` returns text; `get_jsonld_dict()` returns a dictionary.
+Use `model_dump_jsonld`, not Pydantic's ordinary `model_dump_json`, for RDF.
+The supported graph formats include `json-ld`, `ttl`/`turtle`, `n3`, `nt`, and
+`xml`. This interface does not preserve named graph information.
+
+== Load metadata
+
+[source,python]
+----
+restored = Person.from_jsonld(source="person.jsonld", limit=1)
+people = Person.from_jsonld(data=document)
+from_turtle = Person.from_ttl(source="person.ttl", limit=1)
+assert restored.firstName == from_turtle.firstName == "Ada"
+assert len(people) == 1
+----
+
+Loading normally returns a list. `limit=1` returns a single matching model,
+or `[]` when nothing matches. JSON-LD `data` may be text or a dictionary;
+`source` may be a file or URL. Remote contexts may require network access.
+
+== Combine resources and inspect the graph
+
+[source,python]
+----
+from rdflib import Graph, URIRef
+from ontolutils import serialize
+
+colleague = Person(id="https://example.org/people/grace", first_name="Grace")
+combined = serialize([person, colleague], format="ttl")
+graph = Graph().parse(data=combined, format="ttl")
+first_name = URIRef(Person.iri("firstName"))
+assert str(graph.value(URIRef(person.id), first_name)) == "Ada"
+----
+
+Build an RDFLib graph from a serialization; there is no `Thing.to_graph()`.
+Compare graph triples, not serializer whitespace, prefix names, or blank IDs.
+
+== Query by model class
+
+[source,python]
+----
+from ontolutils import query
+
+found = query(Person, data=combined, format="ttl")
+assert {item.firstName for item in found} == {"Ada", "Grace"}
+selected = Person.from_graph(graph, subject=person.id)
+assert len(selected) == 1
+----
+
+`query` takes a model class. Use RDFLib's `graph.query(...)` for arbitrary
+SPARQL. `from_graph` always returns a list, even with `limit=1`.
+
+== Blank nodes and explicit IDs
+
+[source,python]
+----
+from ontolutils import Thing
+
+local = Thing(id="_:run1", label="Run 1")
+expanded = local.get_jsonld_dict(base_uri="https://example.org/runs/")
+assert expanded["@id"] == "https://example.org/runs/run1"
+assert local.id == "_:run1"
+----
+
+A missing ID becomes a blank node. `base_uri` changes its serialized form;
+it does not change the object or establish a persistent identifier. Assign
+stable resource IRIs yourself when publishing metadata.

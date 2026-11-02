@@ -3,44 +3,49 @@
 Configuration
 =============
 
-You may override the default configuration of `ontolutils` dynamically using `set_config`.
+Use ``with set_config(...)`` for a temporary change. Leaving the block restores
+the previous settings, including when an exception occurs. Calling
+``set_config(...)`` without ``with`` changes the process-wide configuration.
 
-You can set the prefix suffix for all blank nodes. That is, that instead of using the default `_:1234`,
-you can use something like `ex:1234`. Hence, in the example, we would be using `set_config(blank_node_prefix_name="ex:")`.
+.. testcode::
 
-You can also define the number generated for blank nodes. By default, the `rdflib.BNode().n3()` is called. However,
-by using `set_config(blank_id_generator=...)` you can provide your own function that returns a string.
+   from ontolutils import LangString, Thing, get_config, set_config
 
-Consider for both settings the below example:
+   original = get_config("show_lang_in_str")
+   with set_config(show_lang_in_str=False):
+       assert str(LangString(value="Velocity", lang="en")) == "Velocity"
+   assert get_config("show_lang_in_str") == original
 
-.. code-block:: python
+Available settings
+------------------
 
-    from ontolutils import Thing, urirefs, namespaces, set_config
-    from pydantic import EmailStr
+.. list-table::
+   :header-rows: 1
+   :widths: 30 20 50
 
-    @namespaces(prov="http://www.w3.org/ns/prov#",
-               foaf="http://xmlns.com/foaf/0.1/")
-    @urirefs(Person='prov:Person',
-             firstName='foaf:firstName',
-             lastName='foaf:lastName',
-             mbox='foaf:mbox')
-    class Person(Thing):
-        firstName: str
-        lastName: str = None
-        mbox: EmailStr = None
+   * - Key
+     - Default
+     - Meaning
+   * - ``show_lang_in_str``
+     - ``True``
+     - Include ``@en`` etc. in a language string's display; RDF is unaffected.
+   * - ``blank_id_generator``
+     - ``None``
+     - Use RDFLib's blank IDs, or supply a no-argument callable returning an ID.
 
-    # define an ID generator:
-    from itertools import count
-    counter = count()
-    def my_id_generator():
-        return f"_:{next(counter)}"
+For predictable IDs within a notebook or test:
 
-    # set the config, stating that "ex" and the custom ID-generator must be used:
-    with set_config(blank_node_prefix_name="ex:", blank_id_generator=my_id_generator):
+.. testcode::
 
-        person = Person(label='test_person', firstName="John", mbox="e@mail.com")
+   from itertools import count
 
-        print(person)
+   counter = count()
+   def next_id():
+       return f"_:run{next(counter)}"
 
-    # returns:
-    # Person(id=ex:0, label=test_person, firstName=John, mbox=e@mail.com)
+   with set_config(blank_id_generator=next_id):
+       run = Thing(label="Run 0")
+   assert run.id == "_:run0"
+
+``blank_node_prefix_name`` is not a supported setting. Use an explicit ``id``
+or the serialization ``base_uri`` parameter described in :doc:`serialization`.

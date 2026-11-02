@@ -1,0 +1,5 @@
+= API reference
+
+See xref:reference.adoc[the task reference] for current entry points and return
+types. The https://ontology-utils.readthedocs.io/en/latest/api.html[published
+Sphinx reference] renders signatures and docstrings from the implementation.

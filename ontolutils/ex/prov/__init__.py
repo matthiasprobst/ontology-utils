@@ -135,19 +135,10 @@ class Person(Agent):
          agent='prov:agent',
          hadRole='dcat:hadRole')
 class Attribution(Thing):
-    """Pydantic Model for http://www.w3.org/ns/prov#Agent
+    """A prov:Attribution connecting an agent to an optional role.
 
-    .. note::
-
-        More than the below parameters are possible but not explicitly defined here.
-
-
-    Parameters
-    ----------
-    agent: Agent
-        Person or Organization
-    hadRole: Role
-        Role of the agent
+        ``agent`` is required and can be a person, organization, or reference.
+        ``hadRole`` (alias ``had_role``) identifies its role using ``dcat:hadRole``.
     """
     agent: Union[AnyThing, Person, List[Person], AnyThing, Organization, List[Organization], List[
         Union[Person, Organization]]]

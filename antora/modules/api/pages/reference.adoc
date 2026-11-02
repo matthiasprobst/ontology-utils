@@ -1,0 +1,53 @@
+= API task reference
+
+[cols="2,3",options="header"]
+|===
+| Task | API
+| Custom model | `Thing`, `namespaces`, `urirefs`
+| JSON-LD text / dictionary | `model_dump_jsonld()` / `get_jsonld_dict()`
+| Other RDF graph formats | `serialize(format)`; `format` is required
+| Combine objects | `ontolutils.serialize([object1, object2], format)`
+| Load models | `from_jsonld`, `from_ttl`, `query(Model, ...)`
+| Existing graph | `Model.from_graph(graph)`; general SPARQL uses `graph.query`
+| Graph validation | `Thing.validate(shacl_data=...)`; needs `pyshacl`
+| Runtime class | `build`, `Property`
+|===
+
+Loaders return lists except when `limit=1`, which returns one matching model
+or `[]`. `from_graph` always returns a list. `model_dump_json()` is ordinary
+Pydantic JSON and does not replace `model_dump_jsonld()`.
+
+== Configuration
+
+Only `show_lang_in_str` and `blank_id_generator` are supported keys. A context
+manager restores previous values; a call without `with` changes global state.
+
+[source,python]
+----
+from ontolutils import LangString, Thing, get_config, set_config
+
+original = get_config("show_lang_in_str")
+with set_config(show_lang_in_str=False):
+    assert str(LangString(value="Velocity", lang="en")) == "Velocity"
+assert get_config("show_lang_in_str") == original
+----
+
+[source,python]
+----
+from itertools import count
+
+counter = count()
+def next_id():
+    return f"_:run{next(counter)}"
+
+with set_config(blank_id_generator=next_id):
+    run = Thing(label="Run 0")
+assert run.id == "_:run0"
+----
+
+== Current signatures
+
+The https://ontology-utils.readthedocs.io/en/latest/api.html[Sphinx reference]
+is generated from the implementation. `get_namespaces` returns prefix mappings;
+`get_urirefs` returns registered predicate mappings, normally compact IRI strings.
+`add_property` registers mappings without adding Pydantic validation.

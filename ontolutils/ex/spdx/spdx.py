@@ -13,14 +13,13 @@ from ontolutils.typing import AnyThing
          algorithm='spdx:algorithm',
          checksumValue='spdx:checksumValue')
 class Checksum(Thing):
-    """Pydantic implementation of dcat:Checksum
+    """An spdx:Checksum describing a digest and its algorithm.
 
-    Parameters
-    ----------
-    algorithm: str
-        The algorithm used to compute the checksum (e.g. "MD5", "SHA-1", "SHA-256")
-    checksumValue: str
-        The checksum value
+        ``checksumValue`` (alias ``value``) is required. Supply ``algorithm``
+        explicitly, for example ``"sha256"``, ``"sha1"``, ``"md5"``, or the
+        algorithm's full SPDX IRI. String names are lowercased and looked up
+        as ``SPDX.checksumAlgorithm_<name>``; hyphenated display names such
+        as ``"SHA-256"`` are not normalized to ``"sha256"``.
     """
     algorithm: Optional[AnyThing] = Field(default="None")  # dcat:algorithm
     checksumValue: str = Field(alias="value")  # dcat:value

@@ -1,0 +1,1 @@
+* xref:namespaces:namespaces.adoc[Namespace Library]

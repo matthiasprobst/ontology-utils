@@ -36,28 +36,12 @@ def _add_namesapces(cls, namespaces: Dict):
         NamespaceManager[cls][k] = str(HttpUrl(v))
 
 def namespaces(**kwargs):
-    """Decorator for model classes. It assigns the namespaces used in the uri fields of the class.
+    """Define namespace-prefix mappings for a Thing subclass.
 
-    Example:
-    --------
-    @namespaces(ex="https://example.com/")
-    @urirefs(name="ex:name")
-    class ExampleModel(ThingModel):
-        name: str
-
-    em = ExampleModel(name="test")
-    print(em.dump_jsonld())
-    # {
-    #     "@context": {
-    #         "ex": "https://example.com/"
-    #     },
-    #     "@graph": [
-    #         {
-    #             "@id": "ex:test",
-    #             "ex:name": "test"
-    #         }
-    #     ]
-    # }
+    Place this decorator above ``@urirefs``. For example,
+    ``@namespaces(ex="https://example.org/vocab/")`` makes the ``ex`` prefix
+    available to mappings such as ``Measurement="ex:Measurement"``.
+    Prefixes and mappings are inherited by subclasses.
     """
 
     def _decorator(cls):
@@ -100,15 +84,12 @@ def _decorate_urirefs(cls, **kwargs):
             URIRefManager[cls][k] = v
 
 def urirefs(**kwargs):
-    """decorator for model classes. It assigns the URIRefs to the fields of the class.
+    """Map a Thing subclass and its fields to RDF IRIs.
 
-    Example:
-    --------
-    @urirefs(name=URIRef("https://example.com/name"))
-    class ExampleModel(ThingModel):
-        name: str
-
-
+    Use the Python class name as the key for its RDF type and Python field
+    names as keys for predicates. Values can be compact IRIs, such as
+    ``value="ex:value"``, or full HTTP(S) IRIs. Pair compact mappings with
+    ``@namespaces`` and define typed model fields for validation.
     """
 
     def _decorator(cls):

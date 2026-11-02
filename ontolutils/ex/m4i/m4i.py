@@ -52,17 +52,10 @@ def get_unit_registry():
 @urirefs(TextVariable='m4i:TextVariable',
          hasStringValue='m4i:hasStringValue')
 class TextVariable(Variable):
-    """Pydantic Model for http://www.w3.org/ns/prov#Agent
+    """An m4i:TextVariable with an optional language-tagged string value.
 
-    .. note::
-
-        More than the below parameters are possible but not explicitly defined here.
-
-
-    Parameters
-    ----------
-    hasStringValue: str
-        String value
+        Set ``hasStringValue`` or its alias ``has_string_value`` using a
+        ``LangString``. Importing this module requires NumPy.
     """
     hasStringValue: Optional[LangString] = Field(alias="has_string_value", default=None)
 
@@ -77,12 +70,20 @@ class TextVariable(Variable):
          hasStepSize='m4i:hasStepSize',
          hasUncertaintyDeclaration='m4i:hasUncertaintyDeclaration')
 class NumericalVariable(Variable):
-    """Pydantic Model for m4i:NumericalVariable
+    """An m4i:NumericalVariable with numerical values and optional QUDT unit metadata.
 
-    **Note**, that hasNumericalValue can be a single numerical value (int or float), a list of numerical values,
-    or a numpy ndarray. The ontology definition does not explicitly support multiple values, but this implementation
-    allows it for convenience. However, when serializing to RDF, multiple values will be split into multiple
-    NumericalVariable instances, while the IDs will be suffixed with an index (e.g., /0, /1, ...).
+    ``hasNumericalValue`` (alias ``has_numerical_value``) accepts a number,
+    a list of numbers, or a NumPy array. ``hasUnit`` also accepts the input
+    names ``has_unit`` and ``units``; supported unit strings such as ``m/s``
+    are looked up as QUDT IRIs.
+
+    For array values, ``serialize`` creates one scalar resource per element,
+    with IDs suffixed by ``/0``, ``/1``, etc. ``model_dump_jsonld`` instead
+    retains multiple values on the original resource. These are different
+    representations; RDF properties do not preserve NumPy array structure.
+
+    Importing this module requires NumPy. Pint is additionally required by
+    ``to_pint``; Pint and xarray are required by ``to_xarray``.
     """
     model_config = ConfigDict(
         arbitrary_types_allowed=True,

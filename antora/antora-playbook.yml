@@ -1,0 +1,22 @@
+site:
+  title: Ontolutils
+  start_page: ontolutils::index.adoc
+
+content:
+  sources:
+    - url: ..
+      branches: HEAD
+      start_paths:
+      - antora
+
+ui:
+  bundle:
+    url: ./ui-bundle.zip
+
+asciidoc:
+  attributes:
+    source-highlighter: highlightjs
+    highlightjs-languages: python
+
+output:
+  dir: build

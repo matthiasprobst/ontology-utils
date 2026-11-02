@@ -1,5 +1,5 @@
 ﻿ontolutils
-==========
+===========
 
 .. automodule:: ontolutils
 
@@ -14,16 +14,3 @@
    .. autosummary::
    
       set_logging_level
-   
-   
-
-   
-   
-   
-
-   
-   
-   
-
-
-

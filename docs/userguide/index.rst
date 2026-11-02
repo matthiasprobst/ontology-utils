@@ -1,14 +1,17 @@
-Usage
-=====
+User guide
+==========
 
-The `ontolutils` package provides two sub-packages: `classes` and `namespacelib`.
-The `classes` sub-package provides an object-oriented solution for working with ontologies.
-The `namespacelib` sub-package provides a simple way to work with IRIs (Internationalized Resource Identifiers),
-which are needed to identify entities in ontologies.
+Start with built-in models when they cover your metadata. Define a ``Thing``
+subclass when you need your own fields and ontology mappings. Use explicit,
+stable IDs for resources that other datasets will reference.
 
 .. toctree::
+   :maxdepth: 1
 
    classes
-   configuration
+   serialization
+   models
+   validation
    namespacelib
    typing
+   configuration

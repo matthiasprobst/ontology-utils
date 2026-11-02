@@ -1,0 +1,29 @@
+= Installation
+
+Use Python 3.9–3.14. The package installs Pydantic 2.x and RDFLib 7.x.
+
+[source,console]
+----
+python -m pip install ontolutils
+python -c "import ontolutils; print(ontolutils.__version__)"
+----
+
+Install extra packages only for the features you need:
+
+[cols="2,1",options="header"]
+|===
+| Feature | Packages
+| `ontolutils.ex.m4i` numerical variables | `numpy`
+| Pint unit conversion | `numpy pint`
+| xarray conversion | `numpy pint xarray`
+| SHACL graph validation | `pyshacl`
+|===
+
+[source,console]
+----
+python -m pip install numpy pint xarray
+python -m pip install pyshacl
+----
+
+For contributors, run `python -m pip install -e ".[test]"` in a source checkout.
+See the repository's `tests/README.md` and `docs/README.md` for checks and builds.

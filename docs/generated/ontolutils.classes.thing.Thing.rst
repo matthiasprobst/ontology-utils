@@ -1,83 +1,29 @@
-﻿ontolutils.classes.thing.Thing
-==============================
+Thing
+=====
 
 .. currentmodule:: ontolutils.classes.thing
 
 .. autoclass:: Thing
 
-   
-   .. automethod:: __init__
+RDF operations
+--------------
 
-   
-   .. rubric:: Methods
+.. autosummary::
 
-   .. autosummary::
-   
-      ~Thing.__init__
-      ~Thing.add_property
-      ~Thing.build
-      ~Thing.construct
-      ~Thing.copy
-      ~Thing.dict
-      ~Thing.from_file
-      ~Thing.from_jsonld
-      ~Thing.from_orm
-      ~Thing.from_ttl
-      ~Thing.get_context
-      ~Thing.get_jsonld_dict
-      ~Thing.iri
-      ~Thing.json
-      ~Thing.map
-      ~Thing.model_construct
-      ~Thing.model_copy
-      ~Thing.model_dump
-      ~Thing.model_dump_json
-      ~Thing.model_dump_jsonld
-      ~Thing.model_dump_ttl
-      ~Thing.model_json_schema
-      ~Thing.model_parametrized_name
-      ~Thing.model_post_init
-      ~Thing.model_rebuild
-      ~Thing.model_validate
-      ~Thing.model_validate_json
-      ~Thing.model_validate_strings
-      ~Thing.parse_file
-      ~Thing.parse_obj
-      ~Thing.parse_raw
-      ~Thing.schema
-      ~Thing.schema_json
-      ~Thing.serialize
-      ~Thing.sparql_query
-      ~Thing.update_forward_refs
-      ~Thing.validate
-   
-   
+   ~Thing.get_jsonld_dict
+   ~Thing.model_dump_jsonld
+   ~Thing.serialize
+   ~Thing.from_jsonld
+   ~Thing.from_ttl
+   ~Thing.from_file
+   ~Thing.from_graph
+   ~Thing.create_query
+   ~Thing.validate
+   ~Thing.iri
+   ~Thing.get_context
+   ~Thing.add_property
 
-   
-   
-   .. rubric:: Attributes
-
-   .. autosummary::
-   
-      ~Thing.model_computed_fields
-      ~Thing.model_config
-      ~Thing.model_extra
-      ~Thing.model_fields
-      ~Thing.model_fields_set
-      ~Thing.namespace
-      ~Thing.namespaces
-      ~Thing.uri
-      ~Thing.urirefs
-      ~Thing.id
-      ~Thing.label
-      ~Thing.altLabel
-      ~Thing.broader
-      ~Thing.comment
-      ~Thing.about
-      ~Thing.relation
-      ~Thing.closeMatch
-      ~Thing.exactMatch
-      ~Thing.description
-      ~Thing.isDefinedBy
-   
-   
+Ordinary Pydantic operations such as ``model_dump``, ``model_validate``, and
+``model_fields`` remain available. Use the RDF methods above when predicate
+mappings and JSON-LD contexts are needed. The user guide explains common
+fields, labels, and references.

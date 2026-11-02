@@ -1,0 +1,20 @@
+= Choose a built-in model
+
+Import models from `ontolutils.ex`. These modules implement selected terms,
+not every class and constraint of their respective ontologies.
+
+[cols="1,2,2",options="header"]
+|===
+| Module | Examples | Use
+| `prov` | `Person`, `Organization`, `Entity`, `Activity` | Provenance
+| `schema` | `Project`, `ResearchProject`, `SoftwareSourceCode` | Projects and software
+| `dcat` | `Dataset`, `Distribution`, `Resource` | Data catalogs
+| `m4i` | `NumericalVariable`, `TextVariable`, `Tool` | Scientific variables; needs NumPy
+| `sosa` / `ssn` | `Sensor`, `Observation`, `ObservableProperty` | Sensor metadata
+| `hdf5` | `File`, `Group`, `Dataset` | HDF5 structure descriptions
+| `skos`, `spdx`, `qudt` | `Concept`, `Checksum`, `Unit` | Concepts, checksums, units
+|===
+
+Inspect `Model.model_fields` for its declared fields and defaults. Use
+`Model.iri("fieldName")` to check a predicate. Models inherit from `Thing` and
+support the xref:core:serialization.adoc[same graph serialization methods].

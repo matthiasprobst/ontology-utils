@@ -1,0 +1,5 @@
+= Namespaces
+
+See xref:namespaces.adoc[namespace IRIs and units] for actual exports, exact unit
+names, and custom vocabularies. Namespace constants identify RDF terms; they do
+not load or reason over a complete ontology.

@@ -1,0 +1,16 @@
+name: ontolutils
+title: Ontolutils
+version: '0.27.7'
+start_page: ROOT:index.adoc
+
+nav:
+  - modules/ROOT/nav.adoc
+  - modules/core/nav.adoc
+  - modules/namespaces/nav.adoc
+  - modules/models/nav.adoc
+  - modules/api/nav.adoc
+
+asciidoc:
+  attributes:
+    source-highlighter: highlightjs
+    highlightjs-languages: python

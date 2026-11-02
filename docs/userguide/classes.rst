@@ -1,213 +1,128 @@
 .. _classes:
 
-Classes
-=======
+Define and validate a model
+===========================
 
-This subpackage provides an object-oriented interface to work with ontologies. It is based on `pydantic` models and
-`rdflib` for the serialization and deserialization of the objects.
+A ``Thing`` subclass describes the fields in your metadata. Python annotations
+set their types; ``@urirefs`` maps the class and fields to RDF terms;
+``@namespaces`` defines the prefixes used in those mappings.
 
-Design a class
-..............
+Define a measurement
+--------------------
 
-The core class is called `Thing`. A realization of a concept of an ontology inherits from it.
-For instance, a "Person" from ontology "prov" can be constructed to describe and validate a person.
-The properties of a "prov:Person" are defined as attributes of the class. To refer the properties to the ontology,
-the class is decorated with `@urirefs` and `@namespaces`. The former assigns the properties to the IRIs of the ontology
-(e.g. `firstName='foaf:firstName'`), the latter provides the context and assigns the prefixes to the full IRI
-(`prov="http://www.w3.org/ns/prov#"`).
+.. testcode::
 
-.. code-block:: python
+   from typing import Optional
+   from pydantic import Field, ValidationError
+   from ontolutils import Thing, namespaces, urirefs
 
-    from ontolutils import Thing, urirefs, namespaces
-    from pydantic import EmailStr
+   @namespaces(ex="https://example.org/vocab/")
+   @urirefs(Measurement="ex:Measurement", value="ex:value", note="ex:note")
+   class Measurement(Thing):
+       value: float = Field(ge=0, alias="measured_value")
+       note: Optional[str] = None
 
-    @namespaces(prov="http://www.w3.org/ns/prov#",
-               foaf="http://xmlns.com/foaf/0.1/")
-    @urirefs(Person='prov:Person',
-             firstName='foaf:firstName',
-             lastName='foaf:lastName',
-             mbox='foaf:mbox')
-    class Person(Thing):
-        firstName: str
-        lastName: str = None
-        mbox: EmailStr = None
+   measurement = Measurement(
+       id="https://example.org/measurements/1",
+       measured_value=1.5,
+       label="Velocity magnitude",
+   )
+   assert measurement.value == 1.5
 
-Note, that in the above example, `mbox` must be of type `EmailStr` (from `pydantic`), which is a string that is a valid
-email address. The `firstName` is a string. The `lastName` is not required (in this example),
-as it is not annotated with a default value.
+``value`` is required. ``Optional[str] = None`` makes ``note`` nullable and
+omittable. ``Optional[str]`` without a default would still require the field.
+Both ``measured_value`` and ``value`` are accepted at construction; an alias
+changes the Python input name, not the RDF predicate ``ex:value``.
 
-Also note, that `Thing` already defines two properties, `id` and `label`.
+The example namespace is illustrative: replace it with the terms used by your
+research community. Preserve the exact spelling of IRIs: ``http`` and ``https``
+name different RDF resources.
 
-The like this created class can be used to create an instance of a person:
+Check invalid values
+--------------------
 
-.. code-block:: python
+Pydantic checks declared types and constraints at construction and assignment.
+It may coerce compatible values, such as numeric strings, to the declared type.
 
-    person = Person(id='_:123uf4', label='test_person', firstName="John", mbox="john@email.com")
+.. testcode::
 
-The advantage of creating such classes are twofold:
+   try:
+       measurement.value = -1
+   except ValidationError as error:
+       assert error.errors()[0]["loc"] == ("value",)
+   else:
+       raise AssertionError("Expected a validation error")
+   assert measurement.value == 1.5
 
-1. The properties (predicates of the ontology) are (type-)validated.
-2. The class can be serialized to JSON-LD and back. The latter is shown next:
+These checks do not enforce every rule of an ontology. Use
+:doc:`SHACL <validation>` for graph-level requirements.
 
+Labels and references
+---------------------
 
-Add a field posterior to the class definition:
-..............................................
+``Thing`` already provides ``id``, ``label``, ``description``, ``comment``,
+``altLabel`` (alias ``alt_label``), and several reference fields. Labels can be
+plain text, language-tagged values, or lists of them:
 
-Sometimes the definition of a "Thing", e.g. "Person", is not complete and one wants to add a field later during the
-runtime. This can be done by using the `URIValue` class, which allows to define a property with a URI and a namespace:
+.. testcode::
 
-.. code-block:: python
+   from ontolutils import LangString
+   from ontolutils.ex.prov import Person
+   from ontolutils.typing import AnyIriOf
 
-    from ontolutils import URIValue
+   measurement.label = [LangString(value="Velocity", lang="en"), "Geschwindigkeit@de"]
 
-    a = Person(id='_:123uf4', label='test_person', firstName="John", mbox="john@email.com", homeTown=URIValue("Berlin", "http://example.org", "ex"))
+   @namespaces(ex="https://example.org/vocab/")
+   @urirefs(ReviewedMeasurement="ex:ReviewedMeasurement", reviewer="ex:reviewer")
+   class ReviewedMeasurement(Measurement):
+       reviewer: Optional[AnyIriOf[Person]] = None
 
+   reviewed = ReviewedMeasurement(
+       value=1.5,
+       reviewer=Person(id="https://example.org/people/ada", first_name="Ada"),
+   )
+   reviewed.reviewer = "https://example.org/people/ada"
 
-Define an ontology class dynamically:
-.....................................
+Pass a model to include its properties in the serialized graph, or an IRI to
+reference a resource described elsewhere. See :doc:`typing` for lists and
+other reference types.
 
-If you cannot define the class statically as above, you can also define it dynamically:
+Add fields deliberately
+-----------------------
 
-.. code-block:: python
+Extra Python fields are allowed by default, but an unmapped field is not a
+reliable way to add RDF. Prefer a declared field plus a ``@urirefs`` mapping.
+For a one-off literal property, use ``URIValue``:
 
-    from typing import List, Union
+.. testcode::
 
-    from ontolutils import build, Property, Thing
+   from ontolutils import URIValue
 
-    Event = build(
-        namespace="https://schema.org/",
-        namespace_prefix="schema",
-        class_name="Event",
-        properties=[Property(
-            name="about",
-            default=None,
-            property_type=Union[Thing, List[Thing]]
-        )]
-    )
-    conference = Event(label="my conference", about=[Thing(label='The thing it is about')])
-    ttl = conference.serialize(format="ttl")
+   annotated = Measurement(
+       value=1.5,
+       instrument_code=URIValue("LDV-01", "https://example.org/vocab/", "ex"),
+   )
+   assert annotated.get_jsonld_dict(resolve_keys=True)["ex:instrument_code"] == "LDV-01"
 
-The serialization in turtle format looks like this:
+For these extra properties, use ``model_dump_jsonld()`` or
+``get_jsonld_dict(resolve_keys=True)`` to retain the registered RDF key.
 
-.. code-block:: turtle
+For classes defined from a configuration at runtime, use ``build``:
 
-    @prefix owl: <http://www.w3.org/2002/07/owl#> .
-    @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-    @prefix schema: <https://schema.org/> .
+.. testcode::
 
-    [] a schema:Event ;
-        rdfs:label "my conference" ;
-        schema:about [ a owl:Thing ;
-                rdfs:label "The thing it is about" ] .
+   from ontolutils import Property, build
 
+   Run = build(
+       namespace="https://example.org/vocab/",
+       namespace_prefix="ex",
+       class_name="Run",
+       properties=[Property(name="sample_count", property_type=int, default=0)],
+   )
+   run = Run(sample_count=3)
+   assert run.sample_count == 3
 
-Dump/Serialize
-..............
-
-.. code-block:: python
-
-    person = Person(id='_:123uf4', label='test_person', firstName="John", mbox="john@email.com")
-    person.model_dump_jsonld()
-
-
-The return value is a JSON-LD string:
-
-.. code-block:: json
-
-    {
-        "@context": {
-            "owl": "http://www.w3.org/2002/07/owl#",
-            "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
-            "prov": "http://www.w3.org/ns/prov#",
-            "schema": "https://schema.org/",
-            "foaf": "http://xmlns.com/foaf/0.1/"
-        },
-        "@type": "prov:Person",
-        "@id": "_:123uf4",
-        "rdfs:label": "test_person",
-        "foaf:mbox": "john@email.com",
-        "firstName": "John"
-    }
-
-
-You may also use `model_dump_ttl()` to serialize the object to Turtle format or `serialize(...)` to serialize it to
-other formats supported by `rdflib` (e.g. RDF/XML, N-Triples, etc.).
-
-**New as from version 0.19.0**: The `model_dump_jsonld()` method now supports the `base_uri` parameter, which allows to
-set a base URI for the serialization. This is useful if you want to serialize the object with a specific base URI. This
-will avoid the creation of blank nodes in the serialization, which is useful, because blank nodes are not
-globally unique and can lead to issues when the data is shared or stored in a distributed system. Example:
-
-.. code-block:: python
-
-    person.model_dump_jsonld(base_uri="https://example.org/", context={"ex": "https://example.org/"})
-
-
-The return value is a JSON-LD string:
-
-.. code-block:: json
-
-    {
-        "@context": {
-            "owl": "http://www.w3.org/2002/07/owl#",
-            "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
-            "prov": "http://www.w3.org/ns/prov#",
-            "schema": "https://schema.org/",
-            "foaf": "http://xmlns.com/foaf/0.1/",
-            "ex": "https://example.org/"
-        },
-        "@type": "prov:Person",
-        "@id": "ex:123uf4",
-        "rdfs:label": "test_person",
-        "foaf:mbox": "john@email.com",
-        "firstName": "John"
-    }
-
-
-Save to file
-............
-
-The use case of the serialization is to store the object in a file or to send it over the network. Storing the data
-in a file is shown next:
-
-.. code-block:: python
-
-    with open("person.json", "w") as f:
-        f.write(person.model_dump_jsonld())
-
-
-Load from file
-..............
-
-Let's load a person from a file:
-
-.. code-block:: python
-
-    loaded_person = Person.from_jsonld(source="person.json", limit=1)
-    print(loaded_person)
-    # Person(id=123uf4, label=test_person, firstName=John, mbox=john@email.com)
-
-
-Conversion between semantically identical classes but different instances
-.........................................................................
-
-Sometimes two codes may implement the same ontology class, that are the same thing, meaning they have the same
-URI and therefore properties. Since `pydantic` ensures the types of the properties, an option is needed to convert
-between these two classes. Normally, this should not be done, but since the URI is the same, it is possible to convert between them.
-For this `.map()` method is provided:
-
-.. code-block:: python
-
-    @namespaces(prov="http://www.w3.org/ns/prov#",
-           foaf="http://xmlns.com/foaf/0.1/")
-    @urirefs(PersonAlternative='prov:PersonAlternative',
-             firstName='foaf:firstName',
-             lastName='foaf:lastName',
-             mbox='foaf:mbox')
-    class PersonAlternative(Thing):
-        firstName: str
-        lastName: str = None
-        mbox: EmailStr = None
-
-    person_alt = PersonAlternative(label='test_person', firstName="John", mbox="e@mail.com", homeTown=URIValue("Berlin", "https://example.org", "ex"))
-    person_alt.map(Person)  # map to Person class (see above)
+``Property`` maps its name to the same local RDF name (here ``ex:sample_count``).
+``Thing.add_property`` only registers an RDF mapping; it does not add a validated
+Pydantic field to ``model_fields``. Define or rebuild a model when field
+validation is required.

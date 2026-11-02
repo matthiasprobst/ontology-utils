@@ -1,50 +1,54 @@
-Namespacelib
-============
+Namespace IRIs and units
+========================
 
-The subpackage `namespacelib` provides popular namespace objects similar to the package `rdflib`. The classes
-are used as a simple way of using IRIs (Internationalized Resource Identifiers). By using the `namespacelib` subpackage,
-you can avoid having to write the full IRI each time you want to use a namespace and be sure that the IRI is correct.
+Namespace constants provide RDF term IRIs without repeatedly typing the full
+URL. They do not load an entire ontology or apply reasoning.
 
-The `namespacelib` subpackage is a simple way to use IRIs in your code. It is not a full ontology library and does not
-provide any reasoning capabilities. It is just a simple way to use IRIs in your code.
+.. testcode::
 
-Available namespaces:
+   from ontolutils import QUDT_UNIT, QUDT_KIND, SCHEMA, parse_unit
 
-- `QUDT_UNIT`: The `QUDT <https://qudt.org/>`_ ontology for units of measure.
-- `QUDT_QUANTITY`: The `QUDT <https://qudt.org/>`_ ontology for quantities.
-- `M4I`: `The M4I ontology <https://nfdi4ing.pages.rwth-aachen.de/metadata4ing/metadata4ing/>`_
-- `HDF5`: `The HDF5 ontology <http://purl.allotrope.org/ontologies/hdf5/1.8#>`_
-- `SCHEMA`: The `schema.org ontology <https://schema.org/>`_.
-- `CODEMETA`: The `codemeta ontology <https://codemeta.github.io/>`_.
-- `OBO`: The `Open Biological and Biomedical Ontologies <http://www.obofoundry.org/>`_.
-- `IANA`: The `Internet Assigned Numbers Authority <https://www.iana.org/>`_.
+   assert str(QUDT_UNIT.M_PER_SEC) == "http://qudt.org/vocab/unit/M-PER-SEC"
+   assert parse_unit("m/s") == QUDT_UNIT.M_PER_SEC
+   assert str(SCHEMA.Person) == "https://schema.org/Person"
 
+Common exports
+--------------
 
-Examples
---------
+.. list-table::
+   :header-rows: 1
+   :widths: 40 60
 
+   * - Name in ``ontolutils.namespacelib``
+     - Use
+   * - ``QUDT_UNIT``, ``QUDT_KIND``
+     - Units and quantity kinds (for example, ``M``, ``SEC``, ``Velocity``).
+   * - ``SCHEMA``, ``CODEMETA``
+     - Web metadata and software descriptions.
+   * - ``M4I``, ``HDF5``, ``SSN_SYSTEM``
+     - Scientific metadata, HDF5 structure, and SSN system terms.
+   * - ``SPDX``, ``OBO``
+     - Checksums and OBO terms included in the generated namespace snapshot.
+   * - ``IANA``
+     - Media-type lookup; registry tables may be downloaded and cached.
 
-A popular way to describe units is to use the `QUDT` ontology. The following code shows how to use the QUDT namespace:
+Use RDFLib for other namespaces, including PROV, FOAF, DCAT, and SKOS:
 
+.. testcode::
 
-.. code-block:: python
+   from rdflib import Namespace
+   from rdflib.namespace import PROV, FOAF
 
-    >>> from ontolutils.namespacelib import QUDT_UNIT
-    >>> QUDT_UNIT.M_PER_SEC
-    rdflib.term.URIRef('http://qudt.org/vocab/unit/M-PER-SEC')
+   assert str(PROV.Person) == "http://www.w3.org/ns/prov#Person"
+   laboratory = Namespace("https://example.org/vocab/")
+   assert str(laboratory["yield"]) == "https://example.org/vocab/yield"
 
+``QUDT_UNIT.M`` denotes metres and ``QUDT_UNIT.SEC`` denotes seconds;
+``QUDT_UNIT.METER`` and ``QUDT_QUANTITY`` are not provided.
+``parse_unit`` is an exact lookup of supported spellings, not a general unit
+parser; an unknown spelling raises ``KeyError``. Use Pint for unit arithmetic.
 
-
-
-Limitations
------------
-
-Some namespaces may be incomplete due to vocabularies with names that are reserved words in Python. E.g. the
-ontology `schema.org` contains "yield" and "True", which are reserved words in Python. This means that the following
-code will raise an `AttributeError`:
-
-.. code-block:: python
-
-    from ontolutils import SCHEMA
-
-    SCHEMA.yield  # AttributeError: 'SCHEMA' object has no attribute 'yield'
+Generated namespaces can omit terms. Unknown terms raise ``AttributeError``;
+bracket syntax does not add them. For an external term absent from the snapshot,
+construct an RDFLib ``Namespace`` or ``URIRef`` explicitly after checking the
+ontology's exact IRI.

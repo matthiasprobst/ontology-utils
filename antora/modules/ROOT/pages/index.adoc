@@ -1,0 +1,26 @@
+= Ontolutils
+
+Create validated scientific metadata as Python objects and exchange it as RDF.
+Use built-in models, or map your own fields to ontology terms. Pydantic checks
+declared fields; SHACL can check additional requirements on the graph.
+
+== First example
+
+[source,python]
+----
+from ontolutils.ex.prov import Person
+
+researcher = Person(id="https://example.org/people/ada", first_name="Ada")
+assert researcher.firstName == "Ada"
+turtle = researcher.serialize("ttl")
+----
+
+`turtle` is text. The person uses `http://www.w3.org/ns/prov#Person` and
+`http://xmlns.com/foaf/0.1/firstName`; changing HTTP to HTTPS changes those IRIs.
+
+* xref:installation.adoc[Install core and optional tools].
+* xref:core:thing.adoc[Define a model and validate a measurement].
+* xref:core:serialization.adoc[Save, load, and query RDF].
+* xref:models:overview.adoc[Choose a built-in model].
+* xref:namespaces:namespaces.adoc[Use namespace IRIs and units].
+* xref:api:reference.adoc[Check API signatures and return types].

@@ -1,0 +1,49 @@
+= Other research metadata
+
+== Numerical variables
+
+Install NumPy for this example:
+
+[source,python]
+----
+from ontolutils import QUDT_UNIT
+from ontolutils.ex.m4i import NumericalVariable
+
+velocity = NumericalVariable(
+    id="https://example.org/variables/velocity",
+    label="Velocity",
+    has_numerical_value=[1.0, 1.2],
+    has_unit="m/s",
+)
+assert str(velocity.hasUnit) == str(QUDT_UNIT.M_PER_SEC)
+assert velocity.to_numpy().tolist() == [1.0, 1.2]
+turtle = velocity.serialize("ttl")
+----
+
+For array values, `NumericalVariable.serialize` creates scalar resources with
+IDs ending in `/0`, `/1`, etc. `model_dump_jsonld` instead retains the values on
+the original model. These are different representations. Keep large arrays in
+data files and describe them with RDF.
+
+Pint is additionally needed for `to_pint`; Pint and xarray for `to_xarray`.
+
+== Checksums, HDF5 structure, and sensors
+
+[source,python]
+----
+from ontolutils.ex.spdx import Checksum
+from ontolutils.ex.hdf5 import Dataset
+from ontolutils.ex.sosa import Sensor, ObservableProperty
+
+checksum = Checksum(algorithm="sha256", value="a" * 64)
+hdf_dataset = Dataset(name="/velocity")
+sensor = Sensor(
+    id="https://example.org/sensor",
+    observes=ObservableProperty(id="https://example.org/temperature"),
+)
+assert hdf_dataset.name == "/velocity"
+----
+
+HDF5 models describe metadata; they do not open HDF5 files. `spdx` exports
+`Checksum`, not a general `Package` model. Other vocabulary namespaces can be
+used through RDFLib without an Ontolutils model for every ontology class.

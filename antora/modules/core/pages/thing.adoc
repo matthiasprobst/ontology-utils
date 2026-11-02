@@ -1,0 +1,48 @@
+= Define and validate a model
+
+Declare fields with Python types and map them to RDF terms. A field without a
+default is required; `Optional[str] = None` is both nullable and omittable.
+
+[source,python]
+----
+from typing import Optional
+from pydantic import Field, ValidationError
+from ontolutils import Thing, namespaces, urirefs
+
+@namespaces(ex="https://example.org/vocab/")
+@urirefs(Measurement="ex:Measurement", value="ex:value", note="ex:note")
+class Measurement(Thing):
+    value: float = Field(ge=0, alias="measured_value")
+    note: Optional[str] = None
+
+measurement = Measurement(
+    id="https://example.org/measurements/1",
+    measured_value=1.5,
+    label="Velocity magnitude",
+)
+assert measurement.value == 1.5
+----
+
+`measured_value` and `value` are alternative Python inputs. Both describe
+`ex:value`. A Pydantic alias does not rename the RDF predicate.
+
+== Invalid values
+
+[source,python]
+----
+try:
+    measurement.value = -1
+except ValidationError as error:
+    assert error.errors()[0]["loc"] == ("value",)
+else:
+    raise AssertionError("Expected a validation error")
+assert measurement.value == 1.5
+----
+
+Validation runs during construction and assignment. Pydantic can coerce compatible
+values; it does not enforce every rule of the ontology. Install `pyshacl` for
+graph validation; see the published https://ontology-utils.readthedocs.io/en/latest/userguide/validation.html[SHACL guide].
+
+`Thing` also provides `id`, `label`, `description`, `comment`, `altLabel`, and
+reference fields. Labels may have language tags. For nested models or IRI-only
+references, see xref:serialization.adoc[serialization].

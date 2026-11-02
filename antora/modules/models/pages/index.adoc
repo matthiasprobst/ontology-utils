@@ -1,0 +1,6 @@
+= Built-in models
+
+* xref:overview.adoc[Choose a model for your metadata].
+* xref:prov.adoc[Describe provenance and responsible people].
+* xref:schema.adoc[Describe a project or software].
+* xref:others.adoc[Use units, numerical variables, checksums, and HDF5 metadata].

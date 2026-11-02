@@ -1,0 +1,10 @@
+= Core concepts
+
+* xref:thing.adoc[Model a measurement and check its fields].
+* xref:decorators.adoc[Map Python fields to RDF predicates].
+* xref:serialization.adoc[Save, load, combine, and query metadata].
+* xref:dynamic.adoc[Create a class from a runtime configuration].
+
+A model represents an RDF resource. An IRI identifies a resource; a predicate
+relates it to a value or another resource. Labels are readable text, not IDs.
+Use persistent IDs when metadata will be shared across files.

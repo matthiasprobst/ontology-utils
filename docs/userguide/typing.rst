@@ -1,155 +1,82 @@
 .. _typing:
 
-Type Hints
-==========
+Types, references, and optional fields
+======================================
 
-The `ontolutils.typing` module provides specialized type hints and validators for working with RDF/IRI data in ontolutils. These types help ensure type safety when working with IRIs, URIs, and Thing instances.
+Use ordinary Python types for literal values and a model type for nested
+metadata. Use the helpers in ``ontolutils.typing`` when a field can contain
+either an object or its IRI.
 
-Core Types
-----------
+.. testcode::
 
-IRI and ID Types
-................
+   from typing import Optional
+   from ontolutils import Thing, namespaces, urirefs
+   from ontolutils.ex.prov import Person
+   from ontolutils.typing import AnyIriOf, AnyIriOrListOf
 
-The module provides several annotated types for validating IRIs and IDs:
+   @namespaces(ex="https://example.org/vocab/")
+   @urirefs(Review="ex:Review", lead="ex:lead", contributors="ex:contributors")
+   class Review(Thing):
+       lead: Optional[AnyIriOf[Person]] = None
+       contributors: Optional[AnyIriOrListOf[Person]] = None
 
-**AnyIri**
-    Accepts HTTP/HTTPS URLs, blank nodes (starting with ``_:``), pydantic ``AnyUrl`` objects, ``URIRef`` or ``BNode`` instances.
+   review = Review(
+       lead=Person(first_name="Ada"),
+       contributors=["https://example.org/people/grace", Person(first_name="Katherine")],
+   )
+   assert isinstance(review.lead, Person)
 
-**IdType** 
-    Similar to ``AnyIri`` but also accepts URN and file URLs.
+Choose a helper
+---------------
 
-**NoneBlankNodeType**
-    Same as ``IdType`` but explicitly rejects blank nodes.
+.. list-table::
+   :header-rows: 1
+   :widths: 40 60
 
-**BlankNodeType**
-    Only accepts blank node strings (must start with ``_:``).
+   * - Type
+     - Intended use
+   * - ``AnyIri``
+     - A reference supplied as HTTP(S) text, ``_:`` blank-node text, a Pydantic
+       URL, or an RDFLib ``URIRef``/``BNode``.
+   * - ``IdType``
+     - ``Thing.id`` validation, including URN and file URL strings.
+   * - ``AnyIriOf[T]``
+     - A model of type ``T`` or an IRI reference.
+   * - ``AnyIriOrListOf[T]``
+     - ``T``/IRI values, singly or in a list.
+   * - ``AnyThing``, ``AnyThingOrList``
+     - Any ``Thing`` subclass or IRI; the latter also allows lists of models.
+   * - ``AnyThingOf[T]``
+     - ``T``, any ``Thing``, or an IRI; broader than ``AnyIriOf[T]``.
+   * - ``IriList``
+     - IRI references, singly or in a list.
+   * - ``BlankNodeType``
+     - A string starting with ``_:``.
 
-.. code-block:: python
+These helpers are permissive: ``AnyIri`` itself also accepts lists of reference
+values, and a plain ``URIRef`` is not checked for a specific URL scheme. Use
+your own Pydantic validator when you need stricter cardinality or IRI rules.
+``NoneBlankNodeType`` is an ID type that rejects ``_:`` strings and RDFLib
+``BNode`` objects when a named resource is required.
 
-    from ontolutils.typing import AnyIri, IdType, NoneBlankNodeType, BlankNodeType
-    from pydantic import BaseModel
+Nullable does not mean omittable
+--------------------------------
 
-    class MyModel(BaseModel):
-        iri_field: AnyIri
-        id_field: IdType  
-        no_blank: NoneBlankNodeType
-        blank_only: BlankNodeType
+``Optional[T]`` allows ``None``. Add ``= None`` if callers may omit the field.
+The same applies to the runtime helper ``make_optional_type_or_list``:
 
-    # Valid usage
-    model = MyModel(
-        iri_field="https://example.org/resource",
-        id_field="urn:uuid:1234-5678",
-        no_blank="https://example.org/resource",
-        blank_only="_:myblanknode"
-    )
+.. testcode::
 
-Generic Type Aliases
-....................
+   from pydantic import BaseModel
+   from ontolutils.typing import make_optional_type_or_list, make_type_or_list
 
-The module provides several generic type aliases for common patterns:
+   class Contributors(BaseModel):
+       people: make_type_or_list(Person)
+       contact: make_optional_type_or_list(Person) = None
 
-**AnyThing**
-    Union of a Thing instance or an IRI.
+   contributors = Contributors(people=[Person(first_name="Ada")])
+   assert contributors.contact is None
 
-**AnyThingOf[T]**
-    Union of type T, a Thing instance, or an IRI.
-
-**AnyThingOrList**
-    Union of a Thing instance, an IRI, or a list of those.
-
-**IriList**
-    An IRI or a list of IRIs.
-
-**AnyIriOf[T]**
-    Union of type T or an IRI.
-
-**AnyIriOrListOf[T]**
-    Union of an IRI, type T, or a list containing T or IRIs.
-
-.. code-block:: python
-
-    from ontolutils.typing import AnyThing, AnyThingOf, AnyThingOrList, IriList
-    from ontolutils import Thing
-
-    class Person(Thing):
-        name: str
-
-    class MyModel(BaseModel):
-        thing_field: AnyThing  # Person instance or IRI
-        person_or_iri: AnyThingOf[Person]  # Person, IRI, or Thing
-        multiple: AnyThingOrList  # Single or list of Things/IRIs
-        iri_list: IriList  # Single IRI or list of IRIs
-
-Runtime Type Factories
-----------------------
-
-The module provides factory functions for creating runtime-safe type annotations that avoid unresolved TypeVars:
-
-**make_type_or_list(*types)**
-    Creates a typing object equivalent to ``Union[<types...>, AnyIri, List[Union[<types...>, AnyIri]]]``.
-
-**make_optional_type_or_list(*types)**
-    Creates an optional variant of ``make_type_or_list``.
-
-.. code-block:: python
-
-    from ontolutils.typing import make_type_or_list, make_optional_type_or_list
-
-    # Create a type that accepts Person, IRIs, or lists of those
-    PersonOrIriOrList = make_type_or_list(Person)
-
-    class MyModel(BaseModel):
-        person_field: PersonOrIriOrList
-        optional_person: make_optional_type_or_list(Person)
-
-    # These are all valid:
-    model1 = MyModel(person_field=Person(name="John"))
-    model2 = MyModel(person_field="https://example.org/person/1")  
-    model3 = MyModel(person_field=[Person(name="Jane"), "https://example.org/person/2"])
-
-Deprecated ResourceType
------------------------
-
-**ResourceType** is deprecated but still available for backward compatibility. It provides runtime validation for resources that can be instances of allowed types or IRIs.
-
-.. code-block:: python
-
-    from ontolutils.typing import ResourceType
-    import warnings
-
-    # This will emit a deprecation warning
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore", DeprecationWarning)
-        
-        class MyModel(BaseModel):
-            resource: ResourceType[Person]  # Accepts Person instances or IRIs
-
-    # Prefer using make_type_or_list instead:
-    PersonOrIri = make_type_or_list(Person)
-    class BetterModel(BaseModel):
-        resource: PersonOrIri
-
-Validation Behavior
--------------------
-
-The type validators perform the following checks:
-
-* **IRI validation**: Accepts HTTP/HTTPS URLs, blank nodes, pydantic URL objects, URIRef, and BNode instances
-* **ID validation**: Same as IRI validation plus URN and file URL schemes  
-* **Blank node validation**: Ensures blank nodes start with ``_:`` prefix
-* **List handling**: All validators automatically handle both single values and lists
-
-Error messages include field names when available to help identify validation issues.
-
-Integration with Pydantic
-------------------------
-
-All types are designed to work seamlessly with pydantic models:
-
-* Automatic validation during model construction
-* Proper serialization to JSON-LD and other formats
-* Type checking support for static analysis tools
-* Runtime-safe type annotations that avoid TypeVar issues
-
-The types integrate with ontolutils' serialization system, ensuring that IRI fields are properly formatted in RDF output formats.
+Pass concrete types to these factories. The older ``ResourceType`` helper is
+deprecated; use ``AnyIriOrListOf[Person]`` or ``make_type_or_list(Person)`` in
+new models.

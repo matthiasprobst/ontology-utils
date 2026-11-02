@@ -38,7 +38,14 @@ def process_object(
             if str(s) == str(obj):
                 if isinstance(o, rdflib.Literal):
                     _, key = split_uri(p)
-                    sub_data[key] = str(o)
+                    value = process_object(_id, p, o, graph, add_type)
+                    if key in sub_data:
+                        if isinstance(sub_data[key], list):
+                            sub_data[key].append(value)
+                        else:
+                            sub_data[key] = [sub_data[key], value]
+                    else:
+                        sub_data[key] = value
                     continue
 
                 if p == rdflib.RDF.first:
@@ -201,13 +208,12 @@ def dquery(subject: str,
            source: Optional[Union[str, pathlib.Path]] = None,
            data: Optional[Union[str, Dict]] = None,
            context: Optional[Dict] = None) -> List[Dict]:
-    """Return a list of resutls. The entries are dictionaries.
+    """Return JSON-LD resources as dictionaries for a compact class IRI.
 
-    Example
-    -------
-    >>> # Query all agents from the source file
-    >>> import ontolutils
-    >>> ontolutils.dquery(subject='prov:Agent', source='agent1.jsonld')
+    ``subject`` names an RDF class, such as ``"prov:Person"``; it is not
+    an individual resource ID. Supply JSON-LD through source or data, and
+    a context dictionary defining the prefixes in subject. The return
+    value is a list of dictionaries, or ``[]`` if no matches are found.
     """
     g = rdflib.Graph()
     g.parse(source=source,
@@ -246,23 +252,16 @@ def query(cls: Type[Thing],
           format: Optional[str] = None,
           context: Optional[Union[Dict, str]] = None,
           limit: Optional[int] = None) -> Union[Thing, List]:
-    """Return a generator of results from the query.
+    """Load matching instances of a model class from RDF.
 
-    Parameters
-    ----------
-    cls : Thing
-        The class to query
-    source: Optional[Union[str, pathlib.Path]]
-        The source of the RDF file. see json.dump() for details
-    data : Optional[Union[str, Dict]]
-        The data of the RDF file
-    format : Optional[str]
-        The format of the RDF file. see rdflib.Graph.parse() for details
-    context : Optional[Union[Dict, str]]
-        The context of the RDF file
-    limit: Optional[int]
-        The limit of the query. Default is None (no limit).
-        If limit equals to 1, the result will be a single obj, not a list.
+    ``cls`` is a ``Thing`` subclass, not a graph or SPARQL query string.
+    Supply a file/URL through ``source`` or inline RDF through ``data``;
+    ``format`` selects the RDFLib parser. ``context`` is an optional namespace
+    dictionary for compact-IRI expansion during model loading.
+
+    Returns a list, except that ``limit=1`` returns a single matching model.
+    No matches return ``[]`` for every limit. This function does not return
+    a generator. Use ``rdflib.Graph.query`` for arbitrary SPARQL.
     """
     if cls == Thing:
         query_string = '\nSELECT *\nWHERE {\n    ?id a ?type .\n    ?id ?p ?o .\n}'

@@ -161,4 +161,17 @@ The above fives us this Turtle serialization:
 
 Please visit the [documentation](https://ontology-utils.readthedocs.io/en/latest/) for more information.
 
+## Local work tracking
 
+Use `.work/` for local work items and investigation notes. Its contents are
+ignored by Git and must not be committed or force-added. Keep accepted project
+documentation in the regular documentation files.
+
+## Compatibility and feature dependencies
+
+The supported semantic dependency families are Pydantic 2.x and RDFLib 7.x.
+Upgrade those major versions only after validating JSON-LD and model contracts.
+
+Dependency metadata is checked by `tests/test_dependency_contracts.py`. Run it
+from a fresh install of this checkout so its installed metadata matches the
+source; an older editable installation can otherwise report stale requirements.

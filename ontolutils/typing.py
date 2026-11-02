@@ -65,8 +65,6 @@ def validate_id(value, handler, info):
         return str(value)
     if isinstance(value, URIRef):
         return str(value)
-    if isinstance(value, FileUrl):
-        return str(value)
     raise ValueError(f"Id must be a HTTP-URL string or a pydantic AnyUrl or a URIRef, not {type(value)}")
 
 

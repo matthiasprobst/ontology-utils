@@ -8,7 +8,6 @@ from functools import lru_cache
 from typing import Dict, Union, Optional, Any, List, Type, Tuple, Set
 from urllib.parse import urlparse
 
-import numpy as np
 import rdflib
 import yaml
 from pydantic import AnyUrl, HttpUrl, BaseModel, Field, model_validator, ValidationError, field_validator
@@ -23,6 +22,13 @@ from .thingmodel import ThingModel
 from .utils import split_uri
 from .. import get_config
 from ..typing import IdType, AnyThingOrList, LangStringTypeOrList
+
+try:
+    import numpy as np
+except ModuleNotFoundError as error:
+    if error.name != "numpy":
+        raise
+    np = None
 
 logger = logging.getLogger('ontolutils')
 URL_SCHEMES = {"http", "https", "urn", "doi"}
@@ -316,50 +322,20 @@ def _parse_string_value(value, ctx):
          closeMatch='skos:closeMatch',
          exactMatch='skos:exactMatch')
 class Thing(ThingModel):
-    """Most basic concept class owl:Thing (see also https://www.w3.org/TR/owl-guide/)
+    """An RDF resource represented by a validated Pydantic model.
 
-    This class is basis to model other concepts.
+    Declare typed fields in a subclass and map them to RDF predicates with
+    ``@urirefs`` and ``@namespaces``. Construction and assignment validate the
+    declared fields; extra fields are allowed but need mappings to become RDF.
+    The class does not automatically enforce all constraints of an ontology.
 
-    Example for `prov:Person`:
+    ``id`` defaults to a generated blank node. Assign an explicit IRI for a
+    resource that must be identified across files. ``label``, ``description``,
+    and ``comment`` accept language strings; common relationship fields accept
+    other ``Thing`` instances or IRI references.
 
-    >>> @namespaces(prov='https://www.w3.org/ns/prov#',
-    >>>             foaf='http://xmlns.com/foaf/0.1/')
-    >>> @urirefs(Person='prov:Person', first_name='foaf:firstName')
-    >>> class Person(Thing):
-    >>>     first_name: str = None
-    >>>     last_name: str = None
-
-    >>> p = Person(first_name='John', last_name='Doe', age=30)
-    >>> # Note, that age is not defined in the class! This is allowed, but may not be
-    >>> # serialized into an IRI although the ontology defines it
-
-    >>> print(p.model_dump_jsonld())
-    >>> {
-    >>>     "@context": {
-    >>>         "prov": "https://www.w3.org/ns/prov#",
-    >>>         "foaf": "http://xmlns.com/foaf/0.1/",
-    >>>         "first_name": "foaf:firstName"
-    >>>     },
-    >>>     "@id": "N23036f1a4eb149edb7db41b2f5f4268c",
-    >>>     "@type": "prov:Person",
-    >>>     "foaf:firstName": "John",
-    >>>     "last_name": "Doe",
-    >>>     "age": "30"  # Age appears as a field without context!
-    >>> }
-
-    Note, that values are validated, as `Thing` is a subclass of `pydantic.BaseModel`:
-
-    >>> Person(first_name=1)
-
-    Will lead to a validation error:
-
-    >>> # Traceback (most recent call last):
-    >>> # ...
-    >>> # pydantic_core._pydantic_core.ValidationError: 1 validation error for Person
-    >>> # first_name
-    >>> #   Input should be a valid string [type=string_type, input_value=1, input_type=int]
-    >>> #     For further information visit https://errors.pydantic.dev/2.4/v/string_type
-
+    Use :meth:`model_dump_jsonld` for JSON-LD text, :meth:`get_jsonld_dict` for
+    a dictionary, and :meth:`serialize` for other RDF graph formats.
     """
     id: Optional[IdType] = Field(default_factory=build_blank_id)  # @id
     label: Optional[LangStringTypeOrList] = Field(default=None)  # rdfs:label
@@ -473,62 +449,26 @@ class Thing(ThingModel):
                         exclude_none: bool = True,
                         resolve_keys: bool = False,
                         ) -> Dict:
-        """Return the JSON-LD dictionary of the object. This will include the context
-        and the fields of the object.
+        """Return the model's JSON-LD dictionary, including its inline context.
 
         Parameters
         ----------
-        context: Optional[Union[Dict, str]]
-            The context to use for the JSON-LD serialization. If a string is given, it will
-            be interpreted as an import statement and will be added to the context.
-        exclude_none: bool=True
-            Exclude fields with None values
-        resolve_keys: bool=False
-            If True, then attributes of a Thing class will be resolved to the full IRI and
-            explained in the context.
-        base_uri: Optional[Union[str, AnyUrl]]=None
-            The base URI to use for blank nodes (only used if no ID is set).
-            This is useful, because blank nodes are not globally unique and
-            can lead to problems when merging data from different sources.
-
-            Example:
-
-                In the following example, first_name refers to foaf:firstName:
-
-                >>> @namespaces(foaf='http://xmlns.com/foaf/0.1/')
-                >>> @urirefs(Person='foaf:Person', first_name='foaf:firstName')
-                >>> class Person(Thing):
-                >>>     first_name: str = None
-
-                >>> p = Person(first_name='John')
-                >>> p.model_dump_jsonld(resolve_keys=True)
-
-                This will result "first_name": "foaf:firstName" showing up in the context:
-
-                >>> {
-                >>>     "@context": {
-                >>>         "foaf": "http://xmlns.com/foaf/0.1/",
-                >>>         "first_name": "foaf:firstName"
-                >>>     },
-                >>>     "@type": "foaf:Person",
-                >>>     "foaf:firstName": "John"
-                >>> }
-
-                While resolve_keys=False will result in:
-
-                >>> {
-                >>>     "@context": {
-                >>>         "foaf": "http://xmlns.com/foaf/0.1/"
-                >>>     },
-                >>>     "@type": "foaf:Person",
-                >>>     "foaf:firstName": "John"
-                >>> }
-
+        base_uri : str or pydantic.AnyUrl, optional
+            Expand blank node IDs during serialization; explicit HTTP, file, and
+            URN IDs are retained. This does not change the model's ``id``.
+        context : dict, optional
+            Additional prefix or term mappings. A context URL string is not
+            accepted here; remote contexts can be referenced within a dictionary.
+        exclude_none : bool, default True
+            Omit fields whose value is ``None``.
+        resolve_keys : bool, default False
+            Use the registered predicate keys (normally compact IRIs). If False,
+            prefer matching context terms when available. Both forms describe RDF.
 
         Returns
         -------
-        Dict
-            The JSON-LD dictionary
+        dict
+            JSON-LD data. Use ``model_dump_jsonld`` when a JSON string is needed.
         """
         from .urivalue import URIValue
         logger.debug('Initializing RDF graph to dump the Thing to JSON-LD')
@@ -612,7 +552,7 @@ class Thing(ThingModel):
                                 serialized_fields[extra_field_name] = f"{extra_field_value.prefix}:{extra_field_name}"
                 for k in obj.model_dump(exclude_none=_exclude_none):
                     value = getattr(obj, k)
-                    if isinstance(value, np.ndarray):
+                    if np is not None and isinstance(value, np.ndarray):
                         value = value.tolist()
                     if isinstance(value, str):
                         value = _replace_context_url_with_prefix(value, at_context)
@@ -698,13 +638,17 @@ class Thing(ThingModel):
                   resolve_keys: bool = True,
                   base_uri: Optional[Union[str, AnyUrl]] = None,
                   **kwargs) -> str:
-        """
-        Serialize the object to a given format. This method calls rdflib.Graph().parse(),
-        so the available formats are the same as for the rdflib library:
-            ``"xml"``, ``"n3"``,
-           ``"turtle"``, ``"nt"``, ``"pretty-xml"``, ``"trix"``, ``"trig"``,
-           ``"nquads"``, ``"json-ld"`` and ``"hext"`` are built in.
-        The kwargs are passed to rdflib.Graph().parse()
+        """Serialize the model as an RDF graph using RDFLib.
+
+        ``format`` is required; common choices are ``"json-ld"``, ``"ttl"``
+        (or ``"turtle"``), ``"n3"``, ``"nt"``, and ``"xml"``. The result is
+        normally a string. Dataset formats requiring named graphs are not provided
+        by this single-graph interface.
+
+        ``context``, ``exclude_none``, ``resolve_keys``, and ``base_uri`` control
+        the intermediate JSON-LD representation; see :meth:`get_jsonld_dict`.
+        Other keyword arguments go to ``rdflib.Graph.serialize``, including
+        RDFLib's destination/encoding options and their corresponding return types.
         """
 
         jsonld_dict = self.get_jsonld_dict(
@@ -740,41 +684,19 @@ class Thing(ThingModel):
             resolve_keys: bool = True,
             base_uri: Optional[Union[str, AnyUrl]] = None,
             indent: int = 4) -> str:
-        """Similar to model_dump_json() but will return a JSON string with
-        context resulting in a JSON-LD serialization. Using `rdflib_serialize=True`
-        will use the rdflib to serialize. This will make the output a bit cleaner
-        but is not needed in most cases and just takes a bit more time (and requires
-        an internet connection.
+        """Return JSON-LD text for the model.
 
-        Note, that if `rdflib_serialize=True`, then a blank node will be generated if no ID is set.
+        Unlike Pydantic's ``model_dump_json``, this includes an RDF context and
+        mapped predicates. ``context`` must be a dictionary. ``exclude_none=True``
+        omits None-valued fields; ``resolve_keys=True`` uses registered
+        predicate keys, normally compact IRIs. ``base_uri`` expands blank node
+        IDs for the output without changing the object's ID.
 
-        Parameters
-        ----------
-        context: Optional[Union[Dict, str]]
-            The context to use for the JSON-LD serialization. If a string is given, it will
-            be interpreted as an import statement and will be added to the context.
-        exclude_none: bool=True
-            Exclude fields with None values
-        rdflib_serialize: bool=False
-            If True, the output will be serialized using rdflib. This results in a cleaner
-            output but is not needed in most cases and just takes a bit more time (and requires
-            an internet connection). Will also generate a blank node if no ID is set.
-        resolve_keys: bool=False
-            If True, then attributes of a Thing class will be resolved to the full IRI and
-            explained in the context.
-        indent: int=4
-            The indent of the JSON-LD string
-        base_uri: Optional[HttpUrl]=None
-            The base URI to use for blank nodes (only used if no ID is set).
-            This is useful, because blank nodes are not globally unique and
-            can lead to problems when merging data from different sources.
-
-            .. seealso:: `Thing.get_jsonld_dict`
-
-        Returns
-        -------
-        str
-            The JSON-LD string
+        With ``rdflib_serialize=False`` (the default), JSON is produced directly
+        with four-space indentation. With ``rdflib_serialize=True``, RDFLib
+        parses and reserializes the graph and applies ``indent``. Its ordering
+        and blank node labels may differ. Inline contexts work offline; remote
+        context references can require network access.
         """
         jsonld_dict = self.get_jsonld_dict(
             context=context,
@@ -854,7 +776,12 @@ class Thing(ThingModel):
                   limit: Optional[int] = None,
                   context: Optional[Dict] = None
                   ):
-        """Initialize the class from a file"""
+        """Load matching model instances from an RDF file or URL.
+
+        Pass a format accepted by RDFLib, such as ``"ttl"`` or ``"json-ld"``.
+        Returns a list by default; ``limit=1`` returns one matching model.
+        An empty query returns ``[]``, including when ``limit=1``.
+        """
         from . import query
         return query(cls, source=source, limit=limit, format=format, context=context)
 
@@ -865,7 +792,11 @@ class Thing(ThingModel):
                  limit: Optional[int] = None,
                  context: Optional[Dict] = None
                  ):
-        """Initialize the class from a Turtle source"""
+        """Load matching models from Turtle text (data) or a file/URL (source).
+
+        Returns a list by default. ``limit=1`` returns one matching model, or
+        ``[]`` when no matching resource is found.
+        """
         g = rdflib.Graph().parse(source=source, data=data)
         jld = g.serialize(format='json-ld')
         return cls.from_jsonld(data=jld, limit=limit, context=context)
@@ -876,25 +807,27 @@ class Thing(ThingModel):
                     data: Optional[Union[str, Dict]] = None,
                     limit: Optional[int] = None,
                     context: Optional[Dict] = None):
-        """Initialize the class from a JSON-LD source
-
-        Note the inconsistency in the schema.org protocol. Codemeta for instance uses http whereas
-        https is the current standard. This repo only works with https. If you have a http schema,
-        this method will replace http with https.
+        """Load matching models from JSON-LD.
 
         Parameters
         ----------
-        source: Optional[Union[str, pathlib.Path]]=None
-            The source of the JSON-LD data (filename). Must be given if data is None.
-        data: Optional[Union[str, Dict]]=None
-            The JSON-LD data as a str or dictionary. Must be given if source is None.
-        limit: Optional[int]=None
-            The limit of the number of objects to return. If None, all objects will be returned.
-            If limit is 1, then the first object will be returned, else a list of objects.
-        context: Optional[Dict]=None
-            The context to use for the JSON-LD serialization. If a string is given, it will
-            be interpreted as an import statement and will be added to the context.
+        source : str or pathlib.Path, optional
+            File path or URL. Remote documents/contexts may require network access.
+        data : str or dict, optional
+            Inline JSON-LD. Supply data or source.
+        limit : int, optional
+            Maximum number of models to return. With ``limit=1``, a matching
+            model is returned directly; otherwise the result is a list. No matches
+            always produce ``[]``.
+        context : dict, optional
+            Namespace mappings used to expand compact IRIs during model loading.
+            This does not replace remote contexts contained in the input document.
 
+        Notes
+        -----
+        For inline ``data``, this method rewrites ``http://schema.org/`` to
+        ``https://schema.org/`` and warns. File/URL source content is not rewritten
+        by this method. An IRI-only reference is not automatically dereferenced.
         """
         from . import query
         if data is not None:
@@ -949,7 +882,11 @@ class Thing(ThingModel):
 
     @classmethod
     def get_context(cls) -> Dict:
-        """Return the context of the class"""
+        """Return registered namespace-prefix mappings for this class.
+
+        This is not a full field-to-predicate JSON-LD context. Use ``iri`` or
+        ``get_urirefs`` to inspect predicate mappings.
+        """
         return get_namespaces(cls)
 
     @classmethod
@@ -997,7 +934,12 @@ class Thing(ThingModel):
                      namespace_prefix: Optional[str],
                      default: Optional[Any] = None,
                      ):
-        """Add a property to the class"""
+        """Register an RDF predicate mapping on this class.
+
+        This updates URI/namespace metadata only. It does not add a Pydantic
+        field or enforce ``property_type``/``default`` on an extra value. Define
+        a typed subclass or use ``build`` to create validated model fields.
+        """
         prop = Property(
             name=name,
             property_type=property_type,
@@ -1118,8 +1060,13 @@ class Thing(ThingModel):
             graph: rdflib.Graph,
             subject: Union[str, rdflib.URIRef] = None,
             limit: Optional[int] = None,
-            distinct: bool = False) -> List["Dataset"]:
-        """Initialize the class from an rdflib Graph for a given subject."""
+            distinct: bool = False) -> List["Thing"]:
+        """Return a list of models built from an RDFLib graph query.
+
+        ``subject`` restricts the query to a resource IRI. ``limit`` limits query
+        rows; this method still returns a list, including for ``limit=1``.
+        No matches produce an empty list. For general SPARQL, use ``graph.query``.
+        """
         # 1. generate query:
         query = cls.create_query(subject=subject, limit=limit, distinct=distinct)
         # 2. run query:
@@ -1138,6 +1085,17 @@ class Thing(ThingModel):
                  meta_shacl: bool = False,
                  advanced: bool = True,
                  ) -> ValidationResult:
+        """Validate the serialized RDF graph against SHACL shapes.
+
+        Requires the optional ``pyshacl`` package. Supply shapes as a Turtle
+        string or RDFLib graph through ``shacl_data``, or as a Turtle file through
+        ``shacl_source``. Do not provide both.
+
+        Returns ``ValidationResult(conforms, results_graph, results_text)``;
+        its truth value is ``conforms``. A nonconforming graph raises ``ValueError``
+        unless ``raise_on_error=False``. Remaining options are forwarded to
+        ``pyshacl.validate``; the default inference mode is ``"rdfs"``.
+        """
         if shacl_source is not None and shacl_data is not None:
             raise ValueError("Cannot provide both shacl_source and shacl_data.")
         sh = _get_pyshacl()
@@ -1182,6 +1140,12 @@ def serialize(thing: Union[Thing, List[Thing]],
               resolve_keys: bool = True,
               base_uri: Optional[Union[str, AnyUrl]] = None,
               **kwargs):
+    """Combine one Thing or a list of Things into one serialized RDF graph.
+
+    ``format`` is required. Common choices are ``"ttl"``, ``"json-ld"``,
+    ``"n3"``, ``"nt"``, and ``"xml"``. Resources with the same IRI describe
+    the same graph subject. Use explicit IDs to preserve identity across files.
+    """
     if not isinstance(thing, list):
         if isinstance(thing, Thing):
             return thing.serialize(
@@ -1241,12 +1205,16 @@ def _parse_blank_node(_id, base_uri: Optional[Union[str, AnyUrl]]):
 
 
 def get_urirefs(cls: Thing) -> Dict:
-    """Return the URIRefs of the class"""
+    """Return registered class/field predicate mappings, normally compact IRI strings.
+
+    """
     return URIRefManager[cls]
 
 
 def get_namespaces(cls: Thing) -> Dict:
-    """Return the namespaces of the class"""
+    """Return the registered namespace-prefix mappings for a model class.
+
+    """
     return NamespaceManager[cls]
 
 
@@ -1256,26 +1224,14 @@ def build(
         class_name: str,
         properties: List[Union[Property, Dict]],
         baseclass=Thing) -> Type[Thing]:
-    """Build a ThingModel class
+    """Create and return a new Thing subclass with validated fields.
 
-    Parameters
-    ----------
-    namespace: str
-        The namespace of the class
-    namespace_prefix: str
-        The namespace prefix of the class
-    class_name: str
-        The name of the class
-    properties: Dict[str, Union[str, int, float, bool, datetime, BlankNodeType, None]]
-        The properties of the class
-    baseclass: Type[Thing]
-        The base class to inherit from, default is Thing
-
-
-    Returns
-    -------
-    Thing
-        A Thing
+    ``namespace`` and ``namespace_prefix`` identify the class vocabulary.
+    ``class_name`` becomes its RDF local name. ``properties`` is a list of
+    ``Property`` instances or equivalent dictionaries; each property maps
+    its Python name to the same RDF local name in its namespace. Omitted
+    property namespaces use the class namespace. ``baseclass`` defaults to
+    ``Thing``. Each property's default is applied to the new Pydantic field.
     """
     _properties = []
     for prop in properties:

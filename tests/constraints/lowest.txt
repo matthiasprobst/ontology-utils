@@ -1,0 +1,5 @@
+# Semantic dependency floors. Pydantic 2.12 introduced Python 3.14 support:
+# https://pydantic.dev/articles/pydantic-v2-12-release
+pydantic==2.8.2; python_version < "3.14"
+pydantic==2.12.0; python_version >= "3.14"
+rdflib==7.0.0

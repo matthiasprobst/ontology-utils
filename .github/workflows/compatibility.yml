@@ -1,0 +1,126 @@
+name: Installed compatibility
+
+on:
+  pull_request:
+  push:
+    branches: [main, 'develop*', 'dev*', 'fix/*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install build
+      # The default build creates an sdist, then builds the wheel from that sdist.
+      - run: python -m build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: candidate-distributions
+          path: dist/
+
+  models:
+    needs: build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python: ['3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
+        dependencies: [lowest, newest]
+        include:
+          - {os: windows-latest, python: '3.12', dependencies: lowest}
+          - {os: windows-latest, python: '3.12', dependencies: newest}
+          - {os: macos-latest, python: '3.12', dependencies: lowest}
+          - {os: macos-latest, python: '3.12', dependencies: newest}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: candidate-distributions
+          path: wheelhouse
+      - name: Create a clean runtime environment
+        run: |
+          python -m venv "$RUNNER_TEMP/ontolutils-venv"
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            echo "$RUNNER_TEMP/ontolutils-venv/Scripts" >> "$GITHUB_PATH"
+          else
+            echo "$RUNNER_TEMP/ontolutils-venv/bin" >> "$GITHUB_PATH"
+          fi
+      - run: python -m pip install --upgrade pip
+      - name: Install semantic dependency floors
+        if: matrix.dependencies == 'lowest'
+        run: python -m pip install -c tests/constraints/lowest.txt wheelhouse/*.whl pytest packaging --report install-report.json
+      - name: Install newest compatible dependencies
+        if: matrix.dependencies == 'newest'
+        run: python -m pip install --upgrade wheelhouse/*.whl pytest packaging --report install-report.json
+      - run: python -m pip check
+      - run: python -m pip freeze > resolved-versions.txt
+      - name: Check installed models without importing the checkout
+        working-directory: ${{ runner.temp }}
+        run: >-
+          python -I -m pytest --import-mode=importlib
+          "${{ github.workspace }}/tests/test_dependency_contracts.py"
+          "${{ github.workspace }}/tests/test_model_compatibility.py"
+          "${{ github.workspace }}/tests/test_base_install.py"
+          "${{ github.workspace }}/tests/test_download.py"
+          -q --junitxml="${{ github.workspace }}/compatibility-results.xml"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: compatibility-${{ matrix.os }}-${{ matrix.python }}-${{ matrix.dependencies }}
+          path: |
+            install-report.json
+            resolved-versions.txt
+            compatibility-results.xml
+
+  consumers:
+    needs: build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: candidate-distributions
+          path: wheelhouse
+      - name: Create a clean consumer environment
+        run: |
+          python -m venv "$RUNNER_TEMP/ontolutils-venv"
+          echo "$RUNNER_TEMP/ontolutils-venv/bin" >> "$GITHUB_PATH"
+      - name: Install candidate together with representative consumers
+        run: >-
+          python -m pip install wheelhouse/*.whl -r tests/constraints/consumers.txt
+          pytest packaging --report consumer-install-report.json
+      - run: python -m pip check
+      - run: python -m pip freeze > consumer-resolved-versions.txt
+      - name: Require both consumers and test installed models
+        working-directory: ${{ runner.temp }}
+        run: |
+          python -I -c "import ssnolib, pivmetalib"
+          python -I -m pytest --import-mode=importlib "${{ github.workspace }}/tests/consumers" -q --junitxml="${{ github.workspace }}/consumer-results.xml"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: consumer-compatibility
+          path: |
+            consumer-install-report.json
+            consumer-resolved-versions.txt
+            consumer-results.xml

@@ -1,0 +1,5 @@
+# Representative 0.27-family consumers. Their own dependency caps still apply.
+ssnolib==2.2.0.3
+pivmetalib==3.1.0.1
+# Both reference consumers import ontolutils.ex.m4i, which requires NumPy.
+numpy

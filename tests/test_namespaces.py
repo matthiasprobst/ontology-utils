@@ -1,13 +1,41 @@
 import logging
 import unittest
 
+import pytest
 import rdflib
+import requests
 
 import ontolutils
 from ontolutils import namespacelib, set_logging_level
 from ontolutils.namespacelib import _iana_utils
+from ontolutils.classes import utils
 
 LOG_LEVEL = logging.DEBUG
+
+
+@pytest.fixture
+def iana_registry(monkeypatch, tmp_path):
+    media_types = {
+        "application": ["zip", "json", "ld+json"], "audio": ["mp4"],
+        "image": ["png"], "text": ["html"], "video": ["mp4"],
+        "model": ["gltf+json"], "multipart": ["form-data"],
+        "message": ["http"], "font": ["woff"],
+    }
+
+    def request(method, url, **kwargs):
+        assert method == "GET"
+        category = url.rsplit("/", 1)[-1].removesuffix(".csv")
+        content = "Name,Template,Reference\n" + "".join(
+            f"{name},{category}/{name},[Test reference]\n" for name in media_types[category])
+        response = requests.Response()
+        response.status_code = 200
+        response.url = url
+        response._content = content.encode("utf-8")
+        return response
+
+    monkeypatch.setattr(_iana_utils, "iana_cache", tmp_path)
+    monkeypatch.setattr(namespacelib, "IANA", _iana_utils.IANACLS())
+    monkeypatch.setattr(utils, "request_with_backoff", request)
 
 
 class TestNamespaces(unittest.TestCase):
@@ -36,6 +64,7 @@ class TestNamespaces(unittest.TestCase):
                 if k[0] != '_':
                     self.assertIsInstance(getattr(ns, k), rdflib.URIRef)
 
+    @pytest.mark.usefixtures("iana_registry")
     def test_iana(self):
         self.assertEqual(namespacelib.IANA.application['zip'],
                          'https://www.iana.org/assignments/media-types/application/zip')

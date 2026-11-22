@@ -35,8 +35,8 @@ of every ontology. Inspect ``Model.model_fields`` for accepted fields and
      - ``Concept``, ``Checksum``, ``Unit``
      - Vocabulary concepts, checksums, and units.
 
-Record who produced a dataset
------------------------------
+Attribute a dataset to a researcher
+-----------------------------------
 
 .. testcode::
 
@@ -93,6 +93,10 @@ IEEE values in valid JSON-LD; they do not establish an application-level
 missing-value policy or make an otherwise invalid measurement scientifically
 valid. Add application constraints when nonfinite values must be rejected.
 
-``to_pint()`` additionally requires Pint. ``to_xarray()`` additionally requires
-Pint and xarray. ``has_unit="m/s"`` uses a built-in QUDT lookup, not arbitrary
-unit-expression parsing. See :doc:`namespacelib`.
+``has_unit="m/s"`` uses the built-in QUDT symbol lookup. See :doc:`namespacelib`
+for other supported spellings. Use ``to_pint()`` for unit arithmetic. For
+example, subtracting two absolute Celsius temperatures produces a temperature
+difference. An unknown QUDT-to-Pint mapping raises ``ValueError``.
+
+Use ``to_xarray()`` to create a DataArray. It requires xarray and uses Pint
+to format the units attribute when the variable has a unit.

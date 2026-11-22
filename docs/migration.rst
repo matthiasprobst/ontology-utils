@@ -34,12 +34,18 @@ are omitted. Retain the source RDFLib graph when arbitrary triples must survive.
 JSON-LD loading preserves HTTP vocabulary IRIs and literal text. Applications using HTTP schema.org data must map those exact IRIs or
 perform an explicit, reviewed vocabulary migration before model loading.
 
+Exporting numerical arrays
+--------------------------
+
 Numerical RDF export preserves the original variable's identity in
 every format; automatic scalar expansion with suffixed IDs is removed. Its
 multi-valued numerical property is an unordered set, not an array encoding:
 order, duplicates, shape, dtype and empty-versus-unset distinctions do not survive
 an RDF round trip. Keep arrays in a suitable scientific data format, or model
 individual scalar resources and their relationships explicitly. Pydantic and SHACL validation do not establish scientific validity.
+
+Reading collections and linked resources
+----------------------------------------
 
 RDF collection loading follows the requested head's ``rdf:rest`` chain and
 preserves order and duplicate entries. Finite sequence loading requires exactly
@@ -51,6 +57,7 @@ Resource expansion retains blank-node identifiers and represents cycle edges as
 identifier references. Model fields on cyclic relationships must accept such
 references. Shared nodes retain their identifiers across expanded branches;
 expansion does not promise Python object identity.
+
 Dictionary queries retain all RDF type assertions. Model loading projects onto
 the requested Python class and its registered predicates; it does not promise
 to preserve additional source type assertions when that model is serialized.
@@ -66,14 +73,17 @@ JSON-LD 1.1 ``@included`` with bounded inline nesting, so the output layout must
 not be treated as a fixed Python object tree. Parse the result as RDF when
 following references or processing arbitrarily deep graphs.
 
-Mailboxes, units and loading results
-------------------------------------
+Email addresses
+---------------
 
 FOAF and PROV mailbox fields retain validated email strings in Python, including
 their existing input aliases. They also accept ``mailto:`` strings and RDF IRIs.
 RDF exports now emit ``foaf:mbox <mailto:address>``. Legacy email literals remain
 accepted on input. Applications comparing earlier RDF output must account for
 this correction from a literal to a mailbox resource.
+
+Converting units
+----------------
 
 Unit conversion compares base-unit resource identifiers independently of labels
 and other descriptive metadata. Conflicting numerical factors on descriptions
@@ -96,7 +106,11 @@ See QUDT's `Fahrenheit description <https://qudt.org/vocab/unit/DEG_F>`_ and
 `milligram description <https://qudt.org/vocab/unit/MilliGM>`_ for the reference
 coefficients. These are implementation corrections, not changes to QUDT data.
 
-All model loaders limit complete resources rather than individual SPARQL rows.
+Loading one resource or several
+-------------------------------
+
+The RDF loaders ``from_jsonld``, ``from_ttl``, ``from_file``, ``from_graph``,
+and ``query`` apply limits to complete resources.
 They return a list by default, a single matching model for ``limit=1``, and
 ``[]`` for no matches or ``limit=0``. Negative limits raise ``ValueError``;
 non-integer limits, including booleans, raise ``TypeError``. In particular,

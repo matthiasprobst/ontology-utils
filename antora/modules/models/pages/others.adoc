@@ -27,7 +27,8 @@ and describe their metadata with RDF. Export no longer creates scalar resources
 with generated `/0`, `/1`, etc. IDs. Model separate scalar resources explicitly
 when that is the intended meaning.
 
-Pint is additionally needed for `to_pint`; Pint and xarray for `to_xarray`.
+Install Pint for `to_pint()`. Install xarray for `to_xarray()` and Pint to
+format the units attribute when the variable has a unit.
 
 == Checksums, HDF5 structure, and sensors
 

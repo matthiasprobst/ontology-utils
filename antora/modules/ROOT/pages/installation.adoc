@@ -1,14 +1,19 @@
 = Installation
 
-Use Python 3.9–3.14. The package installs Pydantic 2.x and RDFLib 7.x.
+This guide describes the unreleased 1.0 branch. Use Python 3.11–3.15 and run
+the following commands from the branch checkout in a virtual environment.
+Pip installs the required versions of Pydantic and RDFLib.
 
 [source,console]
 ----
-python -m pip install ontolutils
+python -m pip install .
 python -c "import ontolutils; print(ontolutils.__version__)"
 ----
 
-Install extra packages only for the features you need:
+For the published release, use `python -m pip install ontolutils` in a fresh
+environment. Its supported Python versions and API may differ.
+
+Optional packages by feature:
 
 [cols="2,1",options="header"]
 |===

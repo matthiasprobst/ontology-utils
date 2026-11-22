@@ -3,11 +3,11 @@
 ![Tests](https://github.com/matthiasprobst/ontology-utils/actions/workflows/tests.yml/badge.svg)
 [![Documentation](https://readthedocs.org/projects/ontology-utils/badge/?version=latest)](https://ontology-utils.readthedocs.io/en/latest/)
 
-Describe things and concepts in the world using Python, including people,
-datasets, instruments, and measurements. Use ontology models to express their
-properties and relationships, validate fields with Pydantic, and share their
-descriptions as RDF in JSON-LD or Turtle. Start with the included models or
-define your own mappings to ontology terms.
+Ontolutils helps you describe things and concepts in Python and express how they
+relate to one another. For example, you can describe a dataset, the researcher
+who created it, and the instrument used to collect the data. Use the built-in
+models or map your own fields to ontology terms. Pydantic validates the fields,
+and you can share the resulting RDF graph as JSON-LD or Turtle.
 
 ## Install
 
@@ -64,24 +64,17 @@ preserved. See the [1.0 migration guide](docs/migration.rst).
 
 ## Learn by task
 
-- [Define and validate your own model](https://ontology-utils.readthedocs.io/en/latest/userguide/classes.html)
-- [Save, load, combine, and query RDF](https://ontology-utils.readthedocs.io/en/latest/userguide/serialization.html)
-- [Use built-in models and numerical variables](https://ontology-utils.readthedocs.io/en/latest/userguide/models.html)
-- [Validate RDF with SHACL](https://ontology-utils.readthedocs.io/en/latest/userguide/validation.html)
+- [Define and validate your own model](docs/userguide/classes.rst)
+- [Save, load, combine, and query RDF](docs/userguide/serialization.rst)
+- [Use built-in models and numerical variables](docs/userguide/models.rst)
+- [Validate RDF with SHACL](docs/userguide/validation.rst)
 - [Work through the notebook](tutorials/Classes.ipynb)
-- [API reference](https://ontology-utils.readthedocs.io/en/latest/api.html)
+- [API reference](docs/api.rst)
 
-The base installation supports core models and RDF serialization. Install
-`numpy` for `ontolutils.ex.m4i`, `pint` for its unit conversions, `xarray` for
-DataArray conversion, or `pyshacl` for RDF validation as needed.
-
-## Units and numerical data
-
-Numerical variables construct Pint quantities explicitly, so absolute offset
-units such as Celsius convert correctly. Subtract absolute temperatures to obtain
-a temperature difference; absolute offsets must not be applied to differences.
-Unknown QUDT-to-Pint mappings raise `ValueError`; `to_pint_unit(..., lookup=...)`
-accepts an optional custom symbol mapping.
+The example above runs with the base installation. For numerical variables,
+install NumPy. Add Pint for unit conversions and xarray to create DataArrays.
+Install pySHACL to validate RDF graphs against shapes. See the
+[installation guide](docs/installation.rst) for the commands.
 
 ## Development
 

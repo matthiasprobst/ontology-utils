@@ -77,8 +77,9 @@ Find resources of a model class
 
    found = query(Person, data=combined, format="ttl")
    assert {item.firstName for item in found} == {"Ada", "Grace"}
-   selected = Person.from_graph(graph, subject=person.id)
-   assert len(selected) == 1
+   selected = Person.from_graph(graph, subject=person.id, limit=1)
+   assert selected.firstName == "Ada"
+   assert Person.from_graph(graph, subject="https://example.org/people/missing", limit=1) == []
 
 ``query`` builds model instances; it is not a general SPARQL-string API.
 ``Person.from_graph`` uses the same resource-limit and return-type rules as the

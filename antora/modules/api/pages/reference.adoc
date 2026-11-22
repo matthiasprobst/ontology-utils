@@ -14,7 +14,8 @@
 |===
 
 Loaders return lists except when `limit=1`, which returns one matching model
-or `[]`. `from_graph` always returns a list. `model_dump_json()` is ordinary
+or `[]` for no match. This includes `Model.from_graph(graph, limit=1)`.
+`model_dump_json()` is ordinary
 Pydantic JSON and does not replace `model_dump_jsonld()`.
 
 == Configuration

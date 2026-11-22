@@ -2,7 +2,7 @@ Migrating from 0.27 to 1.0
 ==========================
 
 This page describes behavior changes that may require application updates.
-Python 3.11 or newer is required; Python 3.10 is no longer supported.
+Use Python 3.11–3.15 for this version.
 
 RDF values and model projection
 -------------------------------

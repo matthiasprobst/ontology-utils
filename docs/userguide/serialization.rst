@@ -25,7 +25,9 @@ are omitted by default.
 
 ``serialize(format)`` supports ``"json-ld"``, ``"ttl"`` (or ``"turtle"``),
 ``"n3"``, ``"nt"``, and ``"xml"``. It exports one RDF graph, without named
-graph information. Use RDFLib directly when working with datasets of named graphs.
+graph information. It returns text by default or bytes if you pass an encoding.
+With ``destination=...``, it writes to that destination using RDFLib. Use
+RDFLib directly when working with datasets of named graphs.
 
 Load one object or a list
 -------------------------
@@ -62,9 +64,9 @@ Combine resources and use RDFLib
    first_name = URIRef(Person.iri("firstName"))
    assert str(graph.value(URIRef(person.id), first_name)) == "Ada"
 
-There is no ``Thing.to_graph()`` method. Parse a serialization with
-``Graph().parse`` as above. Prefix names, triple order, and blank node labels may
-change between serializers; compare RDF graphs rather than raw strings.
+Use ``Graph().parse`` as above to work with the exported triples. Prefix names,
+triple order, and blank node labels can vary across serializations. Compare RDF
+graphs, allowing for different blank node labels.
 
 Find resources of a model class
 -------------------------------
@@ -114,5 +116,4 @@ Remote JSON-LD contexts may require network access; use a dictionary context
 for reproducible, self-contained examples. A local input file can still refer to
 a remote context. For reproducible research, archive the contexts as well as the
 data, record their versions and checksums, and use explicit local context paths
-or inline definitions. The bounded QUDT lookup timeouts do not impose a timeout
-on RDFLib's JSON-LD context fetching.
+or inline definitions.

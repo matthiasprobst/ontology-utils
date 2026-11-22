@@ -3,9 +3,11 @@
 ![Tests](https://github.com/matthiasprobst/ontology-utils/actions/workflows/tests.yml/badge.svg)
 [![Documentation](https://readthedocs.org/projects/ontology-utils/badge/?version=latest)](https://ontology-utils.readthedocs.io/en/latest/)
 
-Describe people, datasets, instruments, and measurements as Python objects;
-validate their fields with Pydantic; export JSON-LD or Turtle with RDFLib.
-Use the included ontology models or map your own fields to RDF terms.
+Describe things and concepts in the world using Python, including people,
+datasets, instruments, and measurements. Use ontology models to express their
+properties and relationships, validate fields with Pydantic, and share their
+descriptions as RDF in JSON-LD or Turtle. Start with the included models or
+define your own mappings to ontology terms.
 
 ## Install
 
@@ -50,9 +52,9 @@ print(researcher.serialize("ttl"))
 Loading normally returns a list; `limit=1` returns one matching object, or `[]`
 if none match. Assign stable `id` values when sharing metadata.
 
-Python field validation checks the model's declared types and constraints.
-Use SHACL for additional rules on the RDF graph; ontology conformance is not
-automatically guaranteed by creating a Python object.
+Pydantic checks the model’s declared field types and constraints. Use SHACL
+to check an RDF graph against a set of shapes. Scientific validity still
+depends on the data and the rules you apply.
 
 Models contain selected ontology terms. Loading projects RDF onto their mapped
 fields, so unknown predicates and additional source types may be omitted on

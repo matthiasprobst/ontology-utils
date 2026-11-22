@@ -1,0 +1,304 @@
+# Selected complete subject descriptions from QUDT 3.1.9.
+# Copyright QUDT.org, licensed CC BY 4.0 https://creativecommons.org/licenses/by/4.0/
+# Source https://github.com/qudt/qudt-public-repo/tree/cf953bf42846f28c6b40a71a74763b2ab1d92069/src/main/rdf/vocab
+# Extracted without changing RDF terms. See tests/README.md for source hashes.
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix ns1: <http://qudt.org/schema/qudt/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://qudt.org/vocab/unit/M-PER-SEC> a ns1:DerivedUnit,
+        ns1:Unit ;
+    rdfs:label "Metre per Second",
+        "متر في الثانية"@ar,
+        "Метър на Секунда"@bg,
+        "Metr na Sekunda"@cs,
+        "Meter pro Sekunde"@de,
+        "Μέτρο ανά Δευτερόλεπτο"@el,
+        "Metre per Second"@en,
+        "Meter per Second"@en-US,
+        "Metro por Segundo"@es,
+        "متر بر ثانیه"@fa,
+        "Mètre par Seconde"@fr,
+        "מטרים לשנייה"@he,
+        "मीटर प्रति सैकिण्ड"@hi,
+        "Metro per Secondo"@it,
+        "メートル毎秒"@ja,
+        "Metrum per Secundum"@la,
+        "Meter per Saat"@ms,
+        "Metr na Sekunda"@pl,
+        "Metro por Segundo"@pt,
+        "Metru pe Secundă"@ro,
+        "Метр на Секунда"@ru,
+        "Meter na Sekunda"@sl,
+        "Metre per Saniye"@tr,
+        "米每秒"@zh ;
+    dcterms:description """Metre per second is an SI derived unit of both speed (scalar) and velocity (vector quantity which specifies both magnitude and a specific direction), defined by distance in metres divided by time in seconds.
+The official SI symbolic abbreviation is mu00b7s-1, or equivalently either m/s."""^^rdf:HTML ;
+    ns1:applicableSystem <http://qudt.org/vocab/sou/CGS>,
+        <http://qudt.org/vocab/sou/CGS-EMU>,
+        <http://qudt.org/vocab/sou/CGS-GAUSS>,
+        <http://qudt.org/vocab/sou/SI> ;
+    ns1:conversionMultiplier 1.0 ;
+    ns1:conversionMultiplierSN 1e+00 ;
+    ns1:definedUnitOfSystem <http://qudt.org/vocab/sou/SI> ;
+    ns1:derivedCoherentUnitOfSystem <http://qudt.org/vocab/sou/SI> ;
+    ns1:expression "$m/s$"^^ns1:LatexString ;
+    ns1:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L1I0M0H0T-1D0> ;
+    ns1:hasQuantityKind <http://qudt.org/vocab/quantitykind/ElectromagneticWavePhaseSpeed>,
+        <http://qudt.org/vocab/quantitykind/LinearVelocity>,
+        <http://qudt.org/vocab/quantitykind/Speed>,
+        <http://qudt.org/vocab/quantitykind/Velocity> ;
+    ns1:hasReciprocalUnit <http://qudt.org/vocab/unit/SEC-PER-M> ;
+    ns1:iec61360Code "0112/2///62720#UAA733" ;
+    ns1:symbol "m/s" ;
+    ns1:ucumCode "m.s-1"^^ns1:UCUMcs ;
+    ns1:uneceCommonCode "MTS" ;
+    ns1:wikidataMatch <http://www.wikidata.org/entity/Q182429> ;
+    rdfs:isDefinedBy <http://qudt.org/$$QUDT_VERSION$$/vocab/unit> .
+
+<http://qudt.org/vocab/unit/M3-PER-HR> a ns1:DerivedUnit,
+        ns1:Unit ;
+    rdfs:label "Cubic Metre per Hour",
+        "Cubic Metre per Hour"@en,
+        "Cubic Meter per Hour"@en-US ;
+    dcterms:description "Cubic Meter Per Hour (m3/h) is a unit in the category of Volume flow rate. It is also known as cubic meters per hour, cubic metre per hour, cubic metres per hour, cubic meter/hour, cubic metre/hour, cubic meter/h, cubic metre/h, flowrate. Cubic Meter Per Hour (m3/h) has a dimension of L3T-1 where $L$ is length, and $T$ is time. It can be converted to the corresponding standard SI unit m3/s by multiplying its value by a factor of 0.00027777777."^^rdf:HTML ;
+    ns1:applicableSystem <http://qudt.org/vocab/sou/CGS>,
+        <http://qudt.org/vocab/sou/CGS-EMU>,
+        <http://qudt.org/vocab/sou/CGS-GAUSS>,
+        <http://qudt.org/vocab/sou/SI> ;
+    ns1:conversionMultiplier 0.0002777777777777777777777777777777778 ;
+    ns1:conversionMultiplierSN 2.777778e-04 ;
+    ns1:expression "$m^{3}/h$"^^ns1:LatexString ;
+    ns1:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L3I0M0H0T-1D0> ;
+    ns1:hasQuantityKind <http://qudt.org/vocab/quantitykind/VolumeFlowRate>,
+        <http://qudt.org/vocab/quantitykind/VolumePerTime> ;
+    ns1:iec61360Code "0112/2///62720#UAA763" ;
+    ns1:symbol "m³/h" ;
+    ns1:ucumCode "m3.h-1"^^ns1:UCUMcs ;
+    ns1:uneceCommonCode "MQH" ;
+    ns1:wikidataMatch <http://www.wikidata.org/entity/Q107313770> ;
+    rdfs:isDefinedBy <http://qudt.org/$$QUDT_VERSION$$/vocab/unit> .
+
+<http://qudt.org/vocab/unit/MilliM-PER-SEC> a ns1:Unit ;
+    rdfs:label "Millimetre per Second",
+        "Millimetr na Sekunda"@cs,
+        "Millimeter pro Sekunde"@de,
+        "Millimetre per Second"@en,
+        "Millimeter per Second"@en-US,
+        "Millimetro por Segundo"@es,
+        "Millimètre par Seconde"@fr,
+        "Millimetro per Secondo"@it,
+        "Millimeter per Saat"@ms,
+        "Millimetr na Sekunda"@pl,
+        "Millimetru pe Secundă"@ro,
+        "Millimeter na Sekunda"@sl,
+        "Millimetre per Saniye"@tr ;
+    dcterms:description "0.001-fold of the SI base unit metre divided by the SI base unit second"^^rdf:HTML ;
+    ns1:applicableSystem <http://qudt.org/vocab/sou/CGS>,
+        <http://qudt.org/vocab/sou/CGS-EMU>,
+        <http://qudt.org/vocab/sou/CGS-GAUSS>,
+        <http://qudt.org/vocab/sou/SI> ;
+    ns1:conversionMultiplier 0.001 ;
+    ns1:conversionMultiplierSN 1e-03 ;
+    ns1:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L1I0M0H0T-1D0> ;
+    ns1:hasQuantityKind <http://qudt.org/vocab/quantitykind/LinearVelocity>,
+        <http://qudt.org/vocab/quantitykind/Velocity> ;
+    ns1:iec61360Code "0112/2///62720#UAA867" ;
+    ns1:plainTextDescription "0.001-fold of the SI base unit metre divided by the SI base unit second" ;
+    ns1:symbol "mm/s" ;
+    ns1:ucumCode "mm.s-1"^^ns1:UCUMcs ;
+    ns1:uneceCommonCode "C16" ;
+    ns1:wikidataMatch <http://www.wikidata.org/entity/Q102130688> ;
+    rdfs:isDefinedBy <http://qudt.org/$$QUDT_VERSION$$/vocab/unit> .
+
+<http://qudt.org/vocab/unit/PA> a ns1:DerivedUnit,
+        ns1:Unit ;
+    rdfs:label "Pascal",
+        "باسكال"@ar,
+        "Паскал"@bg,
+        "Pascal"@cs,
+        "Pascal"@de,
+        "Πασκάλ"@el,
+        "Pascal"@en,
+        "Pascal"@es,
+        "پاسگال"@fa,
+        "Pascal"@fr,
+        "פסקל"@he,
+        "पास्कल"@hi,
+        "Pascal"@hu,
+        "Pascal"@it,
+        "パスカル"@ja,
+        "Pascalium"@la,
+        "Pascal"@ms,
+        "Paskal"@pl,
+        "Pascal"@pt,
+        "Pascal"@ro,
+        "Паскаль"@ru,
+        "Pascal"@sl,
+        "Pascal"@tr,
+        "帕斯卡"@zh ;
+    dcterms:description "The SI unit of pressure. The pascal is the standard pressure unit in the MKS metric system, equal to one newton per square meter or one \"kilogram per meter per second per second.\" The unit is named for Blaise Pascal (1623-1662), French philosopher and mathematician, who was the first person to use a barometer to measure differences in altitude."^^rdf:HTML ;
+    ns1:applicableSystem <http://qudt.org/vocab/sou/CGS>,
+        <http://qudt.org/vocab/sou/CGS-EMU>,
+        <http://qudt.org/vocab/sou/CGS-GAUSS>,
+        <http://qudt.org/vocab/sou/SI> ;
+    ns1:conversionMultiplier 1.0 ;
+    ns1:conversionMultiplierSN 1e+00 ;
+    ns1:dbpediaMatch "http://dbpedia.org/resource/Pascal"^^xsd:anyURI ;
+    ns1:exactMatch <http://qudt.org/vocab/unit/KiloGM-PER-M-SEC2>,
+        <http://qudt.org/vocab/unit/N-PER-M2> ;
+    ns1:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L-1I0M1H0T-2D0> ;
+    ns1:hasFactorUnit [ ns1:exponent -2 ;
+            ns1:hasUnit <http://qudt.org/vocab/unit/M> ],
+        [ ns1:exponent 1 ;
+            ns1:hasUnit <http://qudt.org/vocab/unit/N> ] ;
+    ns1:hasQuantityKind <http://qudt.org/vocab/quantitykind/BulkModulus>,
+        <http://qudt.org/vocab/quantitykind/ForcePerArea>,
+        <http://qudt.org/vocab/quantitykind/Fugacity>,
+        <http://qudt.org/vocab/quantitykind/ModulusOfElasticity>,
+        <http://qudt.org/vocab/quantitykind/ShearModulus>,
+        <http://qudt.org/vocab/quantitykind/VaporPressure> ;
+    ns1:hasReciprocalUnit <http://qudt.org/vocab/unit/M2-PER-N> ;
+    ns1:iec61360Code "0112/2///62720#UAA258" ;
+    ns1:informativeReference "http://en.wikipedia.org/wiki/Pascal?oldid=492989202"^^xsd:anyURI ;
+    ns1:omUnit <http://www.ontology-of-units-of-measure.org/resource/om-2/pascal> ;
+    ns1:siExactMatch <https://si-digital-framework.org/SI/units/pascal> ;
+    ns1:siUnitsExpression "N/m^2" ;
+    ns1:symbol "Pa" ;
+    ns1:ucumCode "Pa"^^ns1:UCUMcs ;
+    ns1:udunitsCode "Pa" ;
+    ns1:uneceCommonCode "PAL" ;
+    ns1:wikidataMatch <http://www.wikidata.org/entity/Q44395> ;
+    rdfs:isDefinedBy <http://qudt.org/$$QUDT_VERSION$$/vocab/unit> .
+
+<http://qudt.org/vocab/unit/PER-MIN> a ns1:DerivedUnit,
+        ns1:Unit ;
+    rdfs:label "Reciprocal Minute",
+        "Reciprocal Minute"@en ;
+    dcterms:description "A reciprocal unit of time for $\\textit{reciprocal minute}$ or $\\textit{inverse minute}$."^^ns1:LatexString ;
+    ns1:applicableSystem <http://qudt.org/vocab/sou/CGS>,
+        <http://qudt.org/vocab/sou/CGS-EMU>,
+        <http://qudt.org/vocab/sou/CGS-GAUSS>,
+        <http://qudt.org/vocab/sou/IMPERIAL>,
+        <http://qudt.org/vocab/sou/SI>,
+        <http://qudt.org/vocab/sou/USCS> ;
+    ns1:conversionMultiplier 0.01666666666666666666666666666666667 ;
+    ns1:conversionMultiplierSN 1.666667e-02 ;
+    ns1:expression "$m^{-1}$"^^ns1:LatexString ;
+    ns1:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L0I0M0H0T-1D0> ;
+    ns1:hasQuantityKind <http://qudt.org/vocab/quantitykind/Frequency> ;
+    ns1:iec61360Code "0112/2///62720#UAA843" ;
+    ns1:symbol "/min" ;
+    ns1:ucumCode "min-1"^^ns1:UCUMcs ;
+    ns1:uneceCommonCode "C94" ;
+    ns1:wikidataMatch <http://www.wikidata.org/entity/Q102129339> ;
+    rdfs:isDefinedBy <http://qudt.org/$$QUDT_VERSION$$/vocab/unit> .
+
+<http://qudt.org/vocab/quantitykind/Force> a ns1:QuantityKind ;
+    rdfs:label "وحدة القوة في نظام متر كيلوغرام ثانية"@ar,
+        "сила"@bg,
+        "Síla"@cs,
+        "Kraft"@de,
+        "Δύναμη"@el,
+        "force"@en,
+        "fuerza"@es,
+        "نیرو"@fa,
+        "force"@fr,
+        "כוח"@he,
+        "बल"@hi,
+        "erő"@hu,
+        "forza"@it,
+        "力"@ja,
+        "vis"@la,
+        "Daya"@ms,
+        "siła"@pl,
+        "força"@pt,
+        "forță"@ro,
+        "Сила"@ru,
+        "sila"@sl,
+        "kuvvet"@tr,
+        "力"@zh ;
+    dcterms:description "\"Force\" is an influence that causes mass to accelerate. It may be experienced as a lift, a push, or a pull. Force is defined by Newton's Second Law as $F = m \\times a $, where $F$ is force, $m$ is mass and $a$ is acceleration. Net force is mathematically equal to the time rate of change of the momentum of the body on which it acts. Since momentum is a vector quantity (has both a magnitude and direction), force also is a vector quantity."^^ns1:LatexString ;
+    ns1:dbpediaMatch "http://dbpedia.org/resource/Force"^^xsd:anyURI ;
+    ns1:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L1I0M1H0T-2D0> ;
+    ns1:iec61360Code "0112/2///62720#UAD054" ;
+    ns1:informativeReference "http://en.wikipedia.org/wiki/Force"^^xsd:anyURI ;
+    ns1:isoNormativeReference "http://www.iso.org/iso/catalogue_detail?csnumber=43012"^^xsd:anyURI ;
+    ns1:latexDefinition "$F = \\frac{dp}{dt}$, where $F$ is the resultant force acting on a body, $p$ is momentum of a body, and $t$ is time."^^ns1:LatexString ;
+    ns1:siExactMatch <https://si-digital-framework.org/quantities/FORC> ;
+    ns1:symbol "F" ;
+    ns1:wikidataMatch <http://www.wikidata.org/entity/Q11402> ;
+    rdfs:isDefinedBy <http://qudt.org/$$QUDT_VERSION$$/vocab/quantitykind> ;
+    skos:altLabel "भार"@hi .
+
+<http://qudt.org/vocab/quantitykind/VolumeFlowRate> a ns1:QuantityKind ;
+    rdfs:label "Volume Flow Rate"@en ;
+    dcterms:description "Volumetric Flow Rate, (also known as volume flow rate, rate of fluid flow or volume velocity) is the volume of fluid which passes through a given surface per unit time."^^ns1:LatexString ;
+    ns1:exactMatch <http://qudt.org/vocab/quantitykind/VolumePerTime> ;
+    ns1:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L3I0M0H0T-1D0> ;
+    ns1:iec61360Code "0112/2///62720#UAD239" ;
+    ns1:informativeReference "http://en.wikipedia.org/wiki/Volumetric_flow_rate"^^xsd:anyURI ;
+    ns1:isoNormativeReference "http://www.iso.org/iso/catalogue_detail?csnumber=31889"^^xsd:anyURI ;
+    ns1:latexDefinition "$q_V = \\frac{dV}{dt}$, where $V$ is volume and $t$ is time."^^ns1:LatexString ;
+    ns1:plainTextDescription "Volumetric Flow Rate, (also known as volume flow rate, rate of fluid flow or volume velocity) is the volume of fluid which passes through a given surface per unit time." ;
+    ns1:symbol "q_V" ;
+    ns1:wikidataMatch <http://www.wikidata.org/entity/Q1134348> ;
+    rdfs:isDefinedBy <http://qudt.org/$$QUDT_VERSION$$/vocab/quantitykind> .
+
+<http://qudt.org/vocab/unit/N> a ns1:DerivedUnit,
+        ns1:Unit ;
+    rdfs:label "Newton",
+        "نيوتن"@ar,
+        "Нютон"@bg,
+        "Newton"@cs,
+        "Newton"@de,
+        "Νιούτον"@el,
+        "Newton"@en,
+        "Newton"@es,
+        "نیوتن"@fa,
+        "Newton"@fr,
+        "ניוטון"@he,
+        "न्यूटन"@hi,
+        "Newton"@hu,
+        "Newton"@it,
+        "ニュートン"@ja,
+        "Newtonium"@la,
+        "Newton"@ms,
+        "Niuton"@pl,
+        "Newton"@pt,
+        "Newton"@ro,
+        "Ньютон"@ru,
+        "Newton"@sl,
+        "Newton"@tr,
+        "牛顿"@zh ;
+    dcterms:description "The \"Newton\" is the SI unit of force. A force of one newton will accelerate a mass of one kilogram at the rate of one meter per second per second. The newton is named for Isaac Newton (1642-1727), the British mathematician, physicist, and natural philosopher. He was the first person to understand clearly the relationship between force (F), mass (m), and acceleration (a) expressed by the formula $F = m \\cdot a$."^^ns1:LatexString ;
+    ns1:applicableSystem <http://qudt.org/vocab/sou/CGS>,
+        <http://qudt.org/vocab/sou/CGS-EMU>,
+        <http://qudt.org/vocab/sou/CGS-GAUSS>,
+        <http://qudt.org/vocab/sou/SI> ;
+    ns1:conversionMultiplier 1.0 ;
+    ns1:conversionMultiplierSN 1e+00 ;
+    ns1:dbpediaMatch "http://dbpedia.org/resource/Newton"^^xsd:anyURI ;
+    ns1:derivedCoherentUnitOfSystem <http://qudt.org/vocab/sou/SI> ;
+    ns1:exactMatch <http://qudt.org/vocab/unit/KiloGM-M-PER-SEC2> ;
+    ns1:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L1I0M1H0T-2D0> ;
+    ns1:hasFactorUnit [ ns1:exponent 1 ;
+            ns1:hasUnit <http://qudt.org/vocab/unit/M> ],
+        [ ns1:exponent -2 ;
+            ns1:hasUnit <http://qudt.org/vocab/unit/SEC> ],
+        [ ns1:exponent 1 ;
+            ns1:hasUnit <http://qudt.org/vocab/unit/KiloGM> ] ;
+    ns1:hasQuantityKind <http://qudt.org/vocab/quantitykind/Force> ;
+    ns1:iec61360Code "0112/2///62720#UAA235" ;
+    ns1:informativeReference "http://en.wikipedia.org/wiki/Newton?oldid=488427661"^^xsd:anyURI ;
+    ns1:omUnit <http://www.ontology-of-units-of-measure.org/resource/om-2/newton> ;
+    ns1:siExactMatch <https://si-digital-framework.org/SI/units/newton> ;
+    ns1:symbol "N" ;
+    ns1:ucumCode "N"^^ns1:UCUMcs ;
+    ns1:udunitsCode "N" ;
+    ns1:uneceCommonCode "NEW" ;
+    ns1:wikidataMatch <http://www.wikidata.org/entity/Q12438> ;
+    rdfs:isDefinedBy <http://qudt.org/$$QUDT_VERSION$$/vocab/unit> .

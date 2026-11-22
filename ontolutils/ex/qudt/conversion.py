@@ -1,4 +1,5 @@
 from functools import lru_cache
+from math import isfinite
 from typing import Tuple, Union, Any, Dict
 
 import pint
@@ -19,31 +20,50 @@ def _get_ureg():
 
 
 def _pick_one_scaling_of(scaling_of: Any) -> Any:
+    """Require an explicitly selected scaling description."""
     if scaling_of is None:
         return None
     if isinstance(scaling_of, list):
+        if len(scaling_of) > 1:
+            raise ValueError('Multiple scalingOf descriptions require explicit selection')
         return scaling_of[0] if scaling_of else None
     return scaling_of
 
 
 def _resolve_to_base_affine(unit: Unit, max_hops: int = 50) -> Tuple[Unit, float, float]:
     """
-    Follow scalingOf chain and compose:
-        v_base = M * v_unit + B
+    Find the shared scaling root and the unit's reference-coordinate transform.
+
+    QUDT coefficients describe ``reference = (value + offset) * multiplier``.
+    They are not successive edge weights: milligrams and grams, for example,
+    both carry multipliers relative to kilograms. Traverse only to establish
+    compatibility; multiplying the coefficients along the chain double counts
+    the intermediate units.
     """
     current: Any = unit
-    M, B = 1.0, 0.0
-    seen_obj_ids = set()
+    seen_ids = set()
 
     for _ in range(max_hops):
-        obj_id = id(current)
-        if obj_id in seen_obj_ids:
-            raise RuntimeError(f"Cycle detected in scalingOf chain starting at {unit}")
-        seen_obj_ids.add(obj_id)
+        if current.id in seen_ids:
+            raise RuntimeError(f"Cycle detected in scalingOf chain starting at {unit.id}")
+        seen_ids.add(current.id)
 
         parent = _pick_one_scaling_of(getattr(current, "scalingOf", None))
         if parent is None:
-            return current, M, B
+            multiplier = unit.conversionMultiplier
+            if multiplier is None:
+                if current is not unit:
+                    raise ValueError(f'Missing conversionMultiplier for scaled unit {unit.id}')
+                multiplier = 1.0
+            offset = unit.conversionOffset
+            offset = float(offset) if offset is not None else 0.0
+            multiplier = float(multiplier)
+            if not isfinite(multiplier) or multiplier == 0 or not isfinite(offset):
+                raise ValueError('Conversion requires a finite nonzero multiplier and finite offset')
+            intercept = multiplier * offset
+            if not isfinite(intercept):
+                raise ValueError('Conversion offset times multiplier must be finite')
+            return current, multiplier, intercept
 
         if not isinstance(parent, Unit):
             raise TypeError(
@@ -51,26 +71,33 @@ def _resolve_to_base_affine(unit: Unit, max_hops: int = 50) -> Tuple[Unit, float
                 f"You likely need to dereference a URI/ResourceType into a Unit object."
             )
 
-        m_raw = getattr(current, "conversionMultiplier", None)
-        b_raw = getattr(current, "conversionOffset", None)
-        m = float(m_raw) if m_raw is not None else 1.0
-        b = float(b_raw) if b_raw is not None else 0.0
-
-        B = m * B + b
-        M = m * M
         current = parent
 
-    raise RuntimeError(f"scalingOf chain too long starting at {unit} (>{max_hops} hops)")
+    raise RuntimeError(f"scalingOf chain too long starting at {unit.id} (>{max_hops} hops)")
 
 
 def convert_value_qudt(value: Union[int, float], from_unit: Unit, to_unit: Unit) -> Union[int, float]:
+    """Convert absolute values using QUDT reference multipliers and offsets.
+
+    Both units must resolve to the same explicit scaling root. This function
+    does not fetch missing descriptions or infer compatibility from dimensions.
+    Temperature differences require a separate interval conversion.
+    """
     if from_unit.id == to_unit.id:
+        for field in ('conversionMultiplier', 'conversionOffset'):
+            left, right = getattr(from_unit, field), getattr(to_unit, field)
+            if left is not None and right is not None and left != right:
+                raise ValueError(f'Conflicting {field} descriptions for unit {from_unit.id}')
         return value
     base_f, m_f, b_f = _resolve_to_base_affine(from_unit)
     base_t, m_t, b_t = _resolve_to_base_affine(to_unit)
 
-    if base_f != base_t:
+    if base_f.id != base_t.id:
         raise ValueError(f"Incompatible units: {from_unit} -> {base_f}, {to_unit} -> {base_t}")
+    for field in ('conversionMultiplier', 'conversionOffset'):
+        left, right = getattr(base_f, field), getattr(base_t, field)
+        if left is not None and right is not None and left != right:
+            raise ValueError(f'Conflicting {field} descriptions for base unit {base_f.id}')
 
     v_base = m_f * float(value) + b_f
     return (v_base - b_t) / m_t
@@ -95,7 +122,7 @@ def to_pint_unit(unit: Union[Unit, str, rdflib.URIRef], ureg=None, lookup: Dict 
             except pint.UndefinedUnitError:
                 pass
     if found_pint_unit is None:
-        for k, v in lookup.items():
+        for k, v in (lookup or {}).items():
             if str(v) == unit_iri:
                 try:
                     found_pint_unit = ureg.__getattr__(k)

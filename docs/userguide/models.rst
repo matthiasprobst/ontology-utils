@@ -76,11 +76,22 @@ Install NumPy for this example: ``python -m pip install numpy``.
    assert velocity.to_numpy().tolist() == [1.0, 1.2]
    turtle = velocity.serialize("ttl")
 
-For array values, ``NumericalVariable.serialize`` creates a scalar variable per
-element, with IDs ending in ``/0``, ``/1``, etc. ``model_dump_jsonld`` instead
-keeps the numerical values on the original model. Do not treat these two
-representations as interchangeable array formats; keep large scientific arrays
-in their data files and use RDF to describe them.
+For array values, every RDF export keeps numerical values on the original
+resource. RDF properties describe unordered sets, so export does not preserve
+element order, duplicates, shape or NumPy dtype. An empty value sequence has no
+value triples; it cannot be distinguished from an unset value after RDF loading.
+Keep scientific arrays in their data files and use RDF to describe their
+metadata. When separate scalar resources are intended, create them with explicit
+IDs and relationships before calling ``serialize``; export does not mint IDs.
+
+NumPy input must contain real integers or floating-point numbers up to float64.
+Complex, boolean, string, object and multidimensional arrays are rejected.
+A zero-dimensional real array is normalized to a scalar.
+NaN and positive/negative infinity are exported as explicit ``xsd:double``
+value objects with lexical forms ``NaN``, ``INF`` and ``-INF``. These preserve
+IEEE values in valid JSON-LD; they do not establish an application-level
+missing-value policy or make an otherwise invalid measurement scientifically
+valid. Add application constraints when nonfinite values must be rejected.
 
 ``to_pint()`` additionally requires Pint. ``to_xarray()`` additionally requires
 Pint and xarray. ``has_unit="m/s"`` uses a built-in QUDT lookup, not arbitrary

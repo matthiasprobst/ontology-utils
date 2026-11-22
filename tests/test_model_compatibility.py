@@ -16,6 +16,42 @@ from ontolutils.typing import AnyIriOf
 EX = Namespace("https://example.org/compatibility/")
 
 
+@pytest.mark.parametrize('text', ['ex:sample', 'schema:Person', 'urn:example:literal'])
+def test_literal_prefixes_are_not_expanded(text):
+    original = Thing(id=str(EX.resource), label=text)
+    restored = Thing.from_jsonld(data=original.model_dump_jsonld(),
+                                context={'ex': str(EX), 'schema': 'https://schema.org/'},
+                                limit=1)
+    assert str(restored.label) == text
+
+
+def test_non_rdf_type_predicate_is_retained():
+    # Dictionary querying must distinguish rdf:type from another namespace's type.
+    from ontolutils import dquery
+    payload = {'@context': {'ex': str(EX)}, '@id': str(EX.resource),
+               '@type': 'ex:Classified', 'ex:type': 'measured'}
+    result = dquery('ex:Classified', data=json.dumps(payload), context={'ex': str(EX)})
+    assert result[0]['type'] == 'measured'
+
+
+@pytest.mark.parametrize("input_kind", ["text", "dict", "file"])
+def test_loading_preserves_schema_http_literals_and_subject(input_kind, tmp_path):
+    original = Thing(id="http://schema.org/example",
+                     label="Source: http://schema.org/",
+                     comment=Literal("http://schema.org/Person", lang="en"))
+    payload = original.model_dump_jsonld()
+    expected = Graph().parse(data=payload, format="json-ld")
+    if input_kind == "file":
+        path = tmp_path / "resource.jsonld"
+        path.write_text(payload, encoding="utf-8")
+        restored = Thing.from_jsonld(source=path, limit=1)
+    else:
+        data = json.loads(payload) if input_kind == "dict" else payload
+        restored = Thing.from_jsonld(data=data, limit=1)
+    actual = Graph().parse(data=restored.model_dump_jsonld(), format="json-ld")
+    assert isomorphic(actual, expected)
+
+
 @namespaces(ex=str(EX))
 @urirefs(Observation="ex:Observation", sampleCount="ex:sampleCount",
          active="ex:active", observedAt="ex:observedAt", creator="ex:creator")

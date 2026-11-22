@@ -20,10 +20,12 @@ assert velocity.to_numpy().tolist() == [1.0, 1.2]
 turtle = velocity.serialize("ttl")
 ----
 
-For array values, `NumericalVariable.serialize` creates scalar resources with
-IDs ending in `/0`, `/1`, etc. `model_dump_jsonld` instead retains the values on
-the original model. These are different representations. Keep large arrays in
-data files and describe them with RDF.
+Every RDF export retains numerical values on the original resource as an
+unordered set. Order, duplicates, array shape and NumPy dtype are not preserved;
+an empty sequence has no value triples. Keep scientific arrays in data files
+and describe their metadata with RDF. Export no longer creates scalar resources
+with generated `/0`, `/1`, etc. IDs. Model separate scalar resources explicitly
+when that is the intended meaning.
 
 Pint is additionally needed for `to_pint`; Pint and xarray for `to_xarray`.
 

@@ -1,13 +1,13 @@
 from datetime import datetime
 from typing import Union, List, Optional
 
-from pydantic import EmailStr, HttpUrl, Field, field_validator, model_validator
+from pydantic import HttpUrl, Field, field_validator, model_validator
 
 from ontolutils import LangString
 from ontolutils import Thing, as_id
 from ontolutils import urirefs, namespaces
 from ontolutils.ex.skos import Concept
-from ontolutils.typing import AnyThing, AnyIriOrListOf
+from ontolutils.typing import AnyThing, AnyIriOrListOf, Mailbox
 
 __version__ = "2013.19.05"
 
@@ -27,7 +27,7 @@ class Role(Concept):
 class Agent(Thing):
     """Pydantic Model for http://www.w3.org/ns/prov#Agent
     """
-    mbox: EmailStr = Field(default=None, alias="personal mailbox")  # foaf:mbox
+    mbox: Mailbox = Field(default=None, alias="personal mailbox")  # foaf:mbox
     name: Union[LangString, List[LangString]] = None  # foaf:name
 
 

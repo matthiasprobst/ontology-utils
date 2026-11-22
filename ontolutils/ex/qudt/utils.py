@@ -1,4 +1,5 @@
 import warnings
+import hashlib
 from collections import defaultdict
 from functools import lru_cache
 from typing import Union
@@ -7,8 +8,29 @@ import rdflib
 import requests
 from rdflib import URIRef, Literal
 
-from ontolutils import QUDT_UNIT
+from ontolutils import QUDT_UNIT, Thing
 from ontolutils.ex.qudt import Unit, QuantityKind
+
+# QUDT v3.1.9 tag, resolved to an immutable upstream commit. These are source
+# vocabularies matching this module's declared baseline, not the latest graphs.
+QUDT_SOURCE_COMMIT = 'cf953bf42846f28c6b40a71a74763b2ab1d92069'
+_QUDT_BASE = f'https://raw.githubusercontent.com/qudt/qudt-public-repo/{QUDT_SOURCE_COMMIT}/src/main/rdf/vocab/'
+_QUDT_SOURCES = {
+    'unit': ('unit/VOCAB_QUDT-UNITS-ALL.ttl',
+             'a4c0f8b0585496faf3c1149047d5eaa906d2f1ac49cf4e98b9678e9fd4f89691'),
+    'quantitykind': ('quantitykinds/VOCAB_QUDT-QUANTITY-KINDS-ALL.ttl',
+                     '376d0514a51e11048861626b691ac96a053824199ebf43ecb2856084e08cb082'),
+}
+
+
+def _load_qudt_graph(kind):
+    """Fetch a verified release vocabulary with bounded connection/read waits."""
+    path, digest = _QUDT_SOURCES[kind]
+    response = requests.get(_QUDT_BASE + path, timeout=(5, 30))
+    response.raise_for_status()
+    if hashlib.sha256(response.content).hexdigest() != digest:
+        raise ValueError(f'QUDT 3.1.9 {kind} source checksum mismatch')
+    return rdflib.Graph().parse(data=response.content, format='turtle')
 
 iri2str = {str(v): k for k, v in {
     's': QUDT_UNIT.SEC,  # time
@@ -190,24 +212,14 @@ def bindings_to_kv(bindings):
 
 @lru_cache()
 def _get_qudt_unit_graph() -> rdflib.Graph:
-    """Retrieve the QUDT unit ontology as an RDFLib Graph."""
-    ontology_uri = "https://qudt.org/vocab/unit/"
-    res = requests.get(ontology_uri)
-    res.raise_for_status()
-    g = rdflib.Graph()
-    g.parse(data=res.text, format="turtle")
-    return g
+    """Retrieve the pinned QUDT 3.1.9 unit vocabulary, cached in memory."""
+    return _load_qudt_graph('unit')
 
 
 @lru_cache()
 def _get_qudt_kind_graph() -> rdflib.Graph:
-    """Retrieve the QUDT quantity kind ontology as an RDFLib Graph."""
-    ontology_uri = "https://qudt.org/vocab/quantitykind/"
-    res = requests.get(ontology_uri)
-    res.raise_for_status()
-    g = rdflib.Graph()
-    g.parse(data=res.text, format="turtle")
-    return g
+    """Retrieve the pinned QUDT 3.1.9 quantity-kind vocabulary, cached in memory."""
+    return _load_qudt_graph('quantitykind')
 
 
 def _prepare_query(uri: Union[str, rdflib.URIRef]) -> str:
@@ -249,20 +261,24 @@ def bindings_to_kv_compact_keys(bindings):
     return {k: (v[0] if len(v) == 1 else v) for k, v in grouped.items()}
 
 
-@lru_cache()
 def get_unit(value: Union[str, rdflib.URIRef, Unit]) -> Unit:
-    """Get the string representation of a unit given its QUDT URI.
-
-    - Downloads the ontology if not already cached.
-    - Looks up the unit in a predefined mapping.
-    """
+    """Resolve a unit's IRI against pinned QUDT, returning an independent model."""
     # download the ontology:
     if isinstance(value, Unit):
         uri = value.id
     else:
         uri = value
+    return _get_unit_by_iri(str(uri)).model_copy(deep=True)
+
+
+@lru_cache()
+def _get_unit_by_iri(uri):
+    """Cache an internal model; public callers receive independent copies."""
     g = _get_qudt_unit_graph()
-    return Unit.from_graph(g, subject=uri)[0]
+    matches = Unit.from_graph(g, subject=uri)
+    if not matches:
+        raise ValueError(f'Unit {uri} not found in QUDT 3.1.9')
+    return matches[0]
 
 
 def get_unit_by_uri(uri):
@@ -270,26 +286,32 @@ def get_unit_by_uri(uri):
     return get_unit(uri)
 
 
-@lru_cache()
 def get_quantity_kind(value: Union[str, rdflib.URIRef, Unit]) -> QuantityKind:
-    """Get the string representation of a quantity kind given its QUDT URI. Alternatively,
-     pass a Unit to get its quantity kind.
+    """Resolve an explicit quantity-kind IRI or an unambiguous Unit association.
 
-    - Downloads the ontology if not already cached.
-    - Looks up the quantity kind in a predefined mapping.
+    A unit may be associated with several quantity kinds. Their RDF order does
+    not select a scientific meaning: pass an explicit kind IRI in that case.
+    Missing or ambiguous associations raise ValueError before network access.
     """
     # download the ontology:
     if isinstance(value, Unit):
-        # get the first quantity kind of the unit
         qkinds = value.hasQuantityKind
         if not qkinds:
-            value = qkinds.id
-        else:
-            if isinstance(qkinds, (str, rdflib.URIRef)):
-                value = str(qkinds)
-            elif isinstance(qkinds, list):
-                value = str(qkinds[0].id)
-            else:
-                value = str(qkinds.id)
+            raise ValueError(f'Unit {value.id} has no quantity kind')
+        candidates = qkinds if isinstance(qkinds, list) else [qkinds]
+        identifiers = {str(kind.id if isinstance(kind, Thing) else kind)
+                       for kind in candidates}
+        if len(identifiers) != 1:
+            raise ValueError(f'Unit {value.id} has multiple quantity kinds; pass an explicit quantity-kind IRI')
+        value = identifiers.pop()
+    return _get_quantity_kind_by_iri(str(value)).model_copy(deep=True)
+
+
+@lru_cache()
+def _get_quantity_kind_by_iri(value):
+    """Cache by immutable IRI, never by mutable Unit association state."""
     g = _get_qudt_kind_graph()
-    return QuantityKind.from_graph(g, subject=value)[0]
+    matches = QuantityKind.from_graph(g, subject=value)
+    if not matches:
+        raise ValueError(f'Quantity kind {value} not found in QUDT 3.1.9')
+    return matches[0]

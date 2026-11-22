@@ -10,6 +10,26 @@ import ontolutils
 from ontolutils import Thing, namespaces, urirefs
 
 
+def test_import_keeps_user_cache_out_of_module_search_path_and_defers_generation():
+    result = subprocess.run(
+        [sys.executable, '-I', '-c', '''
+import importlib
+import sys
+sys.path.insert(0, sys.argv[1])
+before = list(sys.path)
+import ontolutils
+from ontolutils import namespacelib
+assert sys.path == before, 'Importing metadata models must not add a writable cache to sys.path'
+assert 'ontolutils.namespacelib.__dev' not in sys.modules
+assert str(namespacelib.QUDT_UNIT.M) == 'http://qudt.org/vocab/unit/M'
+assert callable(namespacelib.__dev.generate_namespace_file_from_ttl)
+assert namespacelib.__dev is importlib.import_module('ontolutils.namespacelib.__dev')
+assert sys.path == before
+''', str(Path(ontolutils.__file__).resolve().parent.parent)],
+        capture_output=True, text=True, check=False, timeout=60)
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
 def test_core_serialization_without_numpy():
     result = subprocess.run(
         [sys.executable, "-I", "-c", '''

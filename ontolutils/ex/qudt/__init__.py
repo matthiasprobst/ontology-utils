@@ -1,13 +1,30 @@
+import re
 from typing import Union, List, Optional
 
 import rdflib
-from pydantic import Field, field_validator
+from pydantic import AliasChoices, Field, field_validator
+from pydantic.functional_validators import WrapValidator
+from typing_extensions import Annotated
 
 from ontolutils import Thing, namespaces, urirefs
 from ...typing import AnyThing, AnyIri, AnyThingOrList, AnyIriOrListOf
 
 __version__ = "3.1.9"
 _NS = "http://qudt.org/schema/qudt/"
+
+
+def _preserve_uri_literals(value, handler):
+    """Accept QUDT anyURI literals without turning them into resource terms."""
+    if isinstance(value, rdflib.Literal):
+        if value.datatype != rdflib.XSD.anyURI:
+            raise ValueError('QUDT URI literal references require the xsd:anyURI datatype')
+        return value
+    if isinstance(value, list):
+        return [_preserve_uri_literals(item, handler) for item in value]
+    return handler(value)
+
+
+_ReferenceOrUriLiteral = Annotated[AnyThing, WrapValidator(_preserve_uri_literals)]
 
 
 @namespaces(qudt=_NS)
@@ -41,13 +58,15 @@ class Unit(Thing):
     ucumCode: Optional[str] = Field(default=None, alias="ucum_code")
     udunitsCode: Optional[str] = Field(default=None, alias="udunits_code")
     uneceCommonCode: Optional[str] = Field(default=None, alias="unece_common_code")
-    wikidataMatch: Optional[AnyIri] = Field(default=None, alias="wikidata_match ")
+    wikidataMatch: Optional[AnyIri] = Field(
+        default=None, alias="wikidata_match",
+        validation_alias=AliasChoices('wikidataMatch', 'wikidata_match', 'wikidata_match '))
     applicableSystem: Optional[AnyThingOrList] = Field(default=None, alias="applicable_system")
     conversionMultiplier: Optional[float] = Field(default=None, alias="conversion_multiplier")
     conversionMultiplierSN: Optional[float] = Field(default=None, alias="conversion_multiplier_sn")
-    dbpediaMatch: Union[AnyThing] = Field(default=None, alias="dbpedia_match")
+    dbpediaMatch: Optional[_ReferenceOrUriLiteral] = Field(default=None, alias="dbpedia_match")
     hasDimensionVector: Union[AnyThing] = Field(default=None, alias="has_dimension_vector")
-    informativeReference: Union[AnyThing] = Field(default=None, alias="informative_reference")
+    informativeReference: Optional[_ReferenceOrUriLiteral] = Field(default=None, alias="informative_reference")
     iec61360Code: Union[str] = Field(default=None, alias="iec61360_code")
     omUnit: Union[AnyThing] = Field(default=None, alias="om_unit")
     exactMatch: Union["Unit", AnyThing, List[Union["Unit", AnyThing]]] = Field(default=None,
@@ -66,11 +85,14 @@ class Unit(Thing):
     @field_validator("hasQuantityKind", mode='before')
     @classmethod
     def _parse_unit(cls, qkind):
-        if str(qkind).startswith("http"):
-            return str(qkind)
-        if isinstance(qkind, str):
-            # assumes that the string is a quantity kind is short form of the QUDT IRI
-            return "https://https://qudt.org/vocab/quantitykind/" + qkind
+        """Expand bare QUDT local names without rewriting RDF terms or models."""
+        if isinstance(qkind, list):
+            return [cls._parse_unit(item) for item in qkind]
+        if isinstance(qkind, str) and not isinstance(qkind, (rdflib.Literal, rdflib.URIRef)):
+            if ':' not in qkind:
+                if not re.fullmatch(r'[A-Za-z_][A-Za-z0-9_.-]*', qkind):
+                    raise ValueError('Quantity kind shorthand must be a QUDT local name')
+                return 'http://qudt.org/vocab/quantitykind/' + qkind
         return qkind
 
     @classmethod
@@ -111,8 +133,8 @@ class QuantityKind(Thing):
     latexSymbol: Optional[Union[str, List[str]]] = Field(default=None, alias="latex_symbol")
     hasDimensionVector: Optional[Union[AnyThing, List[AnyThing]]] = Field(default=None,
                                                                           alias="has_dimension_vector")
-    informativeReference: Optional[Union[AnyThing, List[AnyThing]]] = Field(default=None,
-                                                                            alias="informative_reference")
+    informativeReference: Optional[_ReferenceOrUriLiteral] = Field(default=None,
+                                                                  alias="informative_reference")
     symbol: Optional[Union[str, List[str]]] = Field(default=None, alias="symbol")
     iec61360Code: Optional[Union[str, List[str]]] = Field(default=None, alias="iec61360_code")
     wikidataMatch: Optional[Union[AnyThing, List[AnyThing]]] = Field(default=None, alias="wikidata_match")

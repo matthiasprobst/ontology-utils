@@ -1,13 +1,19 @@
 {
     "@context": {
-        "@import": "https://w3id.org/nfdi4ing/metadata4ing/m4i_context.jsonld"
+        "prov": "http://www.w3.org/ns/prov#",
+        "foaf": "http://xmlns.com/foaf/0.1/",
+        "dcat": "http://www.w3.org/ns/dcat#",
+        "m4i": "http://w3id.org/nfdi4ing/metadata4ing#",
+        "personal mailbox": {"@id": "foaf:mbox", "@type": "@id"},
+        "dcat:hadRole": {"@id": "dcat:hadRole", "@type": "@id"},
+        "has ORCID ID": "m4i:orcidId"
     },
     "prov:qualifiedAttribution": {
         "@type": "prov:Attribution",
         "prov:agent": {
             "@id": "https://orcid.org/1234-1234-1234-1234",
             "@type": "prov:Person",
-            "personal mailbox": "john.doe@mail.de",
+            "personal mailbox": "mailto:john.doe@mail.de",
             "has ORCID ID": "https://orcid.org/1234-1234-1234-1234"
         },
             "dcat:hadRole": "http://w3id.org/nfdi4ing/metadata4ing#ContactPerson"

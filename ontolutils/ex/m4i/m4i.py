@@ -77,10 +77,11 @@ class NumericalVariable(Variable):
     names ``has_unit`` and ``units``; supported unit strings such as ``m/s``
     are looked up as QUDT IRIs.
 
-    For array values, ``serialize`` creates one scalar resource per element,
-    with IDs suffixed by ``/0``, ``/1``, etc. ``model_dump_jsonld`` instead
-    retains multiple values on the original resource. These are different
-    representations; RDF properties do not preserve NumPy array structure.
+    RDF export retains multiple numerical values on the original resource in
+    every format. These values form an unordered set: ordering, duplicate
+    entries, array shape and NumPy dtype are not preserved. Keep scientific
+    arrays in a data format such as HDF5 or NetCDF and describe their metadata
+    here. Export does not create new resource IDs for array elements.
 
     Importing this module requires NumPy. Pint is additionally required by
     ``to_pint``; Pint and xarray are required by ``to_xarray``.
@@ -138,6 +139,10 @@ class NumericalVariable(Variable):
         if isinstance(data, np.ndarray):
             if data.ndim > 1:
                 raise ValueError("Only 1D numpy arrays are supported for hasNumericalValue")
+            if data.dtype.kind not in 'iuf' or (data.dtype.kind == 'f' and data.dtype.itemsize > 8):
+                raise ValueError('hasNumericalValue requires real integer or floating-point arrays up to float64')
+            if data.ndim == 0:
+                return data.item()
             return data
         return data
 
@@ -192,7 +197,9 @@ class NumericalVariable(Variable):
         from ..qudt.conversion import to_pint_unit
         new_unit = to_pint_unit(self.hasUnit, ureg=ureg)
 
-        return self.hasNumericalValue * new_unit
+        # Pint's quantity constructor handles absolute offset units (e.g. degC).
+        # Multiplication would treat them as a scale and raise for valid inputs.
+        return new_unit._REGISTRY.Quantity(self.hasNumericalValue, new_unit)
 
     def to_numpy(self):
         """Convert numerical value to numpy ndarray"""
@@ -292,51 +299,6 @@ class NumericalVariable(Variable):
             unit_str = f'{ureg(fields["units"]).units:~f}'.replace(" ", "")
             fields["units"] = unit_str
         return cls(hasNumericalValue=data_array.data, **fields)
-
-    def serialize(self,
-                  format: str,
-                  context: Optional[Dict] = None,
-                  exclude_none: bool = True,
-                  resolve_keys: bool = True,
-                  base_uri: Optional[Union[str, AnyUrl]] = None,
-                  **kwargs) -> str:
-        """Serialize NumericalVariable to RDF format."""
-        # if hasNumericalValue is not a float or int, we need to unpack it to n variables
-        if self.hasNumericalValue is None:
-            return super().serialize(
-                format=format,
-                context=context,
-                exclude_none=exclude_none,
-                resolve_keys=resolve_keys,
-                base_uri=base_uri,
-                **kwargs
-            )
-        if isinstance(self.hasNumericalValue, (int, float)):
-            return super().serialize(
-                format=format,
-                context=context,
-                exclude_none=exclude_none,
-                resolve_keys=resolve_keys,
-                base_uri=base_uri,
-                **kwargs
-            )
-        if self.hasNumericalValue is not None:
-            entities = [self.__class__(
-                **{
-                    **self.model_dump(
-                        exclude={'has_numerical_value', 'id'}
-                    ),
-                    "has_numerical_value": v,
-                    "id": f"{self.id}/{i}"
-                }
-            ) for i, v in enumerate(self.hasNumericalValue)]
-        from ... import serialize
-        return serialize(entities,
-                         format=format,
-                         context=context,
-                         exclude_none=exclude_none,
-                         resolve_keys=resolve_keys,
-                         base_uri=base_uri, **kwargs)
 
     def is_kind_of_quantity(self, kind_of_quantity: Union[str, AnyUrl, QuantityKind]) -> bool:
         """Check if the NumericalVariable has the given quantity kind.

@@ -1,9 +1,13 @@
 Ontolutils
 ==========
 
-Create validated scientific metadata as Python objects and exchange it as RDF.
+Describe scientific metadata as Python objects and exchange it as RDF.
 Ontolutils combines Pydantic field validation with RDFLib serialization. It
 includes models for provenance, datasets, observations, and numerical variables.
+
+This guide describes the unreleased 1.0 branch. Published packages may have
+different behavior. See :doc:`installation` to install this checkout and
+:doc:`migration` for changes from 0.27.
 
 Start with a person
 -------------------
@@ -46,3 +50,5 @@ it does not infer an entire ontology's constraints from a class definition.
    userguide/index
    api
    development
+   migration
+   ontologies

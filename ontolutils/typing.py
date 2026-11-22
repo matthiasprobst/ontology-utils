@@ -5,9 +5,9 @@ import warnings
 from typing import TYPE_CHECKING, Union, List, Optional
 from typing import TypeVar
 
-from pydantic import AnyUrl, FileUrl, HttpUrl
+from pydantic import AnyUrl, FileUrl, HttpUrl, EmailStr, BeforeValidator, AfterValidator
 from pydantic.functional_validators import WrapValidator
-from rdflib import URIRef, BNode
+from rdflib import URIRef, BNode, Literal
 from typing_extensions import Annotated, TypeAlias
 
 # Only import Thing for static type checkers — avoids runtime circular import
@@ -16,18 +16,39 @@ if TYPE_CHECKING:
     from .classes import LangString
 
 
+class _IriString(str):
+    """Keep validated resource references distinct from literal string values."""
+
+
+class _Mailbox(str):
+    """An email address whose RDF representation is a mailbox resource."""
+
+
+def _mailbox_address(value):
+    """Accept email addresses and their mailto resource representation."""
+    if isinstance(value, str) and value.startswith('mailto:'):
+        return value[7:]
+    return value
+
+
+Mailbox = Annotated[EmailStr, BeforeValidator(_mailbox_address), AfterValidator(_Mailbox)]
+
+
 def validate_iri_type(value, handler, info):
+    """Validate resource references while retaining string-compatible values."""
     def check_item(item):
-        if isinstance(item, str) and re.match(r'^https?://', item):
-            return str(item)
-        if isinstance(item, str) and item.startswith("_:"):
-            return str(item)
-        if isinstance(item, AnyUrl):
-            return str(item)
-        if isinstance(item, URIRef):
-            return str(item)
+        if isinstance(item, Literal):
+            raise ValueError('An RDF literal cannot be used as a resource reference')
         if isinstance(item, BNode):
-            return str(item)
+            return _IriString(item.n3())
+        if isinstance(item, str) and re.match(r'^https?://', item):
+            return _IriString(item)
+        if isinstance(item, str) and item.startswith("_:"):
+            return _IriString(item)
+        if isinstance(item, AnyUrl):
+            return _IriString(str(item))
+        if isinstance(item, URIRef):
+            return _IriString(str(item))
         field_name = getattr(info, "field_name", None)
         if field_name is not None:
             msg = f"IriOrType in field '{field_name}' must be a HTTP-URL string or a pydantic AnyUrl object. Got: {type(item)}"

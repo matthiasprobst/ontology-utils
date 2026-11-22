@@ -1,4 +1,5 @@
 import logging
+import json
 import pathlib
 import unittest
 from typing import Union
@@ -72,23 +73,31 @@ class TestQuery(unittest.TestCase):
         self.assertTrue(res[0]['@id'] == 'http://example.org/testperson')
 
     def test_dquery_codemeta(self):
-        """Read the codemeta.json file and query for schema:SoftwareSourceCode"""
+        """Query repository metadata with an explicit local schema/list profile."""
         codemeta_filename = __this_dir__ / '../codemeta.json'
         self.assertTrue(codemeta_filename.exists())
+        metadata = json.loads(codemeta_filename.read_text(encoding='utf-8'))
+        metadata['@context'] = {
+            '@vocab': 'http://schema.org/',
+            'author': {'@id': 'http://schema.org/author', '@container': '@list'},
+        }
         res = ontolutils.dquery(
             subject="schema:SoftwareSourceCode",
-            source=codemeta_filename,
+            data=json.dumps(metadata),
             context={"schema": "http://schema.org/"}
         )
         self.assertIsInstance(res, list)
         self.assertTrue(len(res) == 1)
         self.assertTrue(res[0]['version'] == __version__.replace("rc", "-rc"))
         self.assertTrue('author' in res[0])
-        self.assertIsInstance(res[0]['author'], list)
-        self.assertEqual(res[0]['author'][0]["@id"], 'https://orcid.org/0000-0001-8729-0482')
-        self.assertEqual(res[0]['author'][0]['@type'], 'http://schema.org/Person')
-        self.assertEqual(res[0]['author'][0]['givenName'], 'Matthias')
-        self.assertEqual(res[0]['author'][0]['affiliation']["@id"], 'https://ror.org/04t3en479')
+        self.assertIsInstance(res[0]['author'], dict)
+        author = res[0]['author']['first']
+        self.assertEqual(author['@id'], 'https://orcid.org/0000-0001-8729-0482')
+        self.assertEqual(author['@type'], 'http://schema.org/Person')
+        self.assertEqual(author['givenName'], 'Matthias')
+        self.assertEqual(author['affiliation']['@id'], 'https://ror.org/04t3en479')
+        self.assertEqual(res[0]['author']['rest']['@id'],
+                         'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil')
 
     def test_query_get_dict(self):
         """query excepts a class or a type string"""

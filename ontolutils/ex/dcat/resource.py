@@ -13,7 +13,7 @@ from ontolutils import Thing, urirefs, namespaces, LangString
 from ontolutils.classes.utils import download_file
 from ontolutils.ex import foaf
 from ontolutils.ex import prov
-from ontolutils.typing import AnyThing, AnyIriOf, AnyIri, AnyIriOrListOf, IriList, AnyThingOf, \
+from ontolutils.typing import AnyThing, AnyIriOf, AnyIri, AnyIriOrListOf, IriList, \
     AnyThingOrList
 from ..prov import Attribution
 from ..spdx import Checksum
@@ -260,7 +260,7 @@ class Distribution(Resource):
     """
     downloadURL: Union[HttpUrl, FileUrl, pathlib.Path] = Field(default=None, alias='download_URL')
     accessURL: Union[HttpUrl, FileUrl, pathlib.Path] = Field(default=None, alias='access_URL')
-    mediaType: Optional[AnyThingOf[str]] = Field(default=None, alias='media_type')  # dcat:mediaType
+    mediaType: Optional[AnyThing] = Field(default=None, alias='media_type')  # dcat:mediaType
     byteSize: int = Field(default=None, alias='byte_size')  # dcat:byteSize
     hasPart: Optional[AnyThing] = Field(default=None, alias='has_part')  # dcterms:hasPart
     checksum: Optional[AnyIriOf[Checksum]] = None  # spdx:checksum

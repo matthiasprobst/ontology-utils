@@ -56,6 +56,17 @@ Choose a helper
 These helpers are permissive: ``AnyIri`` itself also accepts lists of reference
 values, and a plain ``URIRef`` is not checked for a specific URL scheme. Use
 your own Pydantic validator when you need stricter cardinality or IRI rules.
+Validated IRI references compare as strings and serialize as JSON-LD ``@id``
+objects. Ordinary ``str`` values are literals, including URL-looking text and
+compact-IRI-looking text. In a field accepting both text and IRIs, use an
+explicit RDFLib ``URIRef`` or a Pydantic URL object to request a reference.
+RDFLib ``Literal`` objects cannot be passed to an IRI-only field.
+During RDF loading, fields accepting only IRI/URL references keep the target's
+identifier even if that target has a description in the source graph. A field
+that also accepts a model can load its mapped metadata. Lists of references
+still support finite RDF collections, preserving member order and duplicates
+when loading. Reference-only projection omits the target's description from
+subsequent model export; retain the source graph when it must survive.
 ``NoneBlankNodeType`` is an ID type that rejects ``_:`` strings and RDFLib
 ``BNode`` objects when a named resource is required.
 

@@ -7,6 +7,7 @@ package_user_dir.mkdir(parents=True, exist_ok=True)
 
 
 def get_cache_dir() -> pathlib.Path:
+    """Return the package cache directory, creating it when necessary."""
     cache_dir = package_user_dir / 'cache'
     cache_dir.mkdir(parents=True, exist_ok=True)
     return cache_dir

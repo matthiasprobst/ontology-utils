@@ -87,6 +87,14 @@ Pass a model to include its properties in the serialized graph, or an IRI to
 reference a resource described elsewhere. See :doc:`typing` for lists and
 other reference types.
 
+Ordinary ``str`` fields serialize as literal text, including URL-looking strings
+and strings such as ``ex:sample``. Use ``AnyIri`` or ``AnyIriOf[Model]`` for
+resource-reference fields, or a Pydantic URL type for a URL-valued reference.
+Validated IRI fields remain string-compatible while retaining reference meaning
+for RDF export. An RDFLib ``Literal`` is never accepted as an IRI reference.
+Use ``LangString`` for explicit language tags and RDFLib ``Literal`` for explicit
+datatypes in unconstrained fields.
+
 Add fields deliberately
 -----------------------
 
@@ -126,3 +134,12 @@ For classes defined from a configuration at runtime, use ``build``:
 ``Thing.add_property`` only registers an RDF mapping; it does not add a validated
 Pydantic field to ``model_fields``. Define or rebuild a model when field
 validation is required.
+
+Numerical offset units
+----------------------
+
+``NumericalVariable.to_pint()`` uses the requested registry's quantity
+constructor, including for absolute Celsius values and arrays. Subtracting
+absolute temperatures produces a delta quantity; do not apply an absolute offset
+to a temperature difference. Unknown unit IRIs raise a descriptive ``ValueError``
+from ``to_pint_unit()`` instead of an error about a missing optional lookup.

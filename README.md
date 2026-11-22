@@ -1,4 +1,4 @@
-# Ontolutils: validated scientific metadata in RDF
+# Ontolutils: Python models for scientific metadata and RDF
 
 ![Tests](https://github.com/matthiasprobst/ontology-utils/actions/workflows/tests.yml/badge.svg)
 [![Documentation](https://readthedocs.org/projects/ontology-utils/badge/?version=latest)](https://ontology-utils.readthedocs.io/en/latest/)
@@ -9,7 +9,20 @@ Use the included ontology models or map your own fields to RDF terms.
 
 ## Install
 
-Requires Python **3.9–3.14**, Pydantic **2.x**, and RDFLib **7.x**.
+This version requires Python **3.11–3.15**, Pydantic **2.x**,
+and RDFLib **7.x**. Python 3.14 requires Pydantic 2.12 or newer; Python 3.15
+requires Pydantic 2.14 or newer.
+Python 3.10 and earlier are not supported by this branch.
+
+**This is unreleased 1.0 documentation.** To use the behavior described here,
+install from this branch's checkout in a virtual environment:
+
+```bash
+python -m pip install .
+```
+
+To install the latest published release instead (whose API and Python support
+may differ):
 
 ```bash
 python -m pip install ontolutils
@@ -41,6 +54,12 @@ Python field validation checks the model's declared types and constraints.
 Use SHACL for additional rules on the RDF graph; ontology conformance is not
 automatically guaranteed by creating a Python object.
 
+Models contain selected ontology terms. Loading projects RDF onto their mapped
+fields, so unknown predicates and additional source types may be omitted on
+export. Keep the source graph when all triples must survive. Numerical arrays
+export as unordered RDF values; order, duplicates, shape and dtype are not
+preserved. See the [1.0 migration guide](docs/migration.rst).
+
 ## Learn by task
 
 - [Define and validate your own model](https://ontology-utils.readthedocs.io/en/latest/userguide/classes.html)
@@ -54,11 +73,14 @@ The base installation supports core models and RDF serialization. Install
 `numpy` for `ontolutils.ex.m4i`, `pint` for its unit conversions, `xarray` for
 DataArray conversion, or `pyshacl` for RDF validation as needed.
 
+## Units and numerical data
+
+Numerical variables construct Pint quantities explicitly, so absolute offset
+units such as Celsius convert correctly. Subtract absolute temperatures to obtain
+a temperature difference; absolute offsets must not be applied to differences.
+Unknown QUDT-to-Pint mappings raise `ValueError`; `to_pint_unit(..., lookup=...)`
+accepts an optional custom symbol mapping.
+
 ## Development
 
 See [test instructions](tests/README.md) and [documentation build instructions](docs/README.md).
-Compatibility checks must use a fresh install so installed metadata matches the
-checkout. Validate model and RDF contracts before changing dependency bounds.
-
-Keep local investigations in `.work/`. Its contents are ignored by Git and must
-not be committed or force-added; accepted guidance belongs in regular docs.

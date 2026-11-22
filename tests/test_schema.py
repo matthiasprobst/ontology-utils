@@ -36,7 +36,7 @@ class TestSchema(unittest.TestCase):
             "codeRepository": "https://example.com/code",
             "applicationCategory": "https://example.com/category"
         })
-        print(thing[0].model_dump_jsonld(indent=2))
+        self.assertEqual(thing, [])  # Distinct vocabulary IRI must not be rewritten.
 
     def test_event(self):
         # Event is not defined in the package

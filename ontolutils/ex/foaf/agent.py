@@ -1,7 +1,7 @@
-from pydantic import EmailStr, AnyUrl, Field, model_validator
+from pydantic import AnyUrl, Field, model_validator
 
 from ontolutils import urirefs, namespaces, Thing, as_id
-from ontolutils.typing import AnyIri
+from ontolutils.typing import AnyIri, Mailbox
 
 __version__ = "0.1"
 _NS = "http://xmlns.com/foaf/0.1/"
@@ -51,7 +51,7 @@ class Agent(Thing):
     aimChatID: str = Field(default=None, alias="aim_chat_id")  # foaf:aimChatID
     jabberID: str = Field(default=None, alias="jabber_id")  # foaf:jabberID
     made: AnyUrl = Field(default=None, alias="made")  # foaf:made
-    mbox: EmailStr = Field(default=None, alias="email")  # foaf:mbox
+    mbox: Mailbox = Field(default=None, alias="email")  # foaf:mbox
     interest: AnyUrl = Field(default=None, alias="interest")  # foaf:interest
     tipjar: AnyUrl = Field(default=None, alias="tipjar")  # foaf:tipjar
     skypeID: str = Field(default=None, alias="skype_id")  # foaf:skypeID

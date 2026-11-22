@@ -1,6 +1,8 @@
 import datetime
 import json
 import logging
+import pathlib
+import tempfile
 import unittest
 from itertools import count
 from typing import Optional, List, Union
@@ -29,6 +31,15 @@ LOG_LEVEL = logging.DEBUG
 
 
 class TestNamespaces(unittest.TestCase):
+
+    def _local_context_uri(self):
+        directory = tempfile.TemporaryDirectory(prefix='ontolutils-context-')
+        self.addCleanup(directory.cleanup)
+        path = pathlib.Path(directory.name) / 'context.jsonld'
+        path.write_text(json.dumps({'@context': {
+            'fixture': 'https://example.org/imported/',
+            'mail': 'http://xmlns.com/foaf/0.1/mbox'}}), encoding='utf-8')
+        return path.as_uri()
 
     def setUp(self):
         self.maxDiff = None
@@ -531,7 +542,7 @@ class TestNamespaces(unittest.TestCase):
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 [] a <foaf:MyThing> ;
-    dcterms:created "2025-10-01"^^xsd:date .
+    dcterms:created "2025-10-01T00:00:00"^^xsd:dateTime .
 
 """)
 
@@ -660,16 +671,17 @@ class TestNamespaces(unittest.TestCase):
         # )
 
         # serialize with a "@import"
+        context_uri = self._local_context_uri()
         jsonld_str3 = agent.model_dump_jsonld(
             rdflib_serialize=False,
             context={
-                '@import': 'https://git.rwth-aachen.de/nfdi4ing/metadata4ing/metadata4ing/-/raw/master/m4i_context.jsonld'
+                '@import': context_uri
             }
         )
         jsonld_str3_dict = json.loads(jsonld_str3)
         self.assertEqual(
             jsonld_str3_dict['@context']['@import'],
-            'https://git.rwth-aachen.de/nfdi4ing/metadata4ing/metadata4ing/-/raw/master/m4i_context.jsonld'
+            context_uri
         )
 
         def base_uri_generator():
@@ -770,14 +782,19 @@ class TestNamespaces(unittest.TestCase):
         )
         self.assertNotEqual(agent.id, None)
         ns = agent.namespaces
+        context_uri = self._local_context_uri()
         jsonld_string = agent.model_dump_jsonld(
             context={
-                "@import": 'https://raw.githubusercontent.com/matthiasprobst/pivmeta/main/pivmeta_context.jsonld'
+                "@import": context_uri
             }
         )
         self.assertDictEqual(agent.namespaces, ns)
         self.assertTrue('@import' in json.loads(jsonld_string)['@context'])
-        loaded_agent = Agent.from_jsonld(data=jsonld_string, limit=1)
+        self.assertEqual(Context(source={'@import': context_uri}).expand('fixture:term'),
+                         'https://example.org/imported/term')
+        imported = json.loads(jsonld_string)
+        imported['mail'] = imported.pop('foaf:mbox')
+        loaded_agent = Agent.from_jsonld(data=imported, limit=1)
         self.assertDictEqual(loaded_agent.namespaces, ns)
         self.assertEqual(loaded_agent.mbox, agent.mbox)
 
@@ -789,7 +806,7 @@ class TestNamespaces(unittest.TestCase):
 
     def test_schema_http(self):
         @namespaces(foaf="http://xmlns.com/foaf/0.1/",
-                    schema="https://schema.org/")
+                    schema="http://schema.org/")
         @urirefs(Agent='foaf:Agent',
                  name='schema:name')
         class Agent(Thing):
@@ -798,9 +815,9 @@ class TestNamespaces(unittest.TestCase):
         agent = Agent(name='John Doe')
         self.assertEqual(agent.name, 'John Doe')
         agent_jsonld = agent.model_dump_jsonld()
-        with self.assertWarns(UserWarning):
-            agent.from_jsonld(data=agent_jsonld.replace('https://schema', 'http://schema'),
-                              limit=1)
+        restored = agent.from_jsonld(data=agent_jsonld, limit=1)
+        self.assertEqual(restored.name, 'John Doe')
+        self.assertIn('http://schema.org/', restored.model_dump_jsonld())
 
     def test_model_dump_jsonld_nested(self):
         @namespaces(foaf="http://xmlns.com/foaf/0.1/")
@@ -922,7 +939,7 @@ class TestNamespaces(unittest.TestCase):
             "@type": "prov:Person",
             "foaf:firstName": "John",
             "foaf:lastName": "Doe",
-            "m4i:orcidId": {"@id": "https://orcid.org/0000-0001-8729-0482"},
+            "m4i:orcidId": "https://orcid.org/0000-0001-8729-0482",
             "@id": "_:cde4c79c-21f2-4ab7-b01d-28de6e4aade4",
         }
 
@@ -956,7 +973,7 @@ class TestNamespaces(unittest.TestCase):
             "@type": "prov:Person",
             "foaf:firstName": "John",
             "foaf:lastName": "Doe",
-            "m4i:orcidId": {"@id": "https://orcid.org/0000-0001-8729-0482"},
+            "m4i:orcidId": "https://orcid.org/0000-0001-8729-0482",
             "@id": "https://orcid.org/0000-0001-8729-0482",
         }
 

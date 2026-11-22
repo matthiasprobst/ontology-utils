@@ -15,14 +15,14 @@ class URIValue:
     """
     value: str  # the value of the URI
     namespace: str  # the URI that identifies the predicate of the value
-    prefix: str  # TODO: this might be None and figured out automatically based on known namespaces, for now it's a required field
+    prefix: str  # Required namespace prefix for the extra property.
 
     def __post_init__(self):
         # verify that the URI is a valid URL
         try:
             HttpUrl(self.namespace)
         except ValueError as e:
-            raise ValueError(f"Invalid namespace URI: {self.namespace}. Error: {e}")
+            raise ValueError(f"Invalid namespace URI: {self.namespace}. Error: {e}") from e
 
 
 if __name__ == "__main__":

@@ -108,6 +108,21 @@ Python blocks and the tutorial notebook in temporary directories. The Sphinx
 guide uses `.. testcode::` blocks checked by the doctest build. See
 `docs/README.md` for its command, dependencies, and the editing workflow.
 
+## Publisher vocabulary snapshots
+
+Run the publisher-source check from the repository root:
+
+```bash
+python -m scripts.verify_publisher_namespaces .work/publisher-namespaces --download
+```
+
+The check verifies SHA-256 before parsing, regenerates after reversing triple
+insertion order, and checks every rendered IRI. Omit `--download` to verify
+the same local files offline. Preserve the verified files if a publisher URL
+can serve a newer revision. The command reports differences from the bundled
+namespace so you can review them before adopting a generated module. It checks
+RDF terms and leaves project-specific Python aliases and models to the project.
+
 ## Test coverage
 
 To check the test coverage, you can run the following command in the terminal (from the root directory of the package):

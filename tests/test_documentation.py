@@ -24,6 +24,7 @@ EXAMPLE_PAGES = [page for page in EXAMPLE_PAGES if python_blocks(page)]
 @pytest.mark.parametrize("page", EXAMPLE_PAGES, ids=lambda path: path.relative_to(ROOT).as_posix())
 def test_documented_python_examples(page, monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
+    monkeypatch.syspath_prepend(str(tmp_path))
     namespace = {"__name__": "__main__"}
     for line_offset, source in python_blocks(page):
         exec(compile("\n" * line_offset + source, str(page), "exec"), namespace)

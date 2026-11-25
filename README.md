@@ -65,9 +65,8 @@ preserved. See the [1.0 migration guide](docs/migration.rst).
 ## Generate Python vocabulary terms
 
 Use `render_namespace` to generate an importable RDFLib namespace for your
-project from an RDF snapshot. Choose the ontology revision in your project,
-verify the downloaded file against a recorded SHA-256 digest, and use the
-publisher's exact term namespace.
+project. This example uses two class declarations from Metadata4Ing (M4I) so
+you can run it offline.
 
 ```python
 from pathlib import Path
@@ -76,17 +75,32 @@ from rdflib import Graph
 
 from ontolutils.namespace_generation import render_namespace
 
+namespace = "http://w3id.org/nfdi4ing/metadata4ing#"
 graph = Graph().parse(
-    data="<https://example.org/vocab#Instrument> a <http://www.w3.org/2002/07/owl#Class> .",
+    data=f'''
+        @prefix m4i: <{namespace}> .
+        @prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+        m4i:NumericalVariable a owl:Class .
+        m4i:ProcessingStep a owl:Class .
+    ''',
     format="turtle",
 )
-module = render_namespace(graph, "https://example.org/vocab#", "VOCAB")
-Path("vocabulary.py").write_text(module, encoding="utf-8", newline="\n")
+module = render_namespace(graph, namespace, "M4I")
+Path("m4i_terms.py").write_text(module, encoding="utf-8", newline="\n")
+
+from m4i_terms import M4I
+
+assert str(M4I.NumericalVariable) == namespace + "NumericalVariable"
 ```
 
-Ship the generated module with your package so users can import it offline.
-In Python, `VOCAB.Instrument` returns the term's RDF IRI. Define Pydantic models
-and application-specific aliases in your own code.
+For the full vocabulary, download the [M4I Turtle snapshot](https://w3id.org/nfdi4ing/metadata4ing/ontology.ttl)
+as `m4i.ttl` and verify it against the SHA-256 recorded for your chosen
+revision. The [publisher verifier](scripts/verify_publisher_namespaces.py)
+records the tested M4I 1.5.0 digest. Replace the example's graph with
+`Graph().parse("m4i.ttl", format="turtle")` and keep the exact M4I namespace
+above. Ship `m4i_terms.py` with your package for offline imports. Define
+Pydantic models and application-specific aliases in your own code.
 
 See the [namespace guide](docs/userguide/namespacelib.rst) for file-based
 generation and the [publisher snapshot checks](tests/README.md#publisher-vocabulary-snapshots)

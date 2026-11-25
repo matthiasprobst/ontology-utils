@@ -52,3 +52,30 @@ Generated namespaces can omit terms. Unknown terms raise ``AttributeError``;
 bracket syntax does not add them. For an external term absent from the snapshot,
 construct an RDFLib ``Namespace`` or ``URIRef`` explicitly after checking the
 ontology's exact IRI.
+
+Generating a namespace for your project
+---------------------------------------
+
+Choose an RDF snapshot from the vocabulary publisher and record its version
+and SHA-256 digest in your project. Parse the verified snapshot with RDFLib
+and render the Python module as a development step. Use the exact namespace
+of the terms in the graph, including its trailing delimiter.
+
+.. code-block:: python
+
+   from pathlib import Path
+
+   from rdflib import Graph
+
+   from ontolutils.namespace_generation import render_namespace
+
+   graph = Graph().parse(Path("vocabulary.ttl"), format="turtle")
+   source = render_namespace(graph, "https://example.org/vocab#", "VOCAB")
+   Path("my_package/vocabulary.py").write_text(
+       source, encoding="utf-8", newline="\n"
+   )
+
+Review the generated term changes when you update the snapshot. Ship the
+module with your package so that imports work offline. Use bracket lookup for
+terms such as ``VOCAB["M-PER-SEC"]`` when the local name is unsuitable as a Python
+attribute. Keep application-specific aliases in your package.

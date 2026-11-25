@@ -62,6 +62,37 @@ export. Keep the source graph when all triples must survive. Numerical arrays
 export as unordered RDF values; order, duplicates, shape and dtype are not
 preserved. See the [1.0 migration guide](docs/migration.rst).
 
+## Generate Python vocabulary terms
+
+Use `render_namespace` to generate an importable RDFLib namespace for your
+project from an RDF snapshot. Choose the ontology revision in your project,
+verify the downloaded file against a recorded SHA-256 digest, and use the
+publisher's exact term namespace.
+
+```python
+from pathlib import Path
+
+from rdflib import Graph
+
+from ontolutils.namespace_generation import render_namespace
+
+graph = Graph().parse(
+    data="<https://example.org/vocab#Instrument> a <http://www.w3.org/2002/07/owl#Class> .",
+    format="turtle",
+)
+module = render_namespace(graph, "https://example.org/vocab#", "VOCAB")
+Path("vocabulary.py").write_text(module, encoding="utf-8", newline="\n")
+```
+
+Ship the generated module with your package so users can import it offline.
+In Python, `VOCAB.Instrument` returns the term's RDF IRI. Define Pydantic models
+and application-specific aliases in your own code.
+
+See the [namespace guide](docs/userguide/namespacelib.rst) for file-based
+generation and the [publisher snapshot checks](tests/README.md#publisher-vocabulary-snapshots)
+to reproduce verification against M4I, Allotrope HDF5, SSNO, QUDT, and other
+vocabularies.
+
 ## Learn by task
 
 - [Define and validate your own model](docs/userguide/classes.rst)

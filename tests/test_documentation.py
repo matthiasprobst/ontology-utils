@@ -40,7 +40,9 @@ def test_documented_python_examples(page, monkeypatch, tmp_path):
                 @prefix m4i: <http://w3id.org/nfdi4ing/metadata4ing#> .
                 @prefix owl: <http://www.w3.org/2002/07/owl#> .
                 m4i:Tool a owl:Class .
-                m4i:hasParameter a owl:ObjectProperty .
+                m4i:hasParameter a owl:ObjectProperty ;
+                    <http://www.w3.org/2000/01/rdf-schema#domain>
+                    [ owl:unionOf (m4i:Method m4i:Tool) ] .
             """
             return response
 

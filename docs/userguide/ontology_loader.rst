@@ -8,8 +8,17 @@ classes as attributes of ``models``. If the document declares several class
 namespaces, pass the desired term namespace with ``namespace=``.
 
 The generated classes start with the common ``Thing`` fields such as
-``id`` and ``label``. Add domain fields through a profile. For each field,
-supply a Python annotation and the exact RDF predicate IRI. A
+``id`` and ``label``. The loader also discovers optional
+fields from property domains, including named superclasses and OWL domain
+unions and intersections. Call ``Tool.rdf_fields()`` to see Python names
+and their exact predicate IRIs. Properties with several domain statements
+must match each statement. Object properties accept a resource reference,
+a ``Thing``, or a list of either. Other discovered fields accept literals
+and explicitly typed RDF values.
+
+Use a profile to rename or constrain a discovered field or add an explicit
+mapping when the ontology omits a domain. For each profile field, supply a
+Python annotation and the exact RDF predicate IRI. A
 ``ModelField`` is required by default. To give it a default or an alias,
 pass a value or a Pydantic ``Field(...)`` as its third argument.
 
@@ -44,7 +53,7 @@ generated class to read the graph back with ``Tool.from_graph``.
 For a released package, ship the verified Turtle snapshot and pass its local
 path to ``onto.load`` so the package works offline. The SHA-256 check also
 applies to local files. The loader uses declarations in the supplied document.
-OWL imports, entailment, and SHACL validation are separate steps. Domain and
+OWL imports, full reasoning, and SHACL validation are separate steps. Domain and
 range statements do not specify Python field requirements or defaults. Put
 those decisions in your profile and add scientific methods in a Python
 subclass when your application needs them.

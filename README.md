@@ -64,34 +64,30 @@ preserved. See the [1.0 migration guide](docs/migration.rst).
 
 ## Load an ontology and create Python models
 
-`onto.load()` accepts a Turtle file or an HTTP(S) URL. It generates
-`Thing` subclasses for named classes in the ontology's namespace. A profile
-defines the Python fields your application needs and their RDF predicates.
-
-This example loads Metadata4Ing (M4I) directly from its publisher. It generates
-a `Tool` model and maps its `parameter` field to `m4i:hasParameter`.
+`onto.load()` accepts a Turtle file or an HTTP(S) URL and generates
+`Thing` subclasses. Use `rdf_fields()` to discover the Python field names
+and their RDF predicates.
 
 ```python
 from ontolutils import onto
-from ontolutils.typing import AnyIri
 
-m4i = "http://w3id.org/nfdi4ing/metadata4ing#"
-ontology = onto.load(
-    "https://w3id.org/nfdi4ing/metadata4ing/ontology.ttl",
-    profile={"Tool": {"parameter": onto.ModelField(m4i + "hasParameter", AnyIri)}},
-)
-Tool = ontology.models.Tool
+m4i = onto.load("https://w3id.org/nfdi4ing/metadata4ing/ontology.ttl")
+print(sorted(vars(m4i.models)))
+
+Tool = m4i.models.Tool
+print(Tool.rdf_fields())
 tool = Tool(
     id="https://example.org/instruments/laser",
-    parameter="https://example.org/parameters/power",
+    hasParameter="https://example.org/parameters/power",
 )
 print(tool.serialize("ttl"))
 ```
 
-The Turtle output gives the laser RDF type `m4i:Tool` and links it to the
-power parameter through `m4i:hasParameter`. The
-[ontology loader guide](docs/userguide/ontology_loader.rst) shows how to pin the
-ontology with a SHA-256 digest or ship a snapshot for offline use.
+The loader discovers `hasParameter` from the M4I property domain, which
+includes `Tool` and `Method`. The Turtle output links the laser to the
+power parameter with `m4i:hasParameter`. See the
+[ontology loader guide](docs/userguide/ontology_loader.rst) to pin a snapshot
+or add stricter application rules with a profile.
 
 ## Generate Python vocabulary terms
 

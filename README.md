@@ -112,6 +112,7 @@ vocabularies.
 - [Define and validate your own model](docs/userguide/classes.rst)
 - [Save, load, combine, and query RDF](docs/userguide/serialization.rst)
 - [Use built-in models and numerical variables](docs/userguide/models.rst)
+- [Load an ontology and generate models with a profile](docs/userguide/ontology_loader.rst)
 - [Validate RDF with SHACL](docs/userguide/validation.rst)
 - [Work through the notebook](tutorials/Classes.ipynb)
 - [API reference](docs/api.rst)

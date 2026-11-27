@@ -62,6 +62,37 @@ export. Keep the source graph when all triples must survive. Numerical arrays
 export as unordered RDF values; order, duplicates, shape and dtype are not
 preserved. See the [1.0 migration guide](docs/migration.rst).
 
+## Load an ontology and create Python models
+
+`onto.load()` accepts a Turtle file or an HTTP(S) URL. It generates
+`Thing` subclasses for named classes in the ontology's namespace. A profile
+defines the Python fields your application needs and their RDF predicates.
+
+This example loads Metadata4Ing (M4I) directly from its publisher. It generates
+a `Tool` model and maps its `parameter` field to `m4i:hasParameter`.
+
+```python
+from ontolutils import onto
+from ontolutils.typing import AnyIri
+
+m4i = "http://w3id.org/nfdi4ing/metadata4ing#"
+ontology = onto.load(
+    "https://w3id.org/nfdi4ing/metadata4ing/ontology.ttl",
+    profile={"Tool": {"parameter": onto.ModelField(m4i + "hasParameter", AnyIri)}},
+)
+Tool = ontology.models.Tool
+tool = Tool(
+    id="https://example.org/instruments/laser",
+    parameter="https://example.org/parameters/power",
+)
+print(tool.serialize("ttl"))
+```
+
+The Turtle output gives the laser RDF type `m4i:Tool` and links it to the
+power parameter through `m4i:hasParameter`. The
+[ontology loader guide](docs/userguide/ontology_loader.rst) shows how to pin the
+ontology with a SHA-256 digest or ship a snapshot for offline use.
+
 ## Generate Python vocabulary terms
 
 Use `render_namespace` to generate an importable RDFLib namespace for your
@@ -112,6 +143,7 @@ vocabularies.
 - [Define and validate your own model](docs/userguide/classes.rst)
 - [Save, load, combine, and query RDF](docs/userguide/serialization.rst)
 - [Use built-in models and numerical variables](docs/userguide/models.rst)
+- [Load an ontology and generate models with a profile](docs/userguide/ontology_loader.rst)
 - [Validate RDF with SHACL](docs/userguide/validation.rst)
 - [Work through the notebook](tutorials/Classes.ipynb)
 - [API reference](docs/api.rst)

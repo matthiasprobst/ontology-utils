@@ -11,6 +11,7 @@ stable IDs for resources that other datasets will reference.
    classes
    serialization
    models
+   ontology_loader
    validation
    namespacelib
    typing

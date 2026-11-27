@@ -2,7 +2,7 @@ import unittest
 
 import pydantic
 
-from ontolutils.ex.hdf5 import File, Dataset, Group
+from ontology_fixtures.hdf5 import File, Dataset, Group
 
 
 class TestHDF5(unittest.TestCase):

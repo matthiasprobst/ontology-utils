@@ -1,28 +1,23 @@
 import datetime
 import logging
 import pathlib
-import sys
+import tempfile
 import unittest
 from datetime import timezone
+from unittest.mock import patch
 
 import rdflib
+import requests
 
 import utils
-from ontolutils.ex import dcat, prov, foaf
-from ontolutils.ex.dcat import Dataset
-from ontolutils.ex.prov import Attribution
-from ontolutils.ex.spdx import Checksum
+from ontology_fixtures import dcat, prov, foaf
+from ontology_fixtures.dcat import Dataset
+from ontology_fixtures.prov import Attribution
+from ontology_fixtures.spdx import Checksum
 from ontolutils.namespacelib.spdx import SPDX
 
 logger = logging.getLogger('ontolutils')
 __this_dir__ = pathlib.Path(__file__).parent
-
-TESTING_VERSIONS = (9, 14)
-
-
-def get_python_version():
-    """Get the current Python version as a tuple."""
-    return sys.version_info.major, sys.version_info.minor, sys.version_info.micro
 
 
 class TestDcat(utils.ClassTest):
@@ -62,8 +57,8 @@ class TestDcat(utils.ClassTest):
             foaf:firstName "John" ;
             foaf:lastName "Doe" ] ;
     dcterms:description "Resource description" ;
-    dcterms:identifier <https://example.com/resource> ;
-    dcterms:issued "2023-01-01"^^xsd:date ;
+    dcterms:identifier "https://example.com/resource" ;
+    dcterms:issued "2023-01-01T00:00:00+00:00"^^xsd:dateTime ;
     dcterms:title "Resource title" ;
     dcat:version "1.0" .
 
@@ -150,18 +145,18 @@ class TestDcat(utils.ClassTest):
     dcterms:description "Resource 3 description" ;
     dcterms:hasPart <https://example.com/resource1>,
         <https://example.com/resource2> ;
-    dcterms:identifier <https://example.com/resource3> ;
+    dcterms:identifier "https://example.com/resource3" ;
     dcterms:title "Resource 3" .
 
 <https://example.com/resource2> a dcat:Resource ;
     dcterms:description "Resource 2 description" ;
     dcterms:hasPart <https://example.com/resource1> ;
-    dcterms:identifier <https://example.com/resource2> ;
+    dcterms:identifier "https://example.com/resource2" ;
     dcterms:title "Resource 2" .
 
 <https://example.com/resource1> a dcat:Resource ;
     dcterms:description "Resource 1 description" ;
-    dcterms:identifier <https://example.com/resource1> ;
+    dcterms:identifier "https://example.com/resource1" ;
     dcterms:title "Resource 1" .
 
 """, r3.serialize("ttl"))
@@ -192,9 +187,16 @@ class TestDcat(utils.ClassTest):
         )
         self.assertEqual(dist.mediaType, 'https://www.iana.org/assignments/media-types/application/x-hdf')
 
-    @unittest.skipUnless(get_python_version()[1] in TESTING_VERSIONS,
-                         reason="Only testing on min and max python version")
-    def test_Distribution(self):
+    @patch('ontolutils.classes.utils.request_with_backoff')
+    def test_Distribution(self, request):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        target_folder = pathlib.Path(temporary.name)
+        response = requests.Response()
+        response.status_code = 200
+        response.url = self.test_jsonld_filename
+        response._content = b'{"@context": {}, "@id": "https://example.org/dataset"}'
+        request.return_value = response
         distribution_none_downloadURL = dcat.Distribution(
             id='_:b2',
             title='Distribution title',
@@ -233,22 +235,24 @@ class TestDcat(utils.ClassTest):
         self.assertEqual(str(distribution1.accessURL), 'https://example.com/distribution')
         self.assertEqual(str(distribution1.downloadURL), 'https://example.com/distribution/download')
 
-        pathlib.Path("piv_dataset.jsonld").unlink(missing_ok=True)
         piv_dist = dcat.Distribution(
             downloadURL=self.test_jsonld_filename
         )
-        filename = piv_dist.download(timeout=10)
+        filename = piv_dist.download(target_folder=target_folder, timeout=10)
         self.assertEqual(filename.name, 'piv_dataset.jsonld')
         self.assertIsInstance(filename, pathlib.Path)
         self.assertTrue(filename.exists())
+        self.assertEqual(filename.read_bytes(), response.content)
+        request.assert_called_once_with('GET', piv_dist.download_URL, timeout=10)
 
         local_dist = dcat.Distribution(
             downloadURL=filename
         )
-        local_filename = local_dist.download(timeout=60)
+        local_filename = local_dist.download(target_folder=target_folder, timeout=60)
         self.assertTrue(local_filename.exists())
         self.assertEqual(local_filename.name, 'piv_dataset.jsonld')
         self.assertIsInstance(local_filename, pathlib.Path)
+        request.assert_called_once()
 
         filename.unlink(missing_ok=True)
 
@@ -318,14 +322,14 @@ class TestDcat(utils.ClassTest):
 <https://example.com/dataset> a dcat:Dataset ;
     dcterms:creator <https://example.of/123> ;
     dcterms:description "Dataset description" ;
-    dcterms:identifier <https://example.com/dataset> ;
+    dcterms:identifier "https://example.com/dataset" ;
     dcterms:title "Dataset title" ;
     dcat:distribution <https://example.com/distribution> ;
     dcat:version "1.0" .
 
 <https://example.com/distribution> a dcat:Distribution ;
     dcterms:description "Distribution description" ;
-    dcterms:identifier <https://example.com/distribution> ;
+    dcterms:identifier "https://example.com/distribution" ;
     dcterms:title "Distribution title" ;
     dcat:accessURL <https://example.com/distribution> ;
     dcat:downloadURL <https://example.com/distribution/download> .
@@ -393,7 +397,7 @@ class TestDcat(utils.ClassTest):
         self.assertEqual(str(dataset2.creator), str(person.id))
 
     def test_was_generated_by(self):
-        from ontolutils.ex.m4i import ProcessingStep
+        from ontology_fixtures.m4i import ProcessingStep
         processing_step = ProcessingStep(
             id='https://example.com/processingstep/1',
             used='http://example.com/resource/1',
@@ -471,7 +475,7 @@ class TestDcat(utils.ClassTest):
 
 <http://local.org/sqlite3> a dcat:DataService ;
     dcterms:title "sqlite3 Database" ;
-    dcat:endpointURL "file:///path/to/endpoint" ;
+    dcat:endpointURL <file:///path/to/endpoint> ;
     dcat:servesDataset [ a dcat:Dataset ;
             dcterms:description "An SQL Table with the name 'Table Title'" ;
             dcterms:title "Table Title" ;

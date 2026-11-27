@@ -3,16 +3,61 @@ import json
 import logging
 import pathlib
 import re
+from collections import deque
 from collections.abc import Mapping
+from itertools import islice
 from typing import Union, Dict, List, Optional, Type
 
 import rdflib
 
-from .decorator import URIRefManager, NamespaceManager
-from .thing import Thing
-from .utils import split_uri
+from .decorator import URIRefManager, _get_predicate_fields
+from .thing import Thing, _literal_to_jsonld, _is_reference_field, _has_list_annotation
+from .utils import split_uri, _validate_limit
 
 logger = logging.getLogger('ontolutils')
+
+
+def _add_rdf_type(resource, rdf_type):
+    """Retain all distinct RDF types without changing the single-type shape."""
+    value = rdf_type.n3() if isinstance(rdf_type, rdflib.BNode) else str(rdf_type)
+    previous = resource.get('@type')
+    if previous is None:
+        resource['@type'] = value
+    elif isinstance(previous, list):
+        if value not in previous:
+            previous.append(value)
+    elif previous != value:
+        resource['@type'] = [previous, value]
+
+
+def _collection_values(head, graph, add_type, ancestors=frozenset(), resources=frozenset(), preserve_predicates=False, literal_mode="legacy"):
+    """Read one finite RDF collection, preserving order and multiplicity.
+
+    Reject ambiguous or cyclic list structure instead of choosing an arbitrary
+    rdf:first/rdf:rest value. This is a model-loading constraint, not a claim
+    that such graphs are invalid RDF.
+    """
+    if head in ancestors:
+        raise ValueError('Cyclic nested RDF collection')
+    ancestors = ancestors | {head}
+    values = []
+    seen = set()
+    node = head
+    while node != rdflib.RDF.nil:
+        if node in seen:
+            raise ValueError('Cyclic RDF collection')
+        seen.add(node)
+        first = list(graph.objects(node, rdflib.RDF.first))
+        rest = list(graph.objects(node, rdflib.RDF.rest))
+        if len(first) != 1 or len(rest) != 1:
+            raise ValueError('RDF collection requires exactly one rdf:first and rdf:rest per cell')
+        if not isinstance(rest[0], (rdflib.URIRef, rdflib.BNode)):
+            raise ValueError('RDF collection rdf:rest must identify a resource')
+        values.append(process_object(head, rdflib.RDF.first, first[0], graph, add_type,
+                                     _collection_ancestors=ancestors, _resource_ancestors=resources,
+                                     _preserve_predicates=preserve_predicates, _literal_mode=literal_mode))
+        node = rest[0]
+    return values
 
 
 def process_object(
@@ -20,85 +65,50 @@ def process_object(
         predicate,
         obj: Union[rdflib.URIRef, rdflib.BNode, rdflib.Literal],
         graph,
-        add_type):
+        add_type,
+        _collection_ancestors=frozenset(),
+        _resource_ancestors=frozenset(), _preserve_predicates=False, _literal_mode="legacy"):
     """Process the object of a triple."""
+    if _literal_mode == 'jsonld' and isinstance(obj, (rdflib.URIRef, rdflib.BNode)):
+        identifier = obj.n3() if isinstance(obj, rdflib.BNode) else str(obj)
+        if obj in _resource_ancestors or next(graph.predicate_objects(obj), None) is None:
+            return {'@id': identifier}
+        # Preserve RDF list cells as ordinary nodes, including named/shared
+        # heads and annotations. Replacing them with @list can lose identity.
+        return _query_by_id(graph, obj, add_type,
+                            _resource_ancestors=_resource_ancestors,
+                            _collection_ancestors=_collection_ancestors,
+                            _preserve_predicates=_preserve_predicates, _literal_mode='jsonld')
+    if obj == rdflib.RDF.nil:
+        return []
+    if isinstance(obj, (rdflib.URIRef, rdflib.BNode)) and (
+            (obj, rdflib.RDF.first, None) in graph or
+            (obj, rdflib.RDF.rest, None) in graph):
+        return _collection_values(obj, graph, add_type, _collection_ancestors, _resource_ancestors, _preserve_predicates, _literal_mode)
     if isinstance(obj, rdflib.Literal):
         logger.debug(f'Object "{obj}" for predicate "{predicate}" is a literal.')
+        if _literal_mode == 'model':
+            return obj
+        if _literal_mode == 'jsonld':
+            if obj.language or obj.datatype is not None:
+                return _literal_to_jsonld(obj)
+            return str(obj)
         if obj.language:
             return f"{obj}@{obj.language}"
         return str(obj)
 
-    if isinstance(obj, rdflib.BNode):
-        logger.debug(f'"{predicate}" has blank node obj! not optimal... difficult to find children...')
-        # find children for predicate with blank node obj
-        sub_data = {}
-        # collection = []
-        for (s, p, o) in graph:
-            # logger.debug(s, p, o, obj)
-            if str(s) == str(obj):
-                if isinstance(o, rdflib.Literal):
-                    _, key = split_uri(p)
-                    value = process_object(_id, p, o, graph, add_type)
-                    if key in sub_data:
-                        if isinstance(sub_data[key], list):
-                            sub_data[key].append(value)
-                        else:
-                            sub_data[key] = [sub_data[key], value]
-                    else:
-                        sub_data[key] = value
-                    continue
-
-                if p == rdflib.RDF.first:
-                    # first means we have a collection
-                    logger.debug(f'Need to find children of first: {o}')
-                    # get list:
-                    qs = """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-
-SELECT ?item
-WHERE {
-  ?a rdf:rest*/rdf:first ?item .
-}"""
-                    list_res = graph.query(qs)
-
-                    _ids = list(set([str(_id[0]) for _id in list_res]))
-                    _data = [_query_by_id(graph, _id, add_type) for _id in _ids]
-                    return _data
-
-                if p == rdflib.RDF.type and add_type:
-                    sub_data["@type"] = str(o)
-                else:
-                    # may point to another blank node:
-                    if isinstance(o, rdflib.BNode):
-                        logger.debug(f'"{o}" is a blank node. Need to find children of it...')
-                        _, key = split_uri(p)
-                        if key in sub_data:
-                            if isinstance(sub_data[key], list):
-                                sub_data[key].append(process_object(_id, p, o, graph, add_type))
-                            else:
-                                sub_data[key] = [sub_data[key], process_object(_id, p, o, graph, add_type)]
-                        else:
-                            sub_data[key] = process_object(_id, p, o, graph, add_type)
-                    elif str(o).startswith('http'):
-                        # it might be a IRI which is defined inside the JSON-LD:
-                        _sub_data = process_object(_id, p, o, graph, add_type)
-                        if _sub_data:
-                            _, key = split_uri(p)
-                            sub_data[key] = _sub_data
-                    else:
-                        logger.debug(f'dont know what to do with {p} and {o}')
-        if predicate in sub_data:
-            return sub_data[predicate]
-        return sub_data
-
-    if isinstance(obj, rdflib.URIRef):
-        # could be a type definition or a web IRI
-        if _is_type_definition(graph, obj):
-            logger.debug('points to a type definition inside the data')
-            if obj == _id:
-                return str(obj)
-            return _query_by_id(graph=graph, _id=obj, add_type=True)
-
-    logger.debug(f'"{obj}" for predicate "{predicate}" is a simple data field.')
+    if isinstance(obj, (rdflib.BNode, rdflib.URIRef)):
+        identifier = obj.n3() if isinstance(obj, rdflib.BNode) else str(obj)
+        if obj in _resource_ancestors:
+            return obj if _literal_mode == 'model' else identifier
+        if _literal_mode == 'model' and next(graph.predicate_objects(obj), None) is None:
+            return obj
+        if isinstance(obj, rdflib.BNode) or _is_type_definition(graph, obj):
+            return _query_by_id(graph, obj, add_type,
+                                _resource_ancestors=_resource_ancestors,
+                                _collection_ancestors=_collection_ancestors,
+                                _preserve_predicates=_preserve_predicates, _literal_mode=_literal_mode)
+        return obj if _literal_mode == 'model' else identifier
     return str(obj)
 
 
@@ -120,48 +130,44 @@ WHERE {{
     return query_str
 
 
-def _query_by_id(graph, _id: Union[str, rdflib.URIRef], add_type: bool) -> Dict:
-    """Query the graph by the id. Return the data as a dictionary."""
-    _sub_query_string = """SELECT DISTINCT ?p ?o WHERE { <%s> ?p ?o }""" % _id
-    _sub_res = graph.query(_sub_query_string)
-    out = {'@id': str(_id)}
-    for binding in _sub_res.bindings:
-        predicate = binding['p']
-        obj = binding['o']
-
+def _query_by_id(graph, _id: Union[str, rdflib.URIRef], add_type: bool,
+                 _resource_ancestors=frozenset(), _collection_ancestors=frozenset(),
+                 _preserve_predicates=False, _literal_mode="legacy") -> Dict:
+    """Expand indexed resource properties; cycle edges remain identifier references."""
+    subject = _id if isinstance(_id, (rdflib.URIRef, rdflib.BNode)) else rdflib.URIRef(_id)
+    identifier = subject.n3() if isinstance(subject, rdflib.BNode) else str(subject)
+    ancestors = _resource_ancestors | {subject}
+    out = {'@id': identifier}
+    for predicate, obj in graph.predicate_objects(subject):
         if predicate == rdflib.RDF.type:
             if add_type:
-                out['@type'] = str(obj)
+                _add_rdf_type(out, obj)
             continue
-
-        _, key = split_uri(predicate)
-        if str(_id) == str(obj):
-            # would lead to a circular reference. Example for it: "landingPage" and "_id" are the same.
-            # in this case, we return the object as a string
-            out[key] = str(obj)
-        else:
-            if key in out:
-                if isinstance(out[key], list):
-                    out[key].append(process_object(_id, predicate, obj, graph, add_type))
-                else:
-                    out[key] = [out[key], process_object(_id, predicate, obj, graph, add_type)]
+        key = str(predicate) if _preserve_predicates else split_uri(predicate)[1]
+        value = process_object(subject, predicate, obj, graph, add_type,
+                               _resource_ancestors=ancestors,
+                               _collection_ancestors=_collection_ancestors,
+                               _preserve_predicates=_preserve_predicates, _literal_mode=_literal_mode)
+        if key in out:
+            if isinstance(out[key], list):
+                out[key].append(value)
             else:
-                out[key] = process_object(_id, predicate, obj, graph, add_type)
-
+                out[key] = [out[key], value]
+        else:
+            out[key] = value
     return out
 
 
 def _is_type_definition(graph, iri: Union[str, rdflib.URIRef]):
-    _sub_query_string = """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-SELECT DISTINCT ?o WHERE { <%s> rdf:type ?o }""" % iri
-    _sub_res = graph.query(_sub_query_string)
-    return len(_sub_res) == 1
+    """Check whether a resource has a type using the subject/predicate index."""
+    return next(graph.objects(rdflib.URIRef(iri), rdflib.RDF.type), None) is not None
 
 
 def expand_sparql_res(bindings,
                       graph,
                       add_type: bool,
-                      add_context: bool) -> Dict:
+                      add_context: bool,
+                      predicate_fields=None) -> Dict:
     """Expand the SPARQL results. Return a dictionary."""
     out = {}
     # n_ = len(bindings)
@@ -177,12 +183,17 @@ def expand_sparql_res(bindings,
             out[_id] = {}
             if add_context:
                 out[_id] = {'@context': {}}
-        p = binding['p'].__str__()
-        _, predicate = split_uri(p)
+        p = str(binding['p'])
+        if predicate_fields is None:
+            _, predicate = split_uri(p)
+        else:
+            if p not in predicate_fields and binding['p'] != rdflib.RDF.type:
+                continue
+            predicate = predicate_fields.get(p, p)
 
-        if predicate == 'type':
+        if binding['p'] == rdflib.RDF.type:
             if add_type:
-                out[_id]['@type'] = str(binding['o'])
+                _add_rdf_type(out[_id], binding['o'])
             continue
         if add_context:
             out[_id]['@context'][predicate] = str(p)
@@ -190,7 +201,9 @@ def expand_sparql_res(bindings,
         obj = str(binding['?o'])
 
         logger.debug(f'Processing object "{obj}" for predicate "{predicate}".')
-        data = process_object(_id, predicate, binding['?o'], graph, add_type)
+        data = process_object(_id, predicate, binding['?o'], graph, add_type,
+                              _preserve_predicates=predicate_fields is not None,
+                              _literal_mode=("jsonld" if add_context else "model") if predicate_fields is not None else "legacy")
 
         # well obj is just a data field, add it
         if predicate in out[_id]:
@@ -202,6 +215,51 @@ def expand_sparql_res(bindings,
             out[_id][predicate] = data
 
     return out
+
+
+def _dictionary_resource(graph, subject, predicate_fields):
+    """Describe each reachable resource once with bounded JSON nesting.
+
+    Deeper descriptions use JSON-LD @included, retaining edges and identifiers
+    without relying on Python recursion or duplicating shared subgraphs.
+    """
+    def identifier(node):
+        return node.n3() if isinstance(node, rdflib.BNode) else str(node)
+
+    root = {'@id': identifier(subject)}
+    pending = deque([(subject, root, 0)])
+    discovered = {subject}
+    included = []
+    while pending:
+        node, description, depth = pending.popleft()
+        for predicate, obj in graph.predicate_objects(node):
+            if predicate == rdflib.RDF.type:
+                _add_rdf_type(description, obj)
+                continue
+            key = predicate_fields[str(predicate)]
+            if isinstance(obj, rdflib.Literal):
+                value = (_literal_to_jsonld(obj) if obj.language or obj.datatype is not None
+                         else str(obj))
+            else:
+                value = {'@id': identifier(obj)}
+                if obj not in discovered and next(graph.predicate_objects(obj), None) is not None:
+                    discovered.add(obj)
+                    if depth < 32:
+                        pending.append((obj, value, depth + 1))
+                    else:
+                        extra = {'@id': identifier(obj)}
+                        included.append(extra)
+                        pending.append((obj, extra, depth))
+            if key not in description:
+                description[key] = value
+            elif isinstance(description[key], list):
+                description[key].append(value)
+            else:
+                description[key] = [description[key], value]
+    if included:
+        root['@included'] = included
+    root['@context'] = {key: iri for iri, key in predicate_fields.items()}
+    return root
 
 
 def dquery(subject: str,
@@ -216,6 +274,8 @@ def dquery(subject: str,
     value is a list of dictionaries, or ``[]`` if no matches are found.
     """
     g = rdflib.Graph()
+    if isinstance(data, dict):
+        data = json.dumps(data)
     g.parse(source=source,
             data=data,
             format='json-ld',
@@ -227,10 +287,9 @@ def dquery(subject: str,
     assert isinstance(subject, str), f"Subject must be a string, not {type(subject)}"
 
     query_str = f"""
-    SELECT *
+    SELECT DISTINCT ?id
     WHERE {{
         ?id a {subject}.
-        ?id ?p ?o .
 }}"""
 
     res = g.query(prefixes + query_str)
@@ -240,10 +299,20 @@ def dquery(subject: str,
 
     logger.debug(f'Querying subject="{subject}" with query: "{prefixes + query_str}" and got {len(res)} results')
 
-    kwargs: Dict = expand_sparql_res(res.bindings, g, True, True)
-    for _id in kwargs:
-        kwargs[_id]['@id'] = _id
-    return [v for v in kwargs.values()]
+    # Keep readable local keys when unambiguous. A collision requires full IRI
+    # keys so values from different vocabularies cannot be merged or relabelled.
+    by_local = {}
+    for predicate in set(g.predicates()):
+        if predicate == rdflib.RDF.type:
+            continue
+        try:
+            local = split_uri(predicate)[1]
+        except ValueError:
+            local = str(predicate)
+        by_local.setdefault(local, set()).add(str(predicate))
+    dictionary_fields = {iri: (local if len(iris) == 1 else iri)
+                         for local, iris in by_local.items() for iri in iris}
+    return [_dictionary_resource(g, row['id'], dictionary_fields) for row in res.bindings]
 
 
 def query(cls: Type[Thing],
@@ -256,84 +325,67 @@ def query(cls: Type[Thing],
 
     ``cls`` is a ``Thing`` subclass, not a graph or SPARQL query string.
     Supply a file/URL through ``source`` or inline RDF through ``data``;
-    ``format`` selects the RDFLib parser. ``context`` is an optional namespace
-    dictionary for compact-IRI expansion during model loading.
+    ``format`` selects the RDFLib parser. ``context`` is a legacy namespace
+    dictionary retained for compatibility; model mappings remain authoritative.
+    JSON-LD uses the input document's own context through RDFLib.
 
     Returns a list, except that ``limit=1`` returns a single matching model.
-    No matches return ``[]`` for every limit. This function does not return
+    No matches and ``limit=0`` return ``[]``. Limits must be nonnegative integers;
+    booleans are not accepted. This function does not return
     a generator. Use ``rdflib.Graph.query`` for arbitrary SPARQL.
     """
-    if cls == Thing:
-        query_string = '\nSELECT *\nWHERE {\n    ?id a ?type .\n    ?id ?p ?o .\n}'
-    else:
-        query_string = get_query_string(
-            cls)  # TODO: limit should be passed here, however the sparql query must be written yet
-    g = rdflib.Graph()
-
-    ns_keys = [_ns[0] for _ns in g.namespaces()]
-
-    prefixes = "".join([f"PREFIX {k}: <{p}>\n" for k, p in NamespaceManager[cls].items() if not k.startswith('@')])
-    for k, p in NamespaceManager[cls].items():
-        if k not in ns_keys:
-            g.bind(k, p)
-            # logger.debug(k)
-        g.bind(k, p)
-
+    _validate_limit(limit)
+    if context is not None and not isinstance(context, dict):
+        raise TypeError(f"Context must be a dict, not {type(context)}")
+    if limit == 0:
+        return []
     if isinstance(data, dict):
         data = json.dumps(data)
+    graph = rdflib.Graph().parse(source=source, data=data, format=format)
+    return _query_graph(cls, graph, limit=limit)
 
-    _context = cls.get_context()
 
-    if context is None:
-        context = {}
-
-    if not isinstance(context, dict):
-        raise TypeError(f"Context must be a dict, not {type(context)}")
-
-    _context.update(context)
-
-    g.parse(source=source,
-            data=data,
-            format=format)
-    # add context namespaces:
-    for k, p in _context.items():
-        if k.startswith('@'):
-            continue
-        if k not in ns_keys:
-            g.bind(k, p)
-
-    gquery = prefixes + query_string
-
-    logger.debug(f'Querying class "{cls.__name__}" with query: {gquery}')
-    # logger.debug(prefixes + query_string)
-    res = g.query(gquery)
-
-    logger.debug(f'Querying resulted in {len(res)} results')
-
-    if len(res) == 0:
+def _query_graph(cls, graph, limit=None, subject=None):
+    """Project complete resources using RDFLib indexes, without a row limit."""
+    _validate_limit(limit)
+    if limit == 0:
         return []
-
-    logger.debug(f'Expanding SPARQL results...')
-    kwargs: Dict = expand_sparql_res(res.bindings, g, False, False)
-
-    # in case that the model field names are different than the IRI names, we need to find the
-    # corresponding names. The urirefs translate the class model fields to a <prefix>:<name> format.
-    # As we have the latter, the inverse dictionary let's us find the model field names.
-    # inverse_urirefs = {_v.split(':', 1)[-1]: _k for _k, _v in get_urirefs(cls).items()}
-
-    kwargs = _at_id_to_id(_expand_compact_iris(kwargs, _context))
-
-    if limit is not None:
-        out = []
-        for i, (k, v) in enumerate(kwargs.items()):
-            model_field_dict = v  # {inverse_urirefs.get(key, key): value for key, value in v.items()}
-            if limit == 1:
-                return cls.model_validate({'id': k, **model_field_dict})
-            out.append(cls.model_validate({'id': k, **model_field_dict}))
-            if i == limit - 1:
-                return out
-
-    return [cls.model_validate({'id': _id, **params}) for _id, params in kwargs.items()]
+    rdf_type = None if cls is Thing else rdflib.URIRef(cls.iri())
+    if subject is not None:
+        if not isinstance(subject, (str, rdflib.URIRef, rdflib.BNode)):
+            raise TypeError('subject must be a resource IRI or blank node')
+        if not isinstance(subject, (rdflib.URIRef, rdflib.BNode)):
+            subject = rdflib.BNode(subject[2:]) if subject.startswith('_:') else rdflib.URIRef(subject)
+        subjects = [subject] if any(graph.triples((subject, rdflib.RDF.type, rdf_type))) else []
+    else:
+        subjects = graph.subjects(rdflib.RDF.type, rdf_type, unique=True)
+    predicate_fields = _get_predicate_fields(cls)
+    reference_predicates = {
+        predicate for predicate, name in predicate_fields.items()
+        if _is_reference_field(cls.model_fields.get(name))
+        and not _has_list_annotation(cls.model_fields[name].annotation)}
+    models = []
+    for resource in islice(subjects, limit):
+        identifier = resource.n3() if isinstance(resource, rdflib.BNode) else str(resource)
+        fields = {'id': identifier}
+        for predicate, obj in graph.predicate_objects(resource):
+            field = str(predicate)
+            if field not in predicate_fields:
+                continue
+            if field in reference_predicates and isinstance(obj, (rdflib.URIRef, rdflib.BNode)):
+                value = obj
+            else:
+                value = process_object(resource, predicate, obj, graph, False,
+                                       _resource_ancestors=frozenset({resource}),
+                                       _preserve_predicates=True, _literal_mode='model')
+            if field in fields:
+                if not isinstance(fields[field], list):
+                    fields[field] = [fields[field]]
+                fields[field].append(value)
+            else:
+                fields[field] = value
+        models.append(cls.model_validate(_at_id_to_id(fields)))
+    return models[0] if limit == 1 and models else models
 
 
 _SCHEME_RE = re.compile(r'^[A-Za-z][A-Za-z0-9+.-]*:')
@@ -377,27 +429,22 @@ def _expand_compact_iris(obj, context, *, transform_keys=False):
     def expand_any(x):
         if isinstance(x, str):
             return expand_str(x)
-        elif isinstance(x, Mapping):
-            if transform_keys:
-                return {expand_str(k) if isinstance(k, str) else k: expand_any(v)
-                        for k, v in x.items()}
-            else:
-                return {k: expand_any(v) for k, v in x.items()}
-        elif isinstance(x, tuple):
+        if isinstance(x, Mapping):
+            return {expand_str(k) if transform_keys and isinstance(k, str) else k: expand_any(v)
+                    for k, v in x.items()}
+        if isinstance(x, tuple):
             return tuple(expand_any(i) for i in x)
-        elif isinstance(x, set):
+        if isinstance(x, set):
             return {expand_any(i) for i in x}
-        elif isinstance(x, list):
+        if isinstance(x, list):
             return [expand_any(i) for i in x]
-        else:
-            return x
+        return x
 
     return expand_any(obj)
 
 
 def _at_id_to_id(data: Dict) -> Dict:
     """Convert recursively '@id' keys to 'id' keys in a dictionary."""
-    """Convert '@id' keys to 'id' keys in a dictionary."""
     if isinstance(data, dict):
         new_data = {}
         for k, v in data.items():
@@ -406,7 +453,6 @@ def _at_id_to_id(data: Dict) -> Dict:
             else:
                 new_data[k] = _at_id_to_id(v)
         return new_data
-    elif isinstance(data, list):
+    if isinstance(data, list):
         return [_at_id_to_id(item) for item in data]
-    else:
-        return data
+    return data

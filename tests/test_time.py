@@ -1,6 +1,6 @@
 import unittest
 
-from ontolutils.ex import time
+from ontology_fixtures import time
 
 
 class TestTime(unittest.TestCase):

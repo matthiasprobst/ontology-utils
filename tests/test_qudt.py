@@ -1,10 +1,10 @@
 import pathlib
 import unittest
 
-from ontolutils.ex.qudt import Unit, QuantityKind
-from ontolutils.ex.qudt.conversion import convert_value_qudt, to_pint_unit
-from ontolutils.ex.qudt.utils import get_quantity_kind
-from ontolutils.ex.qudt.utils import iri2str
+from ontology_fixtures.qudt import Unit, QuantityKind
+from ontolutils.units import convert_value_qudt, to_pint_unit
+from ontology_fixtures.qudt.utils import get_quantity_kind
+from ontology_fixtures.qudt.utils import iri2str
 from ontolutils.namespacelib import QUDT_UNIT
 
 __this_dir__ = pathlib.Path(__file__).parent.resolve()
@@ -61,7 +61,7 @@ class TestQudt(unittest.TestCase):
         <http://qudt.org/vocab/sou/SI> ;
     qudt:conversionMultiplier 1e+00 ;
     qudt:conversionMultiplierSN 1e+00 ;
-    qudt:dbpediaMatch <http://dbpedia.org/resource/Pascal> ;
+    qudt:dbpediaMatch "http://dbpedia.org/resource/Pascal"^^xsd:anyURI ;
     qudt:exactMatch <http://qudt.org/vocab/unit/KiloGM-PER-M-SEC2>,
         <http://qudt.org/vocab/unit/N-PER-M2> ;
     qudt:hasDimensionVector <http://qudt.org/vocab/dimensionvector/A0E0L-1I0M1H0T-2D0> ;
@@ -73,8 +73,8 @@ class TestQudt(unittest.TestCase):
         <http://qudt.org/vocab/quantitykind/VaporPressure> ;
     qudt:hasReciprocalUnit <http://qudt.org/vocab/unit/M2-PER-N> ;
     qudt:iec61360Code "0112/2///62720#UAA258" ;
-    qudt:informativeReference <http://en.wikipedia.org/wiki/Pascal?oldid=492989202>,
-        <https://cdd.iec.ch/cdd/iec62720/iec62720.nsf/Units/0112-2---62720%23UAA258> ;
+    qudt:informativeReference "http://en.wikipedia.org/wiki/Pascal?oldid=492989202"^^xsd:anyURI,
+        "https://cdd.iec.ch/cdd/iec62720/iec62720.nsf/Units/0112-2---62720%23UAA258"^^xsd:anyURI ;
     qudt:omUnit <http://www.ontology-of-units-of-measure.org/resource/om-2/pascal> ;
     qudt:siExactMatch <https://si-digital-framework.org/SI/units/pascal> ;
     qudt:symbol "Pa" ;

@@ -1,8 +1,8 @@
 import pathlib
 import unittest
 
-from ontolutils.ex.m4i import NumericalVariable
-from ontolutils.ex.sis import StandardMU, ExpandedMU, CoverageIntervalMU
+from ontology_fixtures.m4i import NumericalVariable
+from ontology_fixtures.sis import StandardMU, ExpandedMU, CoverageIntervalMU
 
 __this_dir__ = pathlib.Path(__file__).parent
 

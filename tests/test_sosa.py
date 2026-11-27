@@ -3,12 +3,12 @@ import unittest
 import rdflib
 
 from ontolutils import serialize, Thing
-from ontolutils.ex.hdf5 import File
-from ontolutils.ex.m4i import Tool, NumericalVariable
-from ontolutils.ex.prov import Activity
-from ontolutils.ex.qudt import Unit
-from ontolutils.ex.sosa import Sensor, Platform, Observation, Result
-from ontolutils.ex.ssn import Accuracy, SystemCapability, MeasurementRange, ObservableProperty
+from ontology_fixtures.hdf5 import File
+from ontology_fixtures.m4i import Tool, NumericalVariable
+from ontology_fixtures.prov import Activity
+from ontology_fixtures.qudt import Unit
+from ontology_fixtures.sosa import Sensor, Platform, Observation, Result
+from ontology_fixtures.ssn import Accuracy, SystemCapability, MeasurementRange, ObservableProperty
 from ontolutils.namespacelib import QUDT_KIND, QUDT_UNIT
 
 
@@ -309,7 +309,7 @@ class TestSosa(unittest.TestCase):
             id="http://example.org/observation/2",
             label="Observation 2"
         )
-        from ontolutils.ex.sosa import ObservationCollection
+        from ontology_fixtures.sosa import ObservationCollection
         obs_collection = ObservationCollection(
             id="http://example.org/observation_collection/1",
             has_member=[obs1, obs2]

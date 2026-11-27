@@ -4,6 +4,9 @@ import re
 from pathlib import Path
 
 import pytest
+from requests import Response
+
+from ontolutils import onto
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -21,17 +24,45 @@ EXAMPLE_PAGES = [ROOT / "README.md"] + sorted((ROOT / "antora/modules").rglob("*
 EXAMPLE_PAGES = [page for page in EXAMPLE_PAGES if python_blocks(page)]
 
 
+@pytest.fixture
+def mock_m4i_download(monkeypatch):
+    def m4i_response(method, url, **kwargs):
+        assert method == "GET"
+        assert url == "https://w3id.org/nfdi4ing/metadata4ing/ontology.ttl"
+        response = Response()
+        response.status_code = 200
+        response.url = url
+        response._content = b"""
+            @prefix m4i: <http://w3id.org/nfdi4ing/metadata4ing#> .
+            @prefix owl: <http://www.w3.org/2002/07/owl#> .
+            m4i:Tool a owl:Class .
+            m4i:hasParameter a owl:ObjectProperty ;
+                <http://www.w3.org/2000/01/rdf-schema#domain>
+                [ owl:unionOf (m4i:Method m4i:Tool) ] .
+        """
+        return response
+
+    monkeypatch.setattr(onto, "request_with_backoff", m4i_response)
+
+
 @pytest.mark.parametrize("page", EXAMPLE_PAGES, ids=lambda path: path.relative_to(ROOT).as_posix())
-def test_documented_python_examples(page, monkeypatch, tmp_path):
+def test_documented_python_examples(page, monkeypatch, tmp_path, request):
     monkeypatch.chdir(tmp_path)
+    monkeypatch.syspath_prepend(str(tmp_path))
+    if page == ROOT / "README.md":
+        request.getfixturevalue("mock_m4i_download")
+
     namespace = {"__name__": "__main__"}
     for line_offset, source in python_blocks(page):
         exec(compile("\n" * line_offset + source, str(page), "exec"), namespace)
 
 
-def test_tutorial_runs_in_cell_order(monkeypatch, tmp_path):
+@pytest.mark.parametrize("name", ["Classes.ipynb", "ex/observations.ipynb"])
+def test_tutorial_runs_in_cell_order(name, monkeypatch, tmp_path, request):
     monkeypatch.chdir(tmp_path)
-    path = ROOT / "tutorials/Classes.ipynb"
+    if name == "Classes.ipynb":
+        request.getfixturevalue("mock_m4i_download")
+    path = ROOT / "tutorials" / name
     notebook = json.loads(path.read_text(encoding="utf-8"))
     assert notebook["nbformat"] == 4
     assert notebook["cells"][0]["cell_type"] == "markdown"

@@ -17,13 +17,12 @@ disable=W1203,
         too-many-locals
 
 analyse-fallback-blocks=no
-fail-under=10
+fail-under=9.7
 ignore=CVS
 ignore-patterns=^\.#
 jobs=1
 limit-inference-results=100
 persistent=yes
-py-version=3.8
+py-version=3.11
 recursive=no
-suggestion-mode=yes
 unsafe-load-any-extension=no

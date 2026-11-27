@@ -1,9 +1,0 @@
-# Antora build output
-build/
-output/
-
-# Generated HTML
-html/
-
-# Cache
-.cache/

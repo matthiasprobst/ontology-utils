@@ -25,9 +25,12 @@ to check signatures and return values.
    * - Build a class at runtime
      - ``build`` and ``Property``
 
-Loading with ``from_jsonld``, ``from_ttl``, or ``query`` normally returns a list;
+Loading with ``from_jsonld``, ``from_ttl``, ``from_file``, ``from_graph`` or
+``query`` normally returns a list;
 ``limit=1`` returns a matching object, or ``[]`` when nothing matches.
-``from_graph`` always returns a list. JSON-LD text is a string, not a dictionary.
+Limits count complete resources: ``0`` returns ``[]`` and negative or non-integer
+limits (including booleans) raise an error. ``create_query(limit=...)`` retains
+SPARQL row-limit semantics. JSON-LD text is a string, not a dictionary.
 
 .. toctree::
    :maxdepth: 1

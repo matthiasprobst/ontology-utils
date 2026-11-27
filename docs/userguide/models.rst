@@ -1,87 +1,42 @@
-Built-in models for research metadata
-=====================================
+Models and scientific data
+==========================
 
-Import a model from ``ontolutils.ex`` when its fields fit your vocabulary.
-These modules implement selected terms; they are not complete implementations
-of every ontology. Inspect ``Model.model_fields`` for accepted fields and
-``Model.iri("fieldName")`` for their RDF predicates.
+Define a :doc:`Thing subclass <classes>` for the fields and validation your
+application needs. Use :doc:`ontology_loader` to generate models from a Turtle
+ontology and inspect their fields and RDF predicates.
 
-.. list-table::
-   :header-rows: 1
-   :widths: 25 35 40
+Numerical arrays
+----------------
 
-   * - Module
-     - Example classes
-     - Typical use
-   * - ``prov``
-     - ``Person``, ``Organization``, ``Entity``, ``Activity``
-     - People, data, and provenance.
-   * - ``dcat``
-     - ``Dataset``, ``Distribution``, ``Resource``
-     - Data catalogs and downloadable resources.
-   * - ``schema``
-     - ``Project``, ``ResearchProject``, ``SoftwareSourceCode``
-     - Research projects and software.
-   * - ``m4i``
-     - ``NumericalVariable``, ``TextVariable``, ``Tool``
-     - Scientific variables and tools; requires NumPy.
-   * - ``sosa`` / ``ssn``
-     - ``Sensor``, ``Observation``, ``ObservableProperty``
-     - Sensors and observations; required fields depend on the class.
-   * - ``hdf5``
-     - ``File``, ``Group``, ``Dataset``
-     - Metadata describing HDF5 structure, not HDF5 file I/O.
-   * - ``skos``, ``spdx``, ``qudt``
-     - ``Concept``, ``Checksum``, ``Unit``
-     - Vocabulary concepts, checksums, and units.
+Keep ordered data, coordinates and shape in array formats such as NetCDF or
+HDF5, and use RDF to describe the data. Repeated RDF values have set semantics.
+They cannot preserve repeated samples or sequence order.
 
-Record who produced a dataset
------------------------------
+Use the standalone ``ontolutils.arrays.to_xarray`` function to build an
+xarray DataArray. Install xarray and add Pint if supplying a QUDT unit.
 
-.. testcode::
-
-   from ontolutils import LangString
-   from ontolutils.ex.prov import Entity, Organization, Person
-
-   lab = Organization(id="https://example.org/lab", name=LangString(value="Flow laboratory"))
-   researcher = Person(id="https://example.org/people/ada", first_name="Ada", affiliation=lab)
-   dataset = Entity(
-       id="https://example.org/datasets/run-01",
-       label="Velocity measurements",
-       was_attributed_to=researcher,
-   )
-   assert dataset.wasAttributedTo is researcher
-   document = dataset.model_dump_jsonld()
-
-The nested person and laboratory are included in the RDF graph. An IRI string
-can be used instead when the related resource is described elsewhere.
-
-Describe a numerical variable
------------------------------
-
-Install NumPy for this example: ``python -m pip install numpy``.
-
-.. testcode::
+.. code-block:: python
 
    from ontolutils import QUDT_UNIT
-   from ontolutils.ex.m4i import NumericalVariable
+   from ontolutils.arrays import to_xarray
 
-   velocity = NumericalVariable(
-       id="https://example.org/variables/velocity",
-       label="Velocity",
-       has_numerical_value=[1.0, 1.2],
-       has_unit="m/s",
+   velocity = to_xarray(
+       [1.0, 1.2],
+       dims=["sample"],
+       coords={"sample": [0, 1]},
+       attrs={"long_name": "Velocity"},
+       unit=QUDT_UNIT.M_PER_SEC,
    )
-   assert str(velocity.hasUnit) == str(QUDT_UNIT.M_PER_SEC)
-   assert velocity.to_numpy().tolist() == [1.0, 1.2]
-   turtle = velocity.serialize("ttl")
+   assert velocity.dims == ("sample",)
+   assert velocity.attrs["units"] == "m/s"
 
-For array values, ``NumericalVariable.serialize`` creates a scalar variable per
-element, with IDs ending in ``/0``, ``/1``, etc. ``model_dump_jsonld`` instead
-keeps the numerical values on the original model. Do not treat these two
-representations as interchangeable array formats; keep large scientific arrays
-in their data files and use RDF to describe them.
+Unit conversions
+----------------
 
-``to_pint()`` additionally requires Pint. ``to_xarray()`` additionally requires
-Pint and xarray. ``has_unit="m/s"`` uses a built-in QUDT lookup, not arbitrary
-unit-expression parsing. See :doc:`namespacelib`.
+Use ``ontolutils.units.to_pint(value, unit)`` for arithmetic with Pint
+quantities. Pass a QUDT unit IRI or a model with that IRI as its ``id``.
+For conversions based directly on QUDT coefficients, pass unit descriptions
+to ``ontolutils.units.convert_value_qudt``. Each description has ``id``,
+``conversionMultiplier``, ``conversionOffset`` and ``scalingOf`` attributes.
+Use nested descriptions for the scaling chain. The function applies
+QUDT reference coefficients and requires a shared scaling root.

@@ -67,8 +67,16 @@ plain text, language-tagged values, or lists of them:
 .. testcode::
 
    from ontolutils import LangString
-   from ontolutils.ex.prov import Person
+   from pydantic import Field
+   from ontolutils import Thing, namespaces, urirefs
    from ontolutils.typing import AnyIriOf
+
+
+   @namespaces(prov="http://www.w3.org/ns/prov#", foaf="http://xmlns.com/foaf/0.1/")
+   @urirefs(Person="prov:Person", firstName="foaf:firstName", lastName="foaf:lastName")
+   class Person(Thing):
+       firstName: str = Field(alias="first_name")
+       lastName: str | None = Field(default=None, alias="last_name")
 
    measurement.label = [LangString(value="Velocity", lang="en"), "Geschwindigkeit@de"]
 
@@ -86,6 +94,14 @@ plain text, language-tagged values, or lists of them:
 Pass a model to include its properties in the serialized graph, or an IRI to
 reference a resource described elsewhere. See :doc:`typing` for lists and
 other reference types.
+
+Ordinary ``str`` fields serialize as literal text, including URL-looking strings
+and strings such as ``ex:sample``. Use ``AnyIri`` or ``AnyIriOf[Model]`` for
+resource-reference fields, or a Pydantic URL type for a URL-valued reference.
+Validated IRI fields remain string-compatible while retaining reference meaning
+for RDF export. An RDFLib ``Literal`` is never accepted as an IRI reference.
+Use ``LangString`` for explicit language tags and RDFLib ``Literal`` for explicit
+datatypes in unconstrained fields.
 
 Add fields deliberately
 -----------------------

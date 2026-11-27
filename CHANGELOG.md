@@ -1,5 +1,98 @@
 # Changelog
 
+## v1.0.0b1
+
+- Remove the bundled `ontolutils.ex` domain models. Define models in your
+  project or generate them from an ontology. Unit conversion remains available
+  in `ontolutils.units`; use `ontolutils.arrays.to_xarray` for numerical data.
+
+- Load a Turtle ontology from its published URL and use the generated Python
+  models directly. Discover optional fields from declared RDF property domains,
+  including named superclasses and supported OWL unions and intersections.
+  Profiles provide custom names and validation.
+
+- Generate deterministic RDFLib namespace definitions from parsed RDF graphs.
+
+- Correct QUDT conversions: apply offsets before multiplication and use reference
+  coefficients once rather than multiplying them along scaling chains. Fix
+  Fahrenheit and milligram conversions; reject missing scaled-unit factors,
+  invalid coefficients, resource-identity cycles and conflicting same-unit factors.
+  Reuse known coefficients when two descriptions share the same scaling-root IRI.
+
+- Target Python 3.11–3.15, with interpreter-specific Pydantic minimums matching
+  upstream support. Align package metadata, dependency-floor profiles and CI;
+  end Python 3.9/3.10 support in this new API family.
+
+- Stop prepending the writable user cache to Python's module search path during
+  import. Export curated namespace constants and load namespace-generation
+  utilities only when explicitly requested.
+
+- Encode NaN and positive/negative infinity as explicit `xsd:double` literals
+  in valid JSON-LD. Preserve them through RDFLib export, combined graphs,
+  keyword aliases, byte output and destination files rather than emitting
+  non-JSON tokens or losing values through a JSON encoder.
+
+- Aggregate distinct SPARQL result values using RDF term equality instead of
+  substring membership. Preserve singleton list fields and literal metadata;
+  report rows without a resource-valued `?id` as invalid input.
+
+- Load described targets into IRI/URL-only fields as references instead of
+  invalid embedded dictionaries, including nested models and lists. Keep model
+  fields embedded and retain declared RDF-collection loading.
+
+- Serialize midnight datetimes as `xsd:dateTime`, retaining time, fractional
+  seconds and timezone instead of silently reducing them to dates.
+
+- Breaking correction: plain string fields remain literals when they look like
+  URLs or compact IRIs. Preserve explicit IRI/URL and blank-node references
+  through validation and RDF export instead of guessing from text. IRI-only
+  fields reject RDFLib literals.
+
+- Breaking correction: all model loaders use complete-resource limits and the
+  same return contract, including `from_graph(limit=1)`. Reject invalid limits,
+  handle singleton RDF values in declared list fields, and avoid SPARQL and
+  intermediate JSON-LD conversion during model loading.
+
+- Traverse dictionary-query graphs iteratively, describe shared resources once,
+  and use JSON-LD @included for deep graphs. Avoid recursion failure and
+  exponential expansion without dropping graph statements.
+
+- Breaking correction: dictionary queries emit JSON-LD resource references and
+  explicit RDF list cells. Preserve shared/named collection heads, annotations,
+  external references and untyped described resources during graph round trips.
+
+- Preserve multiple RDF type assertions in dictionary results and expand nested
+  resources regardless of type count. Avoid duplicating generic model values
+  when the source resource has multiple types.
+
+- Preserve RDF literal datatype/language metadata in unconstrained model fields
+  and typed dictionary-query values, including URL-looking literal text.
+
+- Dictionary queries retain full IRI keys for colliding predicate local names
+  instead of merging values from different namespaces.
+
+- Match model fields by complete predicate IRI, including nested resources.
+  Keep per-load context separate from registered model namespaces.
+
+- Preserve literal strings resembling compact IRIs during model loading.
+  RDFLib expands resource terms during parsing; literal text is not expanded
+  again. Distinguish rdf:type from unrelated predicates with local name type.
+
+- Breaking correction: JSON-LD loading preserves HTTP vocabulary IRIs and
+  literal text instead of replacing schema.org URLs throughout the document.
+  Models must map the exact vocabulary IRIs used in the input; HTTP schema.org
+  types no longer match HTTPS models through implicit rewriting.
+
+- Preserve JSON-LD context directives and structured prefix/term definitions
+  during model serialization and RDF export.
+- Convert absolute Celsius quantities correctly, including arrays and custom
+  Pint registries; preserve temperature-difference semantics.
+- Raise a domain error for unknown QUDT-to-Pint units and support custom lookups.
+- Test DCAT downloads on every supported Python version using fixed responses
+  and temporary destinations instead of a mutable remote file.
+- Run release branches through the full test and installed-wheel workflows;
+  exercise structured contexts across the semantic dependency matrix.
+
 ## v0.27.7
 
 - Removed the incorrectly assigned `m4i:hasNumericalVariable` property from `sosa:Result`.

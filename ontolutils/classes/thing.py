@@ -5,7 +5,7 @@ import warnings
 from dataclasses import dataclass
 from datetime import datetime
 from functools import lru_cache
-from typing import Dict, Union, Optional, Any, List, Type, Tuple, Set
+from typing import Dict, Union, Optional, Any, List, Type, Tuple, Set, get_args, get_origin
 from urllib.parse import urlparse
 
 import rdflib
@@ -17,11 +17,12 @@ from rdflib import XSD
 from rdflib.plugins.shared.jsonld.context import Context
 from rdflib.query import Result
 
-from .decorator import urirefs, namespaces, URIRefManager, NamespaceManager, _is_http_url
+from .decorator import urirefs, namespaces, URIRefManager, NamespaceManager, _is_http_url, _get_predicate_fields
 from .thingmodel import ThingModel
-from .utils import split_uri
+from ._jsonld import _number_to_jsonld, _serialize_graph
+from .utils import split_uri, _validate_limit
 from .. import get_config
-from ..typing import IdType, AnyThingOrList, LangStringTypeOrList
+from ..typing import IdType, AnyThingOrList, LangStringTypeOrList, _IriString, _Mailbox, validate_iri_type
 
 try:
     import numpy as np
@@ -32,6 +33,61 @@ except ModuleNotFoundError as error:
 
 logger = logging.getLogger('ontolutils')
 URL_SCHEMES = {"http", "https", "urn", "doi"}
+
+
+def _literal_to_jsonld(value):
+    """Preserve an RDF literal's lexical form, datatype and language in JSON-LD."""
+    out = {'@value': str(value)}
+    if value.language:
+        out['@language'] = value.language
+    elif value.datatype:
+        out['@type'] = str(value.datatype)
+    return out
+
+
+def _is_reference_field(field_info):
+    """Identify IRI/URL fields that do not accept embedded Pydantic models."""
+    if field_info is None:
+        return False
+    pending = [field_info.annotation, *field_info.metadata]
+    reference = False
+    while pending:
+        annotation = pending.pop()
+        if getattr(annotation, 'func', None) is validate_iri_type:
+            reference = True
+        if isinstance(annotation, type):
+            if issubclass(annotation, BaseModel):
+                return False
+            if issubclass(annotation, AnyUrl):
+                reference = True
+        pending.extend(get_args(annotation))
+    return reference
+
+
+def _has_list_annotation(annotation):
+    """Check whether an annotation admits a collection, including optional unions."""
+    return get_origin(annotation) is list or any(_has_list_annotation(item) for item in get_args(annotation))
+
+
+def _reference_from_rdf(value):
+    """Project an expanded RDF description back onto its resource identifier."""
+    if isinstance(value, list):
+        return [_reference_from_rdf(item) for item in value]
+    if isinstance(value, dict):
+        identifier = value.get('id', value.get('@id'))
+        if isinstance(identifier, str):
+            return rdflib.BNode(identifier[2:]) if identifier.startswith('_:') else rdflib.URIRef(identifier)
+    return value
+
+
+def _rdf_list_value(field_info, value):
+    """Supply a singleton list where an RDF-loaded field requires a list."""
+    annotation = field_info.annotation if field_info is not None else None
+    alternatives = get_args(annotation)
+    list_field = get_origin(annotation) is list or (
+        len(alternatives) == 2 and type(None) in alternatives
+        and any(get_origin(item) is list for item in alternatives))
+    return [value] if list_field and not isinstance(value, list) else value
 
 
 def _validate_lang_string(value):
@@ -287,21 +343,11 @@ def serialize_lang_str_field(lang_str: LangString):
 
 
 def datetime_to_literal(dt: datetime):
-    """Turn a datetime into a literal."""
+    """Preserve a datetime's time, fractional seconds and timezone as xsd:dateTime."""
     return {
         "@value": dt.isoformat(),
-        "@type": str(XSD.dateTime if dt.hour or dt.minute or dt.second else XSD.date)
+        "@type": str(XSD.dateTime)
     }
-
-
-def _parse_string_value(value, ctx):
-    if is_url(value):
-        return {"@id": str(value)}
-    elif ":" in value:
-        _ns, _value = value.split(":", 1)
-        if _ns in ctx:
-            return {"@id": f"{ctx[_ns]}{_value}"}
-    return value
 
 
 @namespaces(owl='http://www.w3.org/2002/07/owl#',
@@ -351,6 +397,32 @@ class Thing(ThingModel):
 
     # class Config:
     #     arbitrary_types_allowed = True
+
+    @model_validator(mode='before')
+    @classmethod
+    def _map_full_rdf_predicates(cls, data):
+        """Map expanded RDF predicates to fields, including in nested models."""
+        if not isinstance(data, dict):
+            return data
+        if not any(isinstance(key, str) and ':' in key for key in data):
+            return data
+        mapped = dict(data)
+        for predicate, field in _get_predicate_fields(cls).items():
+            if predicate in mapped:
+                value = mapped.pop(predicate)
+                if field in mapped:
+                    raise ValueError(f'Conflicting field and RDF predicate for {field}')
+                field_info = cls.model_fields.get(field)
+                if _is_reference_field(field_info):
+                    value = _reference_from_rdf(value)
+                mapped[field] = _rdf_list_value(field_info, value)
+        # A model is a projection onto its registered predicates. Unmapped RDF
+        # properties must not become extra fields serialized as Python reprs.
+        field_names = dict(cls.model_fields)
+        for key in list(mapped):
+            if isinstance(key, str) and ':' in key and key not in field_names:
+                mapped.pop(key)
+        return mapped
 
     def __hash__(self):
         return hash(self.id)
@@ -516,16 +588,20 @@ class Thing(ThingModel):
                                       **NamespaceManager.get(obj.__class__, {}),
                                       **URIRefManager.get(obj.__class__, {})})
 
-            if isinstance(obj, str) and _is_http_url(obj):
+            if isinstance(obj, rdflib.Literal):
+                return _literal_to_jsonld(obj)
+            if isinstance(obj, _Mailbox):
+                return {'@id': 'mailto:' + str(obj)}
+            if isinstance(obj, (_IriString, rdflib.URIRef, AnyUrl, Url)):
                 return {"@id": str(obj)}
+            if isinstance(obj, rdflib.BNode):
+                return {"@id": obj.n3()}
             if isinstance(obj, str):
-                return _parse_string_value(obj, at_context)
-            if isinstance(obj, Url):
-                return {"@id": str(obj)}
+                return obj
             if isinstance(obj, list):
                 return [_serialize_fields(o, _exclude_none) for o in obj]
             if isinstance(obj, (int, float, bool)):
-                return obj
+                return _number_to_jsonld(obj)
             if isinstance(obj, LangString):
                 return serialize_lang_str_field(obj)
             if isinstance(obj, datetime):
@@ -554,8 +630,6 @@ class Thing(ThingModel):
                     value = getattr(obj, k)
                     if np is not None and isinstance(value, np.ndarray):
                         value = value.tolist()
-                    if isinstance(value, str):
-                        value = _replace_context_url_with_prefix(value, at_context)
                     if value is not None and k not in ('id', '@id'):
                         iri = uri_ref_manager.get(k, k)
                         if _is_http_url(iri):
@@ -577,23 +651,29 @@ class Thing(ThingModel):
             for k, v in serialized_fields.copy().items():
                 _field = serialized_fields.pop(k)
                 key = k
-                if isinstance(v, Thing):
+                if isinstance(v, rdflib.Literal):
+                    serialized_fields[key] = _literal_to_jsonld(v)
+                elif isinstance(v, Thing):
                     serialized_fields[key] = _serialize_fields(v, _exclude_none=_exclude_none)
                 elif isinstance(v, list):
                     serialized_fields[key] = [
                         _serialize_fields(i, _exclude_none=_exclude_none) for i in v]
                 elif isinstance(v, (int, float)):
-                    serialized_fields[key] = v
+                    serialized_fields[key] = _number_to_jsonld(v)
                 elif isinstance(v, LangString):
                     serialized_fields[key] = serialize_lang_str_field(v)
-                elif _is_http_url(v):
+                elif isinstance(v, _Mailbox):
+                    serialized_fields[key] = _serialize_fields(v, _exclude_none=_exclude_none)
+                elif isinstance(v, (_IriString, rdflib.URIRef, AnyUrl, Url)):
                     serialized_fields[key] = {"@id": str(v)}
+                elif isinstance(v, rdflib.BNode):
+                    serialized_fields[key] = {"@id": v.n3()}
                 elif isinstance(v, URIValue):
                     serialized_fields[f"{v.prefix}:{key}"] = v.value
                 elif isinstance(v, datetime):
                     serialized_fields[key] = datetime_to_literal(v)
                 elif isinstance(v, str):
-                    serialized_fields[key] = _parse_string_value(v, at_context)
+                    serialized_fields[key] = v
                 else:
                     serialized_fields[key] = _serialize_fields(v, _exclude_none=_exclude_none)
 
@@ -657,13 +737,13 @@ class Thing(ThingModel):
             resolve_keys=resolve_keys,
             base_uri=base_uri
         )
-        jsonld_str = json.dumps(jsonld_dict)
+        jsonld_str = json.dumps(jsonld_dict, allow_nan=False)
 
         logger.debug(f'Parsing the following jsonld dict to the RDF graph: {jsonld_str}')
         g = rdflib.Graph()
 
         if context:
-            for k, v in context.items():
+            for k, v in _context_prefixes(context):
                 g.bind(k, rdflib.Namespace(v))
 
         g.parse(data=jsonld_str, format='json-ld')
@@ -672,9 +752,7 @@ class Thing(ThingModel):
         if context:
             _context.update(context)
 
-        return g.serialize(format=format,
-                           context=_context,
-                           **kwargs)
+        return _serialize_graph(g, format, context=_context, **kwargs)
 
     def model_dump_jsonld(
             self,
@@ -704,7 +782,7 @@ class Thing(ThingModel):
             resolve_keys=resolve_keys,
             base_uri=base_uri
         )
-        jsonld_str = json.dumps(jsonld_dict, indent=4)
+        jsonld_str = json.dumps(jsonld_dict, indent=4, allow_nan=False)
         if not rdflib_serialize:
             return jsonld_str
 
@@ -716,9 +794,7 @@ class Thing(ThingModel):
         if context:
             _context.update(context)
 
-        return g.serialize(format='json-ld',
-                           context=_context,
-                           indent=indent)
+        return _serialize_graph(g, 'json-ld', context=_context, indent=indent)
 
     def model_dump_ttl(self,
                        context: Optional[Dict] = None,
@@ -797,9 +873,8 @@ class Thing(ThingModel):
         Returns a list by default. ``limit=1`` returns one matching model, or
         ``[]`` when no matching resource is found.
         """
-        g = rdflib.Graph().parse(source=source, data=data)
-        jld = g.serialize(format='json-ld')
-        return cls.from_jsonld(data=jld, limit=limit, context=context)
+        from . import query
+        return query(cls, source=source, data=data, format='turtle', limit=limit, context=context)
 
     @classmethod
     def from_jsonld(cls,
@@ -816,28 +891,26 @@ class Thing(ThingModel):
         data : str or dict, optional
             Inline JSON-LD. Supply data or source.
         limit : int, optional
-            Maximum number of models to return. With ``limit=1``, a matching
+            Nonnegative maximum number of models; ``0`` returns an empty list.
+            Booleans and non-integers raise ``TypeError``; negative values raise
+            ``ValueError``. With ``limit=1``, a matching
             model is returned directly; otherwise the result is a list. No matches
             always produce ``[]``.
         context : dict, optional
-            Namespace mappings used to expand compact IRIs during model loading.
-            This does not replace remote contexts contained in the input document.
+            Legacy namespace argument, retained for compatibility. Model predicate
+            mappings remain authoritative; JSON-LD IRIs are resolved using the
+            input document's own context by RDFLib.
 
         Notes
         -----
-        For inline ``data``, this method rewrites ``http://schema.org/`` to
-        ``https://schema.org/`` and warns. File/URL source content is not rewritten
-        by this method. An IRI-only reference is not automatically dereferenced.
+        IRIs and literal text are preserved as supplied. HTTP and HTTPS
+        vocabulary IRIs are distinct; use model mappings matching the input.
+        An IRI-only reference is not automatically dereferenced.
         """
         from . import query
         if data is not None:
             if isinstance(data, dict):
                 data = json.dumps(data)
-            if 'http://schema.org/' in data:
-                warnings.warn('Replacing http with https in the JSON-LD data. '
-                              'This is a workaround for the schema.org inconsistency.',
-                              UserWarning)
-                data = data.replace('http://schema.org/', 'https://schema.org/')
         return query(cls, source=source, data=data, format="json-ld", limit=limit, context=context)
 
     @classmethod
@@ -893,36 +966,43 @@ class Thing(ThingModel):
     def from_sparql(cls,
                     sparql_result: Result,
                     raise_on_error=True):
-        """Initialize the class from a SPARQL result"""
-        # sparql_result_dict = _sparql_result_to_dict(sparql_result)
-        # first cluster by subject. a subject can be identified by type property
+        """Build models from SELECT rows binding ``?id`` and Python field names.
+
+        Return one model per resource, aggregating distinct RDF terms per field
+        in first-seen order. Repeated identical bindings are omitted. Declared
+        list fields accept singleton results. Missing optional bindings are
+        ignored. With ``raise_on_error=False``, skip models failing validation.
+        The result is always a list; this is a projection of the selected rows.
+        Every row must bind ``?id`` to an IRI or blank node, or ``ValueError``
+        is raised independently of the model-validation error policy.
+        """
         subjects: Dict[str, Dict[str, Any]] = {}
         for row in sparql_result:
             row_dict = _sparql_result_to_dict(row)
-            _id = row_dict.pop("id")
-            if _id in subjects:
-                for k, v in row_dict.items():
-                    if k in subjects[_id]:
-                        # already exists, make it a list
-                        if v not in subjects[_id][k]:
-                            if not isinstance(subjects[_id][k], list):
-                                subjects[_id][k] = [subjects[_id][k]]
-                            subjects[_id][k].append(v)
-                    else:
-                        subjects[_id][k] = v
-            else:
-                subjects[_id] = row_dict
+            _id = row_dict.pop("id", None)
+            if not isinstance(_id, (rdflib.URIRef, rdflib.BNode)):
+                raise ValueError('SPARQL results must bind ?id to an IRI or blank node in every row')
+            fields = subjects.setdefault(_id, {})
+            for key, value in row_dict.items():
+                if key not in fields:
+                    fields[key] = value
+                elif isinstance(fields[key], list):
+                    if value not in fields[key]:
+                        fields[key].append(value)
+                elif value != fields[key]:
+                    fields[key] = [fields[key], value]
         instances = []
         for k, v in subjects.items():
+            values = {key: _rdf_list_value(cls.model_fields.get(key), value)
+                      for key, value in v.items()}
             try:
-                i = cls.model_validate({"id": k, **v})
+                i = cls.model_validate({"id": k, **values})
             except ValidationError as e:
                 if raise_on_error:
-                    raise e
+                    raise
                 logger.error(f"Could not validate {v} to {cls.__name__}: {e}")
                 continue
             instances.append(i)
-        # instances = [cls.model_validate(v) for k, v in subjects.items()]
         return instances
 
     @classmethod
@@ -978,13 +1058,14 @@ class Thing(ThingModel):
         """Generate a SPARQL query to find instances of this Thing subclass.
 
         - `select_vars`: list of variable names (including leading `?`) to select; defaults to `['?id', ...]`.
-        - `limit`: optional integer limit.
+        - `limit`: optional nonnegative integer row limit (excluding booleans).
         - `distinct`: use `DISTINCT` in SELECT when True.
 
         This implementation always exposes the subject as the variable `?id`. If a concrete
         subject IRI is provided it is bound into the WHERE clause using `BIND(... AS ?id)` so
         the subject appears in the result rows.
         """
+        _validate_limit(limit)
         # Always expose the subject as ?id
         subj_var = "?id"
         bind_line = None
@@ -1058,23 +1139,23 @@ class Thing(ThingModel):
     def from_graph(
             cls,
             graph: rdflib.Graph,
-            subject: Union[str, rdflib.URIRef] = None,
+            subject: Union[str, rdflib.URIRef, rdflib.BNode] = None,
             limit: Optional[int] = None,
-            distinct: bool = False) -> List["Thing"]:
-        """Return a list of models built from an RDFLib graph query.
+            distinct: bool = False) -> Union["Thing", List["Thing"]]:
+        """Load complete matching resources from an existing RDFLib graph.
 
-        ``subject`` restricts the query to a resource IRI. ``limit`` limits query
-        rows; this method still returns a list, including for ``limit=1``.
-        No matches produce an empty list. For general SPARQL, use ``graph.query``.
+        ``subject`` restricts loading to a resource IRI or blank node. ``limit``
+        bounds complete models, with the same contract as ``from_jsonld``:
+        ``limit=1`` returns one model or ``[]``; otherwise return a list.
+        ``limit=0`` returns ``[]``. The graph and its namespace bindings are not
+        modified. ``distinct`` is retained for compatibility; each resource is
+        always returned once. For SPARQL row limits, use ``graph.query`` with
+        ``create_query``.
         """
-        # 1. generate query:
-        query = cls.create_query(subject=subject, limit=limit, distinct=distinct)
-        # 2. run query:
-        res = graph.query(query)
-        instances = cls.from_sparql(res)
-        if not instances:
-            return []
-        return instances
+        from .query_util import _query_graph
+        if not isinstance(graph, rdflib.Graph):
+            raise TypeError('graph must be an RDFLib Graph')
+        return _query_graph(cls, graph, limit=limit, subject=subject)
 
     def validate(self,
                  shacl_source: Union[str, pathlib.Path] = None,
@@ -1126,10 +1207,24 @@ class Thing(ThingModel):
         return ValidationResult(conforms, results_graph, results_text)
 
 
-def _replace_context_url_with_prefix(value: str, context: Dict) -> str:
+def _context_prefixes(context):
+    """Yield namespace definitions, excluding directives and ordinary term objects."""
     for context_key, context_url in context.items():
+        if context_key.startswith('@'):
+            continue
+        if isinstance(context_url, dict):
+            if context_url.get('@prefix') is not True:
+                continue
+            context_url = context_url.get('@id')
+        if not isinstance(context_url, str) or not context_url.endswith(('/', '#', ':')):
+            continue
+        yield context_key, context_url
+
+
+def _replace_context_url_with_prefix(value: str, context: Dict) -> str:
+    for context_key, context_url in _context_prefixes(context):
         if value.startswith(context_url):
-            return value.replace(context_url, context_key + ':')
+            return context_key + ':' + value[len(context_url):]
     return value
 
 
@@ -1177,7 +1272,7 @@ def serialize(thing: Union[Thing, List[Thing]],
     graph = rdflib.Graph()
     for s in serializations:
         graph.parse(data=s, format=format)
-    return graph.serialize(format=format, **kwargs)
+    return _serialize_graph(graph, format, **kwargs)
 
 
 def _parse_blank_node(_id, base_uri: Optional[Union[str, AnyUrl]]):

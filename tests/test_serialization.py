@@ -5,8 +5,8 @@ import rdflib
 
 from ontolutils import Thing
 from ontolutils import serialize
-from ontolutils.ex import hdf5
-from ontolutils.ex import m4i
+from ontology_fixtures import hdf5
+from ontology_fixtures import m4i
 
 LOG_LEVEL = logging.DEBUG
 

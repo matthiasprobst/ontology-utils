@@ -1,11 +1,13 @@
 import unittest
 
 import pydantic
+from rdflib import Graph
+from rdflib.compare import isomorphic
 
 from ontolutils import LangString
-from ontolutils.ex import m4i
-from ontolutils.ex.m4i import TextVariable, NumericalVariable, Tool, ProcessingStep
-from ontolutils.ex.qudt import Unit
+from ontology_fixtures import m4i
+from ontology_fixtures.m4i import TextVariable, NumericalVariable, Tool, ProcessingStep
+from ontology_fixtures.qudt import Unit
 from ontolutils.namespacelib import QUDT_KIND
 
 
@@ -151,25 +153,16 @@ class TestM4i(unittest.TestCase):
         self.assertEqual(numerical_variable_from_pint.hasNumericalValue.tolist(), [1.0, 2.0, 3.0])
         self.assertEqual(numerical_variable_from_pint.hasSymbol, 'vfr')
         ttl = numerical_variable_from_pint.serialize("ttl")
-        self.assertEqual(ttl, """@prefix m4i: <http://w3id.org/nfdi4ing/metadata4ing#> .
+        expected = """@prefix m4i: <http://w3id.org/nfdi4ing/metadata4ing#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<http://example.org/variable/vfr/0> a m4i:NumericalVariable ;
-    m4i:hasNumericalValue 1e+00 ;
+<http://example.org/variable/vfr> a m4i:NumericalVariable ;
+    m4i:hasNumericalValue 1e+00, 2e+00, 3e+00 ;
     m4i:hasSymbol "vfr" ;
     m4i:hasUnit <http://qudt.org/vocab/unit/MilliM-PER-SEC> .
-
-<http://example.org/variable/vfr/1> a m4i:NumericalVariable ;
-    m4i:hasNumericalValue 2e+00 ;
-    m4i:hasSymbol "vfr" ;
-    m4i:hasUnit <http://qudt.org/vocab/unit/MilliM-PER-SEC> .
-
-<http://example.org/variable/vfr/2> a m4i:NumericalVariable ;
-    m4i:hasNumericalValue 3e+00 ;
-    m4i:hasSymbol "vfr" ;
-    m4i:hasUnit <http://qudt.org/vocab/unit/MilliM-PER-SEC> .
-
-""")
+"""
+        self.assertTrue(isomorphic(Graph().parse(data=ttl, format='turtle'),
+                                   Graph().parse(data=expected, format='turtle')))
 
     def test_serialization_of_non_value_numerical_variable(self):
         numerical_variable = NumericalVariable(

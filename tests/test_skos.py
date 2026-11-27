@@ -3,7 +3,7 @@ import unittest
 
 __this_dir__ = pathlib.Path(__file__).parent
 
-from ontolutils.ex import skos
+from ontology_fixtures import skos
 
 
 class TestSkos(unittest.TestCase):

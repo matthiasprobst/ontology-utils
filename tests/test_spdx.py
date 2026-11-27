@@ -3,7 +3,7 @@ import unittest
 
 __this_dir__ = pathlib.Path(__file__).parent
 
-from ontolutils.ex.spdx import Checksum
+from ontology_fixtures.spdx import Checksum
 from ontolutils.namespacelib.spdx import SPDX
 
 

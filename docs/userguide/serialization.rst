@@ -1,7 +1,7 @@
 Save, load, and query RDF
 =========================
 
-This page continues with a built-in person model. The examples use inline
+This page defines a person model and follows it through RDF serialization. The examples use inline
 contexts and do not need to fetch an ontology from the web.
 
 Save metadata
@@ -10,7 +10,15 @@ Save metadata
 .. testcode::
 
    from pathlib import Path
-   from ontolutils.ex.prov import Person
+   from pydantic import Field
+   from ontolutils import Thing, namespaces, urirefs
+
+
+   @namespaces(prov="http://www.w3.org/ns/prov#", foaf="http://xmlns.com/foaf/0.1/")
+   @urirefs(Person="prov:Person", firstName="foaf:firstName", lastName="foaf:lastName")
+   class Person(Thing):
+       firstName: str = Field(alias="first_name")
+       lastName: str | None = Field(default=None, alias="last_name")
 
    person = Person(id="https://example.org/people/ada", first_name="Ada")
    document = person.model_dump_jsonld()
@@ -25,7 +33,9 @@ are omitted by default.
 
 ``serialize(format)`` supports ``"json-ld"``, ``"ttl"`` (or ``"turtle"``),
 ``"n3"``, ``"nt"``, and ``"xml"``. It exports one RDF graph, without named
-graph information. Use RDFLib directly when working with datasets of named graphs.
+graph information. It returns text by default or bytes if you pass an encoding.
+With ``destination=...``, it writes to that destination using RDFLib. Use
+RDFLib directly when working with datasets of named graphs.
 
 Load one object or a list
 -------------------------
@@ -43,6 +53,11 @@ Without ``limit=1``, the loader returns a list. With ``limit=1``, it returns one
 matching model, or ``[]`` if none match. An IRI-only reference stays a reference;
 the loader does not automatically fetch the referenced resource's description.
 
+Loading is a projection onto the selected model's mapped predicates. Unknown
+predicates and additional source ``rdf:type`` assertions may be omitted when
+the model is exported again. Retain the original RDFLib graph if all triples
+must survive. This is not a lossless editor for arbitrary RDF documents.
+
 Combine resources and use RDFLib
 --------------------------------
 
@@ -57,9 +72,9 @@ Combine resources and use RDFLib
    first_name = URIRef(Person.iri("firstName"))
    assert str(graph.value(URIRef(person.id), first_name)) == "Ada"
 
-There is no ``Thing.to_graph()`` method. Parse a serialization with
-``Graph().parse`` as above. Prefix names, triple order, and blank node labels may
-change between serializers; compare RDF graphs rather than raw strings.
+Use ``Graph().parse`` as above to work with the exported triples. Prefix names,
+triple order, and blank node labels can vary across serializations. Compare RDF
+graphs, allowing for different blank node labels.
 
 Find resources of a model class
 -------------------------------
@@ -70,12 +85,24 @@ Find resources of a model class
 
    found = query(Person, data=combined, format="ttl")
    assert {item.firstName for item in found} == {"Ada", "Grace"}
-   selected = Person.from_graph(graph, subject=person.id)
-   assert len(selected) == 1
+   selected = Person.from_graph(graph, subject=person.id, limit=1)
+   assert selected.firstName == "Ada"
+   assert Person.from_graph(graph, subject="https://example.org/people/missing", limit=1) == []
 
 ``query`` builds model instances; it is not a general SPARQL-string API.
-``Person.from_graph`` also returns a list. Use ``graph.query(...)`` for arbitrary
+``Person.from_graph`` uses the same resource-limit and return-type rules as the
+other loaders. ``limit=1`` returns one complete model or ``[]``. Use
+``graph.query(...)`` for arbitrary
 SPARQL, or ``Person.create_query()`` to inspect the model's generated query.
+
+``Model.from_sparql(result)`` projects SELECT rows into one model per resource.
+Bind ``?id`` to an IRI or blank node and use Python field names for the other
+variables. Distinct RDF terms are aggregated in first-seen order; identical
+bindings are omitted, and fields declared as lists accept singleton values.
+Supply ``ORDER BY`` in your query when binding order matters. This projection
+does not encode an ordered RDF collection or preserve duplicate result rows.
+``raise_on_error=False`` skips models failing Pydantic validation; a row without
+a resource-valued ``?id`` always raises ``ValueError``.
 
 Choose stable IDs
 -----------------
@@ -95,4 +122,7 @@ graph. Assign persistent IRIs yourself when publishing or joining metadata.
 
 This does not change the object's ID or guarantee a persistent identifier.
 Remote JSON-LD contexts may require network access; use a dictionary context
-for reproducible, self-contained examples.
+for reproducible, self-contained examples. A local input file can still refer to
+a remote context. For reproducible research, archive the contexts as well as the
+data, record their versions and checksums, and use explicit local context paths
+or inline definitions.

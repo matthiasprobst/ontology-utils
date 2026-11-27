@@ -1,8 +1,7 @@
 User guide
 ==========
 
-Start with built-in models when they cover your metadata. Define a ``Thing``
-subclass when you need your own fields and ontology mappings. Use explicit,
+Define a ``Thing`` subclass or generate models from a Turtle ontology. Use explicit,
 stable IDs for resources that other datasets will reference.
 
 .. toctree::
@@ -11,6 +10,7 @@ stable IDs for resources that other datasets will reference.
    classes
    serialization
    models
+   ontology_loader
    validation
    namespacelib
    typing

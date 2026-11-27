@@ -1,6 +1,6 @@
 import pydantic
 from pydantic import HttpUrl
-from typing import Dict, Type
+from typing import Dict
 from . import utils
 from .utils import split_uri
 
@@ -31,8 +31,9 @@ def _is_http_url(url: str) -> bool:
     return True
 
 
-def _add_namesapces(cls, namespaces: Dict):
-    for k, v in namespaces.items():
+def _add_namesapces(cls, namespace_definitions: Dict):
+    """Register namespace definitions for a model class."""
+    for k, v in namespace_definitions.items():
         NamespaceManager[cls][k] = str(HttpUrl(v))
 
 def namespaces(**kwargs):
@@ -98,3 +99,19 @@ def urirefs(**kwargs):
         return cls
 
     return _decorator
+
+
+def _get_predicate_fields(cls):
+    """Resolve each registered field predicate to its complete RDF IRI."""
+    fields = {}
+    namespace_definitions = NamespaceManager[cls]
+    for field, predicate in URIRefManager[cls].items():
+        if field not in cls.model_fields:
+            continue
+        prefix, separator, local = predicate.partition(':')
+        if separator and prefix in namespace_definitions:
+            predicate = str(namespace_definitions[prefix]) + local
+        if predicate in fields and fields[predicate] != field:
+            raise ValueError(f'Multiple model fields map to predicate {predicate}')
+        fields[predicate] = field
+    return fields

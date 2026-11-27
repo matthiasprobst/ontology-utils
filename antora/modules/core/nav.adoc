@@ -1,4 +1,0 @@
-* xref:thing.adoc[The Thing Class]
-* xref:decorators.adoc[Decorators]
-* xref:serialization.adoc[Serialization]
-* xref:dynamic.adoc[Dynamic Classes]

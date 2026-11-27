@@ -1,4 +1,0 @@
-.API
-
-* xref:api:index.adoc[Overview]
-* xref:api:reference.adoc[Task reference]

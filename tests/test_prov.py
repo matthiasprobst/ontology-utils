@@ -3,7 +3,7 @@ import pathlib
 import unittest
 
 from ontolutils import cache
-from ontolutils.ex import prov
+from ontology_fixtures import prov
 
 __this_dir__ = pathlib.Path(__file__).parent
 CACHE_DIR = cache.get_cache_dir()

@@ -13,6 +13,15 @@ logger = logging.getLogger(__package__)
 logger.setLevel('DEBUG')
 
 
+def _validate_limit(limit):
+    """Require an explicit nonnegative integer bound, excluding booleans."""
+    if limit is not None:
+        if isinstance(limit, bool) or not isinstance(limit, int):
+            raise TypeError('limit must be a nonnegative integer or None')
+        if limit < 0:
+            raise ValueError('limit must be nonnegative')
+
+
 class UNManager:
     """Manager class for URIRef and Namespace."""
 
@@ -77,6 +86,11 @@ def merge_jsonld(jsonld_strings: List[str]) -> str:
 
 
 def request_with_backoff(method, url, session=None, max_retries=8, timeout=30, **kwargs):
+    """Retry configured HTTP error statuses using server guidance or jitter.
+
+    The timeout applies to each request. Connection exceptions propagate to the
+    caller. Return the last response when the retry count is exhausted.
+    """
     s = session or requests.Session()
     for attempt in range(max_retries + 1):
         r = s.request(method, url, timeout=timeout, **kwargs)
@@ -197,10 +211,11 @@ def as_id(obj, field_name):
     """
     if isinstance(obj, dict):
         return as_id_before(obj, field_name)
-    raise ValueError(f"You must use mode='before' for as_id")
+    raise ValueError("You must use mode='before' for as_id")
 
 
 def as_id_before(obj: Dict, field_name: str):
+    """Fill a missing input id from an HTTP(S) or blank-node field value."""
     current_id = obj.get("id", None)
     if current_id is not None:
         return obj

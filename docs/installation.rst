@@ -3,8 +3,30 @@
 Installation
 ============
 
-Use Python 3.9–3.14. A virtual environment keeps project dependencies separate.
-After activating your environment, install:
+This version supports Python 3.11–3.15. A virtual environment keeps
+project dependencies separate. Python 3.14 needs Pydantic 2.12 or newer;
+Python 3.15 needs Pydantic 2.14 or newer. The package declares these bounds so
+dependency resolution cannot select an unsupported Pydantic floor.
+Python 3.10 and earlier are not supported. A default PyPI installation may
+select a stable release with a different API and Python range.
+
+To follow this guide, start from the 1.0.0b1 source checkout and create an
+isolated environment with a supported Python interpreter:
+
+.. code-block:: console
+
+   python --version
+   python -m venv .venv
+
+Activate it with ``. .\.venv\Scripts\Activate.ps1`` in PowerShell or
+``source .venv/bin/activate`` on Linux/macOS. Then install from the checkout:
+
+.. code-block:: console
+
+   python -m pip install .
+   python -m pip check
+
+To use the latest published release instead:
 
 .. code-block:: console
 
@@ -25,12 +47,10 @@ Install only the tools needed for your workflow:
 
    * - Feature
      - Additional packages
-   * - Numerical variables in ``ontolutils.ex.m4i``
-     - ``numpy``
-   * - Pint quantities and unit conversion
-     - ``numpy pint``
-   * - Numerical variables as xarray DataArrays
-     - ``numpy pint xarray``
+   * - Pint quantities
+     - ``pint``
+   * - Numerical data as xarray DataArrays
+     - ``xarray`` and ``pint`` when formatting a QUDT unit
    * - SHACL graph validation
      - ``pyshacl``
 
@@ -38,7 +58,7 @@ For example:
 
 .. code-block:: console
 
-   python -m pip install numpy pint xarray
+   python -m pip install pint xarray
    python -m pip install pyshacl
 
 Development installations use ``python -m pip install -e ".[test]"`` from a

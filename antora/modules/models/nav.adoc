@@ -1,4 +1,0 @@
-* xref:overview.adoc[Overview]
-* xref:prov.adoc[PROV]
-* xref:schema.adoc[Schema.org]
-* xref:others.adoc[Other Ontologies]

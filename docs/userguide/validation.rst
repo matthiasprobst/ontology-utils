@@ -3,6 +3,14 @@ Validate an RDF graph with SHACL
 
 Pydantic checks the fields declared in a Python model. SHACL checks requirements
 on the RDF graph, such as a mandatory label or a property's cardinality.
+Passing either check does not establish that a measurement is accurate, that
+its provenance is trustworthy, or that every ontology axiom is satisfied.
+Pydantic may coerce input values; add strict field or domain constraints when
+your application requires them. A SHACL result applies to the supplied data
+graph, shapes and validation settings.
+``Thing.validate`` defaults to RDFS inference; pass ``inference="none"`` when
+the shapes should run without that inference. This is separate from a complete
+OWL reasoner or domain-specific scientific validation.
 
 Install the optional validator:
 
@@ -40,3 +48,7 @@ and ``results_text``. Its truth value is ``conforms``. By default, a failed
 validation raises ``ValueError``; use ``raise_on_error=False`` to inspect the
 report. Shapes can also be an RDFLib graph, or a Turtle file supplied through
 ``shacl_source``. Supply one shapes source, not both.
+
+``sample.validate(...)`` checks the graph exported by that model, including
+its embedded resources. To validate an original graph without losing unmapped
+predicates during model loading, pass that graph directly to pySHACL instead.

@@ -139,9 +139,10 @@ vocabularies.
 - [Define and validate your own model](docs/userguide/classes.rst)
 - [Save, load, combine, and query RDF](docs/userguide/serialization.rst)
 - [Use built-in models and numerical variables](docs/userguide/models.rst)
-- [Load an ontology and generate models with a profile](docs/userguide/ontology_loader.rst)
+- [Load an ontology and generate models](docs/userguide/ontology_loader.rst)
 - [Validate RDF with SHACL](docs/userguide/validation.rst)
-- [Work through the notebook](tutorials/Classes.ipynb)
+- [Define a model and load M4I from its URL](tutorials/Classes.ipynb)
+- [Model SOSA observations and QUDT values](tutorials/ex/observations.ipynb)
 - [API reference](docs/api.rst)
 
 The example above runs with the base installation. For numerical variables,

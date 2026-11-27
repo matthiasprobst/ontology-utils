@@ -18,18 +18,19 @@ ranges in `requirements.in`; runtime dependencies come from `pyproject.toml`.
 
 Use `.. testcode::` for runnable guide examples. Blocks on one page run in order
 in the same namespace; start each page with its own imports. Assertions should
-check scientific values or RDF triples, not serializer whitespace. The SHACL and
-numerical-variable examples additionally need `pyshacl` and `numpy`:
+check scientific values or RDF triples while allowing for serializer whitespace.
+Install the test extra to get pytest and the optional packages used by the
+examples, including `pyshacl` and `numpy`.
 
 ```console
-python -m pip install numpy pyshacl
+python -m pip install -e ".[test]" -r docs/requirements.txt
 python -m sphinx -W --keep-going -b doctest docs docs/_build/doctest
 python -m pytest tests/test_documentation.py -q
 ```
 
 The doctest build checks the Sphinx guide; pytest executes the README, Antora
-Python blocks, and tutorial notebook in temporary working directories. Install
-the `test` extra when running pytest. The doctest save/load examples write
+Python blocks, and tutorial notebook in temporary working directories. The
+doctest save/load examples write
 `person.jsonld` and `person.ttl` in the invocation's working directory, so use
 a scratch directory and absolute source/output paths if you want to keep the
 checkout free of example data.

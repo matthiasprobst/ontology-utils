@@ -1,6 +1,6 @@
 = Ontolutils
 
-Create validated scientific metadata as Python objects and exchange it as RDF.
+Describe things and concepts in Python and share their relationships as RDF.
 Use built-in models, or map your own fields to ontology terms. Pydantic checks
 declared fields; SHACL can check additional requirements on the graph.
 

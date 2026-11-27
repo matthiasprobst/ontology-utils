@@ -7,7 +7,8 @@ Its Python examples are checked by `tests/test_documentation.py`.
 Antora requires Node.js and its CLI/site generator; `pip install antora` is
 not the documented installation route. See the
 [official Antora setup guide](https://docs.antora.org/antora/3.1/install/install-antora/).
-With the CLI and generator installed, run from this directory:
+Place an Antora UI bundle at `antora/ui-bundle.zip` (the repository excludes
+ZIP archives). With the CLI and generator installed, run from this directory:
 
 ```console
 antora antora-playbook.yml

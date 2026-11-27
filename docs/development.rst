@@ -8,9 +8,8 @@ From a source checkout, install the test dependencies and run the suite:
    python -m pip install -e ".[test]"
    python -m pytest --cov --cov-report=xml
 
-``tests/README.md`` describes installed-wheel checks, older/newer semantic
-dependencies, and representative consumer models. Inspect their results before
-changing compatibility bounds.
+``tests/README.md`` describes how to test an installed wheel and how to run
+the suite with the oldest and newest supported dependencies.
 
 Build and check the documentation
 ----------------------------------
@@ -21,7 +20,7 @@ variable and SHACL examples:
 
 .. code-block:: console
 
-   python -m pip install . -r docs/requirements.txt numpy pyshacl
+   python -m pip install -e ".[test]" -r docs/requirements.txt
    python -m pip check
    python -m sphinx -W --keep-going -b html docs docs/_build/html
    python -m sphinx -W --keep-going -b doctest docs docs/_build/doctest

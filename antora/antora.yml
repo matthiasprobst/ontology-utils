@@ -1,6 +1,7 @@
 name: ontolutils
 title: Ontolutils
-version: '0.27.7'
+version: '1.0-dev'
+display_version: '1.0 (unreleased)'
 start_page: ROOT:index.adoc
 
 nav:

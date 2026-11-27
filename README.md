@@ -3,9 +3,11 @@
 ![Tests](https://github.com/matthiasprobst/ontology-utils/actions/workflows/tests.yml/badge.svg)
 [![Documentation](https://readthedocs.org/projects/ontology-utils/badge/?version=latest)](https://ontology-utils.readthedocs.io/en/latest/)
 
-Describe people, datasets, instruments, and measurements as Python objects;
-validate their fields with Pydantic; export JSON-LD or Turtle with RDFLib.
-Use the included ontology models or map your own fields to RDF terms.
+Ontolutils helps you describe things and concepts in Python and express how they
+relate to one another. For example, you can describe a dataset, the researcher
+who created it, and the instrument used to collect the data. Use the built-in
+models or map your own fields to ontology terms. Pydantic validates the fields,
+and you can share the resulting RDF graph as JSON-LD or Turtle.
 
 ## Install
 
@@ -50,9 +52,9 @@ print(researcher.serialize("ttl"))
 Loading normally returns a list; `limit=1` returns one matching object, or `[]`
 if none match. Assign stable `id` values when sharing metadata.
 
-Python field validation checks the model's declared types and constraints.
-Use SHACL for additional rules on the RDF graph; ontology conformance is not
-automatically guaranteed by creating a Python object.
+Pydantic checks the model’s declared field types and constraints. Use SHACL
+to check an RDF graph against a set of shapes. Scientific validity still
+depends on the data and the rules you apply.
 
 Models contain selected ontology terms. Loading projects RDF onto their mapped
 fields, so unknown predicates and additional source types may be omitted on
@@ -60,26 +62,96 @@ export. Keep the source graph when all triples must survive. Numerical arrays
 export as unordered RDF values; order, duplicates, shape and dtype are not
 preserved. See the [1.0 migration guide](docs/migration.rst).
 
+## Load an ontology and create Python models
+
+`onto.load()` accepts a Turtle file or an HTTP(S) URL. It generates
+`Thing` subclasses for named classes in the ontology's namespace. A profile
+defines the Python fields your application needs and their RDF predicates.
+
+This example loads Metadata4Ing (M4I) directly from its publisher. It generates
+a `Tool` model and maps its `parameter` field to `m4i:hasParameter`.
+
+```python
+from ontolutils import onto
+from ontolutils.typing import AnyIri
+
+m4i = "http://w3id.org/nfdi4ing/metadata4ing#"
+ontology = onto.load(
+    "https://w3id.org/nfdi4ing/metadata4ing/ontology.ttl",
+    profile={"Tool": {"parameter": onto.ModelField(m4i + "hasParameter", AnyIri)}},
+)
+Tool = ontology.models.Tool
+tool = Tool(
+    id="https://example.org/instruments/laser",
+    parameter="https://example.org/parameters/power",
+)
+print(tool.serialize("ttl"))
+```
+
+The Turtle output gives the laser RDF type `m4i:Tool` and links it to the
+power parameter through `m4i:hasParameter`. The
+[ontology loader guide](docs/userguide/ontology_loader.rst) shows how to pin the
+ontology with a SHA-256 digest or ship a snapshot for offline use.
+
+## Generate Python vocabulary terms
+
+Use `render_namespace` to generate an importable RDFLib namespace for your
+project. This example uses two class declarations from Metadata4Ing (M4I) so
+you can run it offline.
+
+```python
+from pathlib import Path
+
+from rdflib import Graph
+
+from ontolutils.namespace_generation import render_namespace
+
+namespace = "http://w3id.org/nfdi4ing/metadata4ing#"
+graph = Graph().parse(
+    data=f'''
+        @prefix m4i: <{namespace}> .
+        @prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+        m4i:NumericalVariable a owl:Class .
+        m4i:ProcessingStep a owl:Class .
+    ''',
+    format="turtle",
+)
+module = render_namespace(graph, namespace, "M4I")
+Path("m4i_terms.py").write_text(module, encoding="utf-8", newline="\n")
+
+from m4i_terms import M4I
+
+assert str(M4I.NumericalVariable) == namespace + "NumericalVariable"
+```
+
+For the full vocabulary, download the [M4I Turtle snapshot](https://w3id.org/nfdi4ing/metadata4ing/ontology.ttl)
+as `m4i.ttl` and verify it against the SHA-256 recorded for your chosen
+revision. The [publisher verifier](scripts/verify_publisher_namespaces.py)
+records the tested M4I 1.5.0 digest. Replace the example's graph with
+`Graph().parse("m4i.ttl", format="turtle")` and keep the exact M4I namespace
+above. Ship `m4i_terms.py` with your package for offline imports. Define
+Pydantic models and application-specific aliases in your own code.
+
+See the [namespace guide](docs/userguide/namespacelib.rst) for file-based
+generation and the [publisher snapshot checks](tests/README.md#publisher-vocabulary-snapshots)
+to reproduce verification against M4I, Allotrope HDF5, SSNO, QUDT, and other
+vocabularies.
+
 ## Learn by task
 
-- [Define and validate your own model](https://ontology-utils.readthedocs.io/en/latest/userguide/classes.html)
-- [Save, load, combine, and query RDF](https://ontology-utils.readthedocs.io/en/latest/userguide/serialization.html)
-- [Use built-in models and numerical variables](https://ontology-utils.readthedocs.io/en/latest/userguide/models.html)
-- [Validate RDF with SHACL](https://ontology-utils.readthedocs.io/en/latest/userguide/validation.html)
+- [Define and validate your own model](docs/userguide/classes.rst)
+- [Save, load, combine, and query RDF](docs/userguide/serialization.rst)
+- [Use built-in models and numerical variables](docs/userguide/models.rst)
+- [Load an ontology and generate models with a profile](docs/userguide/ontology_loader.rst)
+- [Validate RDF with SHACL](docs/userguide/validation.rst)
 - [Work through the notebook](tutorials/Classes.ipynb)
-- [API reference](https://ontology-utils.readthedocs.io/en/latest/api.html)
+- [API reference](docs/api.rst)
 
-The base installation supports core models and RDF serialization. Install
-`numpy` for `ontolutils.ex.m4i`, `pint` for its unit conversions, `xarray` for
-DataArray conversion, or `pyshacl` for RDF validation as needed.
-
-## Units and numerical data
-
-Numerical variables construct Pint quantities explicitly, so absolute offset
-units such as Celsius convert correctly. Subtract absolute temperatures to obtain
-a temperature difference; absolute offsets must not be applied to differences.
-Unknown QUDT-to-Pint mappings raise `ValueError`; `to_pint_unit(..., lookup=...)`
-accepts an optional custom symbol mapping.
+The example above runs with the base installation. For numerical variables,
+install NumPy. Add Pint for unit conversions and xarray to create DataArrays.
+Install pySHACL to validate RDF graphs against shapes. See the
+[installation guide](docs/installation.rst) for the commands.
 
 ## Development
 

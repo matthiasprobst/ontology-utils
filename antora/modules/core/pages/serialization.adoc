@@ -59,12 +59,14 @@ from ontolutils import query
 
 found = query(Person, data=combined, format="ttl")
 assert {item.firstName for item in found} == {"Ada", "Grace"}
-selected = Person.from_graph(graph, subject=person.id)
-assert len(selected) == 1
+selected = Person.from_graph(graph, subject=person.id, limit=1)
+assert selected.firstName == "Ada"
+assert Person.from_graph(graph, subject="https://example.org/people/missing", limit=1) == []
 ----
 
 `query` takes a model class. Use RDFLib's `graph.query(...)` for arbitrary
-SPARQL. `from_graph` always returns a list, even with `limit=1`.
+SPARQL. Supply a subject IRI to select a particular resource. With multiple
+matches, `limit=1` selects one without guaranteeing which one.
 
 == Blank nodes and explicit IDs
 

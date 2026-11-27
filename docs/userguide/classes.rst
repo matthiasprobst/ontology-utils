@@ -134,12 +134,3 @@ For classes defined from a configuration at runtime, use ``build``:
 ``Thing.add_property`` only registers an RDF mapping; it does not add a validated
 Pydantic field to ``model_fields``. Define or rebuild a model when field
 validation is required.
-
-Numerical offset units
-----------------------
-
-``NumericalVariable.to_pint()`` uses the requested registry's quantity
-constructor, including for absolute Celsius values and arrays. Subtracting
-absolute temperatures produces a delta quantity; do not apply an absolute offset
-to a temperature difference. Unknown unit IRIs raise a descriptive ``ValueError``
-from ``to_pint_unit()`` instead of an error about a missing optional lookup.

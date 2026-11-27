@@ -4,8 +4,10 @@ Configuration
 =============
 
 Use ``with set_config(...)`` for a temporary change. Leaving the block restores
-the previous settings, including when an exception occurs. Calling
-``set_config(...)`` without ``with`` changes the process-wide configuration.
+the previous settings, including when an exception occurs. Settings are shared
+across the process even inside a ``with`` block. Use separate processes if
+concurrent tasks need different settings. Calling ``set_config(...)`` without
+``with`` leaves the change in effect until the setting is changed again.
 
 .. testcode::
 

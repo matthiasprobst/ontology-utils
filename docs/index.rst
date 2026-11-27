@@ -5,9 +5,8 @@ Describe things and concepts in the world using Python. Define Python models for
 or generate models from an ontology. Validate fields with Pydantic and share
 properties and relationships as RDF.
 
-This guide describes the unreleased 1.0 branch. Published packages may have
-different behavior. See :doc:`installation` to install this checkout and
-:doc:`migration` for changes from 0.27.
+This guide covers 1.0.0b1. See :doc:`installation` to install this
+checkout and :doc:`migration` for changes from 0.27.
 
 Start with a person
 -------------------

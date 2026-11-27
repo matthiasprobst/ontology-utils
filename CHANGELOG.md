@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.0.0
+## v1.0.0b1
 
 - Remove the bundled `ontolutils.ex` domain models. Define models in your
   project or generate them from an ontology. Unit conversion remains available

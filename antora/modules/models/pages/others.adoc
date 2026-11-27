@@ -1,9 +1,0 @@
-= Numerical arrays and units
-
-Use `ontolutils.arrays.to_xarray` with numerical data and optional dimensions,
-coordinates and attributes. Install xarray, and install Pint if passing a QUDT
-unit IRI for the units attribute.
-
-Use `ontolutils.units.to_pint` to create a Pint quantity. Use
-`ontolutils.units.convert_value_qudt` for conversions based on supplied QUDT
-unit descriptions.

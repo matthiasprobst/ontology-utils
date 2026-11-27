@@ -7,10 +7,10 @@ This version supports Python 3.11–3.15. A virtual environment keeps
 project dependencies separate. Python 3.14 needs Pydantic 2.12 or newer;
 Python 3.15 needs Pydantic 2.14 or newer. The package declares these bounds so
 dependency resolution cannot select an unsupported Pydantic floor.
-Python 3.10 and earlier are not supported. This guide describes the unreleased
-1.0 branch; a normal PyPI installation may have a different API and Python range.
+Python 3.10 and earlier are not supported. A default PyPI installation may
+select a stable release with a different API and Python range.
 
-To follow this guide, start from this branch's source checkout and create an
+To follow this guide, start from the 1.0.0b1 source checkout and create an
 isolated environment with a supported Python interpreter:
 
 .. code-block:: console

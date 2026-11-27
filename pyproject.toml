@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ontolutils"
-version = "1.0.0"
+version = "1.0.0b1"
 description = "Utility library for the work with ontologies."
 readme = "README.md"
 license = "MIT"
@@ -31,6 +31,9 @@ dependencies = [
     "appdirs>=1.4.4",
     "PyYAML>=6.0"
 ]
+
+[project.urls]
+DOI = "https://doi.org/10.5281/zenodo.24606444"
 
 [project.optional-dependencies]
 test = [

@@ -1,6 +1,0 @@
-= Define a project model
-
-Use a `Thing` subclass to map project fields to RDF terms. A Turtle ontology
-can also supply class and property declarations via `ontolutils.onto.load`.
-Inspect `Model.model_fields` for Python fields and `Model.iri("fieldName")`
-for their RDF predicates.

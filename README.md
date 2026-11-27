@@ -16,8 +16,8 @@ and RDFLib **7.x**. Python 3.14 requires Pydantic 2.12 or newer; Python 3.15
 requires Pydantic 2.14 or newer.
 Python 3.10 and earlier are not supported by this branch.
 
-**This is unreleased 1.0 documentation.** To use the behavior described here,
-install from this branch's checkout in a virtual environment:
+**This documentation covers 1.0.0b1.** To use the behavior described here,
+install from this checkout in a virtual environment:
 
 ```bash
 python -m pip install .

@@ -1,4 +1,0 @@
-= Overview
-
-* xref:ROOT:index.adoc[Introduction]
-* xref:ROOT:installation.adoc[Installation]

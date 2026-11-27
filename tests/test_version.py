@@ -1,8 +1,10 @@
 import json
 import pathlib
+import tomllib
 import unittest
 
 import yaml
+from packaging.version import Version
 
 from ontolutils import __version__
 
@@ -19,28 +21,26 @@ __this_dir__ = pathlib.Path(__file__).parent
 
 class TestVersion(unittest.TestCase):
     def test_version(self):
-        this_version = "x.x.x"
-        pyproject_filename = __this_dir__ / "../pyproject.toml"
-        with open(pyproject_filename, "r") as f:
-            lines = f.readlines()
-            for line in lines:
-                if "version" in line and line.strip().startswith("version"):
-                    this_version = line.split(" = ")[-1].strip().strip('"')
-        self.assertEqual(__version__.replace("rc", "-rc"), this_version)
+        with (__this_dir__ / "../pyproject.toml").open("rb") as f:
+            project = tomllib.load(f)["project"]
+        self.assertEqual(Version(__version__), Version(project["version"]))
 
     def test_codemeta(self):
         """checking if the version in codemeta.json is the same as the one of the toolbox"""
 
         codemeta = get_package_meta()
 
-        assert codemeta["version"] == __version__.replace("rc", "-rc")
+        self.assertEqual(Version(__version__), Version(codemeta["version"]))
 
     def test_citation_cff(self):
-        if "rc" not in __version__:
-            citation_cff = __this_dir__ / "../CITATION.cff"
-            with open(citation_cff, "r") as f:
-                cff = yaml.safe_load(f)
-            self.assertTrue(
-                "todo" not in cff["doi"].lower(),
-                "Please replace 'todo' in CITATION.cff",
-            )
+        citation_cff = __this_dir__ / "../CITATION.cff"
+        with citation_cff.open(encoding="utf-8") as f:
+            cff = yaml.safe_load(f)
+        with (__this_dir__ / "../pyproject.toml").open("rb") as f:
+            project = tomllib.load(f)["project"]
+
+        self.assertEqual(Version(__version__), Version(cff["version"]))
+        self.assertRegex(cff["doi"], r"^10\.\d{4,9}/\S+$")
+        doi_url = f'https://doi.org/{cff["doi"]}'
+        self.assertEqual(doi_url, project["urls"]["DOI"])
+        self.assertEqual(doi_url, get_package_meta()["identifier"])

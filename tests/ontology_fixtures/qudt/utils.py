@@ -9,7 +9,7 @@ import requests
 from rdflib import URIRef, Literal
 
 from ontolutils import QUDT_UNIT, Thing
-from ontolutils.ex.qudt import Unit, QuantityKind
+from ontology_fixtures.qudt import Unit, QuantityKind
 
 # QUDT v3.1.9 tag, resolved to an immutable upstream commit. These are source
 # vocabularies matching this module's declared baseline, not the latest graphs.

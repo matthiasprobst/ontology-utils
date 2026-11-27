@@ -47,6 +47,7 @@ complete = ["ontolutils[test]"]
 
 [tool.setuptools.packages.find]
 include = ["ontolutils*"]
+exclude = ["ontolutils.ex", "ontolutils.ex.*"]
 
 [tool.pytest.ini_options]
 python_files = "test_*.py"

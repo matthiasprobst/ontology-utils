@@ -9,7 +9,7 @@ from rdflib import BNode, Graph, Literal, Namespace, RDF, URIRef
 from rdflib.compare import isomorphic
 
 from ontolutils import Thing, namespaces, urirefs
-from ontolutils.ex.prov import Organization, Person
+from ontology_fixtures.prov import Organization, Person
 from ontolutils.typing import AnyIriOf
 
 

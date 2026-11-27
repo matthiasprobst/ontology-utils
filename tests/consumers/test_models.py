@@ -7,7 +7,7 @@ from rdflib import Graph
 from rdflib.compare import isomorphic
 
 from ontolutils import QUDT_UNIT
-from ontolutils.ex.schema import SoftwareSourceCode
+from ontology_fixtures.schema import SoftwareSourceCode
 
 
 def test_ssnolib_aliases_validation_and_graph_round_trip():

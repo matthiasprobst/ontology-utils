@@ -2,6 +2,10 @@
 
 ## v1.0.0
 
+- Remove the bundled `ontolutils.ex` domain models. Define models in your
+  project or generate them from an ontology. Unit conversion remains available
+  in `ontolutils.units`; use `ontolutils.arrays.to_xarray` for numerical data.
+
 - Load a Turtle ontology from its published URL and use the generated Python
   models directly. Discover optional fields from declared RDF property domains,
   including named superclasses and supported OWL unions and intersections.
@@ -36,10 +40,6 @@
   invalid embedded dictionaries, including nested models and lists. Keep model
   fields embedded and retain declared RDF-collection loading.
 
-- Expand QUDT quantity-kind shorthand to the canonical HTTP vocabulary IRI,
-  including list and assignment input, while preserving explicit RDF terms.
-  Correct `wikidata_match` and retain the old trailing-space input alias.
-
 - Serialize midnight datetimes as `xsd:dateTime`, retaining time, fractional
   seconds and timezone instead of silently reducing them to dates.
 
@@ -47,11 +47,6 @@
   URLs or compact IRIs. Preserve explicit IRI/URL and blank-node references
   through validation and RDF export instead of guessing from text. IRI-only
   fields reject RDFLib literals.
-
-- Breaking correction: numerical RDF export keeps one original resource and
-  the same unordered numerical value set in every format. Remove automatic
-  scalar-resource expansion and generated element IDs. Document array projection
-  losses, reject nonnumeric NumPy arrays and normalize 0D real arrays to scalars.
 
 - Breaking correction: all model loaders use complete-resource limits and the
   same return contract, including `from_graph(limit=1)`. Reject invalid limits,
@@ -61,10 +56,6 @@
 - Traverse dictionary-query graphs iteratively, describe shared resources once,
   and use JSON-LD @included for deep graphs. Avoid recursion failure and
   exponential expansion without dropping graph statements.
-
-- Reject ambiguous unit-to-quantity-kind lookup instead of selecting a meaning
-  from arbitrary RDF value order. Explicit quantity-kind IRIs remain supported.
-  Cache by IRI and isolate returned models from internal cached results.
 
 - Breaking correction: dictionary queries emit JSON-LD resource references and
   explicit RDF list cells. Preserve shared/named collection heads, annotations,
@@ -79,10 +70,6 @@
 
 - Dictionary queries retain full IRI keys for colliding predicate local names
   instead of merging values from different namespaces.
-
-- Pin QUDT expansion to verified 3.1.9 vocabulary bytes with bounded requests;
-  report missing units/quantity kinds as domain errors. Document the reviewed
-  ontology update policy instead of following mutable latest vocabularies.
 
 - Match model fields by complete predicate IRI, including nested resources.
   Keep per-load context separate from registered model namespaces.

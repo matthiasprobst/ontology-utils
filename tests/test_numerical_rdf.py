@@ -9,7 +9,7 @@ from rdflib import Graph, Literal, Namespace, RDF, URIRef, XSD
 from rdflib.compare import isomorphic
 
 from ontolutils import Thing, serialize
-from ontolutils.ex.m4i import NumericalVariable
+from ontology_fixtures.m4i import NumericalVariable
 
 
 M4I = Namespace('http://w3id.org/nfdi4ing/metadata4ing#')

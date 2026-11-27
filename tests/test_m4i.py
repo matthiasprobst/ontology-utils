@@ -5,9 +5,9 @@ from rdflib import Graph
 from rdflib.compare import isomorphic
 
 from ontolutils import LangString
-from ontolutils.ex import m4i
-from ontolutils.ex.m4i import TextVariable, NumericalVariable, Tool, ProcessingStep
-from ontolutils.ex.qudt import Unit
+from ontology_fixtures import m4i
+from ontology_fixtures.m4i import TextVariable, NumericalVariable, Tool, ProcessingStep
+from ontology_fixtures.qudt import Unit
 from ontolutils.namespacelib import QUDT_KIND
 
 

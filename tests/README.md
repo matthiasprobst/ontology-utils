@@ -86,7 +86,7 @@ alongside consumer migrations before treating them as current compatibility
 evidence. Require both imports when claiming that a consumer profile passed.
 
 The consumer profile also installs NumPy because these reference releases import
-`ontolutils.ex.m4i`. A base ontolutils wheel does not need that optional module.
+`ontolutils.ex.m4i`. Those models are absent from the 1.0 wheel. The repository keeps model definitions in `tests/ontology_fixtures` for RDF regression tests.
 For historical 0.27 investigations, run the profile with:
 
 ```bash

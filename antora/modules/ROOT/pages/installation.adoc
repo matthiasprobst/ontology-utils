@@ -18,15 +18,14 @@ Optional packages by feature:
 [cols="2,1",options="header"]
 |===
 | Feature | Packages
-| `ontolutils.ex.m4i` numerical variables | `numpy`
-| Pint unit conversion | `numpy pint`
-| xarray conversion | `numpy pint xarray`
+| Pint quantities | `pint`
+| DataArray export | `xarray`; add `pint` to format QUDT units
 | SHACL graph validation | `pyshacl`
 |===
 
 [source,console]
 ----
-python -m pip install numpy pint xarray
+python -m pip install pint xarray
 python -m pip install pyshacl
 ----
 

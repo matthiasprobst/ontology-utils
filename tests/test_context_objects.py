@@ -3,7 +3,7 @@ import json
 
 from rdflib import Graph, RDF, URIRef
 
-from ontolutils.ex.prov import Person
+from ontology_fixtures.prov import Person
 
 
 def test_structured_context_keeps_directives_and_resource_identity():

@@ -293,7 +293,7 @@ class Observation(Activity):
 
     def to_xarray(self, pref_lang: Optional[str] = "en", dimensions: Optional[List[str]] = "result"):
         """Returns an xarray DataArray"""
-        import xarray as xr
+        from ontolutils.arrays import to_xarray
 
         dataset_attrs = self.model_dump(exclude_none=True, exclude={"hasResult"}, by_alias=True)
         name = self.get_label(pref_lang=pref_lang) or self.get_alt_label(pref_lang=pref_lang)
@@ -310,7 +310,7 @@ class Observation(Activity):
                 data.append(result.to_numpy())
             else:
                 data.append(None)
-        da = xr.DataArray(
+        da = to_xarray(
             data=data,
             dims=dimensions,
             attrs=dataset_attrs

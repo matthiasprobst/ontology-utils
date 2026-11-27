@@ -1,52 +1,9 @@
-= Other research metadata
+= Numerical arrays and units
 
-== Numerical variables
+Use `ontolutils.arrays.to_xarray` with numerical data and optional dimensions,
+coordinates and attributes. Install xarray, and install Pint if passing a QUDT
+unit IRI for the units attribute.
 
-Install NumPy for this example:
-
-[source,python]
-----
-from ontolutils import QUDT_UNIT
-from ontolutils.ex.m4i import NumericalVariable
-
-velocity = NumericalVariable(
-    id="https://example.org/variables/velocity",
-    label="Velocity",
-    has_numerical_value=[1.0, 1.2],
-    has_unit="m/s",
-)
-assert str(velocity.hasUnit) == str(QUDT_UNIT.M_PER_SEC)
-assert velocity.to_numpy().tolist() == [1.0, 1.2]
-turtle = velocity.serialize("ttl")
-----
-
-Every RDF export retains numerical values on the original resource as an
-unordered set. Order, duplicates, array shape and NumPy dtype are not preserved;
-an empty sequence has no value triples. Keep scientific arrays in data files
-and describe their metadata with RDF. Export no longer creates scalar resources
-with generated `/0`, `/1`, etc. IDs. Model separate scalar resources explicitly
-when that is the intended meaning.
-
-Install Pint for `to_pint()`. Install xarray for `to_xarray()` and Pint to
-format the units attribute when the variable has a unit.
-
-== Checksums, HDF5 structure, and sensors
-
-[source,python]
-----
-from ontolutils.ex.spdx import Checksum
-from ontolutils.ex.hdf5 import Dataset
-from ontolutils.ex.sosa import Sensor, ObservableProperty
-
-checksum = Checksum(algorithm="sha256", value="a" * 64)
-hdf_dataset = Dataset(name="/velocity")
-sensor = Sensor(
-    id="https://example.org/sensor",
-    observes=ObservableProperty(id="https://example.org/temperature"),
-)
-assert hdf_dataset.name == "/velocity"
-----
-
-HDF5 models describe metadata; they do not open HDF5 files. `spdx` exports
-`Checksum`, not a general `Package` model. Other vocabulary namespaces can be
-used through RDFLib without an Ontolutils model for every ontology class.
+Use `ontolutils.units.to_pint` to create a Pint quantity. Use
+`ontolutils.units.convert_value_qudt` for conversions based on supplied QUDT
+unit descriptions.

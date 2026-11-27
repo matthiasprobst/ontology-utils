@@ -6,7 +6,7 @@ from pydantic import HttpUrl, Field, field_validator, model_validator
 from ontolutils import LangString
 from ontolutils import Thing, as_id
 from ontolutils import urirefs, namespaces
-from ontolutils.ex.skos import Concept
+from ontology_fixtures.skos import Concept
 from ontolutils.typing import AnyThing, AnyIriOrListOf, Mailbox
 
 __version__ = "2013.19.05"

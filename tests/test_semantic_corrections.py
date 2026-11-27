@@ -4,8 +4,8 @@ import pathlib
 import pytest
 from rdflib import Graph, Namespace, URIRef
 
-from ontolutils.ex import foaf, prov
-from ontolutils.ex.qudt import Unit
+from ontology_fixtures import foaf, prov
+from ontology_fixtures.qudt import Unit
 
 FOAF = Namespace('http://xmlns.com/foaf/0.1/')
 
@@ -14,7 +14,7 @@ FOAF = Namespace('http://xmlns.com/foaf/0.1/')
 def conversion_function():
     """Keep mailbox checks usable without the optional Pint dependency."""
     pytest.importorskip('pint')
-    from ontolutils.ex.qudt.conversion import convert_value_qudt
+    from ontolutils.units import convert_value_qudt
     return convert_value_qudt
 
 

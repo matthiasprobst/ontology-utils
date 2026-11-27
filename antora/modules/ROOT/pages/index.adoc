@@ -1,14 +1,22 @@
 = Ontolutils
 
 Describe things and concepts in Python and share their relationships as RDF.
-Use built-in models, or map your own fields to ontology terms. Pydantic checks
+Define models by mapping your fields to ontology terms. Pydantic checks
 declared fields; SHACL can check additional requirements on the graph.
 
 == First example
 
 [source,python]
 ----
-from ontolutils.ex.prov import Person
+from pydantic import Field
+from ontolutils import Thing, namespaces, urirefs
+
+
+@namespaces(prov="http://www.w3.org/ns/prov#", foaf="http://xmlns.com/foaf/0.1/")
+@urirefs(Person="prov:Person", firstName="foaf:firstName", lastName="foaf:lastName")
+class Person(Thing):
+    firstName: str = Field(alias="first_name")
+    lastName: str | None = Field(default=None, alias="last_name")
 
 researcher = Person(id="https://example.org/people/ada", first_name="Ada")
 assert researcher.firstName == "Ada"
@@ -21,6 +29,6 @@ turtle = researcher.serialize("ttl")
 * xref:installation.adoc[Install core and optional tools].
 * xref:core:thing.adoc[Define a model and validate a measurement].
 * xref:core:serialization.adoc[Save, load, and query RDF].
-* xref:models:overview.adoc[Choose a built-in model].
+* xref:models:overview.adoc[Define a project model].
 * xref:namespaces:namespaces.adoc[Use namespace IRIs and units].
 * xref:api:reference.adoc[Check API signatures and return types].

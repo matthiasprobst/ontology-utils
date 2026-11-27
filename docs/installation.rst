@@ -47,12 +47,10 @@ Install only the tools needed for your workflow:
 
    * - Feature
      - Additional packages
-   * - Numerical variables in ``ontolutils.ex.m4i``
-     - ``numpy``
-   * - Pint quantities and unit conversion
-     - ``numpy pint``
-   * - Numerical variables as xarray DataArrays
-     - ``numpy pint xarray``
+   * - Pint quantities
+     - ``pint``
+   * - Numerical data as xarray DataArrays
+     - ``xarray`` and ``pint`` when formatting a QUDT unit
    * - SHACL graph validation
      - ``pyshacl``
 
@@ -60,7 +58,7 @@ For example:
 
 .. code-block:: console
 
-   python -m pip install numpy pint xarray
+   python -m pip install pint xarray
    python -m pip install pyshacl
 
 Development installations use ``python -m pip install -e ".[test]"`` from a

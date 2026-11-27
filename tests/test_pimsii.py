@@ -1,6 +1,6 @@
 import unittest
 
-from ontolutils.ex.pimsii import Property, Variable
+from ontology_fixtures.pimsii import Property, Variable
 
 
 class TestPIMSII(unittest.TestCase):

@@ -1,8 +1,12 @@
 """Controlled ontology resources for deterministic domain-model checks."""
+import sys
 from pathlib import Path
 
 import pytest
 from rdflib import BNode, Graph
+
+# Make the test-only models available to external wheel-verification runs.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 
 @pytest.fixture(autouse=True)
@@ -11,7 +15,7 @@ def local_qudt_lookups(request, monkeypatch):
     if request.module.__name__.rsplit('.', 1)[-1] not in {'test_qudt', 'test_m4i', 'test_sosa'}:
         yield
         return
-    from ontolutils.ex.qudt import utils
+    from ontology_fixtures.qudt import utils
     graph = Graph().parse(Path(__file__).parent / 'data/qudt_lookup.ttl', format='turtle')
     units = Graph()
     kinds = Graph()

@@ -4,7 +4,7 @@ from pydantic import HttpUrl, field_validator, Field
 from pydantic import model_validator
 
 from ontolutils import Thing, namespaces, urirefs, as_id, LangString
-from ontolutils.ex.prov import Organization, Person
+from ontology_fixtures.prov import Organization, Person
 from ontolutils.typing import AnyThing
 
 

@@ -4,6 +4,18 @@ Migrating from 0.27 to 1.0
 This page describes behavior changes that may require application updates.
 Use Python 3.11–3.15 for this version.
 
+Domain models
+-------------
+
+Move imports from ``ontolutils.ex`` to model definitions owned by your project,
+or use :doc:`userguide/ontology_loader` to generate models from Turtle. Check the
+mapped IRIs and add the field types, defaults and validation your project needs.
+
+Use ``ontolutils.arrays.to_xarray(data, ...)`` with numerical values and optional
+dimensions, coordinates, attributes and unit. Use ``ontolutils.units.to_pint``
+for Pint quantities and ``ontolutils.units.convert_value_qudt`` for QUDT
+reference-coefficient conversions. See :doc:`userguide/models`.
+
 RDF values and model projection
 -------------------------------
 

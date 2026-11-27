@@ -11,8 +11,8 @@ from pydantic import HttpUrl, FileUrl, field_validator, Field
 
 from ontolutils import Thing, urirefs, namespaces, LangString
 from ontolutils.classes.utils import download_file
-from ontolutils.ex import foaf
-from ontolutils.ex import prov
+from ontology_fixtures import foaf
+from ontology_fixtures import prov
 from ontolutils.typing import AnyThing, AnyIriOf, AnyIri, AnyIriOrListOf, IriList, \
     AnyThingOrList
 from ..prov import Attribution

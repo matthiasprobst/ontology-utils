@@ -3,7 +3,7 @@ import pytest
 from pydantic import ValidationError
 from rdflib import Graph, Literal, URIRef
 
-from ontolutils.ex.qudt import QuantityKind, Unit
+from ontology_fixtures.qudt import QuantityKind, Unit
 
 
 KIND = 'http://qudt.org/vocab/quantitykind/'

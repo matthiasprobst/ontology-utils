@@ -67,8 +67,16 @@ plain text, language-tagged values, or lists of them:
 .. testcode::
 
    from ontolutils import LangString
-   from ontolutils.ex.prov import Person
+   from pydantic import Field
+   from ontolutils import Thing, namespaces, urirefs
    from ontolutils.typing import AnyIriOf
+
+
+   @namespaces(prov="http://www.w3.org/ns/prov#", foaf="http://xmlns.com/foaf/0.1/")
+   @urirefs(Person="prov:Person", firstName="foaf:firstName", lastName="foaf:lastName")
+   class Person(Thing):
+       firstName: str = Field(alias="first_name")
+       lastName: str | None = Field(default=None, alias="last_name")
 
    measurement.label = [LangString(value="Velocity", lang="en"), "Geschwindigkeit@de"]
 

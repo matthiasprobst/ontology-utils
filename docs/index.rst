@@ -1,10 +1,9 @@
 Ontolutils
 ==========
 
-Describe things and concepts in the world using Python. Ontolutils provides
-models for people, datasets, observations, and scientific variables. You can
-also define your own models, validate their fields with Pydantic, and share
-their properties and relationships as RDF.
+Describe things and concepts in the world using Python. Define Python models for people, datasets, observations and scientific variables,
+or generate models from an ontology. Validate fields with Pydantic and share
+properties and relationships as RDF.
 
 This guide describes the unreleased 1.0 branch. Published packages may have
 different behavior. See :doc:`installation` to install this checkout and
@@ -15,7 +14,15 @@ Start with a person
 
 .. testcode::
 
-   from ontolutils.ex.prov import Person
+   from pydantic import Field
+   from ontolutils import Thing, namespaces, urirefs
+
+
+   @namespaces(prov="http://www.w3.org/ns/prov#", foaf="http://xmlns.com/foaf/0.1/")
+   @urirefs(Person="prov:Person", firstName="foaf:firstName", lastName="foaf:lastName")
+   class Person(Thing):
+       firstName: str = Field(alias="first_name")
+       lastName: str | None = Field(default=None, alias="last_name")
 
    researcher = Person(
        id="https://example.org/people/ada",
@@ -27,7 +34,7 @@ Start with a person
 
 ``turtle`` is a string containing RDF triples, including
 ``<https://example.org/people/ada> a prov:Person`` and
-``foaf:firstName "Ada"``. The built-in PROV namespace is
+``foaf:firstName "Ada"``. The PROV namespace is
 ``http://www.w3.org/ns/prov#``.
 
 Choose your next step

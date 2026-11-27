@@ -7,7 +7,7 @@ from pydantic.functional_validators import WrapValidator
 from typing_extensions import Annotated
 
 from ontolutils import Thing, namespaces, urirefs
-from ...typing import AnyThing, AnyIri, AnyThingOrList, AnyIriOrListOf
+from ontolutils.typing import AnyThing, AnyIri, AnyThingOrList, AnyIriOrListOf
 
 __version__ = "3.1.9"
 _NS = "http://qudt.org/schema/qudt/"

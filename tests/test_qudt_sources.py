@@ -4,8 +4,8 @@ from hashlib import sha256
 import pytest
 import requests
 
-from ontolutils.ex.qudt import Unit
-from ontolutils.ex.qudt import utils
+from ontology_fixtures.qudt import Unit
+from ontology_fixtures.qudt import utils
 
 
 def test_verified_source_and_timeout(monkeypatch):

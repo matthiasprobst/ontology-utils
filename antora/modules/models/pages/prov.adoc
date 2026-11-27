@@ -1,24 +1,22 @@
 = Provenance with PROV
 
-Link a dataset to its responsible researcher and laboratory:
+A project can use PROV terms for its own provenance model.
 
 [source,python]
 ----
-from ontolutils import LangString
-from ontolutils.ex.prov import Entity, Organization, Person
+from ontolutils import Thing, namespaces, urirefs
+from ontolutils.typing import AnyIri
 
-lab = Organization(id="https://example.org/lab", name=LangString(value="Flow laboratory"))
-researcher = Person(id="https://example.org/people/ada", first_name="Ada", affiliation=lab)
+
+@namespaces(prov="http://www.w3.org/ns/prov#")
+@urirefs(Entity="prov:Entity", attribution="prov:wasAttributedTo")
+class Entity(Thing):
+    attribution: AnyIri
+
+
 dataset = Entity(
     id="https://example.org/datasets/run-01",
-    label="Velocity measurements",
-    was_attributed_to=researcher,
+    attribution="https://example.org/people/ada",
 )
-assert dataset.wasAttributedTo is researcher
-document = dataset.model_dump_jsonld()
+assert "prov:wasAttributedTo" in dataset.serialize("ttl")
 ----
-
-Pass nested objects to include their descriptions in the graph, or an IRI string
-to reference an existing resource. `first_name` is an alias for `firstName`.
-`Organization.name` uses `LangString` for a literal name.
-The model uses `http://www.w3.org/ns/prov#` and `http://xmlns.com/foaf/0.1/`.

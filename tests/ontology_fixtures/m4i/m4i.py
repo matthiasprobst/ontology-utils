@@ -5,32 +5,18 @@ from typing import Any, Dict, List, Union, Optional
 from pydantic import HttpUrl, field_validator, Field, ConfigDict, field_serializer, AnyUrl, AliasChoices
 
 from ontolutils import Thing, namespaces, urirefs, parse_unit, LangString
-from ontolutils.ex.pimsii import Variable
+from ontology_fixtures.pimsii import Variable
 from ..prov import Activity, Organization
 from ..qudt import Unit, QuantityKind
 from ..qudt.utils import get_unit, get_quantity_kind
 from ..schema import ResearchProject
 from ..sis import MeasurementUncertainty
-from ...typing import AnyIriOf, AnyIri, AnyThingOrList, AnyIriOrListOf
+from ontolutils.typing import AnyIriOf, AnyIri, AnyThingOrList, AnyIriOrListOf
 
 try:
     import numpy as np
 except ImportError as e:
     raise ImportError("numpy is required in m4i") from e
-
-from functools import lru_cache
-
-
-@lru_cache(maxsize=1)
-def _get_xarray():
-    try:
-        import xarray as xr
-        return xr
-    except ImportError as e:
-        raise ImportError(
-            "xarray is required but not installed"
-        ) from e
-
 
 __version__ = "1.4.0"
 _NS = "http://w3id.org/nfdi4ing/metadata4ing#"
@@ -194,12 +180,8 @@ class NumericalVariable(Variable):
         if self.hasNumericalValue is None or self.hasUnit is None:
             raise ValueError("Both hasNumericalValue and hasUnit must be set to convert to pint Quantity")
 
-        from ..qudt.conversion import to_pint_unit
-        new_unit = to_pint_unit(self.hasUnit, ureg=ureg)
-
-        # Pint's quantity constructor handles absolute offset units (e.g. degC).
-        # Multiplication would treat them as a scale and raise for valid inputs.
-        return new_unit._REGISTRY.Quantity(self.hasNumericalValue, new_unit)
+        from ontolutils.units import to_pint
+        return to_pint(self.hasNumericalValue, self.hasUnit, ureg=ureg)
 
     def to_numpy(self):
         """Convert numerical value to numpy ndarray"""
@@ -212,7 +194,7 @@ class NumericalVariable(Variable):
     def to_xarray(self, language: str = "en"):
         """Convert numerical value to xarray DataArray"""
 
-        xr = _get_xarray()
+        from ontolutils.arrays import to_xarray
 
         if self.hasNumericalValue is None:
             raise ValueError("hasNumericalValue must be set to convert to xarray DataArray")
@@ -223,18 +205,14 @@ class NumericalVariable(Variable):
             desc = model.pop("has_variable_description")
             desc_with_lang = _xarray_lang_string_to_str("has_variable_description", desc, language)
             model.update(desc_with_lang)
-        if "units" in model:
-            # lazy import to avoid heavy top-level import cost
-            from ..qudt.conversion import to_pint_unit
-            pint_unit = to_pint_unit(self.hasUnit)
-            model["units"] = f"{pint_unit:~f}".replace(" ", "")
+        model.pop("units", None)
         if "label" in model:
             labels = model.pop("label")
             labels_with_lang = _xarray_lang_string_to_str("label", labels, language, "long_name")
 
             model.update(labels_with_lang)
 
-        return xr.DataArray(data=data, attrs=model)
+        return to_xarray(data, attrs=model, unit=self.hasUnit)
 
     @classmethod
     def from_pint(cls, quantity: "pint.Quantity", lookup: Dict = None, **kwargs) -> "NumericalVariable":
@@ -379,7 +357,7 @@ class Method(Thing):
         """add numerical variable to tool"""
         if isinstance(numerical_variable, dict):
             # lokaler Import vermeidet zirkulären Import beim Modul-Import
-            from ontolutils.ex.m4i import NumericalVariable
+            from ontology_fixtures.m4i import NumericalVariable
             numerical_variable = NumericalVariable(**numerical_variable)
         if self.parameter is None:
             self.parameter = [numerical_variable]

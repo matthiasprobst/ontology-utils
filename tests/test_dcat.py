@@ -10,10 +10,10 @@ import rdflib
 import requests
 
 import utils
-from ontolutils.ex import dcat, prov, foaf
-from ontolutils.ex.dcat import Dataset
-from ontolutils.ex.prov import Attribution
-from ontolutils.ex.spdx import Checksum
+from ontology_fixtures import dcat, prov, foaf
+from ontology_fixtures.dcat import Dataset
+from ontology_fixtures.prov import Attribution
+from ontology_fixtures.spdx import Checksum
 from ontolutils.namespacelib.spdx import SPDX
 
 logger = logging.getLogger('ontolutils')
@@ -397,7 +397,7 @@ class TestDcat(utils.ClassTest):
         self.assertEqual(str(dataset2.creator), str(person.id))
 
     def test_was_generated_by(self):
-        from ontolutils.ex.m4i import ProcessingStep
+        from ontology_fixtures.m4i import ProcessingStep
         processing_step = ProcessingStep(
             id='https://example.com/processingstep/1',
             used='http://example.com/resource/1',

@@ -1,21 +1,26 @@
+"""QUDT reference conversion and optional Pint integration."""
+
 from functools import lru_cache
 from math import isfinite
-from typing import Tuple, Union, Any, Dict
-
-import pint
-import rdflib
+from typing import Any, Protocol, runtime_checkable
 
 from ontolutils.utils.qudt_units import qudt_lookup
-from . import Unit
 
-try:
-    from pint import UnitRegistry
-except ImportError:
-    raise ImportError("pint is required for to_pint_unit function. Please install pint package.")
+
+@runtime_checkable
+class UnitDescription(Protocol):
+    """Fields a project-defined unit model supplies for QUDT conversion."""
+
+    id: str
+    conversionMultiplier: float | None
+    conversionOffset: float | None
+    scalingOf: Any
 
 
 @lru_cache(maxsize=1)
 def _get_ureg():
+    from pint import UnitRegistry
+
     return UnitRegistry(force_ndarray_like=True)
 
 
@@ -30,7 +35,7 @@ def _pick_one_scaling_of(scaling_of: Any) -> Any:
     return scaling_of
 
 
-def _resolve_scaling_root(unit: Unit, max_hops: int = 50) -> Unit:
+def _resolve_scaling_root(unit: UnitDescription, max_hops: int = 50) -> UnitDescription:
     """
     Find the scaling root of the unit.
 
@@ -40,7 +45,7 @@ def _resolve_scaling_root(unit: Unit, max_hops: int = 50) -> Unit:
     compatibility; multiplying the coefficients along the chain double counts
     the intermediate units.
     """
-    current: Any = unit
+    current = unit
     seen_ids = set()
 
     for _ in range(max_hops):
@@ -52,10 +57,10 @@ def _resolve_scaling_root(unit: Unit, max_hops: int = 50) -> Unit:
         if parent is None:
             return current
 
-        if not isinstance(parent, Unit):
+        if not isinstance(parent, UnitDescription):
             raise TypeError(
-                f"scalingOf is {type(parent)} not Unit. "
-                f"You likely need to dereference a URI/ResourceType into a Unit object."
+                f"Expected a unit description for scalingOf, got {type(parent).__name__}. "
+                "Resolve resource references before converting."
             )
 
         current = parent
@@ -63,7 +68,7 @@ def _resolve_scaling_root(unit: Unit, max_hops: int = 50) -> Unit:
     raise RuntimeError(f"scalingOf chain too long starting at {unit.id} (>{max_hops} hops)")
 
 
-def _reference_affine(unit: Unit, root: Unit, other_root: Unit) -> Tuple[float, float]:
+def _reference_affine(unit: UnitDescription, root: UnitDescription, other_root: UnitDescription) -> tuple[float, float]:
     multiplier = unit.conversionMultiplier
     offset = unit.conversionOffset
     if unit is root:
@@ -85,7 +90,7 @@ def _reference_affine(unit: Unit, root: Unit, other_root: Unit) -> Tuple[float, 
     return multiplier, intercept
 
 
-def convert_value_qudt(value: Union[int, float], from_unit: Unit, to_unit: Unit) -> Union[int, float]:
+def convert_value_qudt(value: int | float, from_unit: UnitDescription, to_unit: UnitDescription) -> int | float:
     """Convert absolute values using QUDT reference multipliers and offsets.
 
     Both units must resolve to the same explicit scaling root. This function
@@ -114,34 +119,26 @@ def convert_value_qudt(value: Union[int, float], from_unit: Unit, to_unit: Unit)
     return (v_base - b_t) / m_t
 
 
-def to_pint_unit(unit: Union[Unit, str, rdflib.URIRef], ureg=None, lookup: Dict = None) -> str:
-    if isinstance(unit, (str, rdflib.URIRef)):
-        unit_iri = str(unit)
-    else:
-        unit_iri = unit.id
+def to_pint_unit(unit, ureg=None, lookup=None):
+    """Resolve a QUDT unit IRI or an object with an ID to a Pint unit."""
+    from pint import UndefinedUnitError
 
-    # convert found_symbol into pint-compatible string
+    unit_iri = str(getattr(unit, "id", unit))
     if ureg is None:
         ureg = _get_ureg()
-
-    found_pint_unit = None
-    for k, v in qudt_lookup.items():
-        if str(v) == unit_iri:
-            try:
-                found_pint_unit = ureg.__getattr__(k)
-                break
-            except pint.UndefinedUnitError:
-                pass
-    if found_pint_unit is None:
-        for k, v in (lookup or {}).items():
-            if str(v) == unit_iri:
+    for units in (qudt_lookup, lookup or {}):
+        for symbol, iri in units.items():
+            if str(iri) == unit_iri:
                 try:
-                    found_pint_unit = ureg.__getattr__(k)
-                    break
-                except pint.UndefinedUnitError:
-                    pass
+                    return ureg.Unit(symbol)
+                except UndefinedUnitError:
+                    continue
+    raise ValueError(f"Unit {unit_iri} not found in QUDT lookup for pint conversion")
 
-    if found_pint_unit is None:
-        raise ValueError(f"Unit {unit_iri} not found in QUDT lookup for pint conversion")
 
-    return found_pint_unit
+def to_pint(value, unit, ureg=None, lookup=None):
+    """Create a Pint Quantity from a value and a QUDT unit."""
+    if value is None or unit is None:
+        raise ValueError("A value and unit are required for Pint conversion")
+    pint_unit = to_pint_unit(unit, ureg=ureg, lookup=lookup)
+    return pint_unit._REGISTRY.Quantity(value, pint_unit)

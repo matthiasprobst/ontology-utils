@@ -8,7 +8,7 @@ from rdflib import BNode, Graph, Literal, URIRef, XSD
 from rdflib.compare import isomorphic
 
 from ontolutils import Thing, dquery, namespaces, urirefs
-from ontolutils.ex.qudt import QuantityKind, Unit
+from ontology_fixtures.qudt import QuantityKind, Unit
 from ontolutils.typing import AnyIri
 
 

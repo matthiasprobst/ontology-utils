@@ -3,7 +3,7 @@
 
 from ontolutils import urirefs, namespaces
 
-from ontolutils.ex.skos import Concept
+from ontology_fixtures.skos import Concept
 
 
 @namespaces(dcat="http://www.w3.org/ns/dcat#")

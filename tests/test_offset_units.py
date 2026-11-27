@@ -3,14 +3,15 @@ import numpy as np
 import pint
 import pytest
 
-from ontolutils.ex.m4i import NumericalVariable
-from ontolutils.ex.qudt.conversion import to_pint_unit
+from ontology_fixtures.m4i import NumericalVariable
+from ontolutils import QUDT_UNIT
+from ontolutils.arrays import to_xarray
+from ontolutils.units import to_pint, to_pint_unit
 
 
 def test_absolute_celsius_and_array_conversion():
     registry = pint.UnitRegistry()
-    variable = NumericalVariable(hasNumericalValue=[0., 100.], hasUnit='http://qudt.org/vocab/unit/DEG_C')
-    quantity = variable.to_pint(ureg=registry)
+    quantity = to_pint([0., 100.], QUDT_UNIT.DEG_C, ureg=registry)
     assert quantity._REGISTRY is registry
     np.testing.assert_allclose(quantity.to('kelvin').magnitude, [273.15, 373.15])
 
@@ -26,3 +27,17 @@ def test_unknown_unit_has_domain_error_and_custom_lookup_works():
     with pytest.raises(ValueError, match='not found in QUDT lookup'):
         to_pint_unit(unknown)
     assert str(to_pint_unit(unknown, lookup={'meter': unknown})) == 'meter'
+
+
+def test_xarray_export_preserves_coordinates_and_formats_unit():
+    pytest.importorskip("xarray")
+    attrs = {"long_name": "Velocity"}
+    velocity = to_xarray(
+        [1.0, 1.2], dims=["sample"], coords={"sample": [0, 1]},
+        attrs=attrs, unit=QUDT_UNIT.M_PER_SEC,
+    )
+    assert velocity.dims == ("sample",)
+    assert velocity.coords["sample"].values.tolist() == [0, 1]
+    assert velocity.values.tolist() == [1.0, 1.2]
+    assert velocity.attrs == {"long_name": "Velocity", "units": "m/s"}
+    assert attrs == {"long_name": "Velocity"}

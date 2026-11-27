@@ -10,9 +10,16 @@ either an object or its IRI.
 .. testcode::
 
    from typing import Optional
+   from pydantic import Field
    from ontolutils import Thing, namespaces, urirefs
-   from ontolutils.ex.prov import Person
    from ontolutils.typing import AnyIriOf, AnyIriOrListOf
+
+
+   @namespaces(prov="http://www.w3.org/ns/prov#", foaf="http://xmlns.com/foaf/0.1/")
+   @urirefs(Person="prov:Person", firstName="foaf:firstName", lastName="foaf:lastName")
+   class Person(Thing):
+       firstName: str = Field(alias="first_name")
+       lastName: str | None = Field(default=None, alias="last_name")
 
    @namespaces(ex="https://example.org/vocab/")
    @urirefs(Review="ex:Review", lead="ex:lead", contributors="ex:contributors")

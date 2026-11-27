@@ -1,10 +1,10 @@
 import pathlib
 import unittest
 
-from ontolutils.ex.qudt import Unit, QuantityKind
-from ontolutils.ex.qudt.conversion import convert_value_qudt, to_pint_unit
-from ontolutils.ex.qudt.utils import get_quantity_kind
-from ontolutils.ex.qudt.utils import iri2str
+from ontology_fixtures.qudt import Unit, QuantityKind
+from ontolutils.units import convert_value_qudt, to_pint_unit
+from ontology_fixtures.qudt.utils import get_quantity_kind
+from ontology_fixtures.qudt.utils import iri2str
 from ontolutils.namespacelib import QUDT_UNIT
 
 __this_dir__ = pathlib.Path(__file__).parent.resolve()

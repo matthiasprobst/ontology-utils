@@ -1,4 +1,4 @@
-= Built-in models
+= Project models
 
 * xref:overview.adoc[Choose a model for your metadata].
 * xref:prov.adoc[Describe provenance and responsible people].

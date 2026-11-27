@@ -5,8 +5,8 @@
 
 Ontolutils helps you describe things and concepts in Python and express how they
 relate to one another. For example, you can describe a dataset, the researcher
-who created it, and the instrument used to collect the data. Use the built-in
-models or map your own fields to ontology terms. Pydantic validates the fields,
+who created it, and the instrument used to collect the data. Define your own
+models or generate them from an ontology. Pydantic validates the fields,
 and you can share the resulting RDF graph as JSON-LD or Turtle.
 
 ## Install
@@ -34,7 +34,15 @@ python -m pip install ontolutils
 
 ```python
 from pathlib import Path
-from ontolutils.ex.prov import Person
+from pydantic import Field
+from ontolutils import Thing, namespaces, urirefs
+
+
+@namespaces(prov="http://www.w3.org/ns/prov#", foaf="http://xmlns.com/foaf/0.1/")
+@urirefs(Person="prov:Person", firstName="foaf:firstName", lastName="foaf:lastName")
+class Person(Thing):
+    firstName: str = Field(alias="first_name")
+    lastName: str | None = Field(default=None, alias="last_name")
 
 researcher = Person(
     id="https://example.org/people/ada",
@@ -138,15 +146,15 @@ vocabularies.
 
 - [Define and validate your own model](docs/userguide/classes.rst)
 - [Save, load, combine, and query RDF](docs/userguide/serialization.rst)
-- [Use built-in models and numerical variables](docs/userguide/models.rst)
+- [Work with numerical arrays and units](docs/userguide/models.rst)
 - [Load an ontology and generate models](docs/userguide/ontology_loader.rst)
 - [Validate RDF with SHACL](docs/userguide/validation.rst)
 - [Define a model and load M4I from its URL](tutorials/Classes.ipynb)
 - [Model SOSA observations and QUDT values](tutorials/ex/observations.ipynb)
 - [API reference](docs/api.rst)
 
-The example above runs with the base installation. For numerical variables,
-install NumPy. Add Pint for unit conversions and xarray to create DataArrays.
+The introductory examples run with the base installation. Install Pint for
+Pint-based unit arithmetic and xarray to create DataArrays.
 Install pySHACL to validate RDF graphs against shapes. See the
 [installation guide](docs/installation.rst) for the commands.
 

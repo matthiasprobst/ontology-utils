@@ -1,22 +1,20 @@
-= Projects and software
-
-Use the fields declared by each model; an extra Python field is not automatically
-mapped to RDF. Schema.org models use the `https://schema.org/` namespace.
+= Software metadata with Schema.org
 
 [source,python]
 ----
-from ontolutils.ex.schema import Project, SoftwareSourceCode
+from ontolutils import Thing, namespaces, urirefs
+from ontolutils.typing import AnyIri
 
-project = Project(name="Flow measurements", url="https://example.org/project")
+
+@namespaces(schema="https://schema.org/")
+@urirefs(SoftwareSourceCode="schema:SoftwareSourceCode", repository="schema:codeRepository")
+class SoftwareSourceCode(Thing):
+    repository: AnyIri
+
+
 software = SoftwareSourceCode(
-    name="Velocity analysis",
-    code_repository="https://example.org/code",
-    version="1.0",
+    id="https://example.org/software/velocity",
+    repository="https://example.org/code",
 )
-assert str(software.codeRepository) == "https://example.org/code"
-document = software.model_dump_jsonld()
+assert "schema:codeRepository" in software.serialize("ttl")
 ----
-
-`CreativeWork` provides common fields for more specific models. It does not
-declare every Schema.org property; for example, arbitrary `title` and
-`datePublished` inputs are not guaranteed to appear in the RDF graph.

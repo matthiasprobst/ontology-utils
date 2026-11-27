@@ -8,8 +8,8 @@ from pydantic import Field, HttpUrl
 from ontolutils import Property
 from ontolutils import Thing, urirefs, namespaces, build
 from ontolutils import cache
-from ontolutils.ex import dcat, prov
-from ontolutils.ex.schema import Project, ResearchProject
+from ontology_fixtures import dcat, prov
+from ontology_fixtures.schema import Project, ResearchProject
 
 __this_dir__ = pathlib.Path(__file__).parent
 

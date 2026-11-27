@@ -30,9 +30,9 @@ def _pick_one_scaling_of(scaling_of: Any) -> Any:
     return scaling_of
 
 
-def _resolve_to_base_affine(unit: Unit, max_hops: int = 50) -> Tuple[Unit, float, float]:
+def _resolve_scaling_root(unit: Unit, max_hops: int = 50) -> Unit:
     """
-    Find the shared scaling root and the unit's reference-coordinate transform.
+    Find the scaling root of the unit.
 
     QUDT coefficients describe ``reference = (value + offset) * multiplier``.
     They are not successive edge weights: milligrams and grams, for example,
@@ -50,20 +50,7 @@ def _resolve_to_base_affine(unit: Unit, max_hops: int = 50) -> Tuple[Unit, float
 
         parent = _pick_one_scaling_of(getattr(current, "scalingOf", None))
         if parent is None:
-            multiplier = unit.conversionMultiplier
-            if multiplier is None:
-                if current is not unit:
-                    raise ValueError(f'Missing conversionMultiplier for scaled unit {unit.id}')
-                multiplier = 1.0
-            offset = unit.conversionOffset
-            offset = float(offset) if offset is not None else 0.0
-            multiplier = float(multiplier)
-            if not isfinite(multiplier) or multiplier == 0 or not isfinite(offset):
-                raise ValueError('Conversion requires a finite nonzero multiplier and finite offset')
-            intercept = multiplier * offset
-            if not isfinite(intercept):
-                raise ValueError('Conversion offset times multiplier must be finite')
-            return current, multiplier, intercept
+            return current
 
         if not isinstance(parent, Unit):
             raise TypeError(
@@ -74,6 +61,28 @@ def _resolve_to_base_affine(unit: Unit, max_hops: int = 50) -> Tuple[Unit, float
         current = parent
 
     raise RuntimeError(f"scalingOf chain too long starting at {unit.id} (>{max_hops} hops)")
+
+
+def _reference_affine(unit: Unit, root: Unit, other_root: Unit) -> Tuple[float, float]:
+    multiplier = unit.conversionMultiplier
+    offset = unit.conversionOffset
+    if unit is root:
+        if multiplier is None:
+            multiplier = other_root.conversionMultiplier
+        if offset is None:
+            offset = other_root.conversionOffset
+    if multiplier is None:
+        if unit is not root:
+            raise ValueError(f'Missing conversionMultiplier for scaled unit {unit.id}')
+        multiplier = 1.0
+    multiplier = float(multiplier)
+    offset = float(offset) if offset is not None else 0.0
+    if not isfinite(multiplier) or multiplier == 0 or not isfinite(offset):
+        raise ValueError('Conversion requires a finite nonzero multiplier and finite offset')
+    intercept = multiplier * offset
+    if not isfinite(intercept):
+        raise ValueError('Conversion offset times multiplier must be finite')
+    return multiplier, intercept
 
 
 def convert_value_qudt(value: Union[int, float], from_unit: Unit, to_unit: Unit) -> Union[int, float]:
@@ -89,8 +98,8 @@ def convert_value_qudt(value: Union[int, float], from_unit: Unit, to_unit: Unit)
             if left is not None and right is not None and left != right:
                 raise ValueError(f'Conflicting {field} descriptions for unit {from_unit.id}')
         return value
-    base_f, m_f, b_f = _resolve_to_base_affine(from_unit)
-    base_t, m_t, b_t = _resolve_to_base_affine(to_unit)
+    base_f = _resolve_scaling_root(from_unit)
+    base_t = _resolve_scaling_root(to_unit)
 
     if base_f.id != base_t.id:
         raise ValueError(f"Incompatible units: {from_unit} -> {base_f}, {to_unit} -> {base_t}")
@@ -99,6 +108,8 @@ def convert_value_qudt(value: Union[int, float], from_unit: Unit, to_unit: Unit)
         if left is not None and right is not None and left != right:
             raise ValueError(f'Conflicting {field} descriptions for base unit {base_f.id}')
 
+    m_f, b_f = _reference_affine(from_unit, base_f, base_t)
+    m_t, b_t = _reference_affine(to_unit, base_t, base_f)
     v_base = m_f * float(value) + b_f
     return (v_base - b_t) / m_t
 

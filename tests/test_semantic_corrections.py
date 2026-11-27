@@ -44,6 +44,15 @@ def test_unit_identity_ignores_descriptive_labels(convert):
     assert convert(1.5, target, centimetre) == 150
 
 
+def test_partial_qudt_root_uses_coefficients_from_matching_description(convert):
+    gram = Unit(id='http://qudt.org/vocab/unit/GM', conversionMultiplier=1e-3)
+    milligram = Unit(id='http://qudt.org/vocab/unit/MilliGM', scalingOf=gram,
+                     conversionMultiplier=1e-6)
+    partial_gram = Unit(id=gram.id)
+    assert convert(1000, milligram, partial_gram) == pytest.approx(1)
+    assert convert(1, partial_gram, milligram) == pytest.approx(1000)
+
+
 @pytest.mark.parametrize('reverse', [False, True])
 def test_conflicting_scaling_targets_are_rejected(reverse, convert):
     metre = Unit(id='http://qudt.org/vocab/unit/M')

@@ -1,11 +1,19 @@
 # Changelog
 
-## Unreleased
+## v1.0.0
+
+- Load a Turtle ontology from its published URL and use the generated Python
+  models directly. Discover optional fields from declared RDF property domains,
+  including named superclasses and supported OWL unions and intersections.
+  Profiles provide custom names and validation.
+
+- Generate deterministic RDFLib namespace definitions from parsed RDF graphs.
 
 - Correct QUDT conversions: apply offsets before multiplication and use reference
   coefficients once rather than multiplying them along scaling chains. Fix
   Fahrenheit and milligram conversions; reject missing scaled-unit factors,
   invalid coefficients, resource-identity cycles and conflicting same-unit factors.
+  Reuse known coefficients when two descriptions share the same scaling-root IRI.
 
 - Target Python 3.11–3.15, with interpreter-specific Pydantic minimums matching
   upstream support. Align package metadata, dependency-floor profiles and CI;

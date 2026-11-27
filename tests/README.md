@@ -74,33 +74,6 @@ python -m pip freeze
 `-I` and `--import-mode=importlib` keep the source checkout off Python's import
 path, so these checks exercise the installed candidate and its metadata.
 
-## Consumer contracts
-
-`tests/consumers/test_models.py` exercises a standard name from ssnolib and a
-virtual camera with nested source code from pivmetalib. These tests cover aliases,
-validation, expected RDF triples and model round trips with inline contexts.
-They skip when their optional consumer is absent from a normal development
-environment. For the 1.0 major release, downstream repositories migrate
-separately; these historical contracts are not a release CI gate. Update them
-alongside consumer migrations before treating them as current compatibility
-evidence. Require both imports when claiming that a consumer profile passed.
-
-The consumer profile also installs NumPy because these reference releases import
-`ontolutils.ex.m4i`. Those models are absent from the 1.0 wheel. The repository keeps model definitions in `tests/ontology_fixtures` for RDF regression tests.
-For historical 0.27 investigations, run the profile with:
-
-```bash
-python -m pip install -r tests/constraints/consumers.txt
-python -I -c "import ssnolib, pivmetalib"
-python -I -m pytest --import-mode=importlib tests/consumers -q
-```
-
-These pinned releases exclude ontolutils 1.0 and cannot validate its candidate.
-When testing migrated consumers, install the candidate wheel in the same
-environment and let the resolver enforce their dependency bounds. These two model
-contracts complement each consumer's full test suite; they do not establish
-compatibility for every consumer feature or Python version.
-
 ## Documentation examples
 
 `python -m pytest tests/test_documentation.py -q` executes the README and Antora

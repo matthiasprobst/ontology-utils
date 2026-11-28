@@ -36,3 +36,4 @@ scripts/*.ttl
 
 # Local work items and investigation notes; never commit these files.
 .work/
+output.yaml

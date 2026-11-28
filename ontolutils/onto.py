@@ -1,16 +1,19 @@
 """Load Turtle ontologies and construct Python models for declared RDF classes."""
 
 from dataclasses import dataclass
+from datetime import date, datetime, time, timedelta
+from decimal import Decimal
 from hashlib import sha256
 from keyword import iskeyword
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Any, Mapping
+from typing import Any, Mapping, Union
 from unicodedata import normalize
 from urllib.parse import urlsplit
 
-from pydantic import create_model
-from rdflib import BNode, Graph, OWL, RDF, RDFS, URIRef
+from pydantic import ConfigDict, create_model
+from rdflib import BNode, Graph, Literal, OWL, RDF, RDFS, URIRef
+from rdflib.namespace import XSD
 from rdflib.namespace import split_uri
 from requests import Session
 
@@ -74,6 +77,8 @@ def _class_namespace(graph: Graph, classes: set[str]) -> str:
 
 
 class _OntologyThing(Thing):
+    model_config = ConfigDict(**Thing.model_config, arbitrary_types_allowed=True)
+
     @classmethod
     def rdf_fields(cls) -> dict[str, str]:
         """Return Python field names and their mapped predicate IRIs."""
@@ -97,6 +102,83 @@ def _matches_domain(graph, expression, ancestors, seen=frozenset()):
                 _matches_domain(graph, member, ancestors, seen) for member in members
             )
     return False
+
+
+_XSD_PYTHON_TYPES = {
+    XSD.string: str,
+    XSD.normalizedString: str,
+    XSD.token: str,
+    XSD.language: str,
+    XSD.Name: str,
+    XSD.NCName: str,
+    XSD.NMTOKEN: str,
+    XSD.anyURI: str,
+    XSD.boolean: bool,
+    XSD.decimal: Decimal,
+    XSD.integer: int,
+    XSD.nonPositiveInteger: int,
+    XSD.negativeInteger: int,
+    XSD.long: int,
+    XSD.int: int,
+    XSD.short: int,
+    XSD.byte: int,
+    XSD.nonNegativeInteger: int,
+    XSD.unsignedLong: int,
+    XSD.unsignedInt: int,
+    XSD.unsignedShort: int,
+    XSD.unsignedByte: int,
+    XSD.positiveInteger: int,
+    XSD.float: float,
+    XSD.double: float,
+    XSD.date: date,
+    XSD.dateTime: datetime,
+    XSD.time: time,
+    XSD.duration: timedelta,
+}
+
+
+def _range_members(graph, expression):
+    """Expand a datatype range union into its member IRIs."""
+    if not isinstance(expression, BNode):
+        return [expression]
+    unions = list(graph.objects(expression, OWL.unionOf))
+    if len(unions) != 1:
+        return None
+    try:
+        members = list(graph.items(unions[0]))
+    except ValueError:
+        return None
+    if not members:
+        return None
+    result = []
+    for member in members:
+        nested = _range_members(graph, member)
+        if nested is None:
+            return None
+        result.extend(nested)
+    return result
+
+
+def _datatype_annotation(graph, predicate):
+    """Infer a Python annotation from one unambiguous datatype range."""
+    ranges = list(graph.objects(predicate, RDFS.range))
+    if len(ranges) != 1:
+        return Any
+    members = _range_members(graph, ranges[0])
+    if members is None:
+        return Any
+    annotations = []
+    for member in members:
+        annotation = _XSD_PYTHON_TYPES.get(member)
+        if annotation is None:
+            if member == RDFS.Literal:
+                return Any
+            # Unknown datatypes are RDF literals. Keeping the RDFLib term
+            # preserves its datatype IRI during model serialization.
+            annotation = Literal
+        if annotation not in annotations:
+            annotations.append(annotation)
+    return annotations[0] if len(annotations) == 1 else Union[tuple(annotations)]
 
 
 def _discover_fields(graph, class_iri, domains, reserved_names, reserved_predicates):
@@ -126,7 +208,7 @@ def _discover_fields(graph, class_iri, domains, reserved_names, reserved_predica
         name: ModelField(
             str(predicates[0]),
             AnyThingOrList | None if (predicates[0], RDF.type, OWL.ObjectProperty) in graph
-            else Any,
+            else _datatype_annotation(graph, predicates[0]),
             None,
         )
         for name, predicates in sorted(candidates.items())

@@ -26,19 +26,32 @@ EXAMPLE_PAGES = [page for page in EXAMPLE_PAGES if python_blocks(page)]
 
 @pytest.fixture
 def mock_m4i_download(monkeypatch):
+    ontology_urls = {
+        "https://w3id.org/nfdi4ing/metadata4ing/ontology.ttl",
+        "http://w3id.org/nfdi4ing/metadata4ing/1.5.0/",
+    }
+
     def m4i_response(method, url, **kwargs):
         assert method == "GET"
-        assert url == "https://w3id.org/nfdi4ing/metadata4ing/ontology.ttl"
+        assert url in ontology_urls
         response = Response()
         response.status_code = 200
         response.url = url
         response._content = b"""
             @prefix m4i: <http://w3id.org/nfdi4ing/metadata4ing#> .
             @prefix owl: <http://www.w3.org/2002/07/owl#> .
+            @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+            @prefix ptb: <https://ptb.de/dcc/> .
             m4i:Tool a owl:Class .
+            m4i:NumericalVariable a owl:Class .
             m4i:hasParameter a owl:ObjectProperty ;
-                <http://www.w3.org/2000/01/rdf-schema#domain>
+                rdfs:domain
                 [ owl:unionOf (m4i:Method m4i:Tool) ] .
+            m4i:hasMaximumValue a owl:DatatypeProperty ;
+                rdfs:domain m4i:NumericalVariable ;
+                rdfs:range [ a rdfs:Datatype ;
+                    owl:unionOf (xsd:decimal ptb:formulaType) ] .
         """
         return response
 

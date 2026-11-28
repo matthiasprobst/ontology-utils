@@ -13,8 +13,10 @@ fields from property domains, including named superclasses and OWL domain
 unions and intersections. Call ``Tool.rdf_fields()`` to see Python names
 and their exact predicate IRIs. Properties with several domain statements
 must match each statement. Object properties accept a resource reference,
-a ``Thing``, or a list of either. Other discovered fields accept literals
-and explicitly typed RDF values.
+a ``Thing``, or a list of either. Datatype properties use their declared
+``rdfs:range`` where it can be mapped to a Python type. Known XML Schema
+datatypes map to Python scalar types; custom datatypes remain RDFLib
+``Literal`` values so their datatype IRIs are preserved.
 
 Use a profile to rename or constrain a discovered field or add an explicit
 mapping when the ontology omits a domain. For each profile field, supply a

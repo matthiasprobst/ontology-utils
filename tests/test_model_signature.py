@@ -19,8 +19,9 @@ def test_model_signature_shows_declared_fields_and_defaults():
 def test_model_signature_can_include_common_thing_fields():
     signature = SignatureModel.model_signature(include_inherited=True)
 
-    assert signature.startswith("SignatureModel(id: ")
-    assert "label: " in signature
+    assert signature.startswith("SignatureModel(\n")
+    assert "    id: " in signature
+    assert "    label: " in signature
     assert "target: AnyIri" in signature
 
 

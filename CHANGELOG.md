@@ -19,9 +19,8 @@
   invalid coefficients, resource-identity cycles and conflicting same-unit factors.
   Reuse known coefficients when two descriptions share the same scaling-root IRI.
 
-- Target Python 3.11–3.15, with interpreter-specific Pydantic minimums matching
-  upstream support. Align package metadata, dependency-floor profiles and CI;
-  end Python 3.9/3.10 support in this new API family.
+- Target Python 3.10–3.14, with interpreter-specific Pydantic minimums matching
+  upstream support. Align package metadata, dependency-floor profiles and CI.
 
 - Stop prepending the writable user cache to Python's module search path during
   import. Export curated namespace constants and load namespace-generation

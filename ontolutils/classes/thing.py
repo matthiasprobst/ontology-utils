@@ -5,7 +5,7 @@ import warnings
 from dataclasses import dataclass
 from datetime import datetime
 from functools import lru_cache
-from typing import Dict, Union, Optional, Any, List, Type, Tuple, Set, get_args, get_origin
+from typing import Annotated, Dict, Union, Optional, Any, List, Type, Tuple, Set, get_args, get_origin
 from urllib.parse import urlparse
 
 import rdflib
@@ -467,6 +467,80 @@ class Thing(ThingModel):
             properties,
             cls
         )
+
+    @classmethod
+    def model_signature(cls, *, include_inherited: bool = False, width: int = 88) -> str:
+        """Return a compact, readable signature of this model's fields.
+
+        By default, fields inherited from :class:`Thing` are omitted so the
+        result highlights the properties declared by the model. Set
+        ``include_inherited=True`` to include common fields such as ``id`` and
+        ``label``.
+        """
+        from types import UnionType
+        from typing import Union as TypingUnion
+
+        def format_type(annotation, metadata=()):
+            origin = get_origin(annotation)
+            args = get_args(annotation)
+            iri_validator = any(
+                getattr(getattr(item, 'func', item), '__name__', '') == 'validate_iri_type'
+                for item in metadata
+            )
+            if origin is Annotated:
+                annotation, *annotated_metadata = args
+                metadata = (*metadata, *annotated_metadata)
+                origin = get_origin(annotation)
+                args = get_args(annotation)
+                iri_validator = iri_validator or any(
+                    getattr(getattr(item, 'func', item), '__name__', '') == 'validate_iri_type'
+                    for item in metadata
+                )
+            if iri_validator and origin in (TypingUnion, UnionType):
+                return ' | '.join(
+                    'AnyIri' if item is object else format_type(item)
+                    for item in args
+                )
+            if iri_validator:
+                return 'AnyIri'
+            if annotation is Any:
+                return 'Any'
+            if annotation is type(None):
+                return 'None'
+            if origin in (TypingUnion, UnionType):
+                return ' | '.join(format_type(item) for item in args)
+            if origin is not None:
+                name = getattr(origin, '__name__', str(origin).replace('typing.', ''))
+                return f"{name}[{', '.join(format_type(item) for item in args)}]" if args else name
+            if isinstance(annotation, type):
+                return annotation.__name__
+            forward_name = getattr(annotation, '__forward_arg__', None)
+            if forward_name:
+                return forward_name
+            return str(annotation).replace('typing.', '')
+
+        inherited = Thing.model_fields if cls is not Thing else {}
+        fields = [
+            (name, field) for name, field in cls.model_fields.items()
+            if include_inherited or name not in inherited
+        ]
+        parts = []
+        for name, field in fields:
+            part = f"{name}: {format_type(field.annotation, field.metadata)}"
+            if not field.is_required():
+                if field.default_factory is not None:
+                    part += ' = <factory>'
+                elif field.default is not None:
+                    part += f" = {field.default!r}"
+                else:
+                    part += ' = None'
+            parts.append(part)
+
+        single_line = f"{cls.__name__}({', '.join(parts)})"
+        if len(single_line) <= width:
+            return single_line
+        body = ',\n'.join(f"    {part}" for part in parts)
+        return f"{cls.__name__}(\n{body},\n)"
 
     # @classmethod
     # def __getattr__(self, item):

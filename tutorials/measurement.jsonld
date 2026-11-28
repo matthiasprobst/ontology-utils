@@ -1,0 +1,17 @@
+{
+    "@context": {
+        "owl": "http://www.w3.org/2002/07/owl#",
+        "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+        "dcterms": "http://purl.org/dc/terms/",
+        "schema": "https://schema.org/",
+        "skos": "http://www.w3.org/2004/02/skos/core#",
+        "ex": "https://example.org/vocab/"
+    },
+    "@type": "ex:Measurement",
+    "rdfs:label": "Velocity magnitude",
+    "ex:value": 1.5,
+    "ex:unit": {
+        "@id": "http://qudt.org/vocab/unit/M-PER-SEC"
+    },
+    "@id": "https://example.org/measurements/1"
+}

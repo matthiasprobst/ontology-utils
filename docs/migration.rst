@@ -2,7 +2,7 @@ Migrating from 0.27 to 1.0
 ==========================
 
 This page describes behavior changes that may require application updates.
-Use Python 3.11–3.15 for this version.
+Use Python 3.10–3.14 for this version.
 
 Domain models
 -------------

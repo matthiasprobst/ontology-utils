@@ -11,23 +11,13 @@ and you can share the resulting RDF graph as JSON-LD or Turtle.
 
 ## Install
 
-This version requires Python **3.11–3.15**, Pydantic **2.x**,
-and RDFLib **7.x**. Python 3.14 requires Pydantic 2.12 or newer; Python 3.15
-requires Pydantic 2.14 or newer.
-Python 3.10 and earlier are not supported by this branch.
+Ontolutils supports Python **3.10–3.14**, Pydantic **2.x**,
+and RDFLib **7.x**. Python 3.14 requires Pydantic 2.12 or newer.
 
-**This documentation covers 1.0.0b1.** To use the behavior described here,
-install from this checkout in a virtual environment:
+Install the current checkout in a virtual environment:
 
 ```bash
 python -m pip install .
-```
-
-To install the latest published release instead (whose API and Python support
-may differ):
-
-```bash
-python -m pip install ontolutils
 ```
 
 ## Create, save, and reload metadata

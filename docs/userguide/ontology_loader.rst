@@ -57,3 +57,8 @@ OWL imports, full reasoning, and SHACL validation are separate steps. Domain and
 range statements do not specify Python field requirements or defaults. Put
 those decisions in your profile and add scientific methods in a Python
 subclass when your application needs them.
+
+Inspect a generated class with ``Tool.model_signature()``. It returns a compact
+signature containing fields declared on the class, including their types and
+defaults. Common ``Thing`` fields are omitted by default; pass
+``include_inherited=True`` to include them.

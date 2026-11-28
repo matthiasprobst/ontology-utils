@@ -3,15 +3,13 @@
 Installation
 ============
 
-This version supports Python 3.11–3.15. A virtual environment keeps
-project dependencies separate. Python 3.14 needs Pydantic 2.12 or newer;
-Python 3.15 needs Pydantic 2.14 or newer. The package declares these bounds so
-dependency resolution cannot select an unsupported Pydantic floor.
-Python 3.10 and earlier are not supported. A default PyPI installation may
-select a stable release with a different API and Python range.
+Ontolutils supports Python 3.10–3.14. A virtual environment keeps
+project dependencies separate. Python 3.14 needs Pydantic 2.12 or newer. The
+package declares these bounds so dependency resolution cannot select an
+unsupported Pydantic floor.
 
-To follow this guide, start from the 1.0.0b1 source checkout and create an
-isolated environment with a supported Python interpreter:
+To follow this guide, create an isolated environment with a supported Python
+interpreter from the current checkout:
 
 .. code-block:: console
 
@@ -25,13 +23,6 @@ Activate it with ``. .\.venv\Scripts\Activate.ps1`` in PowerShell or
 
    python -m pip install .
    python -m pip check
-
-To use the latest published release instead:
-
-.. code-block:: console
-
-   python -m pip install ontolutils
-   python -c "import ontolutils; print(ontolutils.__version__)"
 
 The package installs its core dependencies, including Pydantic 2.x and RDFLib
 7.x. You do not need to install them separately.

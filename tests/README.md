@@ -52,12 +52,12 @@ network check.
 The `Installed compatibility` workflow builds an sdist and then a wheel from it.
 It installs that wheel in clean environments with both the semantic dependency
 floors in `tests/constraints/lowest.txt` and the newest versions permitted by the
-package metadata and each Python interpreter. It targets Python 3.11 through 3.15
+package metadata and each Python interpreter. It targets Python 3.10 through 3.14
 on Linux, with additional Python 3.12 checks on Windows and macOS. The separate
 `Tests` workflow runs the full suite across all declared Python/OS combinations.
 Install reports, resolved versions and JUnit results are retained as CI artifacts.
-Pydantic 2.12.0 is the older-version baseline on Python 3.14 and 2.14.0 on Python
-3.15. Python 3.11–3.13 use the declared 2.8.2 floor. RDFLib's floor is 7.0.0.
+Pydantic 2.12.0 is the older-version baseline on Python 3.14. Python 3.10–3.13
+use the declared 2.8.2 floor. RDFLib's floor is 7.0.0.
 
 To reproduce the installed check, build with `python -m build`, create a fresh
 virtual environment and install the resulting wheel together with `pytest` and

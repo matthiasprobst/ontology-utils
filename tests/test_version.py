@@ -1,7 +1,11 @@
 import json
 import pathlib
-import tomllib
 import unittest
+
+try:
+    import tomllib
+except ModuleNotFoundError:  # Python 3.10
+    import tomli as tomllib
 
 import yaml
 from packaging.version import Version

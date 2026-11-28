@@ -13,7 +13,6 @@ from urllib.parse import urlsplit
 
 from pydantic import ConfigDict, create_model
 from rdflib import BNode, Graph, Literal, OWL, RDF, RDFS, URIRef
-from rdflib.namespace import XSD
 from rdflib.namespace import split_uri
 from requests import Session
 
@@ -104,36 +103,37 @@ def _matches_domain(graph, expression, ancestors, seen=frozenset()):
     return False
 
 
+_XSD = "http://www.w3.org/2001/XMLSchema#"
 _XSD_PYTHON_TYPES = {
-    XSD.string: str,
-    XSD.normalizedString: str,
-    XSD.token: str,
-    XSD.language: str,
-    XSD.Name: str,
-    XSD.NCName: str,
-    XSD.NMTOKEN: str,
-    XSD.anyURI: str,
-    XSD.boolean: bool,
-    XSD.decimal: Decimal,
-    XSD.integer: int,
-    XSD.nonPositiveInteger: int,
-    XSD.negativeInteger: int,
-    XSD.long: int,
-    XSD.int: int,
-    XSD.short: int,
-    XSD.byte: int,
-    XSD.nonNegativeInteger: int,
-    XSD.unsignedLong: int,
-    XSD.unsignedInt: int,
-    XSD.unsignedShort: int,
-    XSD.unsignedByte: int,
-    XSD.positiveInteger: int,
-    XSD.float: float,
-    XSD.double: float,
-    XSD.date: date,
-    XSD.dateTime: datetime,
-    XSD.time: time,
-    XSD.duration: timedelta,
+    URIRef(_XSD + "string"): str,
+    URIRef(_XSD + "normalizedString"): str,
+    URIRef(_XSD + "token"): str,
+    URIRef(_XSD + "language"): str,
+    URIRef(_XSD + "Name"): str,
+    URIRef(_XSD + "NCName"): str,
+    URIRef(_XSD + "NMTOKEN"): str,
+    URIRef(_XSD + "anyURI"): str,
+    URIRef(_XSD + "boolean"): bool,
+    URIRef(_XSD + "decimal"): Decimal,
+    URIRef(_XSD + "integer"): int,
+    URIRef(_XSD + "nonPositiveInteger"): int,
+    URIRef(_XSD + "negativeInteger"): int,
+    URIRef(_XSD + "long"): int,
+    URIRef(_XSD + "int"): int,
+    URIRef(_XSD + "short"): int,
+    URIRef(_XSD + "byte"): int,
+    URIRef(_XSD + "nonNegativeInteger"): int,
+    URIRef(_XSD + "unsignedLong"): int,
+    URIRef(_XSD + "unsignedInt"): int,
+    URIRef(_XSD + "unsignedShort"): int,
+    URIRef(_XSD + "unsignedByte"): int,
+    URIRef(_XSD + "positiveInteger"): int,
+    URIRef(_XSD + "float"): float,
+    URIRef(_XSD + "double"): float,
+    URIRef(_XSD + "date"): date,
+    URIRef(_XSD + "dateTime"): datetime,
+    URIRef(_XSD + "time"): time,
+    URIRef(_XSD + "duration"): timedelta,
 }
 
 

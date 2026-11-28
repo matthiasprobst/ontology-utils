@@ -38,6 +38,7 @@ DOI = "https://doi.org/10.5281/zenodo.24606444"
 test = [
     "pytest>=8.3.2",
     "pytest-cov>=5.0.0",
+    "tomli>=2.0; python_version < '3.11'",
     "pylint>=3.2.6",
     "pyyaml",
     "pint",
